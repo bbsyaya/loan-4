@@ -1,0 +1,56 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.biz.backstage.inter.impl;
+
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.hrbb.loan.pos.biz.backstage.inter.ApproveResultBiz;
+import com.hrbb.loan.pos.dao.entity.TApproveResult;
+import com.hrbb.loan.pos.service.ApproveResultService;
+
+/**
+ * 
+ * @author marco
+ * @version $Id: ApproveResultBizImpl.java, v 0.1 2015-6-23 下午7:51:49 marco Exp
+ *          $
+ */
+@Component("approveResultBiz")
+public class ApproveResultBizImpl implements ApproveResultBiz {
+
+	@Autowired
+	ApproveResultService service;
+
+	/**
+	 * @see com.hrbb.loan.pos.biz.backstage.inter.ApproveResultBiz#selectByPrimaryKey(java.lang.String)
+	 */
+	@Override
+	public TApproveResult selectByPrimaryKey(String approveId) {
+		return service.selectByPrimaryKey(approveId);
+	}
+	
+	/**
+	 * @see com.hrbb.loan.pos.biz.backstage.inter.ApproveResultBiz#selectByPrimaryKey(java.lang.String)
+	 */
+	@Override
+	public Map<String, Object> getApproveMap(String approveId){
+		return service.getApproveMap(approveId);
+	}
+	/** 
+	 * @see com.hrbb.loan.pos.service.ApproveResultService#selectByPrimaryKey(java.lang.String)
+	 */
+	@Override
+	public TApproveResult selectByLoanId(String loanId) {
+		return service.selectByLoanId(loanId);
+	}
+
+	@Override
+	public int updateApproveResultInfo(Map<String, Object> approveBankMap) {
+		 return service.updateApproveResultInfo(approveBankMap);
+	}
+}

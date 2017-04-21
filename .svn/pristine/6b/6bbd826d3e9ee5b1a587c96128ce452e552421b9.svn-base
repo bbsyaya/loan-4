@@ -1,0 +1,105 @@
+package com.hrbb.loan.pos.biz.backstage.inter.impl;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.biz.backstage.inter.IPaymentApplyBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.IPaymentApplyCheckBiz;
+import com.hrbb.loan.pos.dao.entity.TContractManagement;
+import com.hrbb.loan.pos.dao.entity.TPaymentApply;
+import com.hrbb.loan.pos.service.LoanPosContractManagementService;
+import com.hrbb.loan.pos.service.LoanPosPaybackService;
+import com.hrbb.loan.pos.service.PaymentApplyService;
+
+@Component("paymentApplyCheckBizImpl")
+public class PaymentApplyCheckBizImpl implements IPaymentApplyCheckBiz {
+
+    Logger                                   logger = Logger
+                                                        .getLogger(PaymentApplyCheckBizImpl.class);
+
+    @Autowired
+    private IPaymentApplyBiz                 paymentApplyBiz;
+
+    @Autowired
+    private LoanPosContractManagementService loanPosContractManagementService;
+
+    @Autowired
+    private PaymentApplyService              paymentApplyService;
+
+    @Autowired
+    private LoanPosPaybackService            loanPosPaybackService;
+
+    @Override
+    public Map<String, Object> paymentApplyCheck(String payApplyId) {
+
+        try {
+            TPaymentApply paymentApply = paymentApplyBiz.queryPaymentApplyById(payApplyId);
+            if (paymentApply == null) {
+                return respMap("999", "申请编号为空");
+            }
+
+            //1. 用款申请状态=00-待处理
+            if (!"00".equals(paymentApply.getStatus())) {
+                return respMap("999", "该笔用款不是申请中状态");
+            }
+            //2. 用款申请金额
+            String contNo = paymentApply.getContNo();
+            TContractManagement contract = loanPosContractManagementService
+                .getContractInfoByContNo(contNo);
+            // 用款金额
+            BigDecimal totalPayApplyAmtBD = (paymentApplyService.getPaymentApplyInfocontno(contNo)) == null ? BigDecimal.ZERO
+                : (paymentApplyService.getPaymentApplyInfocontno(contNo));
+
+            String receiptTotalAmt = loanPosPaybackService.getReceiptTotalAmountByContNo(contNo) == null ? "0"
+                : loanPosPaybackService.getReceiptTotalAmountByContNo(contNo);
+            // 借据金额
+            BigDecimal receiptTotalAmtBD = new BigDecimal(
+                (receiptTotalAmt == null || receiptTotalAmt.equals("")) ? "0" : receiptTotalAmt);
+            // 协议金额
+            BigDecimal contractTotalAmt = contract.getContTotalAmt();
+            // 协议可用余额
+            BigDecimal amt = contractTotalAmt.subtract(totalPayApplyAmtBD).subtract(
+                receiptTotalAmtBD);
+            if (amt.compareTo(BigDecimal.ZERO) < 0) {
+                return respMap("999", "协议可用余额不足");
+            }
+            //3. 用款到期日期不能超过授信协议到期日
+            Date endDate = contract.getEndDate();
+            Date expectedDate = paymentApply.getExpectedEndDate();
+            if (endDate != null && expectedDate != null) {
+                if (endDate.before(expectedDate)) {
+                    return respMap("999", "用款到期日超过协议到期日");
+                }
+            }
+            //4. 用款期限限定在1~3个月
+            String payApplyTerm = paymentApply.getPayApplyTerm();
+            if (Integer.parseInt(payApplyTerm) > 3) {
+                return respMap("999", "用款期限超出3个月");
+            }
+        } catch (Exception e) {
+            logger.error("用款合格性校验通过", e);
+        }
+        // 通过
+        return respMap("000", "用款合格性校验通过");
+    }
+
+    /**
+     * 生成检验结果
+     * 
+     * @param respCode
+     * @param respMsg
+     * @return
+     */
+    private Map<String, Object> respMap(String respCode, String respMsg) {
+        Map<String, Object> respMap = Maps.newHashMap();
+        respMap.put("respCode", respCode);
+        respMap.put("respMsg", respMsg);
+        return respMap;
+    }
+}

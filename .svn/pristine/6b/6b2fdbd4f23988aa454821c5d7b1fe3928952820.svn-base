@@ -1,0 +1,23 @@
+package com.hrbb.loan.pos.dao.entity;
+
+public class TCreditReportOverdue5Years extends TCreditReportOverdue5YearsKey {
+    private String beginMonth;
+
+    private String endMonth;
+
+    public String getBeginMonth() {
+        return beginMonth;
+    }
+
+    public void setBeginMonth(String beginMonth) {
+        this.beginMonth = beginMonth == null ? null : beginMonth.trim();
+    }
+
+    public String getEndMonth() {
+        return endMonth;
+    }
+
+    public void setEndMonth(String endMonth) {
+        this.endMonth = endMonth == null ? null : endMonth.trim();
+    }
+}

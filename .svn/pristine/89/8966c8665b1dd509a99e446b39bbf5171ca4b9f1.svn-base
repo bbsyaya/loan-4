@@ -1,0 +1,55 @@
+package com.hrbb.loan.pos.dao.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+import org.springframework.stereotype.Repository;
+
+import com.hrbb.loan.pos.dao.TBdExecutorDao;
+import com.hrbb.loan.pos.dao.entity.TBdExecutor;
+
+@Repository("tBdExecutorDao")
+public class TBdExecutorDaoImpl extends SqlSessionDaoSupport implements TBdExecutorDao {
+
+    @Override
+    public int deleteByPrimaryKey(Integer menberId) {
+        return 0;
+    }
+
+    @Override
+    public int insert(TBdExecutor record) {
+        return 0;
+    }
+
+    @Override
+    public int insertSelective(TBdExecutor record) {
+        return 0;
+    }
+
+    @Override
+    public TBdExecutor selectByPrimaryKey(Integer menberId) {
+        return null;
+    }
+
+    @Override
+    public int updateByPrimaryKeySelective(TBdExecutor record) {
+        return 0;
+    }
+
+    @Override
+    public int updateByPrimaryKey(TBdExecutor record) {
+        return 0;
+    }
+
+    @Override
+    public List<TBdExecutor> selectListBySelective(Map<String, Object> reqMap) {
+        return getSqlSession().selectList("TBdExecutorMapper.selectListBySelective", reqMap);
+    }
+
+    @Override
+    public long countListBySelective(Map<String, Object> reqMap) {
+        return getSqlSession().selectOne("TBdExecutorMapper.countListBySelective", reqMap);
+    }
+
+}

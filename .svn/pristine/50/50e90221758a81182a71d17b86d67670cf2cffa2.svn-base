@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services>
+	<service>
+		<name>basicService</name><!--唯一表示服务-->
+    	<label>Web应用基础配置</label>
+    	<properties>
+    		<!-- POS贷的回调路径 -->
+    		<property name="webUrl" value="http://35.8.33.21:11096/loan-pos-web/"/>
+    		<!-- 文件系统(fileSystem)的访问路径 -->
+    		<property name="fsUrl" value="http://10.1.5.225:11097/"/>
+    		<!-- 账户验真标识 -->
+    		<property name="bankCheckChannelFlag" value="1"/>
+    	</properties>
+	</service>
+	
+	<service>
+		<name>CRService</name><!--唯一表示服务-->
+    	<label>征信查询服务</label>
+    	<properties>
+    		<property name="ftpUrl" value="35.1.1.13"/>
+    		<property name="ftpPort" value="21"/>
+    		<property name="ftpPass" value="11"/>
+    		<property name="ftpUser" value="11"/>
+    		<property name="orgId" value="888973"/>
+    		<property name="uid" value="hlwjr-zmx"/>
+    		<property name="creditInvestigatePat" value="http://%s:%s/S029001010CRQ001"/>
+    		<property name="investigateUrl" value="30.1.1.22"/>
+    		<property name="investigatePort" value="8020"/>
+    		<property name="getInvestigateUrl" value="http://35.8.33.21:11096"/>
+    		<property name="ciOff" value="off"/>
+    		<property name="locatorUrl" value="http://197.17.66.178:8080/AmarCRQ/services/ASWebService?wsdl"/>
+    		<property name="tradeCode" value="CRQ2014080100001"/>
+    		<property name="beforeDate" value="20"/>	<!-- 20天以内征信报告有效 -->
+    	</properties>
+	</service>
+	
+	<service>
+		<name>policeQuery</name><!--唯一表示服务-->
+    	<label>公安信息查询服务</label>
+    	<properties>
+    		<property name="aicPublicKeyPath" value="/home/aic/PublicKey.crt"/>
+    		<property name="SBM" value="111111111111111"/>
+    		<property name="license" value="/home/connectPolice/aaa.txt"/>
+    		<property name="url" value="https://api.nciic.com.cn/nciic_ws/services/"/>
+    	</properties>
+	</service>
+	
+	<service>
+		<name>aicQuery</name><!--唯一表示服务-->
+    	<label>工商信息查询服务</label>
+    	<properties>
+    		<property name="uid" value="A9B2C799A86808D2"/>
+    		<property name="upwd" value="ifs@hrbb123"/>
+    		<property name="url" value="http://115.182.16.71/gsinfo/services/entInfo"/>
+    	</properties>
+	</service>
+	
+	<service>
+		<name>bankCardVerify</name><!--唯一表示服务-->
+    	<label>银行卡验真服务</label>
+    	<properties>
+    		<property name="BANKCHECKURL" value="https://openapi.yiji.com/gateway.html"/>
+    		<property name="SERVICENAME" value="bankCardElementsCheck"/>
+    		<property name="PARTNERID" value="20150518000005461653"/>
+    		<property name="SAFECODE" value="509f5416f4f287837049010062c1e19e"/>
+    	</properties>
+	</service>
+	<service>
+		<name>uploadService</name>
+    	<label>文件上传服务</label>
+    	<properties>
+    		<property name="synFileUploadEnable" value="false"/>
+    		<!-- ftp同步目录 -->
+    		<property name="syncFolder" value="/home/sync-folder/"/>
+    	</properties>
+	</service>
+	
+	<service>
+		<name>MQService</name>
+    	<label>MQ消息服务</label>
+    	<properties>
+    		<property name="mq_q_receive" value="q_transcore_sample"/>
+    		<property name="mq_t_receive" value="t_transcore_sample"/>
+    	</properties>
+	</service>
+	
+	<service>
+		<name>cdcService</name>
+    	<label>CDC数据服务</label>
+    	<properties>
+    		<property name="filePath" value="/home/cdc/CDC/"/>
+    	</properties>
+	</service>
+	
+	<service>
+		<name>mailService</name>
+    	<label>邮件通知生成服务</label>
+    	<properties>
+    		<property name="serviceUrl" value="http://10.1.5.224:11097/frontier/remoting/hrbbMailService"/>
+    		<property name="userName" value="xxxxx"/>
+    		<property name="password" value="xxxxx"/>
+    		<property name="author" value="hrbb@hrbb.com.cn"/>
+    		<!-- 需要发送邮件的handler以逗号分隔 -->
+    		<property name="handlers.generalMailNotify" value=",,"/>
+    	</properties>
+	</service>
+	
+	<!--
+	各个渠道的参数配置:
+	1. 服务名统一规则为：渠道名称,便于在调用时可以拼接调用
+	-->
+	<service>
+		<name>58</name>
+    	<label>58渠道交易服务</label>
+    	<properties>
+    		<property name="messageUrl" value="http://csd.58.com/channel/hrbb/notify"/>
+    		<property name="applyChangeUrl" value="http://csd.58.com/channel/hrbb/info/update"/>
+    		<!-- 前置的公钥存储目录 -->
+    		<property name="encryptedRender" value="58tc"/>
+    		<!-- 消息通知接口编号 -->
+    		<property name="transCode.pushMessage" value="58T15"/>
+    		<!-- 申请信息同步更新接口编号 -->
+    		<property name="transCode.syncApply" value="58T16"/>
+    	</properties>
+	</service>
+	
+	<service>
+		<name>HC</name>
+    	<label>慧聪渠道交易服务</label>
+    	<properties>
+    		<property name="messageUrl" value=""/>
+    		<property name="encryptedRender" value="hc"/>
+    		<property name="transCode.pushMessage" value="HCT15"/>
+    		<!-- 申请信息同步更新接口编号 -->
+    		<property name="transCode.syncApply" value="HCT17"/>
+    	</properties>
+	</service>
+	
+	<service>
+		<name>ZW</name>
+    	<label>北龙中网渠道交易服务</label>
+    	<properties>
+    		<property name="messageUrl" value=""/>
+    		<property name="encryptedRender" value="zw"/>
+    		<property name="transCode.pushMessage" value="ZWT15"/>
+    		<!-- 申请信息同步更新接口编号 -->
+    		<property name="transCode.syncApply" value="ZWT16"/>
+    	</properties>
+	</service>
+	
+	<service>
+		<name>RN</name>
+    	<label>融360渠道交易服务</label>
+    	<properties>
+    		<property name="messageUrl" value="http://is.rong360.com/api/v1/haerbin/message"/>
+    		<property name="encryptedRender" value="rn"/>
+    		<!-- 融360分配的密钥 -->
+    		<property name="key" value="1264d0a51556dab9131ed88f5125e4cc"/>
+    		<property name="transCode.pushMessage" value="RNT15"/>
+    		<!-- 融360无申请同步
+    		<property name="transCode.syncApply" value=""/>
+    		 -->
+    	</properties>
+	</service>
+	
+	<service>
+		<name>SM</name>
+    	<label>萨摩耶渠道交易服务</label>
+    	<properties>
+    		<property name="messageUrl" value=""/>
+    		<property name="encryptedRender" value="sm"/>
+    		<property name="transCode.pushMessage" value="SMT15"/>
+    		<!-- 萨摩耶无申请同步
+    		<property name="transCode.syncApply" value=""/>
+    		 -->
+    	</properties>
+	</service>
+</services>

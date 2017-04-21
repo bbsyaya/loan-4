@@ -1,0 +1,42 @@
+package com.hrbb.loan.jms.listener;
+
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.jms.TextMessage;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import com.alibaba.fastjson.JSON;
+import com.hrbb.loan.yjrpay.constants.ResultCode;
+import com.hrbb.loan.yjrpay.response.GenericResponse;
+
+/**
+ * 
+ * @author cjq
+ * @version $Id: PayOrderListener.java, v 0.1 2015年8月6日 下午9:12:19 cjq Exp $
+ */
+@Service("payOrderListener")
+public class PayOrderListener implements MessageListener {
+
+    private static final Logger logger = LoggerFactory.getLogger(PayOrderListener.class);
+
+    @Override
+    public void onMessage(Message message) {
+        TextMessage textMsg = (TextMessage) message;
+        try {
+            logger.info("received a text message: " + textMsg.getText());
+            GenericResponse genericResponse = JSON.parseObject(textMsg.getText(), GenericResponse.class);
+            
+            if (ResultCode.EXECUTE_SUCCESS.getValue().equals(genericResponse.getStatus())) {
+                // TODO 代收付回调处理
+                genericResponse.getOrderNo();
+            }
+        } catch (JMSException e) {
+            logger.error("JMS error", e);
+        }
+    }
+
+}

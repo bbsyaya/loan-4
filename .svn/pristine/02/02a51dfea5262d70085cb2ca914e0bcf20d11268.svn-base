@@ -1,0 +1,102 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.hrbb.loan.pos.dao.TReceiptInfoDao;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+import com.hrbb.loan.pos.service.ReceiptInfoService;
+
+/**
+ * 
+ * @author marco
+ * @version $Id: TReceiptInfoServiceImpl.java, v 0.1 2015-4-24 下午3:55:46 marco
+ *          Exp $
+ */
+@Service("receiptInfoService")
+public class ReceiptInfoServiceImpl implements ReceiptInfoService {
+
+	@Autowired
+	private TReceiptInfoDao tReceiptInfoDao;
+
+	@Override
+	public TReceiptInfo selectReceiptOne(String payApplyId) {
+		return tReceiptInfoDao.selectByPayApplyId(payApplyId);
+	}
+
+	@Override
+	public TReceiptInfo selectReceiptByPrimary(String receiptId) {
+		return tReceiptInfoDao.selectByPrimaryKey(receiptId);
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.service.TReceiptInfoService#selectRecordInfoHB16()
+	 */
+	@Override
+	public List<TReceiptInfo> selectRecordInfoHB16() {
+		return tReceiptInfoDao.selectRecordInfoHB16();
+	}
+
+	@Override
+	public int insertReceiptInfo(TReceiptInfo receipt) {
+		return tReceiptInfoDao.insertSelective(receipt);
+	}
+
+	@Override
+	public int updateReceiptInfo(Map<String, Object> reqMap) {
+		return tReceiptInfoDao.updateReceiptSelective(reqMap);
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.service.TReceiptInfoService#selectRecordInfoHB18()
+	 */
+	@Override
+	public List<TReceiptInfo> selectRecordInfoHB18() {
+		return tReceiptInfoDao.selectRecordInfoHB18();
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.service.TReceiptInfoService#selectRecordInfoHB19()
+	 */
+	@Override
+	public List<TReceiptInfo> selectRecordInfoHB19() {
+		return tReceiptInfoDao.selectRecordInfoHB19();
+	}
+
+	@Override
+	public String sumLoanTotalBalance(String contNo) {
+		return tReceiptInfoDao.getReceiptTotalAmountByContNo(contNo);
+	}
+
+	@Override
+	public List<TReceiptInfo> getReceiptList10() {
+		return tReceiptInfoDao.getReceiptList10();
+	}
+
+	@Override
+	public TReceiptInfo selectByExeSeq(String exeSeq) {
+		return tReceiptInfoDao.selectByExeSeq(exeSeq);
+	}
+
+	@Override
+	public List<Map<String, String>> selectSumForUM(Map<String, String> p) {
+		return tReceiptInfoDao.selectSumForUM(p);
+	}
+	
+	@Override
+	public List<Map<String, Object>> selectSummaryForCont(Map<String, Object> reqMap) {
+		return tReceiptInfoDao.selectSummaryForCont(reqMap);
+	}
+
+    public List<TReceiptInfo> getUnFinishedReceipt() {
+        return tReceiptInfoDao.selectUnFinishedReceipt();
+    }
+}

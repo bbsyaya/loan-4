@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TChannelPoscustInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TChannelPoscustInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="channelPosCustId" property="channelPosCustId" jdbcType="VARCHAR" />
+    <result column="posCustId" property="posCustId" jdbcType="VARCHAR" />
+    <result column="channel" property="channel" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, channelPosCustId, posCustId, channel
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_channel_poscust_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_channel_poscust_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TChannelPoscustInfo" >
+    insert into t_channel_poscust_info (id, channelPosCustId, posCustId, 
+      channel)
+    values (#{id,jdbcType=INTEGER}, #{channelPosCustId,jdbcType=VARCHAR}, #{posCustId,jdbcType=VARCHAR}, 
+      #{channel,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TChannelPoscustInfo" >
+    insert into t_channel_poscust_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="channelPosCustId != null" >
+        channelPosCustId,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="channel != null" >
+        channel,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="channelPosCustId != null" >
+        #{channelPosCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="channel != null" >
+        #{channel,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <insert id="insertSelectiveMap" parameterType="map" >
+    insert into t_channel_poscust_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="channelPosCustId != null" >
+        channelPosCustId,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="channel != null" >
+        channel,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="channelPosCustId != null" >
+        #{channelPosCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="channel != null" >
+        #{channel,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="selectSelectiveMap" parameterType="map" resultType="map">
+  	SELECT
+    <include refid="Base_Column_List" />
+    FROM t_channel_poscust_info
+    WHERE 1=1 
+    <if test="channel != null">
+    	AND channel = #{channel}
+    </if>
+    <if test="posCustId != null">
+    	AND posCustId = #{posCustId}
+    </if>
+    <if test="channelPosCustId != null">
+    	AND channelPosCustId = #{channelPosCustId}
+    </if>
+  </select>
+  
+   <select id="selectchannelPosCustId" parameterType="map" resultType="java.lang.String">
+  	SELECT channelPosCustId FROM t_channel_poscust_info
+    WHERE 1=1 
+    <if test="channel != null">
+    	AND channel = #{channel}
+    </if>
+    <if test="posCustId != null">
+    	AND posCustId = #{posCustId}
+    </if>
+  </select>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TChannelPoscustInfo" >
+    update t_channel_poscust_info
+    <set >
+      <if test="channelPosCustId != null" >
+        channelPosCustId = #{channelPosCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustId != null" >
+        posCustId = #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="channel != null" >
+        channel = #{channel,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TChannelPoscustInfo" >
+    update t_channel_poscust_info
+    set channelPosCustId = #{channelPosCustId,jdbcType=VARCHAR},
+      posCustId = #{posCustId,jdbcType=VARCHAR},
+      channel = #{channel,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  
+  <select id="queryChannelDetail" parameterType="map" resultType="map">
+  	select a.loanId loanid, b.custName custname, DATE_FORMAT(a.beginDate,'%Y%m%d') begindate, a.applyAmt apptcapi,
+a.returnKind retukind1, a.returnKind2 retukind2, c.bankAccno bankaccno, c.bankName, c.bankBranName bankBrandName, c.bankSubbName bankSubName, a.applyStatus apprstate,
+a.posOrg posorg, d.posCustName poscustname, d.regiCode regicode, d.posCustBusiScope dealscope,  d.busiDivision operaddrRegion, d.posCustAddress operaddrdetail, d.industryTypeId industrytypeid, b.paperKind paperkind,
+b.paperId paperid, b.sexSign sexsign, b.busiYear busiyear, b.marrSign marrsign, b.educSign educsign, b.childNum childnum, b.localHouseNum localhousenum, b.otherHouseNum otherhousenum, 
+b.mobilePhone mobilephone, b.tel, b.residentDivision residentRegion, b.residentDetail residentdetail, b.contactAddrFlag contactaddrflag, b.weixinNo,b.email, b.familyCustName familycustname,
+b.matePaperId matepaperid, b.mateMobilephone matemobilephone,e.relaCustName relacustname, e.relaKind relakind, e.relaMobilePhone relamobilephone, e.relaTel relatel, a.imagefilepackagename, a.stdshno 
+from t_credit_apply_info a LEFT JOIN t_customer_info b on a.custId = b.custId LEFT JOIN t_bankaccno_info c on a.bankAccno = c.bankAccno LEFT JOIN t_poscust_info d on a.posCustId = d.posCustId LEFT JOIN t_relative_info e on e.relativeId = a.relativeId where 
+1=1
+<if test="stdmerno != null">
+	AND a.stdmerno=#{stdmerno}
+</if>
+<if test="channel != null">
+	AND a.channel = #{channel}
+</if>
+<if test="stdshno != null">
+	AND a.stdshno = #{stdshno}
+</if>
+<if test="channelPoscustId != null">
+	AND a.stdmerno = #{channelPoscustId}
+</if>
+<if test="loanId != null">
+	AND a.loanId = #{loanId}
+</if>
+ORDER BY a.beginDate desc
+LIMIT 0, 1
+  </select>
+  
+  <select id="countChannelDetail" parameterType="map" resultType="long">
+  	select count(*) from t_credit_apply_info a where 
+	1=1
+  	<if test="stdshno != null">
+  		AND a.stdshno = #{stdshno}
+  	</if>
+  	<if test="stdmerno != null">
+  		AND a.stdmerno = #{stdmerno}
+  	</if>
+  	<if test="channel != null">
+  		AND a.channel = #{channel}
+  	</if>
+  </select>
+
+  <select id="getCustIdbyStdshno" resultType="java.lang.String" parameterType="java.lang.String" >
+    select posCustId
+    from t_channel_poscust_info
+    where stdmerno = #{stdmerno,jdbcType=VARCHAR}
+  </select>
+
+</mapper>

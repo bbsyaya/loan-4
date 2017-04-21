@@ -1,0 +1,16 @@
+package com.hrbb.loan.spi.AG;
+import org.springframework.stereotype.Service;
+
+import com.hrbb.loan.spi.POSHService;
+import com.hrbb.loan.spi.TC.TCCreditApplyUpdateSyncServiceImpl;
+
+@Service("agCreditApplyUpdateSync")
+public class AGCreditApplyUpdateSyncServiceImpl extends TCCreditApplyUpdateSyncServiceImpl {
+	/* (non-Javadoc)
+	 * @see com.hrbb.loan.spi.POSHService#getChannle()
+	 */
+	@Override
+	public String getChannel() {
+		return POSHService.近件渠道_代理展业;
+	}
+}

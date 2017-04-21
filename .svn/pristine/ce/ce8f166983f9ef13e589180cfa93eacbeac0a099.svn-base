@@ -1,0 +1,254 @@
+package com.hrbb.loan.spi.SALE;
+
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.Resource;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.channel.user.UserProcesser;
+import com.hrbb.loan.pos.service.RepaymentApplyService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.MapUtils;
+import com.hrbb.loan.pos.util.SignUtil;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.loan.pos.util.ValidateUtil;
+import com.hrbb.loan.spiconstants.HServiceReturnCode;
+import com.hrbb.loan.spiconstants.PaymentApplyHServiceConstants;
+import com.hrbb.sh.framework.HRequest;
+import com.hrbb.sh.framework.HResponse;
+import com.hrbb.sh.framework.HService;
+import com.hrbb.sh.framework.HServiceException;
+
+/**
+ * AP0006: 消费贷 还款申请.
+ * 
+ * @author xiongshaogang
+ * @version $Id: ZzSaleAppRepaymentApplyServiceImpl.java, v 0.1 2015年4月28日 下午1:51:16 xiongshaogang Exp $
+ */
+@Service("zzSaleAppRepaymentApply")
+public class ZzSaleAppRepaymentApplyServiceImpl implements HService {
+	private final Logger logger = Logger
+			.getLogger(ZzSaleAppRepaymentApplyServiceImpl.class);
+
+	@Autowired
+	private RepaymentApplyService repaymentApplyService;
+	
+	@Resource(name="userProcesser")
+    private UserProcesser userProcesser;
+
+	@Override
+	public HResponse serve(HRequest request) throws HServiceException {
+	    logger.debug("in ZzSaleAppRepaymentApplyServiceImpl...");
+        
+        // 0. 接收请求包，解包
+        Map<String, String> headerMap = (Map<String, String>) request.getProperties().get("HrbbHeader");
+        Map<String, String> bodyMap = (Map<String, String>) request.getProperties().get("HrbbBody");
+        logger.info("headerMap : " + MapUtils.toString(headerMap));
+        logger.info("bodyMap : " + MapUtils.toString(bodyMap));
+        
+        // 1. 请求包校验
+        HResponse resp = new HResponse();
+        if (!validate(headerMap, bodyMap, resp)) {
+            resp.setRespTime(new Date());
+            return getBlankHResponse(resp, headerMap, bodyMap);
+        }
+        
+        // 2. 验证数字签名,暂不实现
+        String signedMsg = SignUtil.getSignMsg((Map<String, Object>)request.getProperties().get("HrbbBody"), null);
+        logger.info("请求待签名串 signedMsg = [" + signedMsg + "]");
+//        if (!SignUtil.verifySign(SignUtil.MD5_ALG, signedMsg, headerMap.get("Mac"), SignUtil.getProperty("app_posloan_signkey"))) {
+//            logger.error("数字签名验证失败");
+//            bodyMap.put("respcode", HServiceReturnCode.OTHER_ERROR.getReturnCode());
+//            bodyMap.put("respmsg", HServiceReturnCode.OTHER_ERROR.getReturnMessage());
+//            resp.setRespCode(HServiceReturnCode.OTHER_ERROR.getReturnCode());
+//            resp.setRespMessage(HServiceReturnCode.OTHER_ERROR.getReturnMessage());
+//            resp.setRespTime(new Date());
+//            return getBlankHResponse(resp, headerMap, bodyMap);
+//        }
+        logger.info("数字签名验证通过!");
+	    
+	    // 3. 拼装业务入参
+        Map<String, Object> reqMap = Maps.newHashMap();
+        reqMap.putAll(bodyMap);
+        reqMap.put(PaymentApplyHServiceConstants.listid, bodyMap.get(PaymentApplyHServiceConstants.payapplyid));
+        reqMap.remove(PaymentApplyHServiceConstants.payapplyid);
+        
+        // 4. 业务入库
+		try {
+			String repaymentNo = repaymentApplyService.applyRepayment(reqMap);
+            logger.info("还款流水号为"+repaymentNo);
+            if (StringUtil.isEmpty(repaymentNo)) {
+                logger.error("还款流水号为空");
+                bodyMap.put("respcode", HServiceReturnCode.FAILURE_REPAY_ERROR.getReturnCode());
+                bodyMap.put("respmsg", HServiceReturnCode.FAILURE_REPAY_ERROR.getReturnMessage());
+                resp.setRespCode(HServiceReturnCode.FAILURE_REPAY_ERROR.getReturnCode());
+                resp.setRespMessage(HServiceReturnCode.FAILURE_REPAY_ERROR.getReturnMessage());
+                resp.setRespTime(new Date());
+                return getBlankHResponse(resp, headerMap, bodyMap);
+            }
+            
+            // 5. 成功应答
+            Map<String, Object> respMap = Maps.newHashMap();
+            bodyMap.put(PaymentApplyHServiceConstants.retulistid, repaymentNo);
+            bodyMap.put(PaymentApplyHServiceConstants.status, "1");
+            bodyMap.put("respcode", HServiceReturnCode.SUCCESS.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.SUCCESS.getReturnMessage());
+            
+            // 5.1 签名处理
+            Map<String, Object> signMap = Maps.newHashMap();
+            for (Iterator<String> it = bodyMap.keySet().iterator(); it.hasNext();) {
+                String key = it.next();
+                signMap.put(key, bodyMap.get(key));
+            }
+            headerMap.put("Mac", sign(signMap, null));
+            
+            respMap.put("HrbbHeader", headerMap);
+            respMap.put("HrbbBody", bodyMap);
+            resp.setProperties(respMap);
+            resp.setRespCode(HServiceReturnCode.SUCCESS.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.SUCCESS.getReturnMessage());
+            resp.setRespTime(new Date());
+            logger.info("回写数据: " + resp.toString());
+            logger.debug("out ZzSaleAppRepaymentApplyServiceImpl...");
+            return resp;
+		} catch (Exception ex) {
+			logger.error("failed to apply repayment...", ex);
+			bodyMap.put("respcode", HServiceReturnCode.FAILURE_REPAY_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.FAILURE_REPAY_ERROR.getReturnMessage());
+			resp.setRespCode(HServiceReturnCode.FAILURE_REPAY_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.FAILURE_REPAY_ERROR.getReturnMessage());
+			resp.setRespTime(new Date());
+			return getBlankHResponse(resp, headerMap, bodyMap);
+		}
+	}
+	
+	/**
+     * 请求包校验处理.
+     * 
+     * @param headerMap
+     * @param bodyMap
+     * @return
+     */
+    private boolean validate(Map<String, String> headerMap, Map<String, String> bodyMap, HResponse resp) {
+        
+        // 版本
+        if (!"20150415".equals(headerMap.get("Version"))) {
+            logger.error("接口版本号为空或不合法:[]");
+            bodyMap.put("respcode", HServiceReturnCode.OTHER_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.OTHER_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.OTHER_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.OTHER_ERROR.getReturnMessage());
+            return false;
+        }
+        
+        // 用款申请编号
+        String payApplyId = bodyMap.get(PaymentApplyHServiceConstants.payapplyid);
+        if(StringUtil.isEmpty(payApplyId)){
+            bodyMap.put("respcode", HServiceReturnCode.PAYAPPLYID_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.PAYAPPLYID_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.PAYAPPLYID_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.PAYAPPLYID_ERROR.getReturnMessage());
+            return false;
+        }
+        
+        // 还款类型
+        String retuType = bodyMap.get(PaymentApplyHServiceConstants.retutype);
+        if(StringUtil.isEmpty(retuType)){
+            bodyMap.put("respcode", HServiceReturnCode.RETUTYPE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.RETUTYPE_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.RETUTYPE_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.RETUTYPE_ERROR.getReturnMessage());
+            return false;
+        }
+        
+        // 还款金额
+        String sumAmt = bodyMap.get(PaymentApplyHServiceConstants.sumamt);
+        if(StringUtil.isEmpty(sumAmt) || !ValidateUtil.checkDouble(sumAmt)){
+            bodyMap.put("respcode", HServiceReturnCode.SUMAMT_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.SUMAMT_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.SUMAMT_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.SUMAMT_ERROR.getReturnMessage());
+            return false;
+        }
+        
+        // 提前还款类型
+        String aheaKind = bodyMap.get(PaymentApplyHServiceConstants.aheakind);
+        if(StringUtil.isEmpty(aheaKind)){
+            bodyMap.put("respcode", HServiceReturnCode.RETUKIND_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.RETUKIND_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.RETUKIND_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.RETUKIND_ERROR.getReturnMessage());
+            return false;
+        }
+        
+        // 还款账号
+        String subsAccNo    = bodyMap.get(PaymentApplyHServiceConstants.subsaccno);
+        if(StringUtil.isEmpty(subsAccNo)){
+            bodyMap.put("respcode", HServiceReturnCode.BANKACCNO_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.BANKACCNO_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.BANKACCNO_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.BANKACCNO_ERROR.getReturnMessage());
+            return false;
+        }
+        
+        // 还款申请日期
+        String retuDate = bodyMap.get(PaymentApplyHServiceConstants.retudate);
+        if(StringUtil.isEmpty(retuDate) || !DateUtil.isDateTimeFormat(retuDate, "yyyyMMdd")){
+            bodyMap.put("respcode", HServiceReturnCode.BEGINDATE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.BEGINDATE_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.BEGINDATE_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.BEGINDATE_ERROR.getReturnMessage());
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 业务错误应答.
+     * 
+     * @param response
+     * @return
+     */
+    private HResponse getBlankHResponse(HResponse response, Map<String, String> headerMap, Map<String, String> bodyMap){
+        Map<String, Object> respMap = Maps.newHashMap();
+        bodyMap.put(PaymentApplyHServiceConstants.payapplyid, "");
+        bodyMap.put(PaymentApplyHServiceConstants.retulistid, "");
+        bodyMap.put(PaymentApplyHServiceConstants.status, "");
+        
+        // 5.1 签名处理
+        Map<String, Object> signMap = Maps.newHashMap();
+        for (Iterator<String> it = bodyMap.keySet().iterator(); it.hasNext();) {
+            String key = it.next();
+            signMap.put(key, bodyMap.get(key));
+        }
+        headerMap.put("Mac", sign(signMap, null));
+        
+        respMap.put("HrbbHeader", headerMap);
+        respMap.put("HrbbBody", bodyMap);
+        response.setProperties(respMap);
+        return response;
+    }
+    
+    /**
+     * 回写签名处理.
+     * 
+     * @param signMap
+     * @param ignoreSet
+     * @return
+     */
+    private String sign(Map<String, Object> signMap, Set<String> ignoreSet) {
+        String signedMsg = SignUtil.getSignMsg(signMap, ignoreSet);
+        logger.info("应答待签名串 signedMsg = [" + signedMsg + "]");
+        String signRet = SignUtil.sign(SignUtil.MD5_ALG, signedMsg, SignUtil.getProperty("app_posloan_signkey"));
+        logger.info("应答签名 Mac = [" + signRet + "]");
+        return signRet;
+    }
+}

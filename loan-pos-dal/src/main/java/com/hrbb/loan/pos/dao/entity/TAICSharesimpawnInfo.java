@@ -1,0 +1,110 @@
+package com.hrbb.loan.pos.dao.entity;
+
+import java.io.Serializable;
+
+public class TAICSharesimpawnInfo implements Serializable{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1146440808290786832L;
+
+	private Integer id;
+
+    private String posCustId;
+
+    private String orderNo;
+
+    private String impOrg;
+
+    private String impOrgType;
+
+    private String impAm;
+
+    private String impOnRecDate;
+
+    private String impExAeep;
+
+    private String impSanDate;
+
+    private String impTo;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getPosCustId() {
+        return posCustId;
+    }
+
+    public void setPosCustId(String posCustId) {
+        this.posCustId = posCustId == null ? null : posCustId.trim();
+    }
+
+    public String getOrderNo() {
+        return orderNo;
+    }
+
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo == null ? null : orderNo.trim();
+    }
+
+    public String getImpOrg() {
+        return impOrg;
+    }
+
+    public void setImpOrg(String impOrg) {
+        this.impOrg = impOrg == null ? null : impOrg.trim();
+    }
+
+    public String getImpOrgType() {
+        return impOrgType;
+    }
+
+    public void setImpOrgType(String impOrgType) {
+        this.impOrgType = impOrgType == null ? null : impOrgType.trim();
+    }
+
+    public String getImpAm() {
+        return impAm;
+    }
+
+    public void setImpAm(String impAm) {
+        this.impAm = impAm == null ? null : impAm.trim();
+    }
+
+    public String getImpOnRecDate() {
+        return impOnRecDate;
+    }
+
+    public void setImpOnRecDate(String impOnRecDate) {
+        this.impOnRecDate = impOnRecDate == null ? null : impOnRecDate.trim();
+    }
+
+    public String getImpExAeep() {
+        return impExAeep;
+    }
+
+    public void setImpExAeep(String impExAeep) {
+        this.impExAeep = impExAeep == null ? null : impExAeep.trim();
+    }
+
+    public String getImpSanDate() {
+        return impSanDate;
+    }
+
+    public void setImpSanDate(String impSanDate) {
+        this.impSanDate = impSanDate == null ? null : impSanDate.trim();
+    }
+
+    public String getImpTo() {
+        return impTo;
+    }
+
+    public void setImpTo(String impTo) {
+        this.impTo = impTo == null ? null : impTo.trim();
+    }
+}

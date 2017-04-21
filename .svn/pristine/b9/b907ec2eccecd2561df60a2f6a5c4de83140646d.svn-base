@@ -1,0 +1,152 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>统计分析</title>
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/js/themes/default/easyui.css" />
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/js/themes/icon.css" />
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/common.css"/>
+	<script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery-1.7.2.min.js"></script>
+	<script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src='<%=request.getContextPath()%>/js/locale/easyui-lang-zh_CN.js'></script>
+	<script type="text/javascript" src='<%=request.getContextPath()%>/js/common_uiext.js'></script>
+	<script type="text/javascript">
+		 $(function() {
+			 
+		 });
+		 
+		 function buildQueryVars(){
+			var filterVars = $('#filterVars').val();
+			if(typeof(filterVars)=="undefined" || filterVars.length==0){
+				alert("查询条件未设定.");
+				return;
+			}
+			//alert(filterVars);
+			var urlVars = "";
+			var json = jQuery.parseJSON(filterVars);
+			for(var i=0;i<json.length;i++){
+				var key = json[i].id;
+				var type = json[i].type;
+				//alert($('#dateFrom').datebox('getValue'));
+				var value = getValue("#"+key,type);
+				//alert("key="+key+" type="+type+" value="+value);
+				urlVars += "&"+key+"="+value;
+			}
+			urlVars += "&rand="+Math.floor(Math.random()*11);
+			//alert(urlVars);
+			return urlVars;
+		 }
+		
+		 function doQuery(){
+			 //alert("in");
+			 var url = "${baseUrl}"+buildQueryVars();
+			 //buildQueryVars();
+			 //alert(url);
+			 $('#reportContent').attr("src", url);
+		 }
+	</script>
+</head>
+<body>
+	<table style="width:100%">
+		<tr>
+			<td>
+<fieldset>
+	<legend class='dialog-label'>查询条件</legend>
+	<table id="qvars" width="960px" border="0" cellspacing="1" cellpadding="0">
+<c:choose>
+	<c:when test="${qid eq 'fr-repay-01'}">
+      <tr>
+        <td width="12%">交易时间：</td>
+        <td width="38%">从&nbsp;&nbsp;
+          <input type="text" id="dateFrom" name="dateFrom" class="easyui-datebox" data-options="width:100">&nbsp;&nbsp;到&nbsp;&nbsp;
+          <input type="text" id="dateTo" name="dateTo" class="easyui-datebox" data-options="width:100"> </td>
+        <td width="12%"><div align="right">渠道：</div></td>
+        <td width="38%">
+        	<select id="channel" name="channel" data-options="width:100" class="easyui-combobox" editable=false>
+            	<option value="">所有渠道</option>
+					<c:forEach items="${bizChannel}" var="obj">
+					<option value="${obj.itemNo}">${obj.itemName}</option>
+				</c:forEach>
+			</select>
+        </td>
+        <td><input type="hidden" id="filterVars" name="filterVars" value='[{"id":"dateFrom","type":"date"},{"id":"dateTo","type":"date"},{"id":"channel","type":"combo"}]'/></td>
+      </tr>
+    </c:when>
+    <c:when test="${qid eq 'fr-repay-02'}">
+      <tr>
+        <td width="12%">应还款日期：</td>
+        <td width="38%">从&nbsp;&nbsp;
+          <input type="text" id="dateFrom" name="dateFrom" class="easyui-datebox" data-options="width:100">&nbsp;&nbsp;到&nbsp;&nbsp;
+          <input type="text" id="dateTo" name="dateTo" class="easyui-datebox" data-options="width:100"> </td>
+        <td width="12%"><div align="right">渠道：</div></td>
+        <td width="38%">
+        	<select id="channel" name="channel" data-options="width:100" class="easyui-combobox" editable=false>
+            	<option value="">所有渠道</option>
+					<c:forEach items="${bizChannel}" var="obj">
+					<option value="${obj.itemNo}">${obj.itemName}</option>
+				</c:forEach>
+			</select>
+        </td>
+        <td><input type="hidden" id="filterVars" name="filterVars" value='[{"id":"dateFrom","type":"date"},{"id":"dateTo","type":"date"},{"id":"channel","type":"combo"}]'/></td>
+      </tr>
+    </c:when>
+    <c:when test="${qid eq 'fr-urge-01'}">
+      <tr>
+        <td width="12%">应还款日期：</td>
+        <td width="38%"><input type="text" id="dateFrom" name="dateFrom" class="easyui-datebox" data-options="width:100"></td>
+        <td width="12%"><div align="right">&nbsp;</div></td>
+        <td width="38%">&nbsp;</td>
+        <td><input type="hidden" id="filterVars" name="filterVars" value='[{"id":"dateFrom","type":"date"}]'/></td>
+      </tr>
+    </c:when>
+    <c:when test="${qid eq 'fr-risk-01' or qid eq 'fr-risk-01-lite' or qid eq 'fr-custservice-01'}">
+      <tr>
+        <td width="12%">审批时间：</td>
+        <td width="38%">从&nbsp;&nbsp;
+          <input type="text" id="dateFrom" name="dateFrom" class="easyui-datebox" data-options="width:100">&nbsp;&nbsp;到&nbsp;&nbsp;
+          <input type="text" id="dateTo" name="dateTo" class="easyui-datebox" data-options="width:100"> </td>
+        <td width="12%"><div align="right">&nbsp;</div></td>
+        <td width="38%">&nbsp;</td>
+        <td><input type="hidden" id="filterVars" name="filterVars" value='[{"id":"dateFrom","type":"date"},{"id":"dateTo","type":"date"}]'/></td>
+      </tr>
+    </c:when>
+    <c:when test="${qid eq 'qr-custservice-02'}">
+      <tr>
+        <td width="12%">姓名：</td>
+        <td width="38%"><input type="text" id="custname" name="custname" class="easyui-validatebox" data-options="width:150"></td>
+        <td width="12%">身份证号码：</td>
+        <td width="38%"><input type="text" id="paperid" name="paperid" class="easyui-validatebox" data-options="width:150"></td>
+      </tr>
+      <tr>
+        <td width="12%">商户名称：</td>
+        <td width="38%"><input type="text" id="poscustname" name="poscustname" class="easyui-validatebox" data-options="width:150"></td>
+        <td width="12%">申请手机号码：</td>
+        <td width="38%"><input type="text" id="mobileno" name="mobileno" class="easyui-validatebox" data-options="width:150"></td>
+        <td><input type="hidden" id="filterVars" name="filterVars" value='[{"id":"custname","type":"text"},{"id":"paperId","type":"text"},{"id":"poscustname","type":"text"},{"id":"mobileno","type":"text"}]'/></td>
+      </tr>
+    </c:when>
+</c:choose>
+<c:if test="${not empty qid}">
+	<tr><td>&nbsp;</td></tr>
+	<tr>
+		<td colspan="5">
+		<a id="btnExec" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" onclick="doQuery()">查询</a>&nbsp;&nbsp;
+    	<a id="btnCncl" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="doReset()">重置</a>&nbsp;&nbsp;
+		</td>
+	</tr>
+</c:if>
+    </table>
+</fieldset>
+			</td>
+		</tr>
+		<tr>
+			<td>
+		<iframe id="reportContent" name="reportContent" frameborder="0" height="600px" width="100%" scrolling="no" ></iframe>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>

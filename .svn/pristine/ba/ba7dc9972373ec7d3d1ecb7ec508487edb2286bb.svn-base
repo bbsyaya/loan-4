@@ -1,0 +1,29 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:fram="http://framework.facade.common.transcore.pinganfu.com/">
+	<soapenv:Header />
+	<soapenv:Body>
+		<fram:execProxyWithold>
+			<arg0>
+				<bankInfo>
+					<accountName>潘燕</accountName>
+					<bankId>PAD</bankId>
+					<bankName>平安银行</bankName>
+					<cardCode>1043</cardCode>
+				</bankInfo>
+				<bindBankId>46</bindBankId>
+				<busiChannel>B</busiChannel>
+				<ccy>CNY</ccy>
+				<credentialType>2</credentialType>
+				<customerId>1000010000000355</customerId>
+				<dcFlag>D</dcFlag>
+				<merchantNum>1111111</merchantNum>
+				<orderNo>${orderNo}</orderNo> 
+				<productCode>200010020000</productCode>
+				<toCustomerId>1000010000026540</toCustomerId>
+				<transAmt>1000000</transAmt>
+				<transFactAmt>1000000</transFactAmt>
+				<transType>63</transType>
+			</arg0>
+		</fram:execProxyWithold>
+	</soapenv:Body>
+</soapenv:Envelope>

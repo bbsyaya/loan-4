@@ -1,0 +1,191 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.biz.backstage.inter.impl;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.annotation.Resource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import com.hrbb.loan.ftp.web.controller.FtpTransUpload;
+import com.hrbb.loan.pos.biz.backstage.inter.SynFileUploadBiz;
+import com.hrbb.loan.pos.biz.constants.SynFileConstants;
+import com.hrbb.loan.pos.util.FileUtil;
+import com.hrbb.sh.framework.HServiceException;
+import com.hrbb.sh.framework.ftp.ParamResBean;
+import com.hrbb.sh.framework.ftpproxy.HFTPFile;
+
+/**
+ * 
+ * @author marco
+ * @version $Id: SynFileUploadBizImpl.java, v 0.1 2015-4-28 下午2:52:13 marco Exp
+ *          $
+ */
+@Component("synFileUploadBiz")
+public class SynFileUploadBizImpl implements SynFileUploadBiz {
+
+	private final Logger LOG = LoggerFactory
+			.getLogger(SynFileUploadBizImpl.class);
+
+	@Resource(name = "ftpTransUpload")
+	private FtpTransUpload ftpTransUpload;
+
+	/**
+	 * 创建文件，并上传
+	 * 
+	 * @param args
+	 */
+	public void upload(String pathStr, String today) {
+		LOG.info("SynFileUpload begin");
+		// 文件名
+		StringBuffer filePath = new StringBuffer();
+		// HB16
+		filePath.append(pathStr).append(FileUtil.SYNFILE_PATH_PREFIX)
+				.append(SynFileConstants.NO_HB16)
+				.append(SynFileConstants.STRING_UNDERLINE).append(today)
+				.append(FileUtil.FILETYPE_DAT);
+		// 取得路径
+		LOG.debug("文件路径和名称=" + filePath.toString());
+		// 判断文件是否存在
+		if (FileUtil.checkFileExist(filePath.toString())) {
+			LOG.debug("文件存在，准备上传。");
+			uploadFile(ftpTransUpload, filePath.toString());
+		} else {
+			LOG.debug("文件不存在！");
+		}
+		// 清空
+		filePath.setLength(0);
+		// HB17
+		filePath.append(pathStr).append(FileUtil.SYNFILE_PATH_PREFIX)
+				.append(SynFileConstants.NO_HB17)
+				.append(SynFileConstants.STRING_UNDERLINE).append(today)
+				.append(FileUtil.FILETYPE_DAT);
+		// 取得路径
+		LOG.debug("文件路径和名称=" + filePath.toString());
+		// 判断文件是否存在
+		if (FileUtil.checkFileExist(filePath.toString())) {
+			LOG.debug("文件存在，准备上传。");
+			uploadFile(ftpTransUpload, filePath.toString());
+		} else {
+			LOG.debug("文件不存在！");
+		}
+		// 清空
+		filePath.setLength(0);
+		// HB18
+		filePath.append(pathStr).append(FileUtil.SYNFILE_PATH_PREFIX)
+				.append(SynFileConstants.NO_HB18)
+				.append(SynFileConstants.STRING_UNDERLINE).append(today)
+				.append(FileUtil.FILETYPE_DAT);
+		// 取得路径
+		LOG.debug("文件路径和名称=" + filePath.toString());
+		// 判断文件是否存在
+		if (FileUtil.checkFileExist(filePath.toString())) {
+			LOG.debug("文件存在，准备上传。");
+			uploadFile(ftpTransUpload, filePath.toString());
+		} else {
+			LOG.debug("文件不存在！");
+		}
+		// 清空
+		filePath.setLength(0);
+		// HB19
+		filePath.append(pathStr).append(FileUtil.SYNFILE_PATH_PREFIX)
+				.append(SynFileConstants.NO_HB19)
+				.append(SynFileConstants.STRING_UNDERLINE).append(today)
+				.append(FileUtil.FILETYPE_DAT);
+		// 取得路径
+		LOG.debug("文件路径和名称=" + filePath.toString());
+		// 判断文件是否存在
+		if (FileUtil.checkFileExist(filePath.toString())) {
+			LOG.debug("文件存在，准备上传。");
+			uploadFile(ftpTransUpload, filePath.toString());
+		} else {
+			LOG.debug("文件不存在！");
+		}
+		LOG.info("SynFileUpload end");
+	}
+
+	/**
+	 * 上传文件
+	 * 
+	 * @param hftpService
+	 * @param fileName
+	 * @return
+	 */
+	private boolean uploadFile(FtpTransUpload ftpTransUpload, String fileName) {
+		int i = 0;
+		// 取得文件
+		LOG.info("取得文件=" + fileName);
+		File file = new File(fileName);
+		// 取得文件读入流
+		InputStream zis;
+		try {
+			zis = new FileInputStream(file);
+		} catch (FileNotFoundException e) {
+			LOG.error("上传文件不存在！");
+			return false;
+		}
+		LOG.info("读取文件...");
+		// 获取文件大小
+		long length = file.length();
+		LOG.info("文件大小length=" + length);
+
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		byte[] b = new byte[(int) length];
+		try {
+			while ((i = zis.read(b)) != -1) {
+				bos.write(b);
+			}
+			LOG.info("读取文件成功。");
+		} catch (IOException e) {
+			LOG.error("读取文件失败！");
+			return false;
+		} finally {
+			try {
+				zis.close();
+			} catch (IOException e) {
+				LOG.info("zis释放失败.");
+				zis = null;
+			}
+		}
+
+		byte[] bytes = bos.toByteArray();
+		LOG.info("准备上传...");
+		// 上传文件
+		HFTPFile hFTPFile = new HFTPFile();
+		hFTPFile.setData(bytes);
+		hFTPFile.setName(file.getName());
+		LOG.info("file.getName()=" + file.getName());
+		LOG.info("bytes.length=" + bytes.length);
+		LOG.info("开始上传");
+		// 用户
+		LOG.info("custid_um=" + SynFileConstants.KEY_CUSTID_UM);
+		try {
+			ParamResBean paramResBean = ftpTransUpload.uploadFile(
+					SynFileConstants.KEY_CUSTID_UM, hFTPFile);
+			if (null != paramResBean.getRespCode()
+					&& "000".equals(paramResBean.getRespCode())) {
+				LOG.info("resultCode=", paramResBean.getRespCode());
+				LOG.info("上传文件成功。");
+				return true;
+			} else {
+				LOG.error("resultCode=", paramResBean.getRespCode());
+				LOG.error("上传文件失败！");
+				return false;
+			}
+		} catch (HServiceException e) {
+			LOG.error("上传文件失败！", e);
+			return false;
+		}
+	}
+}

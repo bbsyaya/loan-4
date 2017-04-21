@@ -1,0 +1,46 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %> 
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/js/themes/default/easyui.css" />
+<link rel="stylesheet" type="text/css" href='<%=request.getContextPath()%>/css/common.css'/>
+<script type="text/javascript">
+	//初始化
+	$(function(){
+		$('#agreementTT').datagrid({
+	   		onClickCell: function (rowIndex, field, value) { 
+	               if(field != 'id'){
+	               	$(this).datagrid('unselectAll');
+	               }
+	           },
+	   	});
+		
+		hideFilterArea();
+	})
+</script>
+
+<!--新增窗口-->
+<div id="createPaymentApply" region="center" border="false" style="padding: 10px; background: #fff; border: 1px solid #ccc;">
+	 <table id="agreementTT"  class="easyui-datagrid" 
+			url="<%=request.getContextPath()%>/agreementMrg/queryAvalibleAgreement.do?agreementStatus=01"
+			title="Searching" iconCls="icon-search" toolbar="#ta" onClickRow="clickRow" rownumbers="true" pagination="true" pageSize="20">
+		<thead>
+			<tr>
+			    <th field="contId" checkbox="true"></th>
+			    <th field="contNo" width="120px">合同编号</th>
+				<th field="custName" width="80px">客户名称</th>
+				<th field="paperId" width="100px">证件号码</th>
+				<th field="posCustName" width="200px">商户名称</th>
+				<th field="creditLine" width="80px" align="right" formatter="formatMoney">授信金额</th>
+				<th field="creditInterest" width="60px" align="right" formatter="formatRate">授信利率</th>
+				<th field="beginDate" width="80px" align="right" >生效日</th>
+				<th field="endDate" width="80px" align="right" >到期日</th>
+			</tr>	
+		</thead>
+	</table>	
+	<jsp:include page="searchAgreementContracts.jsp"/>	
+</div>
+<br/>
+<div border="false" style="text-align: center; height: 30px; line-height: 30px;">
+	<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" onclick="insertPaymentApply()">新增用款申请</a>&nbsp;&nbsp;
+	<a id="btnCPCancel" onclick="closeAgreementWin();" class="easyui-linkbutton" icon="icon-back" href="javascript:void(0)">关闭</a>&nbsp;&nbsp;
+</div>

@@ -1,0 +1,167 @@
+/**
+ * 
+ */
+package com.hrbb.loan.pos.biz.bean;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.acct.facade.MadeLoanProcessBizHession;
+import com.hrbb.loan.acct.facade.bean.CalcRamtReq;
+import com.hrbb.loan.acct.facade.bean.CalcRamtRes;
+import com.hrbb.loan.acct.facade.bean.MadeLoanLoanLedgerBean;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+import com.hrbb.loan.pos.dao.entity.TransactionLog;
+import com.hrbb.loan.pos.entity.SpringBeans;
+import com.hrbb.loan.pos.service.IGenericConfigService;
+
+/**
+ * <p>Title: OTInterestPayableCalc.java </p>
+ * <p>Description:  </p>
+ * <p>Copyright: Copyright (C) 2015 Hrbb Ltd. Co.</p> 
+ *     
+ * @author linzhaolin@hrbb.com.cn
+ * @version 
+ * @date 2015年7月17日
+ *
+ * logs: 1. 
+ */
+public class OTInterestPayableCalc {
+	
+	Logger logger = LoggerFactory.getLogger(OTInterestPayableCalc.class);
+			
+	private double paybackAmt;
+	
+	private Date repayDate;
+	
+	private String repayType;
+	
+	/*试算对象*/
+	private TReceiptInfo receipt;
+	
+	private Map<String,Object> rspResult = Maps.newHashMap();
+	
+	private CalcRamtRes res = new CalcRamtRes();
+	private CalcRamtReq req = new CalcRamtReq();
+	
+	public OTInterestPayableCalc(TReceiptInfo receipt){
+		this.receipt = receipt;
+	}
+
+	public double getPaybackAmt() {
+		return paybackAmt;
+	}
+
+	public void setPaybackAmt(double paybackAmt) {
+		this.paybackAmt = paybackAmt;
+	}
+
+	public Date getRepayDate() {
+		return repayDate;
+	}
+
+	public void setRepayDate(Date repayDate) {
+		this.repayDate = repayDate;
+	}
+
+	public String getRepayType() {
+		return repayType;
+	}
+
+	public void setRepayType(String repayType) {
+		this.repayType = (repayType!=null && repayType.equals("1"))?"2":"1";
+	}
+	
+	/**
+	 * 执行贷款应付利息试算
+	 * @return
+	 */
+	public boolean execute(){
+		TransactionLog tl = new TransactionLog(receipt.getReceiptId());		/*日志记录对象*/
+		IGenericConfigService genericConfigService = (IGenericConfigService)SpringBeans.getBean("genericConfigService");
+		
+	    try{
+	    	req.setAheakind("1");
+		    req.setSsubsamt(getPaybackAmt());	//应放金额
+		    req.setWorkDate(getRepayDate());
+		    req.setLoanAcNo(receipt.getLoanAcNo());
+		    req.setrCapi(paybackAmt);
+		    req.setAheaamtkind(getRepayType());
+		    
+		    MadeLoanLoanLedgerBean bean = new MadeLoanLoanLedgerBean();
+		    bean.setInterestRate(receipt.getLoanInterest()); //贷款利率
+		    bean.setBeginDate(receipt.getActualIssueDate()==null?receipt.getBeginDate():receipt.getActualIssueDate());
+		    bean.setLastInteDate(receipt.getActualIssueDate()==null?receipt.getBeginDate():receipt.getActualIssueDate());		//起息日
+		    bean.setRepayMethod(receipt.getPaybackWay());//还款方式
+		    bean.setProdId("1001020306");
+		    bean.setPayMethod("90");
+		    bean.setaBal(receipt.getLoanTotalBalance());
+		    req.setBean(bean);
+		    
+		    /*核算接口对象*/
+	    	MadeLoanProcessBizHession service = (MadeLoanProcessBizHession)SpringBeans.getBean("madeLoanProcessBizHession");
+	    	res = service.calcRamtWithBean(req);
+	    	/*日志记录对象*/
+	    	tl.setTransObject(getReq(), getRes());		
+	    	
+	    	Map<String,Object> resMap = res.getRes();
+	    	logger.info("核算接口返回的map为"+resMap);
+	    	if(resMap==null || resMap.size()==0){
+	    		//当利息试算反馈为空时,视为试算失败
+	    		logger.error("利息试算失败, Err:"+res.getMemo());
+	    		rspResult.put("repayPrincipal", BigDecimal.ZERO);
+			    rspResult.put("repayInterest", BigDecimal.ZERO);
+			    rspResult.put("repayTotalAmt", BigDecimal.ZERO);
+		    	return false;
+	    	}
+		    
+		    String capital = (String) resMap.get("rcapi");
+//		    logger.info("计算出来的本金为"+capital);
+		    String interest = (String) resMap.get("rInte");
+		    logger.info("借据["+receipt.getReceiptId()+"]计算出来的本金="+capital+" / 利息="+interest);
+
+		    BigDecimal bdCapital= new BigDecimal(capital);
+		    BigDecimal bdInterest= new BigDecimal(interest);
+		    BigDecimal bdTotalAmt = bdCapital.add(bdInterest);
+		    
+		    rspResult.put("repayPrincipal", bdCapital);
+		    rspResult.put("repayInterest", bdInterest);
+		    rspResult.put("repayTotalAmt", bdTotalAmt);
+		    
+	    }catch(Exception e){
+	    	/*日志记录对象*/
+	    	tl.setTransObject(getReq(), e.getMessage());
+	       	tl.setStatus(TransactionLog.核心交易状态_失败);
+	       	
+	    	rspResult.put("repayPrincipal", BigDecimal.ZERO);
+		    rspResult.put("repayInterest", BigDecimal.ZERO);
+		    rspResult.put("repayTotalAmt", BigDecimal.ZERO);
+	    	logger.error("利息试算失败",e);
+	    	return false;
+	    }finally{
+	        /*记录交易日志*/
+	        tl.setRspTime();
+	        genericConfigService.insertTransactionLog(tl);
+		}
+	    
+	    return true;
+	}
+
+	public Map<String, Object> getRspResult() {
+		return rspResult;
+	}
+
+	public CalcRamtRes getRes() {
+		return res;
+	}
+
+	public CalcRamtReq getReq() {
+		return req;
+	}
+	
+}

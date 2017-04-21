@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TAICOrderlistInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TAICOrderlistInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="queryUid" property="queryUid" jdbcType="VARCHAR" />
+    <result column="orderNo" property="orderNo" jdbcType="VARCHAR" />
+    <result column="posCustId" property="posCustId" jdbcType="VARCHAR" />
+    <result column="posCustName" property="posCustName" jdbcType="VARCHAR" />
+    <result column="keyType" property="keyType" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="queryTime" property="queryTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, queryUid, orderNo, posCustId, posCustName, keyType, status, queryTime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_orderlist_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectMap" resultType="Map" parameterType="Map">
+  	SELECT 
+    <include refid="Base_Column_List" />
+    FROM t_aic_orderlist_info
+    WHERE 1=1
+    <if test="posCustName != null">
+    	AND posCustName = #{posCustName}
+    </if>
+    <if test="posCustId != null">
+    	AND posCustId = #{posCustId}
+    </if>
+    order by queryTime desc
+    LIMIT 0, 1
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_aic_orderlist_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TAICOrderlistInfo" >
+    insert into t_aic_orderlist_info (id, queryUid, orderNo, 
+      posCustId, posCustName, keyType, 
+      status, queryTime)
+    values (#{id,jdbcType=INTEGER}, #{queryUid,jdbcType=VARCHAR}, #{orderNo,jdbcType=VARCHAR}, 
+      #{posCustId,jdbcType=VARCHAR}, #{posCustName,jdbcType=VARCHAR}, #{keyType,jdbcType=VARCHAR}, 
+      #{status,jdbcType=VARCHAR}, #{queryTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICOrderlistInfo" >
+    insert into t_aic_orderlist_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="queryUid != null" >
+        queryUid,
+      </if>
+      <if test="orderNo != null" >
+        orderNo,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="posCustName != null" >
+        posCustName,
+      </if>
+      <if test="keyType != null" >
+        keyType,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="queryTime != null" >
+        queryTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="queryUid != null" >
+        #{queryUid,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustName != null" >
+        #{posCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="keyType != null" >
+        #{keyType,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="queryTime != null" >
+        #{queryTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="Map" >
+    insert into t_aic_orderlist_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="queryUid != null" >
+        queryUid,
+      </if>
+      <if test="orderNo != null" >
+        orderNo,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="posCustName != null" >
+        posCustName,
+      </if>
+      <if test="keyType != null" >
+        keyType,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="queryTime != null" >
+        queryTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="queryUid != null" >
+        #{queryUid,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustName != null" >
+        #{posCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="keyType != null" >
+        #{keyType,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="queryTime != null" >
+        #{queryTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICOrderlistInfo" >
+    update t_aic_orderlist_info
+    <set >
+      <if test="queryUid != null" >
+        queryUid = #{queryUid,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        orderNo = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustId != null" >
+        posCustId = #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustName != null" >
+        posCustName = #{posCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="keyType != null" >
+        keyType = #{keyType,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="queryTime != null" >
+        queryTime = #{queryTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TAICOrderlistInfo" >
+    update t_aic_orderlist_info
+    set queryUid = #{queryUid,jdbcType=VARCHAR},
+      orderNo = #{orderNo,jdbcType=VARCHAR},
+      posCustId = #{posCustId,jdbcType=VARCHAR},
+      posCustName = #{posCustName,jdbcType=VARCHAR},
+      keyType = #{keyType,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
+      queryTime = #{queryTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

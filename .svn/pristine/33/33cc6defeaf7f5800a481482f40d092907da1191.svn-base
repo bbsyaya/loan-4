@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="TcustomerAccountMapper">
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TcustomerAccount">
+    <id column="accountNo" jdbcType="VARCHAR" property="accountNo" />
+    <result column="custId" jdbcType="VARCHAR" property="custId" />
+    <result column="currency" jdbcType="VARCHAR" property="currency" />
+    <result column="balance" jdbcType="DECIMAL" property="balance" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modifyTime" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="meno" jdbcType="VARCHAR" property="meno" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    accountNo, custId, currency, balance, createTime, modifyTime, meno
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_customer_account
+    where custId = #{custId,jdbcType=VARCHAR}
+  </select>
+  <select id="getCustomerAccountInfoByCustId" parameterType="java.lang.String" resultType="Map">
+    select *
+    from t_customer_account
+    where custId = #{custId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_customer_account
+    where accountNo = #{accountNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TcustomerAccount">
+    insert into t_customer_account (accountNo, custId, currency, 
+      balance, createTime, modifyTime, 
+      meno)
+    values (#{accountNo,jdbcType=VARCHAR}, #{custId,jdbcType=VARCHAR}, #{currency,jdbcType=VARCHAR}, 
+      #{balance,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, #{modifyTime,jdbcType=TIMESTAMP}, 
+      #{meno,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertCustomerAccount" parameterType="Map">
+    insert into t_customer_account
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="accountNo != null">
+        accountNo,
+      </if>
+      <if test="custId != null">
+        custId,
+      </if>
+      <if test="currency != null">
+        currency,
+      </if>
+      <if test="balance != null">
+        balance,
+      </if>
+      <if test="createTime != null">
+        createTime,
+      </if>
+      <if test="modifyTime != null">
+        modifyTime,
+      </if>
+      <if test="meno != null">
+        meno,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="accountNo != null">
+        #{accountNo,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null">
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="currency != null">
+        #{currency,jdbcType=VARCHAR},
+      </if>
+      <if test="balance != null">
+        #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyTime != null">
+        #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="meno != null">
+        #{meno,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateCustomerAccount" parameterType="Map">
+    update t_customer_account
+    <set>
+      <if test="custId != null">
+        custId = #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="currency != null">
+        currency = #{currency,jdbcType=VARCHAR},
+      </if>
+      <if test="balance != null">
+        balance = #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        createTime = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyTime != null">
+        modifyTime = #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="meno != null">
+        meno = #{meno,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where accountNo = #{accountNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TcustomerAccount">
+    update t_customer_account
+    set custId = #{custId,jdbcType=VARCHAR},
+      currency = #{currency,jdbcType=VARCHAR},
+      balance = #{balance,jdbcType=DECIMAL},
+      createTime = #{createTime,jdbcType=TIMESTAMP},
+      modifyTime = #{modifyTime,jdbcType=TIMESTAMP},
+      meno = #{meno,jdbcType=VARCHAR}
+    where accountNo = #{accountNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

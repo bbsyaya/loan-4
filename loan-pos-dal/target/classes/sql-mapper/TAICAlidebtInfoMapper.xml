@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TAICAlidebtInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TAICAlidebtInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="posCustId" property="posCustId" jdbcType="VARCHAR" />
+    <result column="orderNo" property="orderNo" jdbcType="VARCHAR" />
+    <result column="sexyClean" property="sexyClean" jdbcType="VARCHAR" />
+    <result column="ageClean" property="ageClean" jdbcType="VARCHAR" />
+    <result column="areaNameClean" property="areaNameClean" jdbcType="VARCHAR" />
+    <result column="ysFzd" property="ysFzd" jdbcType="VARCHAR" />
+    <result column="qked" property="qked" jdbcType="VARCHAR" />
+    <result column="wyqk" property="wyqk" jdbcType="VARCHAR" />
+    <result column="dkdqsj" property="dkdqsj" jdbcType="VARCHAR" />
+    <result column="tbzh" property="tbzh" jdbcType="VARCHAR" />
+    <result column="legalPerson" property="legalPerson" jdbcType="VARCHAR" />
+    <result column="dkqx" property="dkqx" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, posCustId, orderNo, sexyClean, ageClean, areaNameClean, ysFzd, qked, wyqk, dkdqsj, 
+    tbzh, legalPerson, dkqx
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_alidebt_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectBySelectiveMap" resultType="Map" parameterType="Map">
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_alidebt_info
+    where orderNo = #{orderNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_aic_alidebt_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TAICAlidebtInfo" >
+    insert into t_aic_alidebt_info (id, posCustId, orderNo, 
+      sexyClean, ageClean, areaNameClean, 
+      ysFzd, qked, wyqk, 
+      dkdqsj, tbzh, legalPerson, 
+      dkqx)
+    values (#{id,jdbcType=INTEGER}, #{posCustId,jdbcType=VARCHAR}, #{orderNo,jdbcType=VARCHAR}, 
+      #{sexyClean,jdbcType=VARCHAR}, #{ageClean,jdbcType=VARCHAR}, #{areaNameClean,jdbcType=VARCHAR}, 
+      #{ysFzd,jdbcType=VARCHAR}, #{qked,jdbcType=VARCHAR}, #{wyqk,jdbcType=VARCHAR}, 
+      #{dkdqsj,jdbcType=VARCHAR}, #{tbzh,jdbcType=VARCHAR}, #{legalPerson,jdbcType=VARCHAR}, 
+      #{dkqx,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICAlidebtInfo" >
+    insert into t_aic_alidebt_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="orderNo != null" >
+        orderNo,
+      </if>
+      <if test="sexyClean != null" >
+        sexyClean,
+      </if>
+      <if test="ageClean != null" >
+        ageClean,
+      </if>
+      <if test="areaNameClean != null" >
+        areaNameClean,
+      </if>
+      <if test="ysFzd != null" >
+        ysFzd,
+      </if>
+      <if test="qked != null" >
+        qked,
+      </if>
+      <if test="wyqk != null" >
+        wyqk,
+      </if>
+      <if test="dkdqsj != null" >
+        dkdqsj,
+      </if>
+      <if test="tbzh != null" >
+        tbzh,
+      </if>
+      <if test="legalPerson != null" >
+        legalPerson,
+      </if>
+      <if test="dkqx != null" >
+        dkqx,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="sexyClean != null" >
+        #{sexyClean,jdbcType=VARCHAR},
+      </if>
+      <if test="ageClean != null" >
+        #{ageClean,jdbcType=VARCHAR},
+      </if>
+      <if test="areaNameClean != null" >
+        #{areaNameClean,jdbcType=VARCHAR},
+      </if>
+      <if test="ysFzd != null" >
+        #{ysFzd,jdbcType=VARCHAR},
+      </if>
+      <if test="qked != null" >
+        #{qked,jdbcType=VARCHAR},
+      </if>
+      <if test="wyqk != null" >
+        #{wyqk,jdbcType=VARCHAR},
+      </if>
+      <if test="dkdqsj != null" >
+        #{dkdqsj,jdbcType=VARCHAR},
+      </if>
+      <if test="tbzh != null" >
+        #{tbzh,jdbcType=VARCHAR},
+      </if>
+      <if test="legalPerson != null" >
+        #{legalPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="dkqx != null" >
+        #{dkqx,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="Map" >
+    insert into t_aic_alidebt_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="orderNo != null" >
+        orderNo,
+      </if>
+      <if test="sexyClean != null" >
+        sexyClean,
+      </if>
+      <if test="ageClean != null" >
+        ageClean,
+      </if>
+      <if test="areaNameClean != null" >
+        areaNameClean,
+      </if>
+      <if test="ysFzd != null" >
+        ysFzd,
+      </if>
+      <if test="qked != null" >
+        qked,
+      </if>
+      <if test="wyqk != null" >
+        wyqk,
+      </if>
+      <if test="dkdqsj != null" >
+        dkdqsj,
+      </if>
+      <if test="tbzh != null" >
+        tbzh,
+      </if>
+      <if test="legalPerson != null" >
+        legalPerson,
+      </if>
+      <if test="dkqx != null" >
+        dkqx,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="sexyClean != null" >
+        #{sexyClean,jdbcType=VARCHAR},
+      </if>
+      <if test="ageClean != null" >
+        #{ageClean,jdbcType=VARCHAR},
+      </if>
+      <if test="areaNameClean != null" >
+        #{areaNameClean,jdbcType=VARCHAR},
+      </if>
+      <if test="ysFzd != null" >
+        #{ysFzd,jdbcType=VARCHAR},
+      </if>
+      <if test="qked != null" >
+        #{qked,jdbcType=VARCHAR},
+      </if>
+      <if test="wyqk != null" >
+        #{wyqk,jdbcType=VARCHAR},
+      </if>
+      <if test="dkdqsj != null" >
+        #{dkdqsj,jdbcType=VARCHAR},
+      </if>
+      <if test="tbzh != null" >
+        #{tbzh,jdbcType=VARCHAR},
+      </if>
+      <if test="legalPerson != null" >
+        #{legalPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="dkqx != null" >
+        #{dkqx,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICAlidebtInfo" >
+    update t_aic_alidebt_info
+    <set >
+      <if test="posCustId != null" >
+        posCustId = #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        orderNo = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="sexyClean != null" >
+        sexyClean = #{sexyClean,jdbcType=VARCHAR},
+      </if>
+      <if test="ageClean != null" >
+        ageClean = #{ageClean,jdbcType=VARCHAR},
+      </if>
+      <if test="areaNameClean != null" >
+        areaNameClean = #{areaNameClean,jdbcType=VARCHAR},
+      </if>
+      <if test="ysFzd != null" >
+        ysFzd = #{ysFzd,jdbcType=VARCHAR},
+      </if>
+      <if test="qked != null" >
+        qked = #{qked,jdbcType=VARCHAR},
+      </if>
+      <if test="wyqk != null" >
+        wyqk = #{wyqk,jdbcType=VARCHAR},
+      </if>
+      <if test="dkdqsj != null" >
+        dkdqsj = #{dkdqsj,jdbcType=VARCHAR},
+      </if>
+      <if test="tbzh != null" >
+        tbzh = #{tbzh,jdbcType=VARCHAR},
+      </if>
+      <if test="legalPerson != null" >
+        legalPerson = #{legalPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="dkqx != null" >
+        dkqx = #{dkqx,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TAICAlidebtInfo" >
+    update t_aic_alidebt_info
+    set posCustId = #{posCustId,jdbcType=VARCHAR},
+      orderNo = #{orderNo,jdbcType=VARCHAR},
+      sexyClean = #{sexyClean,jdbcType=VARCHAR},
+      ageClean = #{ageClean,jdbcType=VARCHAR},
+      areaNameClean = #{areaNameClean,jdbcType=VARCHAR},
+      ysFzd = #{ysFzd,jdbcType=VARCHAR},
+      qked = #{qked,jdbcType=VARCHAR},
+      wyqk = #{wyqk,jdbcType=VARCHAR},
+      dkdqsj = #{dkdqsj,jdbcType=VARCHAR},
+      tbzh = #{tbzh,jdbcType=VARCHAR},
+      legalPerson = #{legalPerson,jdbcType=VARCHAR},
+      dkqx = #{dkqx,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

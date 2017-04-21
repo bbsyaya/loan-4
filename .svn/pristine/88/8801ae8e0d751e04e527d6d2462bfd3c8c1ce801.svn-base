@@ -1,0 +1,591 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.controller;
+
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.constants.PaymentApplyConstants;
+import com.hrbb.loan.pos.biz.backstage.inter.CautionConfigBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.CreditApplyAprvInfoBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.CreditApplyForReviewBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.ILoanPosCreditApplyBackStageBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.IPaymentApplyBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosContractManagementBiz;
+import com.hrbb.loan.pos.dao.TCreditApplyForReviewDao;
+import com.hrbb.loan.pos.dao.TMessageDao;
+import com.hrbb.loan.pos.dao.entity.TCallbackRecord;
+import com.hrbb.loan.pos.dao.entity.TContractManagement;
+import com.hrbb.loan.pos.dao.entity.TCreditApply;
+import com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo;
+import com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfoKey;
+import com.hrbb.loan.pos.dao.entity.TCustomer;
+import com.hrbb.loan.pos.dao.entity.TMessage;
+import com.hrbb.loan.pos.entity.event.EventException;
+import com.hrbb.loan.pos.entity.event.POSEvent;
+import com.hrbb.loan.pos.entity.event.POSEventsSource;
+import com.hrbb.loan.pos.entity.event.cab.MessageCab;
+import com.hrbb.loan.pos.entity.event.impl.ImageMissingEventAdapter;
+import com.hrbb.loan.pos.entity.listener.impl.MsgListener;
+import com.hrbb.loan.pos.factory.ReturnUrlMapFactory;
+import com.hrbb.loan.pos.service.CallbackRecordService;
+import com.hrbb.loan.pos.service.LoanPosCustomerService;
+import com.hrbb.loan.pos.service.bean.ContractStateChangeMessage;
+import com.hrbb.loan.pos.service.bean.CreditReportDownloadMessage;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.constants.ReviewNoteConstants;
+import com.hrbb.loan.spiconstants.CreditApplyHServiceConstants;
+import com.hrbb.sh.framework.domain.CreditInvestigateRequest;
+
+/**
+ * 补件资料下载成功后，创建补件发起人的工作
+ * 
+ * @author marco
+ * @version $Id: CreditApplyUpdateController.java, v 0.1 2015-3-31 下午4:29:27
+ *          marco Exp $
+ */
+@Controller
+@RequestMapping("/creditApplyUpdate")
+public class CreditApplyUpdateController {
+
+	private final Logger logger = LoggerFactory
+			.getLogger(CreditApplyUpdateController.class);
+	
+	private static final String FTP_RESPCODE_FILE_NOT_EXIST = "005";
+
+	@Autowired
+	@Qualifier("creditApplyAprvInfoBiz")
+	private CreditApplyAprvInfoBiz biz;
+	@Autowired
+	@Qualifier("creditApplyForReviewBiz")
+	private CreditApplyForReviewBiz caBiz;
+	
+	@Autowired
+	IPaymentApplyBiz paymentApplyBiz;
+	
+	@Autowired
+	@Qualifier("tCreditApplyForReviewDao")
+	private TCreditApplyForReviewDao daoCA;
+	
+	@Autowired
+	private TMessageDao tMessageDao;
+	
+	
+	@Autowired
+	private TMessageDao tMessage;
+	
+	@Autowired
+	private LoanPosContractManagementBiz contBiz;
+	
+	@Autowired
+	private ILoanPosCreditApplyBackStageBiz loanBiz;
+	
+	@Autowired
+	private LoanPosCustomerService custService;
+	
+	@Autowired
+	private CautionConfigBiz cautionConfigBiz;
+	
+	@Autowired
+	private CallbackRecordService callbackRecordService;
+
+	/**
+	 * <h2>补件资料下载成功后，创建补件发起人的工作</h2>
+	 * 
+	 * @param reviewid
+	 * @return modelAndView
+	 */
+	@RequestMapping("/updateBackToReview")
+	public ModelAndView updateBackToReview(
+			@RequestParam(value = "LocalSubFolderNameDef", required = false) String loanid,
+			@RequestParam(value = "RespCode", required = false) String respCode,
+			HttpServletRequest request, PrintWriter out) {
+        TCreditApply tCreditApply = caBiz.selectOne(loanid);
+        if(null == tCreditApply){
+            logger.warn("loanId = "+loanid+"的申请不存在");
+            return null;
+        }
+	    //记录回调情况
+	    Date now = new Date();
+	    callbackRecordService.insertSelective(new TCallbackRecord(loanid,null,respCode,now,now));
+
+		logger.debug("CreditApplyUpdateController.updateBackToReview begin ");
+		logger.debug("loanid=" + loanid);
+		logger.debug("respCode=" + respCode);
+		int flag = -1;
+
+		// 处理成功
+		if (CreditApplyHServiceConstants.ftp_resp_code_000.equals(respCode)) {
+			// 申请审批表信息
+			// TCreditApplyAprvInfo record = new TCreditApplyAprvInfo();
+			TCreditApply record = new TCreditApply();
+			record.setLoanId(loanid);
+
+			// 查询上次提交时的申请状态
+			TCreditApplyAprvInfoKey caai = new TCreditApplyAprvInfoKey();
+			caai.setLoanId(loanid);
+			TCreditApplyAprvInfo caaiLast = biz.selectLastSubbmitted(caai);
+			
+			// record.setApplyStatus(ReviewNoteConstants.APPLYSTATUS_CODE_20);
+			record.setApplyStatus(caaiLast.getApprState());
+			// record.setLastOperId(ReviewNoteConstants.ROLE_SYSTEM_ID);
+			// record.setLastOperTime(new Date());
+			flag = caBiz.updateApplyStatus(record);
+			// 更新申请表，申请审批记录表
+			// int flag = biz.updateBackToReview(record);
+
+			// 处理失败
+		} else if(FTP_RESPCODE_FILE_NOT_EXIST.equals(respCode)) {
+			// ftp下载文件处理失败，重新发送消息
+			//flag = biz.sendMsg(loanid); old code
+		    //文件不存在， 要推消息
+            try {
+                pushImageMissingMsg(tCreditApply, null);
+                flag = 1;
+            } catch (EventException e) {
+                logger.error(ExceptionUtils.getFullStackTrace(e));
+            }
+		}
+        logger.debug("flag=" + flag);
+        // 保存成功
+        if (flag == 1) {
+            out.print("000");
+            // 保存失败
+        } else {
+            out.print("001");
+        }
+		logger.debug("CreditApplyUpdateController.updateBackToReview end ");
+		return null;
+	}
+
+	/**
+	 * <h2>补件资料下载成功后，创建补件发起人的工作</h2>
+	 * 
+	 * @param reviewid
+	 * @return modelAndView
+	 */
+	@RequestMapping("/updateBackToAddit")
+	public ModelAndView updateBackToAddit(
+			@RequestParam(value = "LocalSubFolderNameDef", required = true) String loanid,
+			@RequestParam(value = "RespCode", required = true) String respCode,
+			HttpServletRequest request, PrintWriter out) {
+	      TCreditApply record = caBiz.selectOne(loanid);
+	        if(null == record){
+	            logger.warn("loanId = "+loanid+"的申请不存在");
+	            return null;
+	        }
+	    //记录回调情况
+	    Date now = new Date();
+	    callbackRecordService.insertSelective(new TCallbackRecord(loanid,null,respCode,now,now));
+		logger.debug("CreditApplyUpdateController.updateBackToAddit begin ");
+		logger.debug("loanid=" + loanid);
+		logger.debug("respCode=" + respCode);
+		int flag = -1;
+		// 处理成功
+		if (CreditApplyHServiceConstants.ftp_resp_code_000.equals(respCode)) {
+			// 申请审批表信息
+			/*TCreditApplyAprvInfo record = new TCreditApplyAprvInfo();
+			record.setLoanId(loanid);
+			// 更新申请表，申请审批记录表
+			int flag = biz.updateBackToReview(record);
+			logger.debug("flag=" + flag);
+			// 保存成功
+			if (flag == 1) {
+				out.print("000");
+				// 保存失败
+			} else {
+				out.print("001");
+			}*/
+			// 申请审批表信息
+						// TCreditApplyAprvInfo record = new TCreditApplyAprvInfo();
+						record.setLoanId(loanid);
+
+						// 查询上次提交时的申请状态
+						TCreditApplyAprvInfoKey caai = new TCreditApplyAprvInfoKey();
+						caai.setLoanId(loanid);
+						TCreditApplyAprvInfo caaiLast = biz.selectLastSubbmitted(caai);
+						logger.debug("不等待补件回调casiLast的apprState为:" + caaiLast.getApprState());
+						// record.setApplyStatus(ReviewNoteConstants.APPLYSTATUS_CODE_20);
+						record.setApplyStatus(caaiLast.getApprState());
+						// record.setLastOperId(ReviewNoteConstants.ROLE_SYSTEM_ID);
+						// record.setLastOperTime(new Date());
+						flag = caBiz.updateApplyStatus(record);
+						// 更新申请表，申请审批记录表
+						// int flag = biz.updateBackToReview(record);
+			// 处理失败
+		}else if(FTP_RESPCODE_FILE_NOT_EXIST.equals(respCode)){
+		    //文件不存在， 要推消息
+            try {
+                pushImageMissingMsg(record, null);
+                flag = 1;
+            } catch (EventException e) {
+                logger.error(ExceptionUtils.getFullStackTrace(e));
+            }
+		}
+        logger.debug("flag=" + flag);
+        // 保存成功
+        if (flag == 1) {
+            out.print("000");
+            // 保存失败
+        } else {
+            out.print("001");
+        }
+		logger.debug("CreditApplyUpdateController.updateBackToAddit end ");
+		return null;
+	}
+
+	@RequestMapping("/updateApplyStatusForDownloadImages")
+	public void updateApplyStatus(
+			@RequestParam(value = "LocalSubFolderNameDef", required = true) String loanid,
+			@RequestParam(value = "RespCode", required = true) String respCode,
+			HttpServletRequest request, PrintWriter out) {
+        TCreditApply tCreditApply = caBiz.selectOne(loanid);
+        if(null == tCreditApply){
+            logger.warn("loanId = "+loanid+"的申请不存在");
+            return;
+        }
+	    //记录回调情况
+	    Date now = new Date();
+	    callbackRecordService.insertSelective(new TCallbackRecord(loanid,null,respCode,now,now));
+		logger.debug("CreditApplyUpdateController.updateImageDownload begin ");
+		logger.debug("loanid=" + loanid);
+		logger.debug("respCode=" + respCode);
+		// 如果状态为00
+		if (CreditApplyHServiceConstants.ftp_resp_code_000.equals(respCode)) {
+			if ("00".equals(tCreditApply.getApplyStatus())) {
+				if(ReturnUrlMapFactory.isContainChannel(tCreditApply.getChannel())){
+					tCreditApply.setApplyStatus("60");
+				}else{
+					tCreditApply.setApplyStatus("20");
+				}
+				caBiz.updateApplyStatus(tCreditApply);
+			}
+		} else {
+			if ("00".equals(tCreditApply.getApplyStatus())) {
+				tCreditApply.setApplyStatus("10");
+				caBiz.updateApplyStatus(tCreditApply);
+			}
+			if (FTP_RESPCODE_FILE_NOT_EXIST.equals(respCode)) {
+	            //文件不存在， 要推消息
+	            try {
+	                pushImageMissingMsg(tCreditApply, null);
+	            } catch (EventException e) {
+	                logger.error(ExceptionUtils.getFullStackTrace(e));
+	            }
+            }
+		}
+	}
+	
+	@RequestMapping("/updateContractStatusForDownload")
+	@ResponseBody
+	public void updateContractStatusForDownload(@RequestParam(value = "LocalSubFolderNameDef", required = true) String loanId,
+			@RequestParam(value = "RespCode", required = false) String respCode,@RequestParam(value="contNo", required = true)String contNo,
+			@RequestParam(value = "imagefilename", required = false)String imagefilename){
+        TCreditApply tCreditApply = caBiz.selectOne(loanId);
+        if(tCreditApply == null){
+            logger.error("loanId = "+loanId+"的申请不存在");
+            return;
+        }
+	    //记录回调情况
+	    Date now = new Date();
+	    callbackRecordService.insertSelective(new TCallbackRecord(loanId,contNo,respCode,now,now));
+		logger.debug("下载合同ftp回调,loanId=" + loanId + "contNo="+contNo +"respCode=" + respCode);
+		if("000".equals(respCode)){
+			TContractManagement contract = contBiz.getContractByContNo(contNo);
+			if(contract == null){
+				logger.error("该合同不存在");
+				return;
+			}
+			Map<String, Object> updateMap = Maps.newHashMap();
+			updateMap.put("contNo", contNo);
+			if(ReturnUrlMapFactory.isContainContractChannel(contract.getChannel())){
+				updateMap.put("agreementStatus", "01");
+				//推送协议状态调整的消息
+				TMessage message = new TMessage();
+				message.setChannel(contract.getChannel());
+				message.setInChannelKind(contract.getInChannelKind());
+				message.setCreateTime(new Date());
+				message.setContNo(contNo);
+				message.setLoanId(loanId);
+				message.setCustId(contract.getCustId());
+				message.setMessageType("6");
+				ContractStateChangeMessage messageInfo = new  ContractStateChangeMessage();
+				messageInfo.setCnContNo(contract.getContNo());
+				messageInfo.setContStatus("01");
+
+				message.setMessageInfo(messageInfo.toString());
+				tMessageDao.insert(message);
+				
+			}else{
+				updateMap.put("agreementStatus", "06");
+			}
+			logger.debug("更新Map为:" + updateMap);
+			contBiz.updateContractStatus(updateMap);
+			logger.debug(contNo + "更新合同状态结束");
+			if(ReturnUrlMapFactory.isGeneratePaymentApplyAuto(contract.getChannel())){
+				Map<String, Object> reqMap = Maps.newHashMap();
+				reqMap.put("channelType", contract.getChannel());
+				reqMap.put(PaymentApplyConstants.contNo, contNo);
+				//用款额度
+				BigDecimal payApplyAmt = contract.getContTotalAmt();
+				reqMap.put(PaymentApplyConstants.payApplyAmt, payApplyAmt);
+				//用款期限
+				String payApplyTerm = contract.getContTerm();
+				if(payApplyTerm.startsWith("0")){
+					payApplyTerm = payApplyTerm.replaceFirst("0", "");
+				}
+				reqMap.put(PaymentApplyConstants.payApplyTerm, payApplyTerm);
+				/*  期限单位
+				String termunit = (String)props.get(PaymentApplyHServiceConstants.termunit);
+				if(StringUtil.isEmpty(termunit)){
+					resp.setRespCode(HServiceReturnCode.TERMUNIT_ERROR.getReturnCode());
+					resp.setRespMessage(HServiceReturnCode.TERMUNIT_ERROR.getReturnMessage());
+					resp.setRespTime(new Date());
+					return getBlankResponse(resp);
+				}*/
+				//还款方式
+				String returnType = contract.getPaybackMethod();
+		
+				reqMap.put(PaymentApplyConstants.returnType, returnType);
+				/*   放款账号
+				String accNo	= (String)props.get(PaymentApplyHServiceConstants.INDESUBSACNO);
+				if(StringUtil.isEmpty(accNo)){
+					resp.setRespCode(HServiceReturnCode.INDESUBSACNO_ERROR.getReturnCode());
+					resp.setRespMessage(HServiceReturnCode.INDESUBSACNO_ERROR.getReturnMessage());
+					resp.setRespTime(new Date());
+					return getBlankResponse(resp);
+				}*/
+				String accNo = contract.getAcceptAccount();
+				reqMap.put(PaymentApplyConstants.accNo, accNo);
+				
+				
+				//期望用款日期
+				String expectedDate = DateUtil.getDateToString3(contract.getBeginDate());
+				
+				try{
+					Date expectDateStr = DateUtil.getStrToDate1(expectedDate);
+					//到期日
+					reqMap.put(PaymentApplyConstants.expectedEndDate, DateUtil.getDatePattern3(DateUtil.getRelativeDate(expectDateStr, 0, Integer.valueOf(payApplyTerm), -1)));
+					reqMap.put(PaymentApplyConstants.expectedDate, expectDateStr);
+				}catch(Exception e){
+					logger.error("日期转换异常[]", e.getMessage());
+				}
+
+					reqMap.put(PaymentApplyConstants.applyDate, contract.getBeginDate());
+
+				/*  商户id
+				String stdmerno = (String)props.get(PaymentApplyHServiceConstants.stdmerno);
+				if(StringUtil.isEmpty(stdmerno)){
+					resp.setRespCode(HServiceReturnCode.STDMERNO_PAY_ERROR.getReturnCode());
+					resp.setRespMessage(HServiceReturnCode.STDMERNO_PAY_ERROR.getReturnMessage());
+					resp.setRespTime(new Date());
+					return getBlankResponse(resp);
+				}
+				reqMap.put(CreditApplyHServiceConstants.merchantNo, stdmerno);
+				*/
+				//检查保证金配置信息
+				cautionConfigBiz.checkCfgFundingPool(contract.getChannel());
+				
+				reqMap.put("status", "00");
+				Map<String, Object> respMap = paymentApplyBiz.insertPaymentApply(reqMap);
+				logger.debug("自动添加用款申请返回结果为:" + respMap);
+				//校验保证金
+				respMap.put(PaymentApplyConstants.payApplyAmt, payApplyAmt);
+				
+				if(respMap.isEmpty()){
+					logger.error("用款申请入库异常");
+				}
+				if (cautionConfigBiz.checkCautionMoney(respMap)){
+					logger.info("保证金充足, 将用款申请修改为审批状态");
+					Map<String, Object> updateMap1 = Maps.newHashMap();
+					updateMap1.put("payApplyId", respMap.get("issueid"));
+					updateMap1.put("status", "10");
+					paymentApplyBiz.updatePaymentApply(updateMap1);
+					logger.info("更新用款申请状态为审批状态结束。。。");
+					
+				}else{
+					logger.error("保证金余额不足");
+					
+				}
+			}
+			
+	
+
+		}else if(FTP_RESPCODE_FILE_NOT_EXIST.equals(respCode)){
+			TContractManagement contract = contBiz.getContractByContNo(contNo);
+			if(contract == null){
+				logger.error("该合同不存在");
+				return;
+			}
+			//文件不存在， 要推消息
+	        try {
+                pushImageMissingMsg(tCreditApply, contNo);
+            } catch (EventException e1) {
+                logger.error(ExceptionUtils.getFullStackTrace(e1));
+            }
+		}
+		//其他情况不做处理
+	}
+	
+	
+	
+	@RequestMapping("/updateApplyStatusForDownloadImagesAuto")
+	public void updateApplyStatusAuto(
+			@RequestParam(value = "LocalSubFolderNameDef", required = false) String loanid,
+			@RequestParam(value = "RespCode", required = false) String respCode,
+			HttpServletRequest request, PrintWriter out) {
+	    //记录回调情况
+	    Date now = new Date();
+	    callbackRecordService.insertSelective(new TCallbackRecord(loanid,null,respCode,now,now));
+		logger.debug("CreditApplyUpdateController.updateApplyStatusForDownloadImagesAuto begin ");
+		logger.debug("loanid=" + loanid);
+		logger.debug("respCode=" + respCode);
+		// 如果状态为00
+		TCreditApply tCreditApply = caBiz.selectOne(loanid);
+		if(tCreditApply == null){
+			logger.error(loanid+"该申请不存在");
+			return;
+		}
+		try{
+			if (CreditApplyHServiceConstants.ftp_resp_code_000.equals(respCode)) {
+				if ("00".equals(tCreditApply.getApplyStatus()) || "10".equals(tCreditApply.getApplyStatus())) {
+					
+					
+					TCustomer custInfo = custService.getCustumerInfoById(tCreditApply.getCustId());
+					if(custInfo != null){
+						Map<String, Object> reqMap = Maps.newHashMap();
+						//下载征信报告
+						logger.info("回调成功开始下载征信报告");
+						CreditInvestigateRequest request1 = new CreditInvestigateRequest();
+						// 用户名外部传入
+						request1.setCustNme(custInfo.getCustName());
+						// 身份证号码外部传入
+						request1.setCustId(custInfo.getPaperId());
+						// 查询原因外部传入
+						request1.setQryWay("02I");
+						
+						reqMap.put("creditInvestigateRequest", request1);
+						Map<String, Object> resMap = loanBiz.creditInvestigate(reqMap);
+						if(!"00".equals((String)resMap.get("respCode"))){
+							logger.error("征信报告下载失败");
+							tCreditApply.setApplyStatus("10");
+							caBiz.updateApplyStatus(tCreditApply);
+							try {
+			                    pushImageMissingMsg(tCreditApply, null);
+			                } catch (EventException e1) {
+			                    logger.error(ExceptionUtils.getFullStackTrace(e1));
+			                }
+							return;
+						}
+						logger.info("下载征信报告完成, 接着上传征信报告");
+						
+						//上传征信报告
+						reqMap = Maps.newHashMap();
+						reqMap.put("certNo", custInfo.getPaperId());
+						reqMap.put("channel", tCreditApply.getChannel());
+						Map<String, Object> uploadCreditInvestHtmlResMap = loanBiz.uploadCreditInvestHtml(reqMap);
+						if(!"0".equals(uploadCreditInvestHtmlResMap.get("respCode"))){
+							logger.error("征信报告上传失败");
+							tCreditApply.setApplyStatus("10");
+							caBiz.updateApplyStatus(tCreditApply);
+							try {
+			                    pushImageMissingMsg(tCreditApply, null);
+			                } catch (EventException e1) {
+			                    logger.error(ExceptionUtils.getFullStackTrace(e1));
+			                }
+							return;
+						}
+						logger.info("上传征信报告完成");
+						TCreditApply ca = new TCreditApply();
+						ca.setLoanId(tCreditApply.getLoanId());
+						// 申请状态
+						ca.setApplyStatus(ReviewNoteConstants.APPLYSTATUS_CODE_60);
+						// 最后操作人
+						ca.setLastOperId("system");
+						// 最后操作时间
+						ca.setLastOperTime(new Date());
+						// 更新申请状态
+						int flag = daoCA.updateForReview(ca);
+						// 保存成功
+						if (flag == 1) {
+							CreditReportDownloadMessage crdm = new CreditReportDownloadMessage();
+							crdm.setLoanid(tCreditApply.getLoanId());
+							crdm.setFilepackagename((String)uploadCreditInvestHtmlResMap.get("zipFileName"));
+							crdm.setKey((String)uploadCreditInvestHtmlResMap.get("zipFilePwd"));
+							TMessage message = new TMessage();
+							message.setMessageInfo(crdm.toString());
+							message.setChannel(tCreditApply.getChannel());
+							message.setCreateTime(new Date());
+							message.setCustId(tCreditApply.getCustId());
+							message.setLoanId(tCreditApply.getLoanId());
+							message.setMessageType("14");
+							message.setStdshNo(tCreditApply.getStdshno());
+							message.setInChannelKind(tCreditApply.getInChannelKind());
+							tMessageDao.insert(message);
+							logger.info("下载征信报告消息插入成功");
+							
+						}
+						
+					}
+				}
+			} else {
+				if ("00".equals(tCreditApply.getApplyStatus()) || "10".equals(tCreditApply.getApplyStatus())) {
+					tCreditApply.setApplyStatus("10");
+					caBiz.updateApplyStatus(tCreditApply);
+					if(FTP_RESPCODE_FILE_NOT_EXIST.equals(respCode)){
+						//文件不存在， 要推消息
+					       try {
+			                    pushImageMissingMsg(tCreditApply, null);
+			                } catch (EventException e1) {
+			                    logger.error(ExceptionUtils.getFullStackTrace(e1));
+			                }
+					    
+					}
+				}
+			}
+			
+		}catch(Exception e){
+			logger.error("下载影像资料回调发生异常", e);
+			if ("00".equals(tCreditApply.getApplyStatus())) {
+				tCreditApply.setApplyStatus("10");
+				caBiz.updateApplyStatus(tCreditApply);
+				try {
+                    pushImageMissingMsg(tCreditApply, null);
+                } catch (EventException e1) {
+                    logger.error(ExceptionUtils.getFullStackTrace(e1));
+                }
+			}
+		}
+	}
+	
+	/**
+	 * @param tCreditApply 授信申请信息
+	 * @param contNo 合同编号
+	 * @throws EventException 通知异常
+	 */
+	private void pushImageMissingMsg(TCreditApply tCreditApply, String contNo) throws EventException{
+	    POSEventsSource event = new POSEventsSource();
+        event.setAttribute(ImageMissingEventAdapter.ATTR_CONTNO, contNo);
+        event.setAttribute(ImageMissingEventAdapter.ATTR_TCREDITAPPLY, tCreditApply);
+        event.setAttribute(POSEvent.监听事件名称_消息推送, MessageCab.消息推送_影像文件缺失通知);
+        event.addListener(new MsgListener());
+        event.notifyEvent();
+	}
+	
+}

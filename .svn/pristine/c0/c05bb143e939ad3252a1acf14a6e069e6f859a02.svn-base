@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services>
+	<service>
+		<name>creditReference</name><!--唯一表示服务-->
+    	<label>征信查询服务</label>
+    	<properties>
+    		<property name="ftpUrl" value="35.1.1.13"/>
+    		<property name="ftpPort" value="21"/>
+    		<property name="ftpPass" value="11"/>
+    		<property name="ftpUser" value="11"/>
+    		<property name="OrgID" value="888973"/>
+    		<property name="UId" value="hlwjr-zmx"/>
+    		<property name="creditInvestigatePat" value="http://%s:%s/S029001010CRQ001"/>
+    		<property name="investigateUrl" value="30.1.1.22"/>
+    		<property name="investigatePort" value="8020"/>
+    		<property name="getInvestigateUrl" value="http://35.8.33.21:11096"/>
+    		<property name="ciOff" value="off"/>
+    		<property name="locatorUrl" value="http://197.17.66.178:8080/AmarCRQ/services/ASWebService?wsdl"/>
+    		<property name="tradeCode" value="CRQ2014080100001"/>
+    	</properties>
+	</service>
+	
+	<service>
+		<name>policeQuery</name><!--唯一表示服务-->
+    	<label>公安信息查询服务</label>
+    	<properties>
+    		<property name="aicPublicKeyPath" value="/home/aic/PublicKey.crt"/>
+    		<property name="SBM" value="111111111111111"/>
+    		<property name="license" value="/home/connectPolice/aaa.txt"/>
+    		<property name="url" value="https://api.nciic.com.cn/nciic_ws/services/"/>
+    	</properties>
+	</service>
+	
+	<service>
+		<name>aicQuery</name><!--唯一表示服务-->
+    	<label>工商信息查询服务</label>
+    	<properties>
+    		<property name="uid" value="A9B2C799A86808D2"/>
+    		<property name="upwd" value="ifs@hrbb123"/>
+    		<property name="url" value="http://115.182.16.71/gsinfo/services/entInfo"/>
+    	</properties>
+	</service>
+	
+	<service>
+		<name>bankCardVerify</name><!--唯一表示服务-->
+    	<label>银行卡验真服务</label>
+    	<properties>
+    		<property name="BANKCHECKURL" value="https://openapi.yiji.com/gateway.html"/>
+    		<property name="SERVICENAME" value="bankCardElementsCheck"/>
+    		<property name="PARTNERID" value="20150518000005461653"/>
+    		<property name="SAFECODE" value="509f5416f4f287837049010062c1e19e"/>
+    	</properties>
+	</service>
+	
+	<service>
+		<name>crQueryCtrl</name><!--唯一表示服务-->
+    	<label>征信查询控制服务</label>
+    	<properties>
+    		<property name="beforeDate" value="20"/>	<!-- 20天以内征信报告有效 -->
+    	</properties>
+	</service>
+	
+	<service>
+		<name>ftpCallBack</name><!--唯一表示服务-->
+    	<label>FTP回调服务</label>
+    	<properties>
+    		<property name="url" value="http://35.8.33.21:11096/loan-pos-web/"/>
+    	</properties>
+	</service>
+	
+	<service>
+		<name>MQService</name>
+    	<label>MQ消息服务</label>
+    	<properties>
+    		<property name="mq_q_receive" value="q_transcore_sample"/>
+    		<property name="mq_t_receive" value="t_transcore_sample"/>
+    	</properties>
+	</service>
+	
+	<!--各个渠道的参数配置-->
+	<service>
+		<name>channel58</name>
+    	<label>58渠道交易服务</label>
+    	<properties>
+    		<property name="messageUrl" value="http://csd.58.com/channel/hrbb/notify"/>
+    	</properties>
+	</service>
+	
+	<service>
+		<name>channelHC</name>
+    	<label>慧聪渠道交易服务</label>
+    	<properties>
+    		<property name="messageUrl" value=""/>
+    	</properties>
+	</service>
+	
+	<service>
+		<name>channelRN</name>
+    	<label>融360渠道交易服务</label>
+    	<properties>
+    		<property name="messageUrl" value="http://is.rong360.com/api/v1/haerbin/message"/>
+    		<property name="key" value="1264d0a51556dab9131ed88f5125e4cc"/>
+    	</properties>
+	</service>
+	
+	<service>
+		<name>channelSM</name>
+    	<label>萨摩耶渠道交易服务</label>
+    	<properties>
+    		<property name="messageUrl" value=""/>
+    	</properties>
+	</service>
+</services>

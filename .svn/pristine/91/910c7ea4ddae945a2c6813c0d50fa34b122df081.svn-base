@@ -1,0 +1,189 @@
+package com.hrbb.loan.spi.TC;
+import java.util.Map;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.alibaba.fastjson.JSON;
+import com.hrbb.loan.pos.service.loanPosCreditApplyUpdateSyncService;
+import com.hrbb.sh.framework.HServiceException;
+import com.hrbb.sh.framework.HttpRequestSender;
+@Service("tcCreditApplyUpdateSync")
+public class TCCreditApplyUpdateSyncServiceImpl {
+	private static Logger logger = Logger.getLogger(TCCreditApplyUpdateSyncServiceImpl.class);
+	@Autowired
+	private   loanPosCreditApplyUpdateSyncService loanPosCreditApplyUpdateSyncService;
+	@Autowired
+	private  HttpRequestSender requestsender;
+//	private static loanPosCreditApplyUpdateSyncServiceImpl service;
+	private static String url = "http://csd.58v5.cn/channel/hrbb/info/update";
+      public String sendUpdateInfo(String loanId) throws HServiceException{
+    	/* FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(
+ 				"D:\\hrbb\\workspace\\loan\\loan-pos-web\\src\\test\\resources\\58t-context.xml");
+ 		service = (loanPosCreditApplyUpdateSyncServiceImpl) context.getBean("loanPosCreditApplyUpdateSyncService");*/
+    	 Map<String, Object> creditApplyUpdateInfo =loanPosCreditApplyUpdateSyncService.getCreditApplyUpdateSyncInfo(loanId);
+    	//商户名称
+    	 creditApplyUpdateInfo.put("poscustname",creditApplyUpdateInfo.get("posCustName").toString());
+    	 creditApplyUpdateInfo.remove("posCustName");	 
+   
+    	
+    	//主营业务
+    	 creditApplyUpdateInfo.put("dealscope",creditApplyUpdateInfo.get("posCustBusiScope").toString());
+    	 creditApplyUpdateInfo.remove("posCustBusiScope");	 
+    	
+    	 
+    	 //实际经营地址-行政区划
+    	 creditApplyUpdateInfo.put("operaddrRegion", creditApplyUpdateInfo.get("operAddrCode").toString());
+    	 creditApplyUpdateInfo.remove("operAddrCode");
+    	
+    	//实际经营地址-具体
+    	 creditApplyUpdateInfo.put("operaddrdetail", creditApplyUpdateInfo.get("posCustAddress").toString());
+    	 creditApplyUpdateInfo.remove("posCustAddress");
+    	
+    	//客户姓名
+    	 creditApplyUpdateInfo.put("custname", creditApplyUpdateInfo.get("custName").toString());
+    	 creditApplyUpdateInfo.remove("custName");
+    
+    	//证件类型
+    	 creditApplyUpdateInfo.put("paperkind", creditApplyUpdateInfo.get("paperKind").toString());
+    	 creditApplyUpdateInfo.remove("paperKind");
+    	
+    	//证件号码
+    	 creditApplyUpdateInfo.put("paperid", creditApplyUpdateInfo.get("paperId").toString());
+    	 creditApplyUpdateInfo.remove("paperId");
+    	
+    	
+    	 
+    	//从业年限
+    	 creditApplyUpdateInfo.put("busiyear", creditApplyUpdateInfo.get("busiYear").toString());
+    	 creditApplyUpdateInfo.remove("busiYear");
+    	
+    	//婚姻状况
+    	 creditApplyUpdateInfo.put("marrsign", creditApplyUpdateInfo.get("marrSign").toString());
+    	 creditApplyUpdateInfo.remove("marrSign");
+    	
+    	//受教育程度
+    	 creditApplyUpdateInfo.put("educsign", creditApplyUpdateInfo.get("educSign").toString());
+    	 creditApplyUpdateInfo.remove("educSign");
+    	
+    	//子女人数
+    	 creditApplyUpdateInfo.put("childnum", creditApplyUpdateInfo.get("childNum").toString());
+    	 creditApplyUpdateInfo.remove("childNum");
+    	
+    	//拥有经营房产数量
+    	 creditApplyUpdateInfo.put("localhousenum", creditApplyUpdateInfo.get("localHouseNum").toString());
+    	 creditApplyUpdateInfo.remove("localHouseNum");
+    	
+    	//拥有非经营房产数量
+    	 creditApplyUpdateInfo.put("otherhousenum", creditApplyUpdateInfo.get("otherHouseNum").toString());
+    	 creditApplyUpdateInfo.remove("otherHouseNum");
+    
+    	//手机
+    	 creditApplyUpdateInfo.put("mobilephone", creditApplyUpdateInfo.get("mobilePhone").toString());
+    	 creditApplyUpdateInfo.remove("mobilePhone");
+    	
+    	//居住地址-行政区划
+    	 creditApplyUpdateInfo.put("residentRegion", creditApplyUpdateInfo.get("residentDivision").toString());
+    	 creditApplyUpdateInfo.remove("residentDivision");
+    	
+    	//居住地址-具体
+    	 creditApplyUpdateInfo.put("residentdetail", creditApplyUpdateInfo.get("residentDetail").toString());
+    	 creditApplyUpdateInfo.remove("residentDetail");
+    	
+    	//联系地址
+    	 creditApplyUpdateInfo.put("contactaddrflag", creditApplyUpdateInfo.get("contactAddrFlag").toString());
+    	 creditApplyUpdateInfo.remove("contactAddrFlag");
+    	
+    	String marrsign = creditApplyUpdateInfo.get("marrsign").toString();
+    	
+    	 if(marrsign!=null&&marrsign.equals("20")){
+    			//配偶姓名
+        	 creditApplyUpdateInfo.put("familycustname", creditApplyUpdateInfo.get("familyCustName").toString());
+        	 creditApplyUpdateInfo.remove("familyCustName");
+        	
+        	//配偶证件类型
+        	 creditApplyUpdateInfo.put("matepaperkind", creditApplyUpdateInfo.get("matePaperKind").toString());
+        	 creditApplyUpdateInfo.remove("matePaperKind");
+        	
+        	//配偶证件号码
+        	 creditApplyUpdateInfo.put("matepaperid", creditApplyUpdateInfo.get("matePaperId").toString());
+        	 creditApplyUpdateInfo.remove("matePaperId");
+        	
+        	//配偶手机
+        	 creditApplyUpdateInfo.put("matemobilephone", creditApplyUpdateInfo.get("mateMobilephone").toString());
+        	 creditApplyUpdateInfo.remove("mateMobilephone"); 
+    	 }else{
+    		//亲属姓名
+        	 creditApplyUpdateInfo.put("relacustname", creditApplyUpdateInfo.get("relaCustName").toString());
+        	 creditApplyUpdateInfo.remove("relaCustName");
+        	
+        	//亲属类型
+        	 creditApplyUpdateInfo.put("relakind", creditApplyUpdateInfo.get("relaKind").toString());
+        	 creditApplyUpdateInfo.remove("relaKind");
+        
+        	//亲属手机
+        	 creditApplyUpdateInfo.put("relamobilephone", creditApplyUpdateInfo.get("relaMobilePhone").toString());
+        	 creditApplyUpdateInfo.remove("relaMobilePhone");
+        
+        	//亲属固定电话
+        	 creditApplyUpdateInfo.put("relatel", creditApplyUpdateInfo.get("relaTel").toString());
+        	 creditApplyUpdateInfo.remove("relaTel"); 
+    	 }
+    
+    	
+    	
+    	
+    	//申请金额
+    	 creditApplyUpdateInfo.put("apptcapi", creditApplyUpdateInfo.get("applyAmt").toString());
+    	 creditApplyUpdateInfo.remove("applyAmt");
+    	
+    	//申请期限
+    	 creditApplyUpdateInfo.put("appterm", creditApplyUpdateInfo.get("applyTerm").toString());
+    	 creditApplyUpdateInfo.remove("applyTerm");
+    	
+    	//还款方式
+    	 creditApplyUpdateInfo.put("retukind", creditApplyUpdateInfo.get("returnKind").toString());
+    	 creditApplyUpdateInfo.remove("returnKind");
+    	
+    	//贷款偿还方式
+    	 creditApplyUpdateInfo.put("repaymethod", creditApplyUpdateInfo.get("repayMethod").toString());
+    	 creditApplyUpdateInfo.remove("repayMethod");
+    	
+    	//银行账号/卡号
+    	 creditApplyUpdateInfo.put("bankaccno", creditApplyUpdateInfo.get("bankAccno").toString());
+    	 creditApplyUpdateInfo.remove("bankAccno");
+    	//账户分行
+    	 creditApplyUpdateInfo.put("bankBrandName", creditApplyUpdateInfo.get("bankBranName").toString());
+    	 creditApplyUpdateInfo.remove("bankBranName");
+    	//账户支行
+    	 creditApplyUpdateInfo.put("bankSubName", creditApplyUpdateInfo.get("bankSubbName").toString());
+    	 creditApplyUpdateInfo.remove("bankSubbName");
+    	
+    
+    
+    
+    	  
+    	 
+    	 
+    	 
+    	 
+    	 creditApplyUpdateInfo.put("bankid","58.com");
+    	 creditApplyUpdateInfo.put("operid","58.com");
+    	 creditApplyUpdateInfo.put("loanid",loanId);
+    	 String data = JSON.toJSONString(creditApplyUpdateInfo);
+    	 System.out.println("发送给合作机构的字符串为"+data);
+    	 requestsender.sendEncryptedWithCompanion(url, data, "58tc");
+    	 return data;
+     }
+     
+   /*  public static void main(String[] args) {
+ 		try {
+ 			String loanId = "LO2015051814251967152379210900";
+ 			System.out.println("hello world");
+ 			sendUpdateInfo(loanId);
+ 		} catch (Exception ex) {
+ 			logger.error(ex);
+ 		}
+
+ 	}*/
+}

@@ -1,0 +1,25 @@
+package com.hrbb.loan.pos.dao.entity;
+
+import java.math.BigDecimal;
+
+public class TUserApprInfo {
+    private String userName;
+
+    private BigDecimal quota;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName == null ? null : userName.trim();
+    }
+
+    public BigDecimal getQuota() {
+        return quota;
+    }
+
+    public void setQuota(BigDecimal quota) {
+        this.quota = quota;
+    }
+}

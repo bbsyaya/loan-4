@@ -1,0 +1,19 @@
+package com.hrbb.loan.pos.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import com.hrbb.loan.pos.dao.entity.TBdRegion;
+
+public interface TBdRegionDao {
+    int insert(TBdRegion record);
+
+    int insertSelective(TBdRegion record);
+    
+    List<TBdRegion> queryRegion(Map<String,Object> param);
+    
+    int deleteRegion(Map<String,Object> param);
+    
+    Long count( Map<String,Object> param);
+    
+}

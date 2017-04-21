@@ -1,0 +1,25 @@
+package com.hrbb.loan.spi.TC2;
+
+import org.springframework.stereotype.Service;
+
+import com.hrbb.loan.spi.POSHService;
+import com.hrbb.loan.spi.TC.TCContractBackHserviceImpl;
+
+/**
+ * T54电子协议回传
+ * 
+ * @author marco
+ * 
+ */
+@Service("tc2ContractBack")
+public class TC2ContractBackHserviceImpl extends TCContractBackHserviceImpl {
+
+	/**
+	 * 贷款方式
+	 * 
+	 * @return
+	 */
+	public String getLoanType() {
+		return POSHService.贷款模式_资金池;
+	}
+}

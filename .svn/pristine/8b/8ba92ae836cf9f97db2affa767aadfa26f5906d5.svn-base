@@ -1,0 +1,769 @@
+package com.hrbb.loan.controller;
+
+import java.io.PrintWriter;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.hrbb.loan.acct.facade.MadeLoanProcessBizHession;
+import com.hrbb.loan.constants.agreementMrg.AgreementMrgConstants;
+import com.hrbb.loan.constants.enums.ContractOperationTypeEnum;
+import com.hrbb.loan.controller.helper.ControllerHelper;
+import com.hrbb.loan.pos.biz.backstage.inter.ApproveResultBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.IPoliceAndAICConnectBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.ISmsSenderBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosContractManagementBiz;
+import com.hrbb.loan.pos.dao.entity.TBizOperationRecord;
+import com.hrbb.loan.pos.dao.entity.TContractManagement;
+import com.hrbb.loan.pos.dao.entity.TCustomer;
+import com.hrbb.loan.pos.dao.entity.TSmsTemplate;
+import com.hrbb.loan.pos.service.BizOperationRecordService;
+import com.hrbb.loan.pos.service.IGenericConfigService;
+import com.hrbb.loan.pos.service.LoanPosChannelPosCust;
+import com.hrbb.loan.pos.service.LoanPosCreditApplyService;
+import com.hrbb.loan.pos.service.LoanPosCustomerService;
+import com.hrbb.loan.pos.service.LoanPosMessageService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.SmsTemplateFactory;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.loan.web.security.entity.User;
+import com.hrbb.sh.framework.BankCardCheckService;
+
+@Controller
+@RequestMapping("/agreementMrg")
+public class AgreementMrgController {
+    
+    private Logger logger = LoggerFactory.getLogger(AgreementMrgController.class);
+	
+	@Autowired
+	private LoanPosContractManagementBiz loanPosContractManagementBiz;
+	
+	@Autowired
+	private LoanPosCustomerService loanPosCustomerService;
+	
+	@Resource(name="madeLoanProcessBizHession")
+	private MadeLoanProcessBizHession MadeLoanProcessBizHession;
+	
+	@Autowired
+	private LoanPosMessageService loanPosMessageService;
+	
+	@Autowired
+	private LoanPosCreditApplyService loanPosCreditApplyService;
+	
+	@Autowired
+	private LoanPosChannelPosCust loanPosChannelPosCust;
+	
+	@Autowired
+	private ISmsSenderBiz smsSenderBiz;
+	
+	@Autowired
+	private ApproveResultBiz approveResultBiz;
+	
+	@Autowired
+	private IGenericConfigService genericConfigService;
+	
+	@Autowired
+	private BizOperationRecordService bizOperationRecordService;
+	
+	@Autowired
+	private IPoliceAndAICConnectBiz policeAndAICConnectBiz;
+	
+	@Autowired
+	private BankCardCheckService bankCardCheckService;
+	
+	
+	/**
+	 * 协议查询
+	 * 
+	 * @param agreementStatus
+	 * @param contNoLike
+	 * @param posCustNameLike
+	 * @param custIdLike
+	 * @param custNameLike
+	 * @param paperIdLike
+	 * @param pageSize
+	 * @param pageNo
+	 * @param out
+	 * @return
+	 */
+	@RequestMapping("/queryAgreement")
+	public ModelAndView queryAgreement(@RequestParam(value = "agreementStatus", required=false)String agreementStatus,
+                            		   @RequestParam(value = "contNoLike", required=false)String contNoLike,
+                            		   @RequestParam(value = "posCustNameLike", required=false)String posCustNameLike,
+                            		   @RequestParam(value = "custIdLike", required=false)String custIdLike,
+                            		   @RequestParam(value = "custNameLike", required=false)String custNameLike,
+                            		   @RequestParam(value = "paperIdLike", required=false)String paperIdLike, 
+                            		   @RequestParam(value = "rows", required = false) Integer pageSize,
+                            		   @RequestParam(value = "page", required = false) Integer pageNo, PrintWriter out){
+		
+		Map<String, Object> reqMap = Maps.newHashMap();
+		if(!StringUtil.isEmpty(agreementStatus) && !agreementStatus.equals("99")){		//当99时显示所有协议
+			reqMap.put(AgreementMrgConstants.AGREEMENT_STATUS, agreementStatus);
+		}
+		if(!StringUtil.isEmpty(contNoLike)){
+			reqMap.put(AgreementMrgConstants.CONT_NO_LIKE, ControllerHelper.getLikeString(contNoLike));
+		}
+		if(!StringUtil.isEmpty(posCustNameLike)){
+			reqMap.put(AgreementMrgConstants.POS_CUST_NAME_LIKE, ControllerHelper.getLikeString(posCustNameLike));
+		}
+		if(!StringUtil.isEmpty(custIdLike)){
+			reqMap.put(AgreementMrgConstants.CUST_ID_LIKE, custIdLike);
+		}
+		if(!StringUtil.isEmpty(paperIdLike)){
+			reqMap.put(AgreementMrgConstants.PAPER_ID_LIKE, ControllerHelper.getLikeString(paperIdLike));
+		}
+		if(!StringUtil.isEmpty(custNameLike)){
+			reqMap.put(AgreementMrgConstants.CUST_NAME_LIKE, ControllerHelper.getRLikeString(custNameLike));
+		}
+		if(pageNo != null && pageSize != null){
+			reqMap.put("startPage", (pageNo - 1) * pageSize);
+			reqMap.put("limit", pageSize);
+		}
+		List<Map<String, Object>> lists = loanPosContractManagementBiz.selectSelectiveMap(reqMap);
+		JSONObject aaJson = new JSONObject();
+		if(null != lists && lists.size()>0){
+		    Map<String, Object> map = lists.get(lists.size() - 1);
+		    lists.remove(lists.size() - 1);
+		    aaJson.put("total", map.get("total"));
+		    aaJson.put("rows", lists);
+		}else{
+		    aaJson.put("total", 0);
+            aaJson.put("rows", lists);
+		}
+		out.write(aaJson.toJSONString());
+		return null;
+	}
+	
+	/**
+     * 查询满足用款申请的协议列表
+     * 
+     * @param agreementStatus
+     * @param contNoLike
+     * @param posCustNameLike
+     * @param custIdLike
+     * @param custNameLike
+     * @param paperIdLike
+     * @param pageSize
+     * @param pageNo
+     * @param out
+     * @return
+     */
+    @RequestMapping("/queryAvalibleAgreement")
+    public ModelAndView queryAvalibleAgreement(@RequestParam(value = "agreementStatus", required=false)String agreementStatus,
+                                       @RequestParam(value = "contNoLike", required=false)String contNoLike,
+                                       @RequestParam(value = "posCustNameLike", required=false)String posCustNameLike,
+                                       @RequestParam(value = "custIdLike", required=false)String custIdLike,
+                                       @RequestParam(value = "custNameLike", required=false)String custNameLike,
+                                       @RequestParam(value = "paperIdLike", required=false)String paperIdLike, 
+                                       @RequestParam(value = "rows", required = false) Integer pageSize,
+                                       @RequestParam(value = "page", required = false) Integer pageNo, PrintWriter out){
+        Map<String, Object> reqMap = Maps.newHashMap();
+        if(!StringUtil.isEmpty(agreementStatus)){
+            reqMap.put(AgreementMrgConstants.AGREEMENT_STATUS, agreementStatus);
+        }
+        if(!StringUtil.isEmpty(contNoLike)){
+            reqMap.put(AgreementMrgConstants.CONT_NO_LIKE, contNoLike);
+        }
+        if(!StringUtil.isEmpty(posCustNameLike)){
+            reqMap.put(AgreementMrgConstants.POS_CUST_NAME_LIKE, posCustNameLike);
+        }
+        if(!StringUtil.isEmpty(custNameLike)){
+            reqMap.put(AgreementMrgConstants.CUST_NAME_LIKE, custNameLike);
+        }
+        if(!StringUtil.isEmpty(paperIdLike)){
+            reqMap.put(AgreementMrgConstants.PAPER_ID_LIKE, paperIdLike);
+        }
+        if(pageNo != null && pageSize != null){
+            reqMap.put("startPage", (pageNo - 1) * pageSize);
+            reqMap.put("limit", pageSize);
+        }
+        List<Map<String, Object>> lists = loanPosContractManagementBiz.selectAvalibleSelectiveMap(reqMap);
+        Map<String, Object> map = lists.get(lists.size() - 1);
+        lists.remove(lists.size() - 1);
+        JSONObject aaJson = new JSONObject();
+        aaJson.put("total", map.get("total"));
+        aaJson.put("rows", lists);
+        out.write(aaJson.toJSONString());
+        return null;
+    }
+	@RequestMapping("/queryAgreementDetail")
+	public ModelAndView queryAgreementDetail(@RequestParam(value="contNo", required=false)String contNo, PrintWriter out){
+	    out.write(JSONObject.toJSONString(loanPosContractManagementBiz.queryAgreementDetailForObjectFormat(contNo)));
+		//out.print(JSONObject.toJSONString(loanPosContractManagementBiz.queryAgreementDetail(contNo)));
+		return null;
+	}
+	
+	/**
+	 * 协议修改 
+	 * 
+	 * @param freezeReason 冻结原因
+	 * @param contNo 协议编号
+	 * @param unFreezeReason 解冻原因
+	 * @param eddectReason 生效原因
+	 * @param creditLine 授信额度
+	 * @param editReason 调整原因
+	 * @param contTerm 授信期限
+	 * @param agreementEndDate 协议到期日
+	 * @param agreementStatus 协议状态
+	 * @param out
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/modifyAgreement")
+	public ModelAndView modifyAgreement(@RequestParam(value="freezeReason", required=false)String freezeReason,
+                            			@RequestParam(value="contNo", required=false)String contNo,
+                            			@RequestParam(value="unFreezeReason", required=false)String unFreezeReason,
+                            			@RequestParam(value="eddectReason", required=false)String eddectReason,
+                            			@RequestParam(value="creditLine", required=false)String creditLine,
+                            			@RequestParam(value="editReason", required=false)String editReason,
+                            			@RequestParam(value="signBack", required=false)String signBack,
+                            			@RequestParam(value="contTerm", required=false)String contTerm,
+                            			@RequestParam(value="agreementstatus", required=false)String agreementstatus,
+                            			@RequestParam(value="BankAccount", required=false)String BankAccount,
+                            			@RequestParam(value="AccountOpenBank", required=false)String AccountOpenBank,
+                            			@RequestParam(value="AccountBranchBank", required=false)String AccountBranchBank,
+                            			@RequestParam(value="AccountSubBranchBank", required=false)String AccountSubBranchBank,
+                            			@RequestParam(value="editAgreementEndDate", required=false)String agreementEndDate,
+                            			@RequestParam(value="agreementStatus", required=false)String agreementStatus,PrintWriter out,
+                            			HttpServletRequest request){
+	    
+		try {
+            Map<String, Object> reqMap = Maps.newHashMap();
+            User user = ((User)request.getSession().getAttribute("USER"));
+            String userName = user.getUserName();
+            TContractManagement contract = loanPosContractManagementBiz.getContractByContNo(contNo);
+            
+            //协议编号
+            if(!StringUtil.isEmpty(contNo)){
+            	reqMap.put(AgreementMrgConstants.CONT_NO, contNo);
+            }
+            //协议状态
+            if(!StringUtil.isEmpty(agreementStatus)){
+                reqMap.put(AgreementMrgConstants.AGREEMENT_STATUS, agreementStatus);
+            }
+            //当前操作
+            if(!StringUtil.isEmpty(userName)){
+                reqMap.put(AgreementMrgConstants.LAST_CHAN_PERSON, userName);
+            }
+            //当前操作日期
+            reqMap.put(AgreementMrgConstants.LAST_CHAN_DATE, new Date());
+            
+            //生效原因
+            if (!StringUtil.isEmpty(eddectReason)) {
+                logger.info("协议生效处理");
+                try {
+                    Date beginDate = DateUtil.getDatePattern3(DateUtil.getCurrentTimePattern3());
+                    Date endDate = DateUtil.getDatePattern3(DateUtil.getRelativeDate(beginDate, 0, Integer.parseInt(contract.getContTerm()), -1));
+                    // endDate = DateUtil.getDatePattern3(genericConfigService.getNextWorkingDate(endDate));//协议签约时，协议到期日不安
+                    contract.setBeginDate(beginDate);
+                    contract.setEndDate(endDate);
+                    reqMap.put("beginDate", beginDate);
+                    reqMap.put("endDate", endDate);
+                    logger.info("协议生效时，协议beginDate和endDate顺延");
+                } catch (Exception e1) {
+                    logger.error("协议生效时，日期处理错误", e1);
+                }
+                String channel = contract.getChannel();// 业务渠道
+                if (!StringUtil.isEmpty(channel)) {
+                    if ("ZY".equals(channel) || "SQ".equals(channel)) {
+                        out.print("生效成功");
+                        loanPosContractManagementBiz.updateAgreement(reqMap);
+                        //插入生效记录
+                        saveBizOperationRecord(contNo, userName,"CNT",eddectReason,ContractOperationTypeEnum.SX.getCode(),"");
+                        //推送消息
+                        loanPosContractManagementBiz.addContractStatusChangeMessage(contNo, contract, "01", "协议生效");
+                        try {
+                            insertContractSmsMessage(contract);
+                            logger.info("协议生效短信入库成功");
+                        } catch (Exception e) {
+                            logger.error("协议生效短信入库异常", e);
+                        }
+                    } else {
+                        String privileges = (String) request.getSession().getAttribute("assignedPrivileges");
+                        if (privileges == null || privileges.indexOf("ROLE_CONTRACT_ADMIN;") == -1) {
+                            out.print("非合同管理员，无此操作权限");
+                        } else {
+                            out.print("生效成功");
+                            loanPosContractManagementBiz.updateAgreement(reqMap);
+                            //插入生效记录
+                            saveBizOperationRecord(contNo, userName,"CNT",eddectReason,ContractOperationTypeEnum.SX.getCode(),"");
+                            //推送消息
+                            loanPosContractManagementBiz.addContractStatusChangeMessage(contNo, contract, "01", "协议生效");
+                            try {
+                                insertContractSmsMessage(contract);
+                                logger.info("协议生效短信入库成功");
+                            } catch (Exception e) {
+                                logger.error("协议生效短信入库异常", e);
+                            }
+                        }
+                    }
+                }
+                return null;
+            }
+            //冻结原因
+            if(!StringUtil.isEmpty(freezeReason)){
+            	reqMap.put(AgreementMrgConstants.FREEZE_REASON, freezeReason);
+            	reqMap.put(AgreementMrgConstants.freezePerson, userName);
+            	reqMap.put(AgreementMrgConstants.freezeDate, new Date());
+            	out.print("冻结成功");
+            	loanPosContractManagementBiz.updateAgreement(reqMap);
+            	//插入冻结记录
+        	    saveBizOperationRecord(contNo, userName,"CNT",freezeReason,ContractOperationTypeEnum.DJ.getCode(),"");
+        	    //推送消息
+        	    loanPosContractManagementBiz.addContractStatusChangeMessage(contNo, contract, "02", "协议冻结");
+   
+            	return null;
+            }
+            //解冻原因
+            if(!StringUtil.isEmpty(unFreezeReason)){
+            	reqMap.put(AgreementMrgConstants.UNFREEZE_REASON, unFreezeReason);
+            	reqMap.put(AgreementMrgConstants.unfreezePerson, userName);
+            	reqMap.put(AgreementMrgConstants.unfreezeDate, new Date());
+            	out.print("解冻成功");
+            	loanPosContractManagementBiz.updateAgreement(reqMap);
+            	//插入冻结记录
+                saveBizOperationRecord(contNo, userName,"CNT",unFreezeReason,ContractOperationTypeEnum.JD.getCode(),"");
+                //推送消息
+                loanPosContractManagementBiz.addContractStatusChangeMessage(contNo, contract, "01", "协议解冻");
+           
+            	return null;
+            }
+            //调整原因
+            if(!StringUtil.isEmpty(editReason)&&!StringUtil.isEmpty(creditLine)){
+            	reqMap.put(AgreementMrgConstants.editReason, editReason);
+            	reqMap.put(AgreementMrgConstants.editPerson, userName);
+            	reqMap.put(AgreementMrgConstants.editDate, new Date());
+            	if(!StringUtil.isEmpty(creditLine)){
+            		reqMap.put(AgreementMrgConstants.CREDIT_LINE, creditLine);
+            	}
+            	if(!StringUtil.isEmpty(contTerm)){
+            	    reqMap.put(AgreementMrgConstants.CONT_TERM, contTerm);
+            	}
+            	if(!StringUtil.isEmpty(agreementEndDate)){
+            	    reqMap.put(AgreementMrgConstants.endDate, agreementEndDate);
+            	}
+            	loanPosContractManagementBiz.updateAgreement(reqMap);
+            	logger.debug("调整协议成功");
+            	out.println("调整授信额度及期限成功");
+            	//调整后协议
+            	TContractManagement contractNew = loanPosContractManagementBiz.getContractByContNo(contNo);
+            	//插入调整记录
+            	saveBizOperationRecord(contNo, userName,"CNT",editReason,ContractOperationTypeEnum.TZ.getCode(),"");
+            	//推送消息
+                loanPosContractManagementBiz.addContractStatusChangeMessage(contNo, contractNew, "01", "协议调整");
+     
+            }
+            
+            //更换银行卡信息
+            if(!StringUtil.isEmpty(editReason)&&!StringUtil.isEmpty(BankAccount)){
+            	
+            	Map<String, Object> bankAccMap = Maps.newHashMap();
+        		String bankCheckChannelFlag = "1";
+        		bankAccMap = loanPosCreditApplyService.selectOneBankAcc(BankAccount);
+        		Map<String, Object> bankMap = Maps.newHashMap();
+        		bankMap.put("bankAccno",BankAccount);
+        		bankMap.put("bankName",AccountOpenBank);
+        		bankMap.put("bankBranName",AccountBranchBank);
+        		bankMap.put("bankSubbName",AccountSubBranchBank);
+        		TContractManagement cont = loanPosContractManagementBiz.getContractInfoByContNo(contNo);
+        		String custId2 = cont.getCustId();
+        		TCustomer cust = loanPosCustomerService.getCustumerInfoById(custId2);
+        		Map<String, String> bankCheckMap = Maps.newHashMap();
+        		bankCheckMap.put("cardNo", BankAccount);
+        		bankCheckMap.put("cardName", cont.getCustName());
+        		bankCheckMap.put("certNo", cust.getPaperId());
+        		
+        		Map<String, Object> contBankMap = Maps.newHashMap();
+        		contBankMap.put("contNo",contNo);
+        		contBankMap.put("acceptAccount",BankAccount);
+        		contBankMap.put("accountOpenBank",AccountOpenBank);
+        		contBankMap.put("accountBranchBank",AccountBranchBank);
+        		contBankMap.put("accountSubBranchBank",AccountSubBranchBank);
+        		
+        		String approveid = cont.getApproveId();
+        		Map<String, Object> approveBankMap = Maps.newHashMap();
+        		approveBankMap.put("approveId",approveid);
+        		approveBankMap.put("acceptAccount",BankAccount);
+        		approveBankMap.put("accountOpenBank",AccountOpenBank);
+        		approveBankMap.put("accountBranchBank",AccountBranchBank);
+        		approveBankMap.put("accountSubBranchBank",AccountSubBranchBank);
+        		
+        		if(bankAccMap.isEmpty()){
+        			logger.debug("新卡，数据库中不存在记录");
+        			try{
+        				String url = policeAndAICConnectBiz.getBankCardCheckUrl(bankCheckMap);
+        				Map<String, String> resMap = Maps.newHashMap();
+        				if(StringUtil.isEmpty(url)){
+        					logger.error("账户验真路径为空");
+        				}else{
+        					Gson gson = new Gson();
+        					logger.debug("--调Hessian之前");
+        					String resString = bankCardCheckService.checkBankCard(url);
+        					logger.debug("返回结果为:" + resString);
+        					logger.debug("--调Hessian之后");
+        					if(StringUtil.isEmpty(resString)){
+        						logger.error("账户验真返回为空");
+        					}
+        					try{
+        						Map<String,Object> respMap = gson.fromJson(resString,new TypeToken<Map<String, Object>>() {}.getType());
+        						Boolean success = (Boolean) respMap.get("success");
+        						String resultMessage = (String) respMap.get("resultMessage");
+        						if(success){
+        							logger.debug("账户验真通过，插入新卡到数据库");
+        							String status ="01";
+        							bankMap.put("status",status);
+        							loanPosCreditApplyService.insertBankAccSelectiveMap(bankMap);
+        							if(agreementstatus.equals("1")){
+        								logger.debug("更改协议表中银行卡信息");
+        								loanPosContractManagementBiz.updateAgreement(contBankMap);
+        							}else{
+        								logger.debug("更改批复表中银行卡信息");
+        								int a = approveResultBiz.updateApproveResultInfo(approveBankMap);
+        								loanPosContractManagementBiz.updateAgreement(contBankMap);
+        							}
+        							 out.print("更换新银行卡成功");
+        							 return null;
+        						}else{
+        							logger.error("账户验真失败，输入银行信息有误");
+        							out.print("输入银行卡信息有误，账户验真失败");
+        							return null;
+        						}
+//        						policeAndAICConnectBiz.updateBankAccnoStatus(resultMessage, success, bankaccount, null, bankCheckChannelFlag, bankCheckMap);
+        					}catch(Exception ex){
+        						logger.error("更新银行卡状态失败!",ex);
+        						out.print("更换银行卡失败");
+        						return null;
+        					}
+        				}
+        			}catch(Exception e){
+        				logger.error("账户验证发生异常:" + e);
+        				out.print("更换银行卡失败");
+        				return null;
+        			}
+        			
+        		}else{
+        			logger.debug("数据库中存在记录，银行卡身份验证");
+        			String custId1 = (String)bankAccMap.get("custId")==null?"":(String)bankAccMap.get("custId");
+//        			TCustomer cust = loanPosCustomerService.getCustumerInfoById(custId);
+//        			String paperId1 = cust.getPaperId();
+        			if(!custId1.equals(custId2)){
+        				logger.error("两次输入的银行卡不属于同一个客户，请重新检查银行账号信息");
+        				out.print("银行卡信息输入错误，请检查后重新输入");
+        				return null;
+        			}
+        			Boolean flag = false;
+        			String status = (String)bankAccMap.get("status");
+        			if(status==null){
+        				flag = true;    //要做账户验真
+        			}else if(!status.equals("01")&&!status.equals("03")){
+        				flag = true;    //要做账户验真
+        			}else{
+        				flag = false;
+        			}
+        			if(flag){
+        				logger.debug("数据库中存在的银行账户验真失败或未进行账户验真，再次进行账户验真");
+        				String url = policeAndAICConnectBiz.getBankCardCheckUrl(bankCheckMap);
+        				Map<String, String> resMap = Maps.newHashMap();
+        				if(StringUtil.isEmpty(url)){
+        					logger.error("账户验真路径为空");
+        				}else{
+        							Gson gson = new Gson();
+        							logger.debug("--调Hessian之前");
+        							String resString = "";
+        							try{
+        								resString = bankCardCheckService.checkBankCard(url);
+        							}catch(Exception e){
+        								logger.error("账户验真失败");
+        							}
+        							
+        							logger.debug("返回结果为:" + resString);
+        							logger.debug("--调Hessian之后");
+        							if(StringUtil.isEmpty(resString)){
+        								logger.error("账户验真返回为空");
+        							}
+        								Map<String,Object> respMap = gson.fromJson(resString,new TypeToken<Map<String, Object>>() {}.getType());
+        								Boolean success = (Boolean) respMap.get("success");
+        								String resultMessage = (String) respMap.get("resultMessage");
+        								try{
+        									policeAndAICConnectBiz.updateBankAccnoStatus(resultMessage, success, BankAccount, null, bankCheckChannelFlag, bankCheckMap);
+        								}catch(Exception e){
+        									logger.error("更新银行账户验真状态失败");
+        								}
+        								
+        									if(success){		
+        										if(agreementstatus.equals("1")){
+        										logger.debug("更改协议表中银行卡信息");
+        										loanPosContractManagementBiz.updateAgreement(contBankMap);
+        									    }else{
+        										logger.debug("更改批复表中银行卡信息");
+        										int a = approveResultBiz.updateApproveResultInfo(approveBankMap);
+        										loanPosContractManagementBiz.updateAgreement(contBankMap);
+        									    }
+        									out.print("更新银行卡信息成功");	 
+        									return null;
+        									}else{
+        									logger.error("账户验真失败");
+        									out.print("账户验真失败，输入的银行账户信息有误，请重新检查");
+        									return null;
+        									}
+        					}
+        			}else{
+        				logger.debug("已做过账户验真且成功");
+        				if(agreementstatus.equals("1")){
+        					logger.debug("更改协议表中银行卡信息");
+        					loanPosContractManagementBiz.updateAgreement(contBankMap);
+        				}else{
+        					logger.debug("更改批复表中银行卡信息");
+        					int a = approveResultBiz.updateApproveResultInfo(approveBankMap);
+        					loanPosContractManagementBiz.updateAgreement(contBankMap);
+        				}
+        				out.print("更新银行卡信息成功");	 
+        				return null;
+        			}
+        		}//数据库中存在该银行卡信息
+            }
+        	
+            //退回重签
+            if(!StringUtil.isEmpty(signBack)){
+                out.print("退回重签成功");
+                loanPosContractManagementBiz.updateAgreement(reqMap);
+                //插入重签记录
+                saveBizOperationRecord(contNo, userName,"CNT",signBack,ContractOperationTypeEnum.CQ.getCode(),"");
+                //推送消息
+                TContractManagement contractNew = loanPosContractManagementBiz.getContractByContNo(contNo);
+                loanPosContractManagementBiz.addContractStatusChangeMessage(contNo, contractNew, "07", "退回重签");
+                return null;
+            }
+        } catch (Exception e) {
+            logger.error("协议调整异常", e);
+        }
+		out.print("填写内容不完整");
+		return null;
+	}
+
+
+    /**
+     * 插入协议操作记录
+     * 
+     * @param contNo
+     * @param userName
+     */
+    private void saveBizOperationRecord(String contNo, String userName, String bizPhase, String operationContent, String operationType, String remarks) {
+        TBizOperationRecord record = new TBizOperationRecord();
+        record.setBizNo(contNo);
+        record.setBizPhase(bizPhase);
+        record.setOperationContent(operationContent);
+        record.setOperationId(userName);
+        record.setOperationType(operationType);
+        record.setOperationTime(new Date());
+        record.setRemarks(remarks);
+        bizOperationRecordService.saveBizOperationRecord(record);
+    }
+
+
+    /**
+     * 协议生效短信入库
+     * 
+     * @param contract
+     */
+    private void insertContractSmsMessage(TContractManagement contract) throws Exception{
+        // 发送短信
+        String tempId = SmsTemplateFactory.getContractSms(contract.getChannel());
+        // 获取短信模板
+        TSmsTemplate smsTemplate = smsSenderBiz.getSmsTemplate(tempId);
+        // 编辑短信内容
+        String sendContent = smsTemplate.getSmsContent();
+        sendContent = sendContent.replace("%effectDate%", DateUtil.getCurrentTimePattern3())
+            .replace("%amount1%", contract.getCreditLine().toString())
+            .replace("%rate%", contract.getCreditInterest().toString())
+            .replace("%issueDate%", DateUtil.getCurrentTimePattern3())
+            .replace("%maturity%", DateUtil.getDateToString3(contract.getEndDate()));
+        // 获取手机号
+        TCustomer customer = loanPosCustomerService.getCustumerInfoById(contract.getCustId());
+        // 短信入库
+        smsSenderBiz.insertSmsMessage(tempId, customer.getMobilePhone(), sendContent);
+    }
+    
+	@RequestMapping("/changebankaccountinfo")
+	public ModelAndView changebankaccountinfo(@RequestParam(value="contNo", required=false)String contNo,
+			@RequestParam(value="agreementstatus", required=false)String agreementstatus,
+			@RequestParam(value="bankaccount", required=false)String bankaccount,
+			@RequestParam(value="accountopenbank", required=false)String accountopenbank,
+			@RequestParam(value="accountbranchbank", required=false)String accountbranchbank,
+			@RequestParam(value="accountsubbranchbank", required=false)String accountsubbranchbank,PrintWriter out){
+		Map<String, Object> reqMap = Maps.newHashMap();
+		String bankCheckChannelFlag = "1";
+		reqMap = loanPosCreditApplyService.selectOneBankAcc(bankaccount);
+		Map<String, Object> bankMap = Maps.newHashMap();
+		bankMap.put("bankAccno",bankaccount);
+		bankMap.put("bankName",accountopenbank);
+		bankMap.put("bankBranName",accountbranchbank);
+		bankMap.put("bankSubbName",accountsubbranchbank);
+		TContractManagement cont = loanPosContractManagementBiz.getContractInfoByContNo(contNo);
+		String custId2 = cont.getCustId();
+		TCustomer cust = loanPosCustomerService.getCustumerInfoById(custId2);
+		Map<String, String> bankCheckMap = Maps.newHashMap();
+		bankCheckMap.put("cardNo", bankaccount);
+		bankCheckMap.put("cardName", cont.getCustName());
+		bankCheckMap.put("certNo", cust.getPaperId());
+		
+		Map<String, Object> contBankMap = Maps.newHashMap();
+		contBankMap.put("contNo",contNo);
+		contBankMap.put("acceptAccount",bankaccount);
+		contBankMap.put("accountOpenBank",accountopenbank);
+		contBankMap.put("accountBranchBank",accountbranchbank);
+		contBankMap.put("accountSubBranchBank",accountsubbranchbank);
+		
+		String approveid = cont.getApproveId();
+		Map<String, Object> approveBankMap = Maps.newHashMap();
+		approveBankMap.put("approveId",approveid);
+		approveBankMap.put("acceptAccount",bankaccount);
+		approveBankMap.put("accountOpenBank",accountopenbank);
+		approveBankMap.put("accountBranchBank",accountbranchbank);
+		approveBankMap.put("accountSubBranchBank",accountsubbranchbank);
+		
+		if(reqMap.isEmpty()){
+			logger.debug("新卡，数据库中不存在记录");
+			try{
+				String url = policeAndAICConnectBiz.getBankCardCheckUrl(bankCheckMap);
+				Map<String, String> resMap = Maps.newHashMap();
+				if(StringUtil.isEmpty(url)){
+					logger.error("账户验真路径为空");
+				}else{
+					Gson gson = new Gson();
+					logger.debug("--调Hessian之前");
+					String resString = bankCardCheckService.checkBankCard(url);
+					logger.debug("返回结果为:" + resString);
+					logger.debug("--调Hessian之后");
+					if(StringUtil.isEmpty(resString)){
+						logger.error("账户验真返回为空");
+					}
+					try{
+						Map<String,Object> respMap = gson.fromJson(resString,new TypeToken<Map<String, Object>>() {}.getType());
+						Boolean success = (Boolean) respMap.get("success");
+						String resultMessage = (String) respMap.get("resultMessage");
+						if(success){
+							logger.debug("账户验真通过，插入新卡到数据库");
+							String status ="01";
+							bankMap.put("status",status);
+							loanPosCreditApplyService.insertBankAccSelectiveMap(bankMap);
+							if(agreementstatus.equals("1")){
+								logger.debug("更改协议表中银行卡信息");
+								loanPosContractManagementBiz.updateAgreement(contBankMap);
+							}else{
+								logger.debug("更改批复表中银行卡信息");
+								int a = approveResultBiz.updateApproveResultInfo(approveBankMap);
+								loanPosContractManagementBiz.updateAgreement(contBankMap);
+							}
+							 out.print("更换新银行卡成功");
+						}else{
+							logger.error("账户验真失败，输入银行信息有误");
+							out.print("输入银行卡信息有误，账户验真失败");
+						}
+//						policeAndAICConnectBiz.updateBankAccnoStatus(resultMessage, success, bankaccount, null, bankCheckChannelFlag, bankCheckMap);
+					}catch(Exception ex){
+						logger.error("更新银行卡状态失败!",ex);
+						out.print("更换银行卡失败");
+					}
+				}
+			}catch(Exception e){
+				logger.error("账户验证发生异常:" + e);
+				out.print("更换银行卡失败");
+			}
+			
+		}else{
+			logger.debug("数据库中存在记录，银行卡身份验证");
+			String custId1 = (String)reqMap.get("custId")==null?"":(String)reqMap.get("custId");
+//			TCustomer cust = loanPosCustomerService.getCustumerInfoById(custId);
+//			String paperId1 = cust.getPaperId();
+			if(!custId1.equals(custId2)){
+				logger.error("两次输入的银行卡不属于同一个客户，请重新检查银行账号信息");
+				out.print("银行卡信息输入错误，请检查后重新输入");
+				return null;
+			}
+			String status = (String)reqMap.get("status");
+			if(!status.equals("01")&&!status.equals("03")){
+				logger.debug("数据库中存在的银行账户验真失败或未进行账户验真，再次进行账户验真");
+				String url = policeAndAICConnectBiz.getBankCardCheckUrl(bankCheckMap);
+				Map<String, String> resMap = Maps.newHashMap();
+				if(StringUtil.isEmpty(url)){
+					logger.error("账户验真路径为空");
+				}else{
+							Gson gson = new Gson();
+							logger.debug("--调Hessian之前");
+							String resString = "";
+							try{
+								resString = bankCardCheckService.checkBankCard(url);
+							}catch(Exception e){
+								logger.error("账户验真失败");
+							}
+							
+							logger.debug("返回结果为:" + resString);
+							logger.debug("--调Hessian之后");
+							if(StringUtil.isEmpty(resString)){
+								logger.error("账户验真返回为空");
+							}
+								Map<String,Object> respMap = gson.fromJson(resString,new TypeToken<Map<String, Object>>() {}.getType());
+								Boolean success = (Boolean) respMap.get("success");
+								String resultMessage = (String) respMap.get("resultMessage");
+								try{
+									policeAndAICConnectBiz.updateBankAccnoStatus(resultMessage, success, bankaccount, null, bankCheckChannelFlag, bankCheckMap);
+								}catch(Exception e){
+									logger.error("更新银行账户验真状态失败");
+								}
+								
+									if(success){		
+										if(agreementstatus.equals("1")){
+										logger.debug("更改协议表中银行卡信息");
+										loanPosContractManagementBiz.updateAgreement(contBankMap);
+									    }else{
+										logger.debug("更改批复表中银行卡信息");
+										int a = approveResultBiz.updateApproveResultInfo(approveBankMap);
+										loanPosContractManagementBiz.updateAgreement(contBankMap);
+									    }
+									out.print("更新银行卡信息成功");	 
+									}else{
+									logger.error("账户验真失败");
+									out.print("账户验真失败，输入的银行账户信息有误，请重新检查");
+									}
+					}
+			}else{
+				logger.debug("已做过账户验真且成功");
+				if(agreementstatus.equals("1")){
+					logger.debug("更改协议表中银行卡信息");
+					loanPosContractManagementBiz.updateAgreement(contBankMap);
+				}else{
+					logger.debug("更改批复表中银行卡信息");
+					int a = approveResultBiz.updateApproveResultInfo(approveBankMap);
+					loanPosContractManagementBiz.updateAgreement(contBankMap);
+				}
+				out.print("更新银行卡信息成功");	 
+			}
+		
+	
+			
+			
+		
+		}
+	
+		
+		return null;
+	}
+	
+	
+}

@@ -1,0 +1,59 @@
+package com.hrbb.loan.pos.biz.backstage.inter.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.hrbb.loan.pos.biz.backstage.inter.ISmsSenderBiz;
+import com.hrbb.loan.pos.dao.entity.TSmsTemplate;
+import com.hrbb.loan.pos.service.CommSmsTemplateService;
+import com.hrbb.loan.pos.service.SendSmsMessageService;
+
+/**
+ * 短信下行业务处理通道.
+ * 
+ * @author xiongshaogang
+ * @version $Id: SmsSenderBizImpl.java, v 0.1 2015年4月29日 下午7:32:40 xiongshaogang Exp $
+ */
+@Component("iSmsSenderBiz")
+public class SmsSenderBizImpl implements ISmsSenderBiz {
+
+    @Autowired
+    private CommSmsTemplateService commSmsTemplateService;
+    
+    @Autowired
+    private SendSmsMessageService sendSmsMessageService;
+    
+    @Override
+    public TSmsTemplate getSmsTemplate(String tempId) {
+        return commSmsTemplateService.queryTSmsTemplateByTempId(tempId);
+    }
+
+	@Override
+	public void insertSmsMessage(String tempId, String mobile, String sendContent) {
+		sendSmsMessageService.insertSmsMessage(tempId, mobile, sendContent);
+		
+	}
+
+	@Override
+	public void insertSmsMessageHist(String tempId, String mobile, String sendContent) {
+		sendSmsMessageService.insertSmsMessageHist(tempId, mobile, sendContent);
+	}
+
+	@Override
+	public List<Map<String, Object>> getAllSmsMessage() {
+		return sendSmsMessageService.selectAllMessage();
+	}
+
+	@Override
+	public void deleteSmsMessage(Integer id) {
+		sendSmsMessageService.deleteSmsMessage(id);
+		
+	}
+    
+    
+    
+
+}

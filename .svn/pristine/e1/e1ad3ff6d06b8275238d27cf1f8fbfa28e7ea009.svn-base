@@ -1,0 +1,9 @@
+package com.hrbb.loan.pos.dao;
+
+import com.hrbb.loan.pos.dao.entity.PUBTRANEXT;
+
+public interface PUBTRANEXTDao {
+    int insert(PUBTRANEXT record);
+
+    int insertSelective(PUBTRANEXT record);
+}

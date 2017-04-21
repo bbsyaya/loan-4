@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditReportIdentityMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditReportIdentity" >
+    <id column="reportNo" property="reportNo" jdbcType="VARCHAR" />
+    <result column="gender" property="gender" jdbcType="VARCHAR" />
+    <result column="birthDate" property="birthDate" jdbcType="VARCHAR" />
+    <result column="marital" property="marital" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="officeTel" property="officeTel" jdbcType="VARCHAR" />
+    <result column="homeTel" property="homeTel" jdbcType="VARCHAR" />
+    <result column="education" property="education" jdbcType="VARCHAR" />
+    <result column="degree" property="degree" jdbcType="VARCHAR" />
+    <result column="postAddr" property="postAddr" jdbcType="VARCHAR" />
+    <result column="regiAddr" property="regiAddr" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    reportNo, gender, birthDate, marital, mobile, officeTel, homeTel, education, degree, 
+    postAddr, regiAddr
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_report_identity
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_credit_report_identity
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportIdentity" >
+    insert into t_credit_report_identity (reportNo, gender, birthDate, 
+      marital, mobile, officeTel, 
+      homeTel, education, degree, 
+      postAddr, regiAddr)
+    values (#{reportNo,jdbcType=VARCHAR}, #{gender,jdbcType=VARCHAR}, #{birthDate,jdbcType=VARCHAR}, 
+      #{marital,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, #{officeTel,jdbcType=VARCHAR}, 
+      #{homeTel,jdbcType=VARCHAR}, #{education,jdbcType=VARCHAR}, #{degree,jdbcType=VARCHAR}, 
+      #{postAddr,jdbcType=VARCHAR}, #{regiAddr,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportIdentity" >
+    insert into t_credit_report_identity
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="gender != null" >
+        gender,
+      </if>
+      <if test="birthDate != null" >
+        birthDate,
+      </if>
+      <if test="marital != null" >
+        marital,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="officeTel != null" >
+        officeTel,
+      </if>
+      <if test="homeTel != null" >
+        homeTel,
+      </if>
+      <if test="education != null" >
+        education,
+      </if>
+      <if test="degree != null" >
+        degree,
+      </if>
+      <if test="postAddr != null" >
+        postAddr,
+      </if>
+      <if test="regiAddr != null" >
+        regiAddr,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null" >
+        #{gender,jdbcType=VARCHAR},
+      </if>
+      <if test="birthDate != null" >
+        #{birthDate,jdbcType=VARCHAR},
+      </if>
+      <if test="marital != null" >
+        #{marital,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="officeTel != null" >
+        #{officeTel,jdbcType=VARCHAR},
+      </if>
+      <if test="homeTel != null" >
+        #{homeTel,jdbcType=VARCHAR},
+      </if>
+      <if test="education != null" >
+        #{education,jdbcType=VARCHAR},
+      </if>
+      <if test="degree != null" >
+        #{degree,jdbcType=VARCHAR},
+      </if>
+      <if test="postAddr != null" >
+        #{postAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="regiAddr != null" >
+        #{regiAddr,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <insert id="insertSelectiveMap" parameterType="Map" >
+    insert into t_credit_report_identity
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="gender != null" >
+        gender,
+      </if>
+      <if test="birthDate != null" >
+        birthDate,
+      </if>
+      <if test="marital != null" >
+        marital,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="officeTel != null" >
+        officeTel,
+      </if>
+      <if test="homeTel != null" >
+        homeTel,
+      </if>
+      <if test="education != null" >
+        education,
+      </if>
+      <if test="degree != null" >
+        degree,
+      </if>
+      <if test="postAddr != null" >
+        postAddr,
+      </if>
+      <if test="regiAddr != null" >
+        regiAddr,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null" >
+        #{gender,jdbcType=VARCHAR},
+      </if>
+      <if test="birthDate != null" >
+        #{birthDate,jdbcType=VARCHAR},
+      </if>
+      <if test="marital != null" >
+        #{marital,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="officeTel != null" >
+        #{officeTel,jdbcType=VARCHAR},
+      </if>
+      <if test="homeTel != null" >
+        #{homeTel,jdbcType=VARCHAR},
+      </if>
+      <if test="education != null" >
+        #{education,jdbcType=VARCHAR},
+      </if>
+      <if test="degree != null" >
+        #{degree,jdbcType=VARCHAR},
+      </if>
+      <if test="postAddr != null" >
+        #{postAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="regiAddr != null" >
+        #{regiAddr,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportIdentity" >
+    update t_credit_report_identity
+    <set >
+      <if test="gender != null" >
+        gender = #{gender,jdbcType=VARCHAR},
+      </if>
+      <if test="birthDate != null" >
+        birthDate = #{birthDate,jdbcType=VARCHAR},
+      </if>
+      <if test="marital != null" >
+        marital = #{marital,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="officeTel != null" >
+        officeTel = #{officeTel,jdbcType=VARCHAR},
+      </if>
+      <if test="homeTel != null" >
+        homeTel = #{homeTel,jdbcType=VARCHAR},
+      </if>
+      <if test="education != null" >
+        education = #{education,jdbcType=VARCHAR},
+      </if>
+      <if test="degree != null" >
+        degree = #{degree,jdbcType=VARCHAR},
+      </if>
+      <if test="postAddr != null" >
+        postAddr = #{postAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="regiAddr != null" >
+        regiAddr = #{regiAddr,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportIdentity" >
+    update t_credit_report_identity
+    set gender = #{gender,jdbcType=VARCHAR},
+      birthDate = #{birthDate,jdbcType=VARCHAR},
+      marital = #{marital,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      officeTel = #{officeTel,jdbcType=VARCHAR},
+      homeTel = #{homeTel,jdbcType=VARCHAR},
+      education = #{education,jdbcType=VARCHAR},
+      degree = #{degree,jdbcType=VARCHAR},
+      postAddr = #{postAddr,jdbcType=VARCHAR},
+      regiAddr = #{regiAddr,jdbcType=VARCHAR}
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </update>
+  <select id="selectInfor" resultMap="BaseResultMap"  parameterType="Map">
+    select b.reportNo,i.mobile,i.officeTel,i.homeTel,i.postAddr,i.regiAddr
+    from t_credit_report_brief b 
+    left join t_credit_report_identity i on i.reportNo and b.reportNo
+    where b.certType = #{certType,jdbcType=VARCHAR}
+      and b.certNo = #{certNo,jdbcType=VARCHAR}
+    order by b.queryTime desc
+    limit 0,1
+  </select>
+</mapper>

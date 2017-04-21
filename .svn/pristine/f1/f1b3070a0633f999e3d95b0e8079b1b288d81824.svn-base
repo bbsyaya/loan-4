@@ -1,0 +1,176 @@
+package com.hrbb.loan.pos.dao.entity;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+public class TPaybackImportInfo {
+    private String importRunningId;
+
+    private Date importRunningDate;
+
+    private String moneyKind;
+
+    private BigDecimal importAmount;
+
+    private Date delegateTime;
+
+    private String paybackPersonName;
+
+    private String paybackPersonAcount;
+
+    private String paybackPersonOpenBankName;
+
+    private String paybackClearBankId;
+
+    private String paybackPersonOpenBankId;
+
+    private String paybackBankId;
+
+    private String businessProperty;
+
+    private String businessKind;
+
+    private String additional;
+
+    private String note;
+
+    private BigDecimal notAllocateAmount;
+
+    private String matchedCustId;
+
+    public String getImportRunningId() {
+        return importRunningId;
+    }
+
+    public void setImportRunningId(String importRunningId) {
+        this.importRunningId = importRunningId == null ? null : importRunningId.trim();
+    }
+
+    public Date getImportRunningDate() {
+        return importRunningDate;
+    }
+
+    public void setImportRunningDate(Date importRunningDate) {
+        this.importRunningDate = importRunningDate;
+    }
+
+    public String getMoneyKind() {
+        return moneyKind;
+    }
+
+    public void setMoneyKind(String moneyKind) {
+        this.moneyKind = moneyKind == null ? null : moneyKind.trim();
+    }
+
+    public BigDecimal getImportAmount() {
+        return importAmount;
+    }
+
+    public void setImportAmount(BigDecimal importAmount) {
+        this.importAmount = importAmount;
+    }
+
+    public Date getDelegateTime() {
+        return delegateTime;
+    }
+
+    public void setDelegateTime(Date delegateTime) {
+        this.delegateTime = delegateTime;
+    }
+
+    public String getPaybackPersonName() {
+        return paybackPersonName;
+    }
+
+    public void setPaybackPersonName(String paybackPersonName) {
+        this.paybackPersonName = paybackPersonName == null ? null : paybackPersonName.trim();
+    }
+
+    public String getPaybackPersonAcount() {
+        return paybackPersonAcount;
+    }
+
+    public void setPaybackPersonAcount(String paybackPersonAcount) {
+        this.paybackPersonAcount = paybackPersonAcount == null ? null : paybackPersonAcount.trim();
+    }
+
+    public String getPaybackPersonOpenBankName() {
+        return paybackPersonOpenBankName;
+    }
+
+    public void setPaybackPersonOpenBankName(String paybackPersonOpenBankName) {
+        this.paybackPersonOpenBankName = paybackPersonOpenBankName == null ? null : paybackPersonOpenBankName.trim();
+    }
+
+    public String getPaybackClearBankId() {
+        return paybackClearBankId;
+    }
+
+    public void setPaybackClearBankId(String paybackClearBankId) {
+        this.paybackClearBankId = paybackClearBankId == null ? null : paybackClearBankId.trim();
+    }
+
+    public String getPaybackPersonOpenBankId() {
+        return paybackPersonOpenBankId;
+    }
+
+    public void setPaybackPersonOpenBankId(String paybackPersonOpenBankId) {
+        this.paybackPersonOpenBankId = paybackPersonOpenBankId == null ? null : paybackPersonOpenBankId.trim();
+    }
+
+    public String getPaybackBankId() {
+        return paybackBankId;
+    }
+
+    public void setPaybackBankId(String paybackBankId) {
+        this.paybackBankId = paybackBankId == null ? null : paybackBankId.trim();
+    }
+
+    public String getBusinessProperty() {
+        return businessProperty;
+    }
+
+    public void setBusinessProperty(String businessProperty) {
+        this.businessProperty = businessProperty == null ? null : businessProperty.trim();
+    }
+
+    public String getBusinessKind() {
+        return businessKind;
+    }
+
+    public void setBusinessKind(String businessKind) {
+        this.businessKind = businessKind == null ? null : businessKind.trim();
+    }
+
+    public String getAdditional() {
+        return additional;
+    }
+
+    public void setAdditional(String additional) {
+        this.additional = additional == null ? null : additional.trim();
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note == null ? null : note.trim();
+    }
+
+    public BigDecimal getNotAllocateAmount() {
+        return notAllocateAmount;
+    }
+
+    public void setNotAllocateAmount(BigDecimal notAllocateAmount) {
+        this.notAllocateAmount = notAllocateAmount;
+    }
+
+    public String getMatchedCustId() {
+        return matchedCustId;
+    }
+
+    public void setMatchedCustId(String matchedCustId) {
+        this.matchedCustId = matchedCustId == null ? null : matchedCustId.trim();
+    }
+}

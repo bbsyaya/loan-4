@@ -1,0 +1,543 @@
+package com.hrbb.loan.pos.dao.entity;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+public class TReceiptInfo {
+	
+	public static final String 用款执行状态_待发送指令 = "00";
+	public static final String 用款执行状态_指令发送成功 = "10";
+	public static final String 用款执行状态_指令发送失败 = "19";
+	public static final String 用款执行状态_放款支付成功 = "20";
+	public static final String 用款执行状态_放款支付失败 = "29";
+	
+    private String receiptId;
+
+    private String payApplyId;
+
+    private String contNo;
+
+    private String custId;
+    
+    private String posCustId;
+
+    private String custName;
+    
+
+    private String posCustName;
+
+    private BigDecimal payApplyAmt;
+
+    private String payApplyTerm;
+
+    private Date beginDate;
+
+    private Date endDate;
+    
+    private Date finishDate;
+
+    private BigDecimal loanInterest;
+
+    private String paybackWay;
+    
+    private String loanPaybackWay;
+
+	private String loanUsage;
+
+    private String payAccount;
+
+    private String accountOpenBank;
+
+    private String accountBranckBank;
+
+    private String accountSubBranchBank;
+
+    private String payChannel;
+
+    private BigDecimal loanTotalBalance;
+
+    private BigDecimal normalBalance;
+
+    private BigDecimal overdueBalance;
+
+    private BigDecimal innerOwnedInterest;
+
+    private BigDecimal outterOwnedInterest;
+
+    private String checkOrganization;
+
+    private String loanExecuteStatus;
+
+    private Date lnExctStsUpdtTm;
+    
+    private String clearStatus;
+    
+    private String loanAcNo;
+    
+    private String listId;
+    
+    private String cdtbranchid;
+    
+    /*增加罚息和宽限天数 by Lin,Zhaolin*/
+    private BigDecimal fineRate;
+    private int graceDays;
+    private int scheduleTimes;	/*计划还款期次*/
+    
+    /**
+     * 贷款状态
+     */
+    private String loanStatus;
+    /*add 实际放款日期和实际到期日 by Lin,Zhaolin*/
+    /**
+     * 实际放款日期
+     */
+    private Date actualIssueDate;
+    /**
+     * 实际到期日
+     */
+    private Date actualMaturity;
+    /**
+     * 转账支付序号
+     */
+    private String exeSeq;
+
+    //chenhualang add
+    private String beginDateStr;
+    
+    private String endDateStr;
+    
+    private String stdshno;
+    private String channelPosCustId;
+    private String paperId;
+    private BigDecimal amt;//佣金代收明细文件-转账金额
+    
+	public String getExeSeq() {
+		return exeSeq;
+	}
+
+	public void setExeSeq(String exeSeq) {
+		this.exeSeq = exeSeq;
+	}
+
+	public String getLoanStatus() {
+		return loanStatus;
+	}
+
+	public void setLoanStatus(String loanStatus) {
+		this.loanStatus = loanStatus;
+	}
+
+	public Date getActualIssueDate() {
+		return actualIssueDate;
+	}
+
+	public void setActualIssueDate(Date actualIssueDate) {
+		this.actualIssueDate = actualIssueDate;
+	}
+
+	public Date getActualMaturity() {
+		return actualMaturity;
+	}
+
+	public void setActualMaturity(Date actualMaturity) {
+		this.actualMaturity = actualMaturity;
+	}
+
+	public int getScheduleTimes() {
+		return scheduleTimes;
+	}
+
+	public void setScheduleTimes(int scheduleTimes) {
+		this.scheduleTimes = scheduleTimes;
+	}
+
+	public BigDecimal getFineRate() {
+		return fineRate;
+	}
+
+	public void setFineRate(BigDecimal fineRate) {
+		this.fineRate = fineRate;
+	}
+
+	public int getGraceDays() {
+		return graceDays;
+	}
+
+	public void setGraceDays(int graceDays) {
+		this.graceDays = graceDays;
+	}
+
+	/**
+	 * Getter method for property <tt>amt</tt>.
+	 * 
+	 * @return property value of amt
+	 */
+	public BigDecimal getAmt() {
+		return amt;
+	}
+
+	/**
+	 * Setter method for property <tt>amt</tt>.
+	 * 
+	 * @param amt value to be assigned to property amt
+	 */
+	public void setAmt(BigDecimal amt) {
+		this.amt = amt;
+	}
+
+	/**
+	 * Getter method for property <tt>paperId</tt>.
+	 * 
+	 * @return property value of paperId
+	 */
+	public String getPaperId() {
+		return paperId;
+	}
+
+	/**
+	 * Setter method for property <tt>paperId</tt>.
+	 * 
+	 * @param paperId value to be assigned to property paperId
+	 */
+	public void setPaperId(String paperId) {
+		this.paperId = paperId;
+	}
+
+	
+
+	/**
+	 * Getter method for property <tt>lnExctStsUpdtTm</tt>.
+	 * 
+	 * @return property value of lnExctStsUpdtTm
+	 */
+	public Date getLnExctStsUpdtTm() {
+		return lnExctStsUpdtTm;
+	}
+
+	/**
+	 * Setter method for property <tt>lnExctStsUpdtTm</tt>.
+	 * 
+	 * @param lnExctStsUpdtTm value to be assigned to property lnExctStsUpdtTm
+	 */
+	public void setLnExctStsUpdtTm(Date lnExctStsUpdtTm) {
+		this.lnExctStsUpdtTm = lnExctStsUpdtTm;
+	}
+
+	/**
+	 * Getter method for property <tt>finishDate</tt>.
+	 * 
+	 * @return property value of finishDate
+	 */
+	public Date getFinishDate() {
+		return finishDate;
+	}
+
+	/**
+	 * Setter method for property <tt>finishDate</tt>.
+	 * 
+	 * @param finishDate value to be assigned to property finishDate
+	 */
+	public void setFinishDate(Date finishDate) {
+		this.finishDate = finishDate;
+	}
+
+	/**
+	 * Getter method for property <tt>stdshno</tt>.
+	 * 
+	 * @return property value of stdshno
+	 */
+	public String getStdshno() {
+		return stdshno;
+	}
+
+	/**
+	 * Setter method for property <tt>stdshno</tt>.
+	 * 
+	 * @param stdshno value to be assigned to property stdshno
+	 */
+	public void setStdshno(String stdshno) {
+		this.stdshno = stdshno;
+	}
+
+	/**
+	 * Getter method for property <tt>channelPosCustId</tt>.
+	 * 
+	 * @return property value of channelPosCustId
+	 */
+	public String getChannelPosCustId() {
+		return channelPosCustId;
+	}
+
+	/**
+	 * Setter method for property <tt>channelPosCustId</tt>.
+	 * 
+	 * @param channelPosCustId value to be assigned to property channelPosCustId
+	 */
+	public void setChannelPosCustId(String channelPosCustId) {
+		this.channelPosCustId = channelPosCustId;
+	}
+
+	public String getReceiptId() {
+        return receiptId;
+    }
+
+    public void setReceiptId(String receiptId) {
+        this.receiptId = receiptId == null ? null : receiptId.trim();
+    }
+
+    public String getPayApplyId() {
+        return payApplyId;
+    }
+
+    public void setPayApplyId(String payApplyId) {
+        this.payApplyId = payApplyId == null ? null : payApplyId.trim();
+    }
+
+    public String getContNo() {
+        return contNo;
+    }
+
+    public void setContNo(String contNo) {
+        this.contNo = contNo == null ? null : contNo.trim();
+    }
+
+    public String getCustName() {
+        return custName;
+    }
+
+    public void setCustName(String custName) {
+        this.custName = custName == null ? null : custName.trim();
+    }
+
+    public String getPosCustName() {
+        return posCustName;
+    }
+
+    public void setPosCustName(String posCustName) {
+        this.posCustName = posCustName == null ? null : posCustName.trim();
+    }
+
+    public BigDecimal getPayApplyAmt() {
+        return payApplyAmt;
+    }
+
+    public void setPayApplyAmt(BigDecimal payApplyAmt) {
+        this.payApplyAmt = payApplyAmt;
+    }
+
+    public String getPayApplyTerm() {
+        return payApplyTerm;
+    }
+
+    public void setPayApplyTerm(String payApplyTerm) {
+        this.payApplyTerm = payApplyTerm == null ? null : payApplyTerm.trim();
+    }
+
+    public Date getBeginDate() {
+        return beginDate;
+    }
+
+    public void setBeginDate(Date beginDate) {
+        this.beginDate = beginDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public BigDecimal getLoanInterest() {
+        return loanInterest;
+    }
+
+    public void setLoanInterest(BigDecimal loanInterest) {
+        this.loanInterest = loanInterest;
+    }
+
+    public String getPaybackWay() {
+        return paybackWay;
+    }
+
+    public void setPaybackWay(String paybackWay) {
+        this.paybackWay = paybackWay == null ? null : paybackWay.trim();
+    }
+
+    public String getLoanPaybackWay() {
+		return loanPaybackWay;
+	}
+
+	public void setLoanPaybackWay(String loanPaybackWay) {
+		this.loanPaybackWay = loanPaybackWay;
+	}
+	
+    public String getLoanUsage() {
+        return loanUsage;
+    }
+
+    public void setLoanUsage(String loanUsage) {
+        this.loanUsage = loanUsage == null ? null : loanUsage.trim();
+    }
+
+    public String getPayAccount() {
+        return payAccount;
+    }
+
+    public void setPayAccount(String payAccount) {
+        this.payAccount = payAccount == null ? null : payAccount.trim();
+    }
+
+    public String getAccountOpenBank() {
+        return accountOpenBank;
+    }
+
+    public void setAccountOpenBank(String accountOpenBank) {
+        this.accountOpenBank = accountOpenBank == null ? null : accountOpenBank.trim();
+    }
+
+    public String getAccountBranckBank() {
+        return accountBranckBank;
+    }
+
+    public void setAccountBranckBank(String accountBranckBank) {
+        this.accountBranckBank = accountBranckBank == null ? null : accountBranckBank.trim();
+    }
+
+    public String getAccountSubBranchBank() {
+        return accountSubBranchBank;
+    }
+
+    public void setAccountSubBranchBank(String accountSubBranchBank) {
+        this.accountSubBranchBank = accountSubBranchBank == null ? null : accountSubBranchBank.trim();
+    }
+
+    public String getPayChannel() {
+        return payChannel;
+    }
+
+    public void setPayChannel(String payChannel) {
+        this.payChannel = payChannel == null ? null : payChannel.trim();
+    }
+
+    public BigDecimal getLoanTotalBalance() {
+        return loanTotalBalance;
+    }
+
+    public void setLoanTotalBalance(BigDecimal loanTotalBalance) {
+        this.loanTotalBalance = loanTotalBalance;
+    }
+
+    public BigDecimal getNormalBalance() {
+        return normalBalance;
+    }
+
+    public void setNormalBalance(BigDecimal normalBalance) {
+        this.normalBalance = normalBalance;
+    }
+
+    public BigDecimal getOverdueBalance() {
+        return overdueBalance;
+    }
+
+    public void setOverdueBalance(BigDecimal overdueBalance) {
+        this.overdueBalance = overdueBalance;
+    }
+
+    public BigDecimal getInnerOwnedInterest() {
+        return innerOwnedInterest;
+    }
+
+    public void setInnerOwnedInterest(BigDecimal innerOwnedInterest) {
+        this.innerOwnedInterest = innerOwnedInterest;
+    }
+
+    public BigDecimal getOutterOwnedInterest() {
+        return outterOwnedInterest;
+    }
+
+    public void setOutterOwnedInterest(BigDecimal outterOwnedInterest) {
+        this.outterOwnedInterest = outterOwnedInterest;
+    }
+
+    public String getCheckOrganization() {
+        return checkOrganization;
+    }
+
+    public void setCheckOrganization(String checkOrganization) {
+        this.checkOrganization = checkOrganization == null ? null : checkOrganization.trim();
+    }
+
+    public String getLoanExecuteStatus() {
+        return loanExecuteStatus;
+    }
+
+    public void setLoanExecuteStatus(String loanExecuteStatus) {
+        this.loanExecuteStatus = loanExecuteStatus == null ? null : loanExecuteStatus.trim();
+    }
+
+    public String getClearStatus() {
+        return clearStatus;
+    }
+
+    public void setClearStatus(String clearStatus) {
+        this.clearStatus = clearStatus == null ? null : clearStatus.trim();
+    }
+
+	public String getBeginDateStr() {
+		return beginDateStr;
+	}
+
+	public void setBeginDateStr(String beginDateStr) {
+		this.beginDateStr = beginDateStr;
+	}
+
+	public String getEndDateStr() {
+		return endDateStr;
+	}
+
+	public void setEndDateStr(String endDateStr) {
+		this.endDateStr = endDateStr;
+	}
+
+	public String getLoanAcNo() {
+		return loanAcNo;
+	}
+
+	public void setLoanAcNo(String loanAcNo) {
+		this.loanAcNo = loanAcNo;
+	}
+
+	public String getCustId() {
+		return custId;
+	}
+
+	public void setCustId(String custId) {
+		this.custId = custId;
+	}
+
+	public String getPosCustId() {
+		return posCustId;
+	}
+
+	public void setPosCustId(String posCustId) {
+		this.posCustId = posCustId;
+	}
+    
+    public String getListId() {
+        return listId;
+    }
+
+    public void setListId(String listId) {
+        this.listId = listId;
+    }
+    public String getCdtbranchid() {
+        return cdtbranchid;
+    }
+
+    public void setCdtbranchid(String cdtbranchid) {
+        this.cdtbranchid = cdtbranchid;
+    }
+
+}

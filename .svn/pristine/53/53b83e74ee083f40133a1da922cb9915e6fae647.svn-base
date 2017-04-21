@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TUserApprInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TUserApprInfo" >
+    <id column="userName" property="userName" jdbcType="VARCHAR" />
+    <result column="quota" property="quota" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    userName, quota
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_user_appr_info
+    where userName = #{userName,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_user_appr_info
+    where userName = #{userName,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TUserApprInfo" >
+    insert into t_user_appr_info (userName, quota)
+    values (#{userName,jdbcType=VARCHAR}, #{quota,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TUserApprInfo" >
+    insert into t_user_appr_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userName != null" >
+        userName,
+      </if>
+      <if test="quota != null" >
+        quota,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userName != null" >
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="quota != null" >
+        #{quota,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TUserApprInfo" >
+    update t_user_appr_info
+    <set >
+      <if test="quota != null" >
+        quota = #{quota,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where userName = #{userName,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TUserApprInfo" >
+    update t_user_appr_info
+    set quota = #{quota,jdbcType=DECIMAL}
+    where userName = #{userName,jdbcType=VARCHAR}
+  </update>
+</mapper>

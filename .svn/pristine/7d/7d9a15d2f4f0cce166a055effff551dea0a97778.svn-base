@@ -1,0 +1,144 @@
+package com.hrbb.loan.pos.dao.impl;
+
+import java.util.List;
+
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+import org.springframework.stereotype.Repository;
+
+import com.hrbb.loan.pos.dao.TCreditApplyAprvInfoDao;
+import com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo;
+import com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfoKey;
+
+/**
+ * <h1></h1>
+ * 
+ * @author marco
+ * @version Id: TCreditApplyAprvInfoDaoImpl.java, v 1.0 2015-2-15 上午10:35:28
+ *          Johnson Song Exp
+ */
+@Repository("tCreditApplyAprvInfoDao")
+public class TCreditApplyAprvInfoDaoImpl extends SqlSessionDaoSupport implements
+		TCreditApplyAprvInfoDao {
+
+	@Override
+	public int deleteByPrimaryKey(TCreditApplyAprvInfoKey key) {
+		return getSqlSession().delete(
+				"TCreditApplyAprvInfoMapper.deleteByPrimaryKey", key);
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.dao.TCreditApplyAprvInfoDao#deleteSelective(com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo)
+	 */
+	@Override
+	public int deleteSelective(TCreditApplyAprvInfo record) {
+		return getSqlSession().delete(
+				"TCreditApplyAprvInfoMapper.deleteSelective", record);
+	}
+
+	@Override
+	public int insert(TCreditApplyAprvInfo record) {
+		return getSqlSession().insert("TCreditApplyAprvInfoMapper.insert",
+				record);
+	}
+
+	@Override
+	public int insertSelective(TCreditApplyAprvInfo record) {
+		int appNum = selectMaxAppNumByLoanId(record.getLoanId());
+		record.setAppNum(appNum);
+		return getSqlSession().insert(
+				"TCreditApplyAprvInfoMapper.insertSelective", record);
+	}
+
+	@Override
+	public TCreditApplyAprvInfo selectByPrimaryKey(TCreditApplyAprvInfoKey key) {
+		return getSqlSession().selectOne(
+				"TCreditApplyAprvInfoMapper.selectByPrimaryKey", key);
+	}
+
+	@Override
+	public List<TCreditApplyAprvInfo> selectSelective(
+			TCreditApplyAprvInfo record) {
+		return getSqlSession().selectList(
+				"TCreditApplyAprvInfoMapper.selectSelective", record);
+	}
+
+	@Override
+	public int updateByPrimaryKeySelective(TCreditApplyAprvInfo record) {
+		return getSqlSession().update(
+				"TCreditApplyAprvInfoMapper.updateByPrimaryKeySelective",
+				record);
+	}
+
+	@Override
+	public int updateByPrimaryKey(TCreditApplyAprvInfo record) {
+		return getSqlSession().update(
+				"TCreditApplyAprvInfoMapper.updateByPrimaryKey", record);
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.dao.TCreditApplyAprvInfoDao#selectNotSubbmit(com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfoKey)
+	 */
+	@Override
+	public TCreditApplyAprvInfo selectNotSubmit(TCreditApplyAprvInfoKey key) {
+		return getSqlSession().selectOne(
+				"TCreditApplyAprvInfoMapper.selectNotSubbmit", key);
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.dao.TCreditApplyAprvInfoDao#selectLastOne(com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfoKey)
+	 */
+	@Override
+	public TCreditApplyAprvInfo selectLastOne(TCreditApplyAprvInfoKey key) {
+		TCreditApplyAprvInfo reocord = getSqlSession().selectOne(
+				"TCreditApplyAprvInfoMapper.selectLastOne", key);
+		return reocord == null ? new TCreditApplyAprvInfo() : reocord;
+	}
+
+	/**
+	 * <h2>获取相应业务编号的最大复审编号</h2>
+	 * 
+	 * @param loanId
+	 * @return reviewId
+	 */
+	private int selectMaxAppNumByLoanId(String loanId) {
+		int reviewId = getSqlSession().selectOne(
+				"TCreditApplyAprvInfoMapper.selectMaxAppNumByLoanId", loanId);
+		return reviewId + 1;
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.dao.TCreditApplyAprvInfoDao#selectBackToInfo(java.lang.String)
+	 */
+	@Override
+	public List<TCreditApplyAprvInfo> selectBackToInfo(
+			TCreditApplyAprvInfo record) {
+		return getSqlSession().selectList(
+				"TCreditApplyAprvInfoMapper.selectBackToInfo", record);
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.dao.TCreditApplyAprvInfoDao#selectBackToInfo(java.lang.String)
+	 */
+	@Override
+	public List<TCreditApplyAprvInfo> selectInforAuditList(
+			TCreditApplyAprvInfo record) {
+		return getSqlSession().selectList(
+				"TCreditApplyAprvInfoMapper.selectInforAuditList", record);
+	}
+
+	@Override
+	public TCreditApplyAprvInfo selectExecutor(TCreditApplyAprvInfoKey key) {
+		TCreditApplyAprvInfo reocord = getSqlSession().selectOne(
+				"TCreditApplyAprvInfoMapper.selectExecutor", key);
+		return reocord == null ? new TCreditApplyAprvInfo() : reocord;
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.dao.TCreditApplyAprvInfoDao#selectLastSubbmitted(com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfoKey)
+	 */
+	@Override
+	public TCreditApplyAprvInfo selectLastSubbmitted(TCreditApplyAprvInfoKey key) {
+		return getSqlSession().selectOne(
+				"TCreditApplyAprvInfoMapper.selectLastSubbmitted", key);
+	}
+}

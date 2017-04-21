@@ -1,0 +1,130 @@
+package com.hrbb.loan.pos.dao.entity;
+
+import java.io.Serializable;
+
+public class TCreditReportCreditInfo implements Serializable{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -1660195996160154416L;
+
+	private String reportNo;
+
+    private Integer houseLoans;
+
+    private Integer otherLoans;
+
+    private String firstIssueMonth;
+
+    private Integer creditCards;
+
+    private String firstIssueMonth2;
+
+    private Integer semiCreidtCards;
+
+    private String firstIssueMonth3;
+
+    private Integer announceCount;
+
+    private Integer dissentCount;
+
+    private String score;
+
+    private String month;
+
+    public String getReportNo() {
+        return reportNo;
+    }
+
+    public void setReportNo(String reportNo) {
+        this.reportNo = reportNo == null ? null : reportNo.trim();
+    }
+
+    public Integer getHouseLoans() {
+        return houseLoans;
+    }
+
+    public void setHouseLoans(Integer houseLoans) {
+        this.houseLoans = houseLoans;
+    }
+
+    public Integer getOtherLoans() {
+        return otherLoans;
+    }
+
+    public void setOtherLoans(Integer otherLoans) {
+        this.otherLoans = otherLoans;
+    }
+
+    public String getFirstIssueMonth() {
+        return firstIssueMonth;
+    }
+
+    public void setFirstIssueMonth(String firstIssueMonth) {
+        this.firstIssueMonth = firstIssueMonth == null ? null : firstIssueMonth.trim();
+    }
+
+    public Integer getCreditCards() {
+        return creditCards;
+    }
+
+    public void setCreditCards(Integer creditCards) {
+        this.creditCards = creditCards;
+    }
+
+    public String getFirstIssueMonth2() {
+        return firstIssueMonth2;
+    }
+
+    public void setFirstIssueMonth2(String firstIssueMonth2) {
+        this.firstIssueMonth2 = firstIssueMonth2 == null ? null : firstIssueMonth2.trim();
+    }
+
+    public Integer getSemiCreidtCards() {
+        return semiCreidtCards;
+    }
+
+    public void setSemiCreidtCards(Integer semiCreidtCards) {
+        this.semiCreidtCards = semiCreidtCards;
+    }
+
+    public String getFirstIssueMonth3() {
+        return firstIssueMonth3;
+    }
+
+    public void setFirstIssueMonth3(String firstIssueMonth3) {
+        this.firstIssueMonth3 = firstIssueMonth3 == null ? null : firstIssueMonth3.trim();
+    }
+
+    public Integer getAnnounceCount() {
+        return announceCount;
+    }
+
+    public void setAnnounceCount(Integer announceCount) {
+        this.announceCount = announceCount;
+    }
+
+    public Integer getDissentCount() {
+        return dissentCount;
+    }
+
+    public void setDissentCount(Integer dissentCount) {
+        this.dissentCount = dissentCount;
+    }
+
+    public String getScore() {
+        return score;
+    }
+
+    public void setScore(String score) {
+        this.score = score == null ? null : score.trim();
+    }
+
+    public String getMonth() {
+        return month;
+    }
+
+    public void setMonth(String month) {
+        this.month = month == null ? null : month.trim();
+    }
+}

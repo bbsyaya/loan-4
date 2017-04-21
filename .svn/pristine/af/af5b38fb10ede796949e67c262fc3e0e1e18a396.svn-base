@@ -1,0 +1,349 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.service.bean;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+
+/**
+ * 
+ * @author XLY
+ * @version $Id: PosSerialHandleMidInfoBean.java, v 0.1 2015-3-12 下午5:23:12 XLY
+ *          Exp $
+ */
+public class PosSerialHandleMidInfoBean implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4689896134188210282L;
+
+	private BigDecimal tradeNum = BigDecimal.ZERO;
+
+	private BigDecimal tradeAmt = BigDecimal.ZERO;
+	// 当月的交易流水金额汇总
+	private BigDecimal tradeAmt0 = BigDecimal.ZERO;
+	// 前1个月内的交易流水金额汇总
+	private BigDecimal tradeAmt1 = BigDecimal.ZERO;
+	// 前2个月内的交易流水金额汇总
+	private BigDecimal tradeAmt2 = BigDecimal.ZERO;
+	private BigDecimal tradeAmt3 = BigDecimal.ZERO;
+	private BigDecimal tradeAmt4 = BigDecimal.ZERO;
+	private BigDecimal tradeAmt5 = BigDecimal.ZERO;
+
+	private BigDecimal bankcardNum = BigDecimal.ZERO;
+
+	private BigDecimal creditCardNum = BigDecimal.ZERO;
+
+	private BigDecimal countMonth = BigDecimal.ZERO;
+
+	private Integer latestMonth = null;
+
+	private BigDecimal regTimeNum = BigDecimal.ZERO;
+
+	private BigDecimal regTimeAmt = BigDecimal.ZERO;
+
+	private BigDecimal tradeAmtsumMax = BigDecimal.ZERO;
+
+	private BigDecimal tradeAmtsumMin = BigDecimal.ZERO;
+
+	/**
+	 * Getter method for property <tt>tradeAmt0</tt>.
+	 * 
+	 * @return property value of tradeAmt0
+	 */
+	public BigDecimal getTradeAmt0() {
+		return tradeAmt0;
+	}
+
+	/**
+	 * Setter method for property <tt>tradeAmt0</tt>.
+	 * 
+	 * @param tradeAmt0 value to be assigned to property tradeAmt0
+	 */
+	public void setTradeAmt0(BigDecimal tradeAmt0) {
+		this.tradeAmt0 = tradeAmt0;
+	}
+
+	/**
+	 * Getter method for property <tt>tradeAmt1</tt>.
+	 * 
+	 * @return property value of tradeAmt1
+	 */
+	public BigDecimal getTradeAmt1() {
+		return tradeAmt1;
+	}
+
+	/**
+	 * Setter method for property <tt>tradeAmt1</tt>.
+	 * 
+	 * @param tradeAmt1 value to be assigned to property tradeAmt1
+	 */
+	public void setTradeAmt1(BigDecimal tradeAmt1) {
+		this.tradeAmt1 = tradeAmt1;
+	}
+
+	/**
+	 * Getter method for property <tt>tradeAmt2</tt>.
+	 * 
+	 * @return property value of tradeAmt2
+	 */
+	public BigDecimal getTradeAmt2() {
+		return tradeAmt2;
+	}
+
+	/**
+	 * Setter method for property <tt>tradeAmt2</tt>.
+	 * 
+	 * @param tradeAmt2 value to be assigned to property tradeAmt2
+	 */
+	public void setTradeAmt2(BigDecimal tradeAmt2) {
+		this.tradeAmt2 = tradeAmt2;
+	}
+
+	/**
+	 * Getter method for property <tt>tradeAmt3</tt>.
+	 * 
+	 * @return property value of tradeAmt3
+	 */
+	public BigDecimal getTradeAmt3() {
+		return tradeAmt3;
+	}
+
+	/**
+	 * Setter method for property <tt>tradeAmt3</tt>.
+	 * 
+	 * @param tradeAmt3 value to be assigned to property tradeAmt3
+	 */
+	public void setTradeAmt3(BigDecimal tradeAmt3) {
+		this.tradeAmt3 = tradeAmt3;
+	}
+
+	/**
+	 * Getter method for property <tt>tradeAmt4</tt>.
+	 * 
+	 * @return property value of tradeAmt4
+	 */
+	public BigDecimal getTradeAmt4() {
+		return tradeAmt4;
+	}
+
+	/**
+	 * Setter method for property <tt>tradeAmt4</tt>.
+	 * 
+	 * @param tradeAmt4 value to be assigned to property tradeAmt4
+	 */
+	public void setTradeAmt4(BigDecimal tradeAmt4) {
+		this.tradeAmt4 = tradeAmt4;
+	}
+
+	/**
+	 * Getter method for property <tt>tradeAmt5</tt>.
+	 * 
+	 * @return property value of tradeAmt5
+	 */
+	public BigDecimal getTradeAmt5() {
+		return tradeAmt5;
+	}
+
+	/**
+	 * Setter method for property <tt>tradeAmt5</tt>.
+	 * 
+	 * @param tradeAmt5 value to be assigned to property tradeAmt5
+	 */
+	public void setTradeAmt5(BigDecimal tradeAmt5) {
+		this.tradeAmt5 = tradeAmt5;
+	}
+
+	/**
+	 * Getter method for property <tt>latestMonth</tt>.
+	 * 
+	 * @return property value of latestMonth
+	 */
+	public Integer getLatestMonth() {
+		return latestMonth;
+	}
+
+	/**
+	 * Setter method for property <tt>latestMonth</tt>.
+	 * 
+	 * @param latestMonth
+	 *            value to be assigned to property latestMonth
+	 */
+	public void setLatestMonth(Integer latestMonth) {
+		this.latestMonth = latestMonth;
+	}
+
+	public BigDecimal getTradeAmtsumMax() {
+		return tradeAmtsumMax;
+	}
+
+	public void setTradeAmtsumMax(BigDecimal tradeAmtsumMax) {
+		this.tradeAmtsumMax = tradeAmtsumMax;
+	}
+
+	public BigDecimal getTradeAmtsumMin() {
+		return tradeAmtsumMin;
+	}
+
+	public void setTradeAmtsumMin(BigDecimal tradeAmtsumMin) {
+		this.tradeAmtsumMin = tradeAmtsumMin;
+	}
+
+	/**
+	 * Getter method for property <tt>tradeNum</tt>.
+	 * 
+	 * @return property value of tradeNum
+	 */
+	public BigDecimal getTradeNum() {
+		return tradeNum;
+	}
+
+	/**
+	 * Setter method for property <tt>tradeNum</tt>.
+	 * 
+	 * @param tradeNum
+	 *            value to be assigned to property tradeNum
+	 */
+	public void setTradeNum(BigDecimal tradeNum) {
+		this.tradeNum = tradeNum;
+	}
+
+	/**
+	 * Getter method for property <tt>tradeAmt</tt>.
+	 * 
+	 * @return property value of tradeAmt
+	 */
+	public BigDecimal getTradeAmt() {
+		return tradeAmt;
+	}
+
+	/**
+	 * Setter method for property <tt>tradeAmt</tt>.
+	 * 
+	 * @param tradeAmt
+	 *            value to be assigned to property tradeAmt
+	 */
+	public void setTradeAmt(BigDecimal tradeAmt) {
+		this.tradeAmt = tradeAmt;
+	}
+
+	/**
+	 * Getter method for property <tt>bankcardNum</tt>.
+	 * 
+	 * @return property value of bankcardNum
+	 */
+	public BigDecimal getBankcardNum() {
+		return bankcardNum;
+	}
+
+	/**
+	 * Setter method for property <tt>bankcardNum</tt>.
+	 * 
+	 * @param bankcardNum
+	 *            value to be assigned to property bankcardNum
+	 */
+	public void setBankcardNum(BigDecimal bankcardNum) {
+		this.bankcardNum = bankcardNum;
+	}
+
+	/**
+	 * Getter method for property <tt>creditCardNum</tt>.
+	 * 
+	 * @return property value of creditCardNum
+	 */
+	public BigDecimal getCreditCardNum() {
+		return creditCardNum;
+	}
+
+	/**
+	 * Setter method for property <tt>creditCardNum</tt>.
+	 * 
+	 * @param creditCardNum
+	 *            value to be assigned to property creditCardNum
+	 */
+	public void setCreditCardNum(BigDecimal creditCardNum) {
+		this.creditCardNum = creditCardNum;
+	}
+
+	/**
+	 * Getter method for property <tt>countMonth</tt>.
+	 * 
+	 * @return property value of countMonth
+	 */
+	public BigDecimal getCountMonth() {
+		return countMonth;
+	}
+
+	/**
+	 * Setter method for property <tt>countMonth</tt>.
+	 * 
+	 * @param countMonth
+	 *            value to be assigned to property countMonth
+	 */
+	public void setCountMonth(BigDecimal countMonth) {
+		this.countMonth = countMonth;
+	}
+
+	/**
+	 * Getter method for property <tt>regTimeNum</tt>.
+	 * 
+	 * @return property value of regTimeNum
+	 */
+	public BigDecimal getRegTimeNum() {
+		return regTimeNum;
+	}
+
+	/**
+	 * Setter method for property <tt>regTimeNum</tt>.
+	 * 
+	 * @param regTimeNum
+	 *            value to be assigned to property regTimeNum
+	 */
+	public void setRegTimeNum(BigDecimal regTimeNum) {
+		this.regTimeNum = regTimeNum;
+	}
+
+	/**
+	 * Getter method for property <tt>regTimeAmt</tt>.
+	 * 
+	 * @return property value of regTimeAmt
+	 */
+	public BigDecimal getRegTimeAmt() {
+		return regTimeAmt;
+	}
+
+	/**
+	 * Setter method for property <tt>regTimeAmt</tt>.
+	 * 
+	 * @param regTimeAmt
+	 *            value to be assigned to property regTimeAmt
+	 */
+	public void setRegTimeAmt(BigDecimal regTimeAmt) {
+		this.regTimeAmt = regTimeAmt;
+	}
+
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "PosSerialHandleMidInfoBean [tradeNum=" + tradeNum
+				+ ", tradeAmt=" + tradeAmt + ", bankcardNum=" + bankcardNum
+				+ ", creditCardNum=" + creditCardNum + ", countMonth="
+				+ countMonth + ", regTimeNum=" + regTimeNum + ", regTimeAmt="
+				+ regTimeAmt + ", tradeAmtsumMax=" + tradeAmtsumMax
+				+ ", tradeAmtsumMin=" + tradeAmtsumMin 
+				+ ", tradeAmt0=" + tradeAmt0
+				+ ", tradeAmt1=" + tradeAmt1
+				+ ", tradeAmt2=" + tradeAmt2
+				+ ", tradeAmt3=" + tradeAmt3
+				+ ", tradeAmt4=" + tradeAmt4
+				+ ", tradeAmt5=" + tradeAmt5
+				+ "]";
+	}
+
+}

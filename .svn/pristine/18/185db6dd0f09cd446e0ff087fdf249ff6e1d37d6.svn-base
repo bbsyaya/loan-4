@@ -1,0 +1,63 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.util;
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xhtmlrenderer.pdf.ITextFontResolver;
+import org.xhtmlrenderer.pdf.ITextRenderer;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.BaseFont;
+
+/**
+ * @author yida
+ * @date 2015年10月28日 下午4:35:05
+ */
+public class PDFGenerator {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(PDFGenerator.class);
+    
+    public static void generate(String template){
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.setDocumentFromString(template);
+        ITextFontResolver fontResolver = renderer.getFontResolver();
+        String system = System.getProperty("os.name").toLowerCase();
+        if (system.startsWith("win"))
+            try {
+                fontResolver.addFont("C:/Windows/Fonts/ARIALUNI.TTF",     
+                        BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+            } catch (DocumentException | IOException e1) {
+                LOGGER.error(ExceptionUtils.getFullStackTrace(e1));
+            }
+        else
+            try {
+                fontResolver.addFont("/usr/share/fonts/TTF/ARIALUNI.TTF",     
+                        BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+            } catch (DocumentException | IOException e1) {
+                LOGGER.error(ExceptionUtils.getFullStackTrace(e1));
+            }     
+        renderer.layout();
+        OutputStream os = null;
+        try {
+            os = new FileOutputStream("C:\\Work\\sample.pdf");
+            renderer.createPDF(os);
+        } catch (FileNotFoundException | DocumentException e) {
+            LOGGER.error(ExceptionUtils.getFullStackTrace(e));
+        }finally{
+            try {
+                os.close();
+            } catch (IOException e) {
+                LOGGER.error(ExceptionUtils.getFullStackTrace(e));
+            }
+        }
+    }
+
+}

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TAICLiguidationInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TAICLiguidationInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="posCustId" property="posCustId" jdbcType="VARCHAR" />
+    <result column="orderNo" property="orderNo" jdbcType="VARCHAR" />
+    <result column="ligEntity" property="ligEntity" jdbcType="VARCHAR" />
+    <result column="ligPrincipal" property="ligPrincipal" jdbcType="VARCHAR" />
+    <result column="liqMen" property="liqMen" jdbcType="VARCHAR" />
+    <result column="ligSt" property="ligSt" jdbcType="VARCHAR" />
+    <result column="ligEndDate" property="ligEndDate" jdbcType="VARCHAR" />
+    <result column="debtTranee" property="debtTranee" jdbcType="VARCHAR" />
+    <result column="claimTranee" property="claimTranee" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, posCustId, orderNo, ligEntity, ligPrincipal, liqMen, ligSt, ligEndDate, debtTranee, 
+    claimTranee
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_liquidation_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectSelective" resultType="Map" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_liquidation_info
+    where 1=1
+    <if test="orderNo != null">
+    	AND orderNo = #{orderNo}
+    </if>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_aic_liquidation_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TAICLiguidationInfo" >
+    insert into t_aic_liquidation_info (id, posCustId, orderNo, 
+      ligEntity, ligPrincipal, liqMen, 
+      ligSt, ligEndDate, debtTranee, 
+      claimTranee)
+    values (#{id,jdbcType=INTEGER}, #{posCustId,jdbcType=VARCHAR}, #{orderNo,jdbcType=VARCHAR}, 
+      #{ligEntity,jdbcType=VARCHAR}, #{ligPrincipal,jdbcType=VARCHAR}, #{liqMen,jdbcType=VARCHAR}, 
+      #{ligSt,jdbcType=VARCHAR}, #{ligEndDate,jdbcType=VARCHAR}, #{debtTranee,jdbcType=VARCHAR}, 
+      #{claimTranee,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICLiguidationInfo" >
+    insert into t_aic_liquidation_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="orderNo != null" >
+        orderNo,
+      </if>
+      <if test="ligEntity != null" >
+        ligEntity,
+      </if>
+      <if test="ligPrincipal != null" >
+        ligPrincipal,
+      </if>
+      <if test="liqMen != null" >
+        liqMen,
+      </if>
+      <if test="ligSt != null" >
+        ligSt,
+      </if>
+      <if test="ligEndDate != null" >
+        ligEndDate,
+      </if>
+      <if test="debtTranee != null" >
+        debtTranee,
+      </if>
+      <if test="claimTranee != null" >
+        claimTranee,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="ligEntity != null" >
+        #{ligEntity,jdbcType=VARCHAR},
+      </if>
+      <if test="ligPrincipal != null" >
+        #{ligPrincipal,jdbcType=VARCHAR},
+      </if>
+      <if test="liqMen != null" >
+        #{liqMen,jdbcType=VARCHAR},
+      </if>
+      <if test="ligSt != null" >
+        #{ligSt,jdbcType=VARCHAR},
+      </if>
+      <if test="ligEndDate != null" >
+        #{ligEndDate,jdbcType=VARCHAR},
+      </if>
+      <if test="debtTranee != null" >
+        #{debtTranee,jdbcType=VARCHAR},
+      </if>
+      <if test="claimTranee != null" >
+        #{claimTranee,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICLiguidationInfo" >
+    update t_aic_liquidation_info
+    <set >
+      <if test="posCustId != null" >
+        posCustId = #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        orderNo = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="ligEntity != null" >
+        ligEntity = #{ligEntity,jdbcType=VARCHAR},
+      </if>
+      <if test="ligPrincipal != null" >
+        ligPrincipal = #{ligPrincipal,jdbcType=VARCHAR},
+      </if>
+      <if test="liqMen != null" >
+        liqMen = #{liqMen,jdbcType=VARCHAR},
+      </if>
+      <if test="ligSt != null" >
+        ligSt = #{ligSt,jdbcType=VARCHAR},
+      </if>
+      <if test="ligEndDate != null" >
+        ligEndDate = #{ligEndDate,jdbcType=VARCHAR},
+      </if>
+      <if test="debtTranee != null" >
+        debtTranee = #{debtTranee,jdbcType=VARCHAR},
+      </if>
+      <if test="claimTranee != null" >
+        claimTranee = #{claimTranee,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TAICLiguidationInfo" >
+    update t_aic_liquidation_info
+    set posCustId = #{posCustId,jdbcType=VARCHAR},
+      orderNo = #{orderNo,jdbcType=VARCHAR},
+      ligEntity = #{ligEntity,jdbcType=VARCHAR},
+      ligPrincipal = #{ligPrincipal,jdbcType=VARCHAR},
+      liqMen = #{liqMen,jdbcType=VARCHAR},
+      ligSt = #{ligSt,jdbcType=VARCHAR},
+      ligEndDate = #{ligEndDate,jdbcType=VARCHAR},
+      debtTranee = #{debtTranee,jdbcType=VARCHAR},
+      claimTranee = #{claimTranee,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

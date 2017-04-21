@@ -1,0 +1,37 @@
+package com.hrbb.loan.timer;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.hrbb.loan.pos.biz.backstage.inter.SynFileBiz;
+import com.hrbb.loan.pos.biz.constants.SynFileConstants;
+import com.hrbb.sh.framework.HServiceException;
+
+/**
+ * 
+ * @author cjq
+ * @version $Id: POSSynFileTimer.java, v 0.1 2015年5月27日 下午4:45:50 cjq Exp $
+ */
+@Service("POSSynFileTimer")
+public class POSSynFileTimer {
+    
+    @Autowired
+    @Qualifier("synFileBiz")
+    private SynFileBiz biz;
+    /**
+     * 定时查询放款结果
+     * 
+     */
+    @Scheduled(cron="0 19 * * * ?")
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class })
+    public void run() throws HServiceException {
+        biz.makeSynFile(SynFileConstants.NO_HB16);
+        biz.makeSynFile(SynFileConstants.NO_HB17);
+        biz.makeSynFile(SynFileConstants.NO_HB18);
+        biz.makeSynFile(SynFileConstants.NO_HB19);
+    }
+}

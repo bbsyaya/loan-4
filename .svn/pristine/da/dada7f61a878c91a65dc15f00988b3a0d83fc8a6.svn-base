@@ -1,0 +1,296 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.controller;
+
+import java.io.PrintWriter;
+import java.util.Date;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.biz.backstage.inter.CreditApplyAprvInfoBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.CreditApplyForReviewBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.ILoanPosCreditApplyBackStageBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosContractManagementBiz;
+import com.hrbb.loan.pos.dao.TMessageDao;
+import com.hrbb.loan.pos.dao.entity.TContractManagement;
+import com.hrbb.loan.pos.dao.entity.TCreditApply;
+import com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo;
+import com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfoKey;
+import com.hrbb.loan.pos.dao.entity.TCustomer;
+import com.hrbb.loan.pos.dao.entity.TMessage;
+import com.hrbb.loan.pos.service.LoanPosCustomerService;
+import com.hrbb.loan.pos.service.bean.ImageFileLostMessage;
+import com.hrbb.loan.spiconstants.CreditApplyHServiceConstants;
+import com.hrbb.sh.framework.domain.CreditInvestigateRequest;
+
+/**
+ * 补件资料下载成功后，创建补件发起人的工作
+ * 
+ * @author marco
+ * @version $Id: CreditApplyUpdateController.java, v 0.1 2015-3-31 下午4:29:27
+ *          marco Exp $
+ */
+@Controller
+@RequestMapping("/creditApplyUpdate")
+public class CreditApplyUpdateController {
+
+	private final Logger logger = LoggerFactory
+			.getLogger(CreditApplyUpdateController.class);
+
+	@Autowired
+	@Qualifier("creditApplyAprvInfoBiz")
+	private CreditApplyAprvInfoBiz biz;
+	@Autowired
+	@Qualifier("creditApplyForReviewBiz")
+	private CreditApplyForReviewBiz caBiz;
+	
+	
+	@Autowired
+	private TMessageDao tMessage;
+	
+	@Autowired
+	private LoanPosContractManagementBiz contBiz;
+	
+	@Autowired
+	private ILoanPosCreditApplyBackStageBiz loanBiz;
+	
+	@Autowired
+	private LoanPosCustomerService custService;
+
+	/**
+	 * <h2>补件资料下载成功后，创建补件发起人的工作</h2>
+	 * 
+	 * @param reviewid
+	 * @return modelAndView
+	 */
+	@RequestMapping("/updateBackToReview")
+	public ModelAndView updateBackToReview(
+			@RequestParam(value = "LocalSubFolderNameDef", required = false) String loanid,
+			@RequestParam(value = "RespCode", required = false) String respCode,
+			HttpServletRequest request, PrintWriter out) {
+
+		logger.debug("CreditApplyUpdateController.updateBackToReview begin ");
+		logger.debug("loanid=" + loanid);
+		logger.debug("respCode=" + respCode);
+
+		// 处理成功
+		if (CreditApplyHServiceConstants.ftp_resp_code_000.equals(respCode)) {
+			// 申请审批表信息
+			// TCreditApplyAprvInfo record = new TCreditApplyAprvInfo();
+			TCreditApply record = new TCreditApply();
+			record.setLoanId(loanid);
+
+			// 查询上次提交时的申请状态
+			TCreditApplyAprvInfoKey caai = new TCreditApplyAprvInfoKey();
+			caai.setLoanId(loanid);
+			TCreditApplyAprvInfo caaiLast = biz.selectLastSubbmitted(caai);
+			// record.setApplyStatus(ReviewNoteConstants.APPLYSTATUS_CODE_20);
+			record.setApplyStatus(caaiLast.getApprState());
+			// record.setLastOperId(ReviewNoteConstants.ROLE_SYSTEM_ID);
+			// record.setLastOperTime(new Date());
+			int flag = caBiz.updateApplyStatus(record);
+			// 更新申请表，申请审批记录表
+			// int flag = biz.updateBackToReview(record);
+			logger.debug("flag=" + flag);
+			// 保存成功
+			if (flag == 1) {
+				out.print("000");
+				// 保存失败
+			} else {
+				out.print("001");
+			}
+			// 处理失败
+		} else {
+			// ftp下载文件处理失败，重新发送消息
+			int flag = biz.sendMsg(loanid);
+			logger.debug("flag=" + flag);
+			// 保存成功
+			if (flag == 1) {
+				out.print("000");
+				// 保存失败
+			} else {
+				out.print("001");
+			}
+		}
+		logger.debug("CreditApplyUpdateController.updateBackToReview end ");
+		return null;
+	}
+
+	/**
+	 * <h2>补件资料下载成功后，创建补件发起人的工作</h2>
+	 * 
+	 * @param reviewid
+	 * @return modelAndView
+	 */
+	@RequestMapping("/updateBackToAddit")
+	public ModelAndView updateBackToAddit(
+			@RequestParam(value = "LocalSubFolderNameDef", required = false) String loanid,
+			@RequestParam(value = "RespCode", required = false) String respCode,
+			HttpServletRequest request, PrintWriter out) {
+
+		logger.debug("CreditApplyUpdateController.updateBackToAddit begin ");
+		logger.debug("loanid=" + loanid);
+		logger.debug("respCode=" + respCode);
+
+		// 处理成功
+		if (CreditApplyHServiceConstants.ftp_resp_code_000.equals(respCode)) {
+			// 申请审批表信息
+			TCreditApplyAprvInfo record = new TCreditApplyAprvInfo();
+			record.setLoanId(loanid);
+			// 更新申请表，申请审批记录表
+			int flag = biz.updateBackToReview(record);
+			logger.debug("flag=" + flag);
+			// 保存成功
+			if (flag == 1) {
+				out.print("000");
+				// 保存失败
+			} else {
+				out.print("001");
+			}
+			// 处理失败
+		}
+		logger.debug("CreditApplyUpdateController.updateBackToAddit end ");
+		return null;
+	}
+
+	@RequestMapping("/updateApplyStatusForDownloadImages")
+	public void updateApplyStatus(
+			@RequestParam(value = "LocalSubFolderNameDef", required = false) String loanid,
+			@RequestParam(value = "RespCode", required = false) String respCode,
+			HttpServletRequest request, PrintWriter out) {
+		logger.debug("CreditApplyUpdateController.updateImageDownload begin ");
+		logger.debug("loanid=" + loanid);
+		logger.debug("respCode=" + respCode);
+		// 如果状态为00
+		if (CreditApplyHServiceConstants.ftp_resp_code_000.equals(respCode)) {
+			TCreditApply tCreditApply = caBiz.selectOne(loanid);
+			if ("00".equals(tCreditApply.getApplyStatus())) {
+				tCreditApply.setApplyStatus("20");
+				caBiz.updateApplyStatus(tCreditApply);
+			}
+		} else {
+			TCreditApply tCreditApply = caBiz.selectOne(loanid);
+			if ("00".equals(tCreditApply.getApplyStatus())) {
+				tCreditApply.setApplyStatus("10");
+				caBiz.updateApplyStatus(tCreditApply);
+			}
+		}
+	}
+	
+	@RequestMapping("/updateContractStatusForDownload")
+	public void updateContractStatusForDownload(@RequestParam(value = "LocalSubFolderNameDef", required = false) String loanId,
+			@RequestParam(value = "RespCode", required = false) String respCode,@RequestParam(value="contNo", required = false)String contNo,
+			@RequestParam(value = "imagefilename", required = false)String imagefilename){
+		logger.debug("下载合同ftp回调,loanId=" + loanId);
+		if("000".equals(respCode)){
+			Map<String, Object> updateMap = Maps.newHashMap();
+			updateMap.put("contNo", contNo);
+			updateMap.put("agreementStatus", "06");
+			contBiz.updateContractStatus(updateMap);
+		}else if("005".equals(respCode)){
+			TContractManagement contract = contBiz.getContractByContNo(contNo);
+			if(contract == null){
+				logger.error("该合同不存在");
+			}
+			//文件不存在， 要推消息
+			TMessage message = new TMessage();
+			message.setChannel(contract.getChannel());
+			message.setContNo(contNo);
+			message.setCreateTime(new Date());
+			message.setCustId(contract.getCustId());
+			message.setInChannelKind(contract.getInChannelKind());
+			ImageFileLostMessage messageInfo = new ImageFileLostMessage();
+			messageInfo.setImagefilepackagename(imagefilename);
+			message.setLoanId(loanId);
+			message.setMessageInfo(messageInfo.toString());
+			message.setMessageType("12");
+			tMessage.insert(message);
+		}
+		//其他情况不做处理
+	}
+	
+	@RequestMapping("/updateApplyStatusForDownloadImagesAuto")
+	public void updateApplyStatusAuto(
+			@RequestParam(value = "LocalSubFolderNameDef", required = false) String loanid,
+			@RequestParam(value = "RespCode", required = false) String respCode,
+			HttpServletRequest request, PrintWriter out) {
+		logger.debug("CreditApplyUpdateController.updateApplyStatusForDownloadImagesAuto begin ");
+		logger.debug("loanid=" + loanid);
+		logger.debug("respCode=" + respCode);
+		// 如果状态为00
+		TCreditApply tCreditApply = caBiz.selectOne(loanid);
+		try{
+			if (CreditApplyHServiceConstants.ftp_resp_code_000.equals(respCode)) {
+				if ("00".equals(tCreditApply.getApplyStatus())) {
+					
+					
+					TCustomer custInfo = custService.getCustumerInfoById(tCreditApply.getCustId());
+					if(custInfo != null){
+						//下载征信报告
+						logger.info("回调成功开始下载征信报告");
+						CreditInvestigateRequest request1 = new CreditInvestigateRequest();
+						// 用户名外部传入
+						request1.setCustNme(custInfo.getCustName());
+						// 身份证号码外部传入
+						request1.setCustId(custInfo.getCustId());
+						// 查询原因外部传入
+						request1.setQryWay("02I");
+						
+						Map<String, Object> reqMap = Maps.newHashMap();
+						reqMap.put("creditInvestigateRequest", request1);
+						Map<String, Object> resMap = loanBiz.creditInvestigate(reqMap);
+						if(!"00".equals((String)resMap.get("respCode"))){
+							logger.error("征信报告下载失败");
+							tCreditApply.setApplyStatus("10");
+							caBiz.updateApplyStatus(tCreditApply);
+							return;
+						}
+						logger.info("下载征信报告完成, 接着上传征信报告");
+						
+						//上传征信报告
+						reqMap = Maps.newHashMap();
+						reqMap.put("certNo", custInfo.getCustId());
+						reqMap.put("channel", tCreditApply.getChannel());
+						Map<String, Object> uploadCreditInvestHtmlResMap = loanBiz.uploadCreditInvestHtml(reqMap);
+						if(!"0".equals(uploadCreditInvestHtmlResMap.get("respCode"))){
+							logger.error("征信报告上传失败");
+							tCreditApply.setApplyStatus("10");
+							caBiz.updateApplyStatus(tCreditApply);
+							return;
+						}
+						logger.info("上传征信报告完成");
+						//修改订单状态为20
+						tCreditApply.setApplyStatus("20");
+						caBiz.updateApplyStatus(tCreditApply);
+					}
+				}
+			} else {
+				if ("00".equals(tCreditApply.getApplyStatus())) {
+					tCreditApply.setApplyStatus("10");
+					caBiz.updateApplyStatus(tCreditApply);
+				}
+			}
+			
+		}catch(Exception e){
+			logger.error("下载影像资料回调发生异常", e);
+			if ("00".equals(tCreditApply.getApplyStatus())) {
+				tCreditApply.setApplyStatus("10");
+				caBiz.updateApplyStatus(tCreditApply);
+			}
+		}
+	}
+}

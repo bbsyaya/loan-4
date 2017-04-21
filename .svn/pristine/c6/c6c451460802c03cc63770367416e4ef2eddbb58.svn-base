@@ -1,0 +1,426 @@
+package com.hrbb.loan.spi.TC2;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.Executor;
+
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.biz.backstage.inter.CautionConfigBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.ILoanPosCreditApplyBackStageBiz;
+import com.hrbb.loan.pos.dao.entity.TApproveResult;
+import com.hrbb.loan.pos.dao.entity.TContractManagement;
+import com.hrbb.loan.pos.service.LoanPosBusinessCodeService;
+import com.hrbb.loan.pos.service.LoanPosContractManagementService;
+import com.hrbb.loan.pos.service.LoanPosCreditApplyService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.ExecutorUtil;
+import com.hrbb.loan.pos.util.IdUtil;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.loan.pos.util.ValidateUtil;
+import com.hrbb.loan.spi.POSHService;
+import com.hrbb.loan.spi.TC.TCService;
+import com.hrbb.loan.spiconstants.CreditApplyHServiceConstants;
+import com.hrbb.loan.spiconstants.HServiceReturnCode;
+import com.hrbb.loan.thread.DownloadContractThread;
+import com.hrbb.sh.framework.HRequest;
+import com.hrbb.sh.framework.HResponse;
+import com.hrbb.sh.framework.HServiceException;
+
+/**
+ * T54电子协议回传
+ * 
+ * @author marco
+ * 
+ */
+@Service("tc2ContractBack")
+public class TC2ContractBackHserviceImpl extends TCService{
+
+	/**
+	 * 贷款方式
+	 * 
+	 * @return
+	 */
+	public String getLoanType() {
+		return POSHService.贷款模式_资金池;
+	}
+	
+	@Autowired
+	private LoanPosContractManagementService loanPosContractManagementService;
+	
+	@Autowired
+	private LoanPosCreditApplyService loanPosCreditApplyService;
+	
+	@Autowired
+	private LoanPosBusinessCodeService loanPosBusinessCodeService;
+	
+	@Autowired
+	private ILoanPosCreditApplyBackStageBiz loanPosCreditApplyBackStageBiz;
+	
+	@Autowired
+	private CautionConfigBiz cautionConfigBiz;
+	
+	@Autowired
+	@Qualifier("downloadContract")
+	private DownloadContractThread runnable;
+	
+	Executor executor = null;
+	
+	@PostConstruct
+	private void initExecutor(){
+		executor = ExecutorUtil.getScheduledThreadExecutor(10);
+	}
+
+	@Override
+	public HResponse serve(HRequest request) throws HServiceException {
+		Map<String, Object> props = request.getProperties();
+		HResponse response = new HResponse();
+		String loanId = (String)props.get(CreditApplyHServiceConstants.loanid);
+		String custId = (String)props.get(CreditApplyHServiceConstants.custid);
+		String custName = (String)props.get(CreditApplyHServiceConstants.custname);
+		String apptcApi = (String)props.get(CreditApplyHServiceConstants.apptcapi);
+		String inteRate = (String)props.get(CreditApplyHServiceConstants.interate);
+		String signDate = (String)props.get(CreditApplyHServiceConstants.signdate);
+		
+		String endDate = (String)props.get(CreditApplyHServiceConstants.enddate);
+
+		String retuKind = (String)props.get(CreditApplyHServiceConstants.retukind);
+		
+		String repayMethod = (String)props.get(CreditApplyHServiceConstants.repaymethod);
+		
+		String loanBankName = (String)props.get(CreditApplyHServiceConstants.loanbankname);
+		
+		String loanBankBranch = (String)props.get(CreditApplyHServiceConstants.loanbankBranch);
+		
+		String loanBankSub = (String)props.get(CreditApplyHServiceConstants.loanbankSub);
+		
+		String loanBankAcno = (String)props.get(CreditApplyHServiceConstants.loanbankacno);
+		String imagefilepackagename = (String)props.get(CreditApplyHServiceConstants.imagefilepackagename);
+		
+		String contTerm = (String)props.get("contTerm");
+		
+		BigDecimal interate = new BigDecimal(inteRate);
+		String channel = this.getChannel();
+		BigDecimal price = cautionConfigBiz.getInterestPriceByChannel(channel);
+	    if(interate.subtract(price).compareTo(BigDecimal.ZERO)<0){
+	    	 logger.error("利率输入错误");
+             response.setRespCode(HServiceReturnCode.INTERATE_INPUT_ERROR.getReturnCode());
+             response.setRespCode(HServiceReturnCode.INTERATE_INPUT_ERROR.getReturnMessage());
+             Map<String, Object> map = Maps.newHashMap();
+             map.put("contno","");
+             response.setProperties(map);
+             return response;
+	    }else{
+	    	inteRate = price.toString();
+	    }
+		
+		if(!HServiceReturnCode.SUCCESS.getReturnCode().equals(checkParam(response, loanId, custId, custName, apptcApi, inteRate,
+				signDate, endDate, retuKind, repayMethod, loanBankName,
+				loanBankBranch, loanBankSub, loanBankAcno, imagefilepackagename, contTerm).getRespCode())){
+			return response;
+		}
+		SimpleDateFormat sft = new SimpleDateFormat(DateUtil.HRRB_SHORT_DATETIME_FORMAT);
+		
+        try {
+            logger.info("申请编号为" + loanId);
+            TContractManagement t = loanPosContractManagementService
+                .getContractInfoByLoanId(loanId);
+
+            TApproveResult result = loanPosContractManagementService
+                .getApproveResultInfoByLoanId(loanId);
+            if (result == null) {
+                logger.error("没有批复");
+                response.setRespCode(HServiceReturnCode.HASNO_APPRV_ERROR.getReturnCode());
+                response.setRespCode(HServiceReturnCode.HASNO_APPRV_ERROR.getReturnMessage());
+                return response;
+            }
+            if (t != null) {
+                //已存在该合同的情况
+                String agreementStatus = t.getAgreementStatus();
+                if (agreementStatus != null && agreementStatus.equals("05")) { //05未签约状态允许发起二次签约动作
+
+                    logger.info("申请[" + t.getLoanId() + "]再次发起签约动作！");
+                    Map<String, Object> approveResultMap = Maps.newHashMap();
+                    String contNo = t.getContNo();
+                    approveResultMap.put("contno", contNo);
+                    if (!custName.equals(result.getCustName())) {
+                        response.setRespCode(HServiceReturnCode.NAMENOTSAME_ERROR.getReturnCode());
+                        response.setRespMessage(HServiceReturnCode.NAMENOTSAME_ERROR
+                            .getReturnMessage());
+                        return response;
+                    }
+                    //更新合同表中的begindate enddate signdate等字段
+
+                    Map<String, Object> contractMap = Maps.newHashMap();
+                    Calendar a = Calendar.getInstance();
+                    Date b = a.getTime();
+                    String unit = result.getApproveTermUnit();
+                    String apprTerm = result.getApproveTerm();
+                    int approveTerm = Integer.parseInt(apprTerm);
+                    if (unit.equals("Y"))
+                        a.add(Calendar.YEAR, approveTerm);
+                    else if (unit.equals("M"))
+                        a.add(Calendar.MONTH, approveTerm);
+                    else
+                        a.add(Calendar.DAY_OF_MONTH, approveTerm);
+                    a.add(Calendar.DATE, -1);
+                    Date c = a.getTime();
+                    contractMap.put("contNo", contNo);
+                    contractMap.put("beginDate", sft.format(b));
+                    contractMap.put("endDate", sft.format(c));
+                    contractMap.put("signDate", new Date());
+                    contractMap.put("custName", custName);
+                    contractMap.put("apprTotalAmt", apptcApi);
+                    contractMap.put("contTotalAmt", apptcApi);
+                    contractMap.put("creditLine", apptcApi);
+                    contractMap.put("creditInterest", inteRate);
+                    contractMap.put("paybackMethod", retuKind);
+                    contractMap.put("repayMethod", repayMethod);
+                    contractMap.put("accountOpenBank", loanBankName);
+                    contractMap.put("accountBranchBank", loanBankBranch);
+                    contractMap.put("accountSubBranchBank", loanBankSub);
+                    contractMap.put("acceptAccount", loanBankAcno);
+                    contractMap.put("agreementStatus", "05");
+
+                    loanPosContractManagementService.updateContractInfo(contractMap);
+                    Map<String, Object> threadMap = Maps.newHashMap();
+                    threadMap.put("imagefilepackagename", imagefilepackagename);
+                    threadMap.put("channel", getChannel());
+                    threadMap.put("loanid", loanId);
+                    runnable.setReqMap(threadMap);
+                    executor.execute(runnable);
+                    response.setRespCode(HServiceReturnCode.SUCCESS.getReturnCode());
+                    response.setRespMessage(HServiceReturnCode.SUCCESS.getReturnMessage());
+                    response.setRespTime(new Date());
+                    response.setProperties(approveResultMap);
+                    return response;
+                } else {
+                    //return error message
+                    logger.error("该笔申请已经生成过电子协议");
+                    response
+                        .setRespCode(HServiceReturnCode.POS_CONTRACT_AGAIN_INFO.getReturnCode());
+                    response.setRespMessage(HServiceReturnCode.POS_CONTRACT_AGAIN_INFO
+                        .getReturnMessage());
+                    response.setRespTime(new Date());
+                    Map<String, Object> map = Maps.newHashMap();
+                    map.put("contNo", t.getContNo());
+                    response.setProperties(map);
+                    return getBlankHResponse(response);
+                }
+
+            } else {
+                logger.info("生成新的电子协议");
+                //更改批复表中批复状态为已签约
+                /*Map<String, Object> updateMap = Maps.newHashMap();
+                String approveId = result.getApproveId();
+                updateMap.put("approveId", approveId);
+                updateMap.put("approveStatus", "02");
+                logger.info("更新批复状态信息为"+updateMap);
+                int abc = loanPosContractManagementService.updateContractManagementInfo(updateMap);
+                logger.info("批复状态更新成功");*/
+
+                //往协议表t_contract_info中插入一条记录
+                String contNo = IdUtil.getId("cn");
+                Map<String, Object> approveResultMap = Maps.newHashMap();
+                approveResultMap.put("contno", contNo);
+                Map<String, Object> reqMap = Maps.newHashMap();
+
+                reqMap.put("loanId", loanId);
+                reqMap.put("contNo", contNo);
+                reqMap.put("termUnit", "M");
+                if(contTerm != null){
+                	reqMap.put("contTerm", contTerm);
+                	reqMap.put("applyTerm", contTerm);
+                }else{
+                	reqMap.put("contTerm", "12");
+                	reqMap.put("applyTerm", "12");
+                }
+                reqMap.put("approveId", result.getApproveId());
+                reqMap.put("custId", custId);
+                reqMap.put("custName", custName);
+                reqMap.put("beginDate", signDate);
+                reqMap.put("endDate", endDate);
+                reqMap.put("signDate", signDate);
+                reqMap.put("operId", "system");
+                reqMap.put("prodId", getProdId());
+                reqMap.put("prodName", getProdName());
+                reqMap.put("posCustId", result.getPosCustId());
+                reqMap.put("approveMoneyKind", result.getApproveMoneyKind());
+                reqMap.put("approveInterest", inteRate);
+                reqMap.put("expiryDate", result.getExpiryDate());
+                reqMap.put("stdshno", result.getStdshno());
+                reqMap.put("loanPaybackWay", repayMethod);
+                reqMap.put("posCustName", result.getPosCustName());
+                reqMap.put("channel", getChannel());
+                reqMap.put("apprTotalAmt", apptcApi);
+                reqMap.put("contTotalAmt", apptcApi);
+                reqMap.put("creditLine", apptcApi);
+                reqMap.put("creditInterest", inteRate);
+                reqMap.put("paybackMethod", retuKind);
+                reqMap.put("accountOpenBank", loanBankName);
+                reqMap.put("accountBranchBank", loanBankBranch);
+                reqMap.put("accountSubBranchBank", loanBankSub);
+                reqMap.put("acceptAccount", loanBankAcno);
+                reqMap.put("repayMethod", repayMethod);
+                reqMap.put("inChannelKind", getInChannelKind());
+                reqMap.put("agreementStatus", "05");
+                /* 添加贷款模式   add by cjq 2015-09-01*/
+//                String loanType = loanPosCreditApplyBackStageBiz.getLoanType(loanId);
+                reqMap.put("loanType", getLoanType());
+                /* end by cjq*/
+                
+                //---增加了对推送合同号的入库处理
+        		String atcontno = (String)props.get("atcontno");
+                if(atcontno!=null && atcontno.trim().length()>0){
+                	reqMap.put("cnContNo", atcontno);
+                }
+                
+                logger.info("合同信息元素为" + reqMap);
+                if(loanPosContractManagementService.insertContractManagementMap(reqMap) != 1){
+                    logger.error("电子协议生成失败");
+                    response.setRespCode(HServiceReturnCode.POS_CONTRACT_ERROR.getReturnCode());
+                    response.setRespMessage(HServiceReturnCode.POS_CONTRACT_ERROR.getReturnMessage());
+                    response.setRespTime(new Date());
+                    return getBlankHResponse(response);
+                }
+                //起线程下载合同
+                Map<String, Object> threadMap = Maps.newHashMap();
+                threadMap.put("imagefilepackagename", imagefilepackagename);
+                threadMap.put("channel", getChannel());
+                threadMap.put("loanid", loanId);
+                runnable.setReqMap(threadMap);
+                executor.execute(runnable);
+                logger.info("插入合同信息成功" + reqMap);
+                response.setRespCode(HServiceReturnCode.SUCCESS.getReturnCode());
+                response.setRespMessage(HServiceReturnCode.SUCCESS.getReturnMessage());
+                response.setRespTime(new Date());
+                response.setProperties(approveResultMap);
+                return response;
+            }
+        } catch (Exception e) {
+            logger.error("电子协议生成失败", e);
+            response.setRespCode(HServiceReturnCode.POS_CONTRACT_ERROR.getReturnCode());
+            response.setRespMessage(HServiceReturnCode.POS_CONTRACT_ERROR.getReturnMessage());
+            response.setRespTime(new Date());
+            return getBlankHResponse(response);
+        }
+
+	}
+
+	public HResponse checkParam(HResponse response, String loanId, String custId,
+			String custName, String apptcApi, String inteRate, String signDate,
+			String endDate, String retuKind, String repayMethod,
+			String loanBankName, String loanBankBranch, String loanBankSub,
+			String loanBankAcno, String imagefilepackagename, String contTerm) {
+		if(StringUtil.isEmpty(loanId)){
+			response.setRespCode(HServiceReturnCode.LOANID_ERROR.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.LOANID_ERROR.getReturnMessage());
+			response.setRespTime(new Date());
+			return response;
+		}
+		
+		if(StringUtil.isEmpty(contTerm)){
+			response.setRespCode(HServiceReturnCode.CONTTERM_ERROR.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.CONTTERM_ERROR.getReturnMessage());
+			response.setRespTime(new Date());
+			return response;
+		}
+		
+		if(StringUtil.isEmpty(custId)){
+			response.setRespCode(HServiceReturnCode.CUSTID_ERROR.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.CUSTID_ERROR.getReturnMessage());
+			return response;
+		}
+		
+		if(StringUtil.isEmpty(custName) || !ValidateUtil.checkChinese(custName)){
+			response.setRespCode(HServiceReturnCode.CUSTNAME_ERROR.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.CUSTNAME_ERROR.getReturnMessage());
+			return response;
+		}
+		
+		if(StringUtil.isEmpty(apptcApi) || !ValidateUtil.checkDouble(apptcApi)){
+			response.setRespCode(HServiceReturnCode.APPTCAPI_ERROR.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.APPTCAPI_ERROR.getReturnMessage());
+			return response;
+		}
+		
+		if(StringUtil.isEmpty(inteRate) || !ValidateUtil.checkDouble(inteRate)){
+			response.setRespCode(HServiceReturnCode.INTERATE_ERROR.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.INTERATE_ERROR.getReturnMessage());
+			return response;
+		}
+		
+		if(StringUtil.isEmpty(signDate)){
+			response.setRespCode(HServiceReturnCode.SIGNDATE_ERROR.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.SIGNDATE_ERROR.getReturnMessage());
+			return response;
+		}
+		
+		if(StringUtil.isEmpty(endDate)){
+			response.setRespCode(HServiceReturnCode.ENDDATE_ERORR.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.ENDDATE_ERORR.getReturnMessage());
+			return response;
+		}
+		
+		if(StringUtil.isEmpty(retuKind)){
+			response.setRespCode(HServiceReturnCode.RETURNKIND_ERROR.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.RETURNKIND_ERROR.getReturnMessage());
+			return response;
+		}
+		
+		if(StringUtil.isEmpty(repayMethod)){
+			response.setRespCode(HServiceReturnCode.REPAYMETHOD_ERROR.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.REPAYMETHOD_ERROR.getReturnMessage());
+			return response;
+		}
+		
+		if(StringUtil.isEmpty(loanBankName)){
+			response.setRespCode(HServiceReturnCode.LOANBANKNAME_ERROR.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.LOANBANKNAME_ERROR.getReturnMessage());
+			return response;
+		}
+		
+		if(StringUtil.isEmpty(loanBankBranch)){
+			response.setRespCode(HServiceReturnCode.LOANBANKBRANCH_ERROR.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.LOANBANKBRANCH_ERROR.getReturnMessage());
+			return response;
+		}
+		
+		if(StringUtil.isEmpty(loanBankSub)){
+			response.setRespCode(HServiceReturnCode.LOANBANKSUB_ERROR.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.LOANBANKSUB_ERROR.getReturnMessage());
+			return response;
+		}
+		
+		if(StringUtil.isEmpty(loanBankAcno)){
+			response.setRespCode(HServiceReturnCode.LOANBANKACCNO_ERROR.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.LOANBANKACCNO_ERROR.getReturnMessage());
+			return response;
+		}
+		
+		if(StringUtil.isEmpty(imagefilepackagename)){
+			response.setRespCode(HServiceReturnCode.IMAGEFILEPACKAGENAME_ERROR.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.IMAGEFILEPACKAGENAME_ERROR.getReturnMessage());
+			return response;
+		}
+		response.setRespCode(HServiceReturnCode.SUCCESS.getReturnCode());
+		return response;
+	}
+	
+	public HResponse getBlankHResponse(HResponse response){
+		Map<String, Object> respMap = Maps.newHashMap();
+		respMap.put("contno", "");
+		response.setProperties(respMap);
+		return response;
+	}
+	
+	
+}

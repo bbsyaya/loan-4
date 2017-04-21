@@ -1,0 +1,20 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:fram="http://framework.facade.common.transcore.pinganfu.com/">
+	<soapenv:Header />
+	<soapenv:Body>
+		<fram:settle>
+			<arg0>
+				<busiChannel>P</busiChannel>
+				<busiCode>W</busiCode>
+				<customerId>2000010000000002</customerId>
+				<dcFlag>D</dcFlag>
+				<extFeilds>dsadf</extFeilds>
+				<orderNo>${orderNo}</orderNo>
+				<productCode>100010010000</productCode>
+				<transAmt>1000000</transAmt>
+				<transFactAmt>1000000</transFactAmt>
+				<transType>32</transType>
+			</arg0>
+		</fram:settle>
+	</soapenv:Body>
+</soapenv:Envelope>

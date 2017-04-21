@@ -1,0 +1,1412 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditReportIndicatorMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditReportIndicator" >
+    <id column="CR001" property="CR001" jdbcType="VARCHAR" />
+    <result column="CR002" property="CR002" jdbcType="VARCHAR" />
+    <result column="CR003" property="CR003" jdbcType="VARCHAR" />
+    <result column="CR004" property="CR004" jdbcType="VARCHAR" />
+    <result column="CR005" property="CR005" jdbcType="VARCHAR" />
+    <result column="CR006" property="CR006" jdbcType="VARCHAR" />
+    <result column="CR007" property="CR007" jdbcType="VARCHAR" />
+    <result column="CR008" property="CR008" jdbcType="VARCHAR" />
+    <result column="CR009" property="CR009" jdbcType="VARCHAR" />
+    <result column="CR010" property="CR010" jdbcType="VARCHAR" />
+    <result column="CR011" property="CR011" jdbcType="VARCHAR" />
+    <result column="CR012" property="CR012" jdbcType="VARCHAR" />
+    <result column="CR013" property="CR013" jdbcType="VARCHAR" />
+    <result column="CR014" property="CR014" jdbcType="VARCHAR" />
+    <result column="CR015" property="CR015" jdbcType="VARCHAR" />
+    <result column="CR016" property="CR016" jdbcType="VARCHAR" />
+    <result column="CR017" property="CR017" jdbcType="VARCHAR" />
+    <result column="CR018" property="CR018" jdbcType="VARCHAR" />
+    <result column="CR019" property="CR019" jdbcType="VARCHAR" />
+    <result column="CR020" property="CR020" jdbcType="VARCHAR" />
+    <result column="CR021" property="CR021" jdbcType="VARCHAR" />
+    <result column="CR022" property="CR022" jdbcType="VARCHAR" />
+    <result column="CR023" property="CR023" jdbcType="VARCHAR" />
+    <result column="CR024" property="CR024" jdbcType="VARCHAR" />
+    <result column="CR025" property="CR025" jdbcType="VARCHAR" />
+    <result column="CR026" property="CR026" jdbcType="VARCHAR" />
+    <result column="CR027" property="CR027" jdbcType="INTEGER" />
+    <result column="CR028" property="CR028" jdbcType="INTEGER" />
+    <result column="CR029" property="CR029" jdbcType="VARCHAR" />
+    <result column="CR030" property="CR030" jdbcType="INTEGER" />
+    <result column="CR031" property="CR031" jdbcType="VARCHAR" />
+    <result column="CR032" property="CR032" jdbcType="INTEGER" />
+    <result column="CR033" property="CR033" jdbcType="VARCHAR" />
+    <result column="CR034" property="CR034" jdbcType="INTEGER" />
+    <result column="CR035" property="CR035" jdbcType="INTEGER" />
+    <result column="CR036" property="CR036" jdbcType="INTEGER" />
+    <result column="CR037" property="CR037" jdbcType="INTEGER" />
+    <result column="CR038" property="CR038" jdbcType="DECIMAL" />
+    <result column="CR039" property="CR039" jdbcType="INTEGER" />
+    <result column="CR040" property="CR040" jdbcType="INTEGER" />
+    <result column="CR041" property="CR041" jdbcType="INTEGER" />
+    <result column="CR042" property="CR042" jdbcType="DECIMAL" />
+    <result column="CR043" property="CR043" jdbcType="INTEGER" />
+    <result column="CR044" property="CR044" jdbcType="INTEGER" />
+    <result column="CR045" property="CR045" jdbcType="INTEGER" />
+    <result column="CR046" property="CR046" jdbcType="DECIMAL" />
+    <result column="CR047" property="CR047" jdbcType="INTEGER" />
+    <result column="CR048" property="CR048" jdbcType="INTEGER" />
+    <result column="CR049" property="CR049" jdbcType="INTEGER" />
+    <result column="CR050" property="CR050" jdbcType="INTEGER" />
+    <result column="CR051" property="CR051" jdbcType="DECIMAL" />
+    <result column="CR052" property="CR052" jdbcType="DECIMAL" />
+    <result column="CR053" property="CR053" jdbcType="DECIMAL" />
+    <result column="CR054" property="CR054" jdbcType="INTEGER" />
+    <result column="CR055" property="CR055" jdbcType="INTEGER" />
+    <result column="CR056" property="CR056" jdbcType="INTEGER" />
+    <result column="CR057" property="CR057" jdbcType="DECIMAL" />
+    <result column="CR058" property="CR058" jdbcType="DECIMAL" />
+    <result column="CR059" property="CR059" jdbcType="DECIMAL" />
+    <result column="CR060" property="CR060" jdbcType="DECIMAL" />
+    <result column="CR061" property="CR061" jdbcType="DECIMAL" />
+    <result column="CR062" property="CR062" jdbcType="DECIMAL" />
+    <result column="CR063" property="CR063" jdbcType="DECIMAL" />
+    <result column="CR064" property="CR064" jdbcType="VARCHAR" />
+    <result column="CR065" property="CR065" jdbcType="VARCHAR" />
+    <result column="CR066" property="CR066" jdbcType="DECIMAL" />
+    <result column="CR067" property="CR067" jdbcType="INTEGER" />
+    <result column="CR068" property="CR068" jdbcType="INTEGER" />
+    <result column="CR069" property="CR069" jdbcType="INTEGER" />
+    <result column="CR070" property="CR070" jdbcType="DECIMAL" />
+    <result column="CR071" property="CR071" jdbcType="DECIMAL" />
+    <result column="CR072" property="CR072" jdbcType="DECIMAL" />
+    <result column="CR073" property="CR073" jdbcType="VARCHAR" />
+    <result column="CR074" property="CR074" jdbcType="DECIMAL" />
+    <result column="CR075" property="CR075" jdbcType="INTEGER" />
+    <result column="CR076" property="CR076" jdbcType="DECIMAL" />
+    <result column="CR077" property="CR077" jdbcType="INTEGER" />
+    <result column="CR078" property="CR078" jdbcType="DECIMAL" />
+    <result column="CR079" property="CR079" jdbcType="INTEGER" />
+    <result column="CR080" property="CR080" jdbcType="DECIMAL" />
+    <result column="CR081" property="CR081" jdbcType="INTEGER" />
+    <result column="CR082" property="CR082" jdbcType="INTEGER" />
+    <result column="CR083" property="CR083" jdbcType="DECIMAL" />
+    <result column="CR084" property="CR084" jdbcType="DECIMAL" />
+    <result column="CR085" property="CR085" jdbcType="DECIMAL" />
+    <result column="CR086" property="CR086" jdbcType="DECIMAL" />
+    <result column="CR087" property="CR087" jdbcType="VARCHAR" />
+    <result column="CR088" property="CR088" jdbcType="VARCHAR" />
+    <result column="CR089" property="CR089" jdbcType="VARCHAR" />
+    <result column="CR090" property="CR090" jdbcType="VARCHAR" />
+    <result column="CR091" property="CR091" jdbcType="VARCHAR" />
+    <result column="CR092" property="CR092" jdbcType="VARCHAR" />
+    <result column="CR093" property="CR093" jdbcType="INTEGER" />
+    <result column="CR094" property="CR094" jdbcType="INTEGER" />
+    <result column="CR095" property="CR095" jdbcType="INTEGER" />
+    <result column="CR096" property="CR096" jdbcType="DECIMAL" />
+    <result column="CR097" property="CR097" jdbcType="INTEGER" />
+    <result column="CR098" property="CR098" jdbcType="INTEGER" />
+    <result column="CR099" property="CR099" jdbcType="INTEGER" />
+    <result column="CR100" property="CR100" jdbcType="DECIMAL" />
+    <result column="CR101" property="CR101" jdbcType="VARCHAR" />
+    <result column="CR102" property="CR102" jdbcType="INTEGER" />
+    <result column="CR103" property="CR103" jdbcType="INTEGER" />
+    <result column="CR104" property="CR104" jdbcType="DECIMAL" />
+    <result column="CR105" property="CR105" jdbcType="DECIMAL" />
+    <result column="CR106" property="CR106" jdbcType="DECIMAL" />
+    <result column="CR107" property="CR107" jdbcType="DECIMAL" />
+    <result column="CR108" property="CR108" jdbcType="DECIMAL" />
+    <result column="CR109" property="CR109" jdbcType="DECIMAL" />
+    <result column="CR110" property="CR110" jdbcType="DECIMAL" />
+    <result column="CR111" property="CR111" jdbcType="INTEGER" />
+    <result column="CR112" property="CR112" jdbcType="INTEGER" />
+    <result column="CR113" property="CR113" jdbcType="INTEGER" />
+    <result column="CR114" property="CR114" jdbcType="INTEGER" />
+    <result column="CR115" property="CR115" jdbcType="INTEGER" />
+    <result column="CR116" property="CR116" jdbcType="INTEGER" />
+    <result column="CR117" property="CR117" jdbcType="INTEGER" />
+    <result column="CR118" property="CR118" jdbcType="INTEGER" />
+    <result column="CR119" property="CR119" jdbcType="INTEGER" />
+    <result column="CR120" property="CR120" jdbcType="DECIMAL" />
+    <result column="CR121" property="CR121" jdbcType="DECIMAL" />
+    <result column="CR122" property="CR122" jdbcType="DECIMAL" />
+    <result column="CR123" property="CR123" jdbcType="DECIMAL" />
+    <result column="CR124" property="CR124" jdbcType="DECIMAL" />
+    <result column="CR125" property="CR125" jdbcType="DECIMAL" />
+    <result column="CR126" property="CR126" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CR001, CR002, CR003, CR004, CR005, CR006, CR007, CR008, CR009, CR010, CR011, CR012, 
+    CR013, CR014, CR015, CR016, CR017, CR018, CR019, CR020, CR021, CR022, CR023, CR024, 
+    CR025, CR026, CR027, CR028, CR029, CR030, CR031, CR032, CR033, CR034, CR035, CR036, 
+    CR037, CR038, CR039, CR040, CR041, CR042, CR043, CR044, CR045, CR046, CR047, CR048, 
+    CR049, CR050, CR051, CR052, CR053, CR054, CR055, CR056, CR057, CR058, CR059, CR060, 
+    CR061, CR062, CR063, CR064, CR065, CR066, CR067, CR068, CR069, CR070, CR071, CR072, 
+    CR073, CR074, CR075, CR076, CR077, CR078, CR079, CR080, CR081, CR082, CR083, CR084, 
+    CR085, CR086, CR087, CR088, CR089, CR090, CR091, CR092, CR093, CR094, CR095, CR096, 
+    CR097, CR098, CR099, CR100, CR101, CR102, CR103, CR104, CR105, CR106, CR107, CR108,
+    CR109, CR110, CR111, CR112, CR113, CR114, CR115, CR116, CR117, CR118, CR119, CR120,
+    CR121, CR122, CR123, CR124, CR125
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_report_indicator
+    where CR001 = #{CR001,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_credit_report_indicator
+    where CR001 = #{CR001,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportIndicator" >
+    insert into t_credit_report_indicator (CR001, CR002, CR003, 
+      CR004, CR005, CR006, 
+      CR007, CR008, CR009, 
+      CR010, CR011, CR012, 
+      CR013, CR014, CR015, 
+      CR016, CR017, CR018, 
+      CR019, CR020, CR021, 
+      CR022, CR023, CR024, 
+      CR025, CR026, CR027, 
+      CR028, CR029, CR030, 
+      CR031, CR032, CR033, 
+      CR034, CR035, CR036, 
+      CR037, CR038, CR039, 
+      CR040, CR041, CR042, 
+      CR043, CR044, CR045, 
+      CR046, CR047, CR048, 
+      CR049, CR050, CR051, 
+      CR052, CR053, CR054, 
+      CR055, CR056, CR057, 
+      CR058, CR059, CR060, 
+      CR061, CR062, CR063, 
+      CR064, CR065, CR066, 
+      CR067, CR068, CR069, 
+      CR070, CR071, CR072, 
+      CR073, CR074, CR075, 
+      CR076, CR077, CR078, 
+      CR079, CR080, CR081, 
+      CR082, CR083, CR084, 
+      CR085, CR086, CR087, 
+      CR088, CR089, CR090, 
+      CR091, CR092, CR093, 
+      CR094, CR095, CR096, 
+      CR097, CR098, CR099, 
+      CR100, CR101, CR102, 
+      CR103, CR104, CR105, 
+      CR106, CR107, CR108, 
+      CR109, CR110)
+    values (#{CR001,jdbcType=VARCHAR}, #{CR002,jdbcType=VARCHAR}, #{CR003,jdbcType=VARCHAR}, 
+      #{CR004,jdbcType=VARCHAR}, #{CR005,jdbcType=VARCHAR}, #{CR006,jdbcType=VARCHAR}, 
+      #{CR007,jdbcType=VARCHAR}, #{CR008,jdbcType=VARCHAR}, #{CR009,jdbcType=VARCHAR}, 
+      #{CR010,jdbcType=VARCHAR}, #{CR011,jdbcType=VARCHAR}, #{CR012,jdbcType=VARCHAR}, 
+      #{CR013,jdbcType=VARCHAR}, #{CR014,jdbcType=VARCHAR}, #{CR015,jdbcType=VARCHAR}, 
+      #{CR016,jdbcType=VARCHAR}, #{CR017,jdbcType=VARCHAR}, #{CR018,jdbcType=VARCHAR}, 
+      #{CR019,jdbcType=VARCHAR}, #{CR020,jdbcType=VARCHAR}, #{CR021,jdbcType=VARCHAR}, 
+      #{CR022,jdbcType=VARCHAR}, #{CR023,jdbcType=VARCHAR}, #{CR024,jdbcType=VARCHAR}, 
+      #{CR025,jdbcType=VARCHAR}, #{CR026,jdbcType=VARCHAR}, #{CR027,jdbcType=INTEGER}, 
+      #{CR028,jdbcType=INTEGER}, #{CR029,jdbcType=VARCHAR}, #{CR030,jdbcType=INTEGER}, 
+      #{CR031,jdbcType=VARCHAR}, #{CR032,jdbcType=INTEGER}, #{CR033,jdbcType=VARCHAR}, 
+      #{CR034,jdbcType=INTEGER}, #{CR035,jdbcType=INTEGER}, #{CR036,jdbcType=INTEGER}, 
+      #{CR037,jdbcType=INTEGER}, #{CR038,jdbcType=DECIMAL}, #{CR039,jdbcType=INTEGER}, 
+      #{CR040,jdbcType=INTEGER}, #{CR041,jdbcType=INTEGER}, #{CR042,jdbcType=DECIMAL}, 
+      #{CR043,jdbcType=INTEGER}, #{CR044,jdbcType=INTEGER}, #{CR045,jdbcType=INTEGER}, 
+      #{CR046,jdbcType=DECIMAL}, #{CR047,jdbcType=INTEGER}, #{CR048,jdbcType=INTEGER}, 
+      #{CR049,jdbcType=INTEGER}, #{CR050,jdbcType=INTEGER}, #{CR051,jdbcType=DECIMAL}, 
+      #{CR052,jdbcType=DECIMAL}, #{CR053,jdbcType=DECIMAL}, #{CR054,jdbcType=INTEGER}, 
+      #{CR055,jdbcType=INTEGER}, #{CR056,jdbcType=INTEGER}, #{CR057,jdbcType=DECIMAL}, 
+      #{CR058,jdbcType=DECIMAL}, #{CR059,jdbcType=DECIMAL}, #{CR060,jdbcType=DECIMAL}, 
+      #{CR061,jdbcType=DECIMAL}, #{CR062,jdbcType=DECIMAL}, #{CR063,jdbcType=DECIMAL}, 
+      #{CR064,jdbcType=VARCHAR}, #{CR065,jdbcType=VARCHAR}, #{CR066,jdbcType=DECIMAL}, 
+      #{CR067,jdbcType=INTEGER}, #{CR068,jdbcType=INTEGER}, #{CR069,jdbcType=INTEGER}, 
+      #{CR070,jdbcType=DECIMAL}, #{CR071,jdbcType=DECIMAL}, #{CR072,jdbcType=DECIMAL}, 
+      #{CR073,jdbcType=VARCHAR}, #{CR074,jdbcType=DECIMAL}, #{CR075,jdbcType=INTEGER}, 
+      #{CR076,jdbcType=DECIMAL}, #{CR077,jdbcType=INTEGER}, #{CR078,jdbcType=DECIMAL}, 
+      #{CR079,jdbcType=INTEGER}, #{CR080,jdbcType=DECIMAL}, #{CR081,jdbcType=INTEGER}, 
+      #{CR082,jdbcType=INTEGER}, #{CR083,jdbcType=DECIMAL}, #{CR084,jdbcType=DECIMAL}, 
+      #{CR085,jdbcType=DECIMAL}, #{CR086,jdbcType=DECIMAL}, #{CR087,jdbcType=VARCHAR}, 
+      #{CR088,jdbcType=VARCHAR}, #{CR089,jdbcType=VARCHAR}, #{CR090,jdbcType=VARCHAR}, 
+      #{CR091,jdbcType=VARCHAR}, #{CR092,jdbcType=VARCHAR}, #{CR093,jdbcType=INTEGER}, 
+      #{CR094,jdbcType=INTEGER}, #{CR095,jdbcType=INTEGER}, #{CR096,jdbcType=DECIMAL}, 
+      #{CR097,jdbcType=INTEGER}, #{CR098,jdbcType=INTEGER}, #{CR099,jdbcType=INTEGER}, 
+      #{CR100,jdbcType=DECIMAL}, #{CR101,jdbcType=VARCHAR}, #{CR102,jdbcType=INTEGER}, 
+      #{CR103,jdbcType=INTEGER}, #{CR104,jdbcType=DECIMAL}, #{CR105,jdbcType=DECIMAL},
+      #{CR106,jdbcType=DECIMAL}, #{CR107,jdbcType=DECIMAL}, #{CR108,jdbcType=DECIMAL},
+      #{CR109,jdbcType=DECIMAL}, #{CR110,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportIndicator" >
+    insert into t_credit_report_indicator
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="CR001 != null" >
+        CR001,
+      </if>
+      <if test="CR002 != null" >
+        CR002,
+      </if>
+      <if test="CR003 != null" >
+        CR003,
+      </if>
+      <if test="CR004 != null" >
+        CR004,
+      </if>
+      <if test="CR005 != null" >
+        CR005,
+      </if>
+      <if test="CR006 != null" >
+        CR006,
+      </if>
+      <if test="CR007 != null" >
+        CR007,
+      </if>
+      <if test="CR008 != null" >
+        CR008,
+      </if>
+      <if test="CR009 != null" >
+        CR009,
+      </if>
+      <if test="CR010 != null" >
+        CR010,
+      </if>
+      <if test="CR011 != null" >
+        CR011,
+      </if>
+      <if test="CR012 != null" >
+        CR012,
+      </if>
+      <if test="CR013 != null" >
+        CR013,
+      </if>
+      <if test="CR014 != null" >
+        CR014,
+      </if>
+      <if test="CR015 != null" >
+        CR015,
+      </if>
+      <if test="CR016 != null" >
+        CR016,
+      </if>
+      <if test="CR017 != null" >
+        CR017,
+      </if>
+      <if test="CR018 != null" >
+        CR018,
+      </if>
+      <if test="CR019 != null" >
+        CR019,
+      </if>
+      <if test="CR020 != null" >
+        CR020,
+      </if>
+      <if test="CR021 != null" >
+        CR021,
+      </if>
+      <if test="CR022 != null" >
+        CR022,
+      </if>
+      <if test="CR023 != null" >
+        CR023,
+      </if>
+      <if test="CR024 != null" >
+        CR024,
+      </if>
+      <if test="CR025 != null" >
+        CR025,
+      </if>
+      <if test="CR026 != null" >
+        CR026,
+      </if>
+      <if test="CR027 != null" >
+        CR027,
+      </if>
+      <if test="CR028 != null" >
+        CR028,
+      </if>
+      <if test="CR029 != null" >
+        CR029,
+      </if>
+      <if test="CR030 != null" >
+        CR030,
+      </if>
+      <if test="CR031 != null" >
+        CR031,
+      </if>
+      <if test="CR032 != null" >
+        CR032,
+      </if>
+      <if test="CR033 != null" >
+        CR033,
+      </if>
+      <if test="CR034 != null" >
+        CR034,
+      </if>
+      <if test="CR035 != null" >
+        CR035,
+      </if>
+      <if test="CR036 != null" >
+        CR036,
+      </if>
+      <if test="CR037 != null" >
+        CR037,
+      </if>
+      <if test="CR038 != null" >
+        CR038,
+      </if>
+      <if test="CR039 != null" >
+        CR039,
+      </if>
+      <if test="CR040 != null" >
+        CR040,
+      </if>
+      <if test="CR041 != null" >
+        CR041,
+      </if>
+      <if test="CR042 != null" >
+        CR042,
+      </if>
+      <if test="CR043 != null" >
+        CR043,
+      </if>
+      <if test="CR044 != null" >
+        CR044,
+      </if>
+      <if test="CR045 != null" >
+        CR045,
+      </if>
+      <if test="CR046 != null" >
+        CR046,
+      </if>
+      <if test="CR047 != null" >
+        CR047,
+      </if>
+      <if test="CR048 != null" >
+        CR048,
+      </if>
+      <if test="CR049 != null" >
+        CR049,
+      </if>
+      <if test="CR050 != null" >
+        CR050,
+      </if>
+      <if test="CR051 != null" >
+        CR051,
+      </if>
+      <if test="CR052 != null" >
+        CR052,
+      </if>
+      <if test="CR053 != null" >
+        CR053,
+      </if>
+      <if test="CR054 != null" >
+        CR054,
+      </if>
+      <if test="CR055 != null" >
+        CR055,
+      </if>
+      <if test="CR056 != null" >
+        CR056,
+      </if>
+      <if test="CR057 != null" >
+        CR057,
+      </if>
+      <if test="CR058 != null" >
+        CR058,
+      </if>
+      <if test="CR059 != null" >
+        CR059,
+      </if>
+      <if test="CR060 != null" >
+        CR060,
+      </if>
+      <if test="CR061 != null" >
+        CR061,
+      </if>
+      <if test="CR062 != null" >
+        CR062,
+      </if>
+      <if test="CR063 != null" >
+        CR063,
+      </if>
+      <if test="CR064 != null" >
+        CR064,
+      </if>
+      <if test="CR065 != null" >
+        CR065,
+      </if>
+      <if test="CR066 != null" >
+        CR066,
+      </if>
+      <if test="CR067 != null" >
+        CR067,
+      </if>
+      <if test="CR068 != null" >
+        CR068,
+      </if>
+      <if test="CR069 != null" >
+        CR069,
+      </if>
+      <if test="CR070 != null" >
+        CR070,
+      </if>
+      <if test="CR071 != null" >
+        CR071,
+      </if>
+      <if test="CR072 != null" >
+        CR072,
+      </if>
+      <if test="CR073 != null" >
+        CR073,
+      </if>
+      <if test="CR074 != null" >
+        CR074,
+      </if>
+      <if test="CR075 != null" >
+        CR075,
+      </if>
+      <if test="CR076 != null" >
+        CR076,
+      </if>
+      <if test="CR077 != null" >
+        CR077,
+      </if>
+      <if test="CR078 != null" >
+        CR078,
+      </if>
+      <if test="CR079 != null" >
+        CR079,
+      </if>
+      <if test="CR080 != null" >
+        CR080,
+      </if>
+      <if test="CR081 != null" >
+        CR081,
+      </if>
+      <if test="CR082 != null" >
+        CR082,
+      </if>
+      <if test="CR083 != null" >
+        CR083,
+      </if>
+      <if test="CR084 != null" >
+        CR084,
+      </if>
+      <if test="CR085 != null" >
+        CR085,
+      </if>
+      <if test="CR086 != null" >
+        CR086,
+      </if>
+      <if test="CR087 != null" >
+        CR087,
+      </if>
+      <if test="CR088 != null" >
+        CR088,
+      </if>
+      <if test="CR089 != null" >
+        CR089,
+      </if>
+      <if test="CR090 != null" >
+        CR090,
+      </if>
+      <if test="CR091 != null" >
+        CR091,
+      </if>
+      <if test="CR092 != null" >
+        CR092,
+      </if>
+      <if test="CR093 != null" >
+        CR093,
+      </if>
+      <if test="CR094 != null" >
+        CR094,
+      </if>
+      <if test="CR095 != null" >
+        CR095,
+      </if>
+      <if test="CR096 != null" >
+        CR096,
+      </if>
+      <if test="CR097 != null" >
+        CR097,
+      </if>
+      <if test="CR098 != null" >
+        CR098,
+      </if>
+      <if test="CR099 != null" >
+        CR099,
+      </if>
+      <if test="CR100 != null" >
+        CR100,
+      </if>
+      <if test="CR101 != null" >
+        CR101,
+      </if>
+      <if test="CR102 != null" >
+        CR102,
+      </if>
+      <if test="CR103 != null" >
+        CR103,
+      </if>
+      <if test="CR104 != null" >
+        CR104,
+      </if>
+      <if test="CR105 != null" >
+        CR105,
+      </if>
+      <if test="CR106 != null" >
+        CR106,
+      </if>
+      <if test="CR107 != null" >
+        CR107,
+      </if>
+      <if test="CR108 != null" >
+        CR108,
+      </if>
+      <if test="CR109 != null" >
+        CR109,
+      </if>
+      <if test="CR110 != null" >
+        CR110,
+      </if>
+      <if test="CR111 != null" >
+        CR111,
+      </if>
+      <if test="CR112 != null" >
+        CR112,
+      </if>
+      <if test="CR113 != null" >
+        CR113,
+      </if>
+      <if test="CR114 != null" >
+        CR114,
+      </if>
+      <if test="CR115 != null" >
+        CR115,
+      </if>
+      <if test="CR116 != null" >
+        CR116,
+      </if>
+      <if test="CR117 != null" >
+        CR117,
+      </if>
+      <if test="CR118 != null" >
+        CR118,
+      </if>
+      <if test="CR119 != null" >
+        CR119,
+      </if>
+      <if test="CR120 != null" >
+        CR120,
+      </if>
+      <if test="CR121 != null" >
+        CR121,
+      </if>
+      <if test="CR122 != null" >
+        CR122,
+      </if>
+      <if test="CR123 != null" >
+        CR123,
+      </if>
+      <if test="CR124 != null" >
+        CR124,
+      </if>
+      <if test="CR125 != null" >
+        CR125,
+      </if>
+      <if test="CR126 != null" >
+        CR126,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="CR001 != null" >
+        #{CR001,jdbcType=VARCHAR},
+      </if>
+      <if test="CR002 != null" >
+        #{CR002,jdbcType=VARCHAR},
+      </if>
+      <if test="CR003 != null" >
+        #{CR003,jdbcType=VARCHAR},
+      </if>
+      <if test="CR004 != null" >
+        #{CR004,jdbcType=VARCHAR},
+      </if>
+      <if test="CR005 != null" >
+        #{CR005,jdbcType=VARCHAR},
+      </if>
+      <if test="CR006 != null" >
+        #{CR006,jdbcType=VARCHAR},
+      </if>
+      <if test="CR007 != null" >
+        #{CR007,jdbcType=VARCHAR},
+      </if>
+      <if test="CR008 != null" >
+        #{CR008,jdbcType=VARCHAR},
+      </if>
+      <if test="CR009 != null" >
+        #{CR009,jdbcType=VARCHAR},
+      </if>
+      <if test="CR010 != null" >
+        #{CR010,jdbcType=VARCHAR},
+      </if>
+      <if test="CR011 != null" >
+        #{CR011,jdbcType=VARCHAR},
+      </if>
+      <if test="CR012 != null" >
+        #{CR012,jdbcType=VARCHAR},
+      </if>
+      <if test="CR013 != null" >
+        #{CR013,jdbcType=VARCHAR},
+      </if>
+      <if test="CR014 != null" >
+        #{CR014,jdbcType=VARCHAR},
+      </if>
+      <if test="CR015 != null" >
+        #{CR015,jdbcType=VARCHAR},
+      </if>
+      <if test="CR016 != null" >
+        #{CR016,jdbcType=VARCHAR},
+      </if>
+      <if test="CR017 != null" >
+        #{CR017,jdbcType=VARCHAR},
+      </if>
+      <if test="CR018 != null" >
+        #{CR018,jdbcType=VARCHAR},
+      </if>
+      <if test="CR019 != null" >
+        #{CR019,jdbcType=VARCHAR},
+      </if>
+      <if test="CR020 != null" >
+        #{CR020,jdbcType=VARCHAR},
+      </if>
+      <if test="CR021 != null" >
+        #{CR021,jdbcType=VARCHAR},
+      </if>
+      <if test="CR022 != null" >
+        #{CR022,jdbcType=VARCHAR},
+      </if>
+      <if test="CR023 != null" >
+        #{CR023,jdbcType=VARCHAR},
+      </if>
+      <if test="CR024 != null" >
+        #{CR024,jdbcType=VARCHAR},
+      </if>
+      <if test="CR025 != null" >
+        #{CR025,jdbcType=VARCHAR},
+      </if>
+      <if test="CR026 != null" >
+        #{CR026,jdbcType=VARCHAR},
+      </if>
+      <if test="CR027 != null" >
+        #{CR027,jdbcType=INTEGER},
+      </if>
+      <if test="CR028 != null" >
+        #{CR028,jdbcType=INTEGER},
+      </if>
+      <if test="CR029 != null" >
+        #{CR029,jdbcType=VARCHAR},
+      </if>
+      <if test="CR030 != null" >
+        #{CR030,jdbcType=INTEGER},
+      </if>
+      <if test="CR031 != null" >
+        #{CR031,jdbcType=VARCHAR},
+      </if>
+      <if test="CR032 != null" >
+        #{CR032,jdbcType=INTEGER},
+      </if>
+      <if test="CR033 != null" >
+        #{CR033,jdbcType=VARCHAR},
+      </if>
+      <if test="CR034 != null" >
+        #{CR034,jdbcType=INTEGER},
+      </if>
+      <if test="CR035 != null" >
+        #{CR035,jdbcType=INTEGER},
+      </if>
+      <if test="CR036 != null" >
+        #{CR036,jdbcType=INTEGER},
+      </if>
+      <if test="CR037 != null" >
+        #{CR037,jdbcType=INTEGER},
+      </if>
+      <if test="CR038 != null" >
+        #{CR038,jdbcType=DECIMAL},
+      </if>
+      <if test="CR039 != null" >
+        #{CR039,jdbcType=INTEGER},
+      </if>
+      <if test="CR040 != null" >
+        #{CR040,jdbcType=INTEGER},
+      </if>
+      <if test="CR041 != null" >
+        #{CR041,jdbcType=INTEGER},
+      </if>
+      <if test="CR042 != null" >
+        #{CR042,jdbcType=DECIMAL},
+      </if>
+      <if test="CR043 != null" >
+        #{CR043,jdbcType=INTEGER},
+      </if>
+      <if test="CR044 != null" >
+        #{CR044,jdbcType=INTEGER},
+      </if>
+      <if test="CR045 != null" >
+        #{CR045,jdbcType=INTEGER},
+      </if>
+      <if test="CR046 != null" >
+        #{CR046,jdbcType=DECIMAL},
+      </if>
+      <if test="CR047 != null" >
+        #{CR047,jdbcType=INTEGER},
+      </if>
+      <if test="CR048 != null" >
+        #{CR048,jdbcType=INTEGER},
+      </if>
+      <if test="CR049 != null" >
+        #{CR049,jdbcType=INTEGER},
+      </if>
+      <if test="CR050 != null" >
+        #{CR050,jdbcType=INTEGER},
+      </if>
+      <if test="CR051 != null" >
+        #{CR051,jdbcType=DECIMAL},
+      </if>
+      <if test="CR052 != null" >
+        #{CR052,jdbcType=DECIMAL},
+      </if>
+      <if test="CR053 != null" >
+        #{CR053,jdbcType=DECIMAL},
+      </if>
+      <if test="CR054 != null" >
+        #{CR054,jdbcType=INTEGER},
+      </if>
+      <if test="CR055 != null" >
+        #{CR055,jdbcType=INTEGER},
+      </if>
+      <if test="CR056 != null" >
+        #{CR056,jdbcType=INTEGER},
+      </if>
+      <if test="CR057 != null" >
+        #{CR057,jdbcType=DECIMAL},
+      </if>
+      <if test="CR058 != null" >
+        #{CR058,jdbcType=DECIMAL},
+      </if>
+      <if test="CR059 != null" >
+        #{CR059,jdbcType=DECIMAL},
+      </if>
+      <if test="CR060 != null" >
+        #{CR060,jdbcType=DECIMAL},
+      </if>
+      <if test="CR061 != null" >
+        #{CR061,jdbcType=DECIMAL},
+      </if>
+      <if test="CR062 != null" >
+        #{CR062,jdbcType=DECIMAL},
+      </if>
+      <if test="CR063 != null" >
+        #{CR063,jdbcType=DECIMAL},
+      </if>
+      <if test="CR064 != null" >
+        #{CR064,jdbcType=VARCHAR},
+      </if>
+      <if test="CR065 != null" >
+        #{CR065,jdbcType=VARCHAR},
+      </if>
+      <if test="CR066 != null" >
+        #{CR066,jdbcType=DECIMAL},
+      </if>
+      <if test="CR067 != null" >
+        #{CR067,jdbcType=INTEGER},
+      </if>
+      <if test="CR068 != null" >
+        #{CR068,jdbcType=INTEGER},
+      </if>
+      <if test="CR069 != null" >
+        #{CR069,jdbcType=INTEGER},
+      </if>
+      <if test="CR070 != null" >
+        #{CR070,jdbcType=DECIMAL},
+      </if>
+      <if test="CR071 != null" >
+        #{CR071,jdbcType=DECIMAL},
+      </if>
+      <if test="CR072 != null" >
+        #{CR072,jdbcType=DECIMAL},
+      </if>
+      <if test="CR073 != null" >
+        #{CR073,jdbcType=VARCHAR},
+      </if>
+      <if test="CR074 != null" >
+        #{CR074,jdbcType=DECIMAL},
+      </if>
+      <if test="CR075 != null" >
+        #{CR075,jdbcType=INTEGER},
+      </if>
+      <if test="CR076 != null" >
+        #{CR076,jdbcType=DECIMAL},
+      </if>
+      <if test="CR077 != null" >
+        #{CR077,jdbcType=INTEGER},
+      </if>
+      <if test="CR078 != null" >
+        #{CR078,jdbcType=DECIMAL},
+      </if>
+      <if test="CR079 != null" >
+        #{CR079,jdbcType=INTEGER},
+      </if>
+      <if test="CR080 != null" >
+        #{CR080,jdbcType=DECIMAL},
+      </if>
+      <if test="CR081 != null" >
+        #{CR081,jdbcType=INTEGER},
+      </if>
+      <if test="CR082 != null" >
+        #{CR082,jdbcType=INTEGER},
+      </if>
+      <if test="CR083 != null" >
+        #{CR083,jdbcType=DECIMAL},
+      </if>
+      <if test="CR084 != null" >
+        #{CR084,jdbcType=DECIMAL},
+      </if>
+      <if test="CR085 != null" >
+        #{CR085,jdbcType=DECIMAL},
+      </if>
+      <if test="CR086 != null" >
+        #{CR086,jdbcType=DECIMAL},
+      </if>
+      <if test="CR087 != null" >
+        #{CR087,jdbcType=VARCHAR},
+      </if>
+      <if test="CR088 != null" >
+        #{CR088,jdbcType=VARCHAR},
+      </if>
+      <if test="CR089 != null" >
+        #{CR089,jdbcType=VARCHAR},
+      </if>
+      <if test="CR090 != null" >
+        #{CR090,jdbcType=VARCHAR},
+      </if>
+      <if test="CR091 != null" >
+        #{CR091,jdbcType=VARCHAR},
+      </if>
+      <if test="CR092 != null" >
+        #{CR092,jdbcType=VARCHAR},
+      </if>
+      <if test="CR093 != null" >
+        #{CR093,jdbcType=INTEGER},
+      </if>
+      <if test="CR094 != null" >
+        #{CR094,jdbcType=INTEGER},
+      </if>
+      <if test="CR095 != null" >
+        #{CR095,jdbcType=INTEGER},
+      </if>
+      <if test="CR096 != null" >
+        #{CR096,jdbcType=DECIMAL},
+      </if>
+      <if test="CR097 != null" >
+        #{CR097,jdbcType=INTEGER},
+      </if>
+      <if test="CR098 != null" >
+        #{CR098,jdbcType=INTEGER},
+      </if>
+      <if test="CR099 != null" >
+        #{CR099,jdbcType=INTEGER},
+      </if>
+      <if test="CR100 != null" >
+        #{CR100,jdbcType=DECIMAL},
+      </if>
+      <if test="CR101 != null" >
+        #{CR101,jdbcType=VARCHAR},
+      </if>
+      <if test="CR102 != null" >
+        #{CR102,jdbcType=INTEGER},
+      </if>
+      <if test="CR103 != null" >
+        #{CR103,jdbcType=INTEGER},
+      </if>
+      <if test="CR104 != null" >
+        #{CR104,jdbcType=DECIMAL},
+      </if>
+      <if test="CR105 != null" >
+        #{CR105,jdbcType=DECIMAL},
+      </if>
+      <if test="CR106 != null" >
+        #{CR106,jdbcType=DECIMAL},
+      </if>
+      <if test="CR107 != null" >
+        #{CR107,jdbcType=DECIMAL},
+      </if>
+      <if test="CR108 != null" >
+        #{CR108,jdbcType=DECIMAL},
+      </if>
+      <if test="CR109 != null" >
+        #{CR109,jdbcType=DECIMAL},
+      </if>
+      <if test="CR110 != null" >
+        #{CR110,jdbcType=DECIMAL},
+      </if>
+      <if test="CR111 != null" >
+        #{CR111,jdbcType=INTEGER},
+      </if>
+      <if test="CR112 != null" >
+        #{CR112,jdbcType=INTEGER},
+      </if>
+      <if test="CR113 != null" >
+        #{CR113,jdbcType=INTEGER},
+      </if>
+      <if test="CR114 != null" >
+        #{CR114,jdbcType=INTEGER},
+      </if>
+      <if test="CR115 != null" >
+        #{CR115,jdbcType=INTEGER},
+      </if>
+      <if test="CR116 != null" >
+        #{CR116,jdbcType=INTEGER},
+      </if>
+      <if test="CR117 != null" >
+        #{CR117,jdbcType=INTEGER},
+      </if>
+      <if test="CR118 != null" >
+        #{CR118,jdbcType=INTEGER},
+      </if>
+      <if test="CR119 != null" >
+        #{CR119,jdbcType=INTEGER},
+      </if>
+      <if test="CR120 != null" >
+        #{CR120,jdbcType=DECIMAL},
+      </if>
+      <if test="CR121 != null" >
+        #{CR121,jdbcType=DECIMAL},
+      </if>
+      <if test="CR122 != null" >
+        #{CR122,jdbcType=DECIMAL},
+      </if>
+      <if test="CR123 != null" >
+        #{CR123,jdbcType=DECIMAL},
+      </if>
+      <if test="CR124 != null" >
+        #{CR124,jdbcType=DECIMAL},
+      </if>
+      <if test="CR125 != null" >
+        #{CR125,jdbcType=DECIMAL},
+      </if>
+      <if test="CR126 != null" >
+        #{CR126,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportIndicator" >
+    update t_credit_report_indicator
+    <set >
+      <if test="CR002 != null" >
+        CR002 = #{CR002,jdbcType=VARCHAR},
+      </if>
+      <if test="CR003 != null" >
+        CR003 = #{CR003,jdbcType=VARCHAR},
+      </if>
+      <if test="CR004 != null" >
+        CR004 = #{CR004,jdbcType=VARCHAR},
+      </if>
+      <if test="CR005 != null" >
+        CR005 = #{CR005,jdbcType=VARCHAR},
+      </if>
+      <if test="CR006 != null" >
+        CR006 = #{CR006,jdbcType=VARCHAR},
+      </if>
+      <if test="CR007 != null" >
+        CR007 = #{CR007,jdbcType=VARCHAR},
+      </if>
+      <if test="CR008 != null" >
+        CR008 = #{CR008,jdbcType=VARCHAR},
+      </if>
+      <if test="CR009 != null" >
+        CR009 = #{CR009,jdbcType=VARCHAR},
+      </if>
+      <if test="CR010 != null" >
+        CR010 = #{CR010,jdbcType=VARCHAR},
+      </if>
+      <if test="CR011 != null" >
+        CR011 = #{CR011,jdbcType=VARCHAR},
+      </if>
+      <if test="CR012 != null" >
+        CR012 = #{CR012,jdbcType=VARCHAR},
+      </if>
+      <if test="CR013 != null" >
+        CR013 = #{CR013,jdbcType=VARCHAR},
+      </if>
+      <if test="CR014 != null" >
+        CR014 = #{CR014,jdbcType=VARCHAR},
+      </if>
+      <if test="CR015 != null" >
+        CR015 = #{CR015,jdbcType=VARCHAR},
+      </if>
+      <if test="CR016 != null" >
+        CR016 = #{CR016,jdbcType=VARCHAR},
+      </if>
+      <if test="CR017 != null" >
+        CR017 = #{CR017,jdbcType=VARCHAR},
+      </if>
+      <if test="CR018 != null" >
+        CR018 = #{CR018,jdbcType=VARCHAR},
+      </if>
+      <if test="CR019 != null" >
+        CR019 = #{CR019,jdbcType=VARCHAR},
+      </if>
+      <if test="CR020 != null" >
+        CR020 = #{CR020,jdbcType=VARCHAR},
+      </if>
+      <if test="CR021 != null" >
+        CR021 = #{CR021,jdbcType=VARCHAR},
+      </if>
+      <if test="CR022 != null" >
+        CR022 = #{CR022,jdbcType=VARCHAR},
+      </if>
+      <if test="CR023 != null" >
+        CR023 = #{CR023,jdbcType=VARCHAR},
+      </if>
+      <if test="CR024 != null" >
+        CR024 = #{CR024,jdbcType=VARCHAR},
+      </if>
+      <if test="CR025 != null" >
+        CR025 = #{CR025,jdbcType=VARCHAR},
+      </if>
+      <if test="CR026 != null" >
+        CR026 = #{CR026,jdbcType=VARCHAR},
+      </if>
+      <if test="CR027 != null" >
+        CR027 = #{CR027,jdbcType=INTEGER},
+      </if>
+      <if test="CR028 != null" >
+        CR028 = #{CR028,jdbcType=INTEGER},
+      </if>
+      <if test="CR029 != null" >
+        CR029 = #{CR029,jdbcType=VARCHAR},
+      </if>
+      <if test="CR030 != null" >
+        CR030 = #{CR030,jdbcType=INTEGER},
+      </if>
+      <if test="CR031 != null" >
+        CR031 = #{CR031,jdbcType=VARCHAR},
+      </if>
+      <if test="CR032 != null" >
+        CR032 = #{CR032,jdbcType=INTEGER},
+      </if>
+      <if test="CR033 != null" >
+        CR033 = #{CR033,jdbcType=VARCHAR},
+      </if>
+      <if test="CR034 != null" >
+        CR034 = #{CR034,jdbcType=INTEGER},
+      </if>
+      <if test="CR035 != null" >
+        CR035 = #{CR035,jdbcType=INTEGER},
+      </if>
+      <if test="CR036 != null" >
+        CR036 = #{CR036,jdbcType=INTEGER},
+      </if>
+      <if test="CR037 != null" >
+        CR037 = #{CR037,jdbcType=INTEGER},
+      </if>
+      <if test="CR038 != null" >
+        CR038 = #{CR038,jdbcType=DECIMAL},
+      </if>
+      <if test="CR039 != null" >
+        CR039 = #{CR039,jdbcType=INTEGER},
+      </if>
+      <if test="CR040 != null" >
+        CR040 = #{CR040,jdbcType=INTEGER},
+      </if>
+      <if test="CR041 != null" >
+        CR041 = #{CR041,jdbcType=INTEGER},
+      </if>
+      <if test="CR042 != null" >
+        CR042 = #{CR042,jdbcType=DECIMAL},
+      </if>
+      <if test="CR043 != null" >
+        CR043 = #{CR043,jdbcType=INTEGER},
+      </if>
+      <if test="CR044 != null" >
+        CR044 = #{CR044,jdbcType=INTEGER},
+      </if>
+      <if test="CR045 != null" >
+        CR045 = #{CR045,jdbcType=INTEGER},
+      </if>
+      <if test="CR046 != null" >
+        CR046 = #{CR046,jdbcType=DECIMAL},
+      </if>
+      <if test="CR047 != null" >
+        CR047 = #{CR047,jdbcType=INTEGER},
+      </if>
+      <if test="CR048 != null" >
+        CR048 = #{CR048,jdbcType=INTEGER},
+      </if>
+      <if test="CR049 != null" >
+        CR049 = #{CR049,jdbcType=INTEGER},
+      </if>
+      <if test="CR050 != null" >
+        CR050 = #{CR050,jdbcType=INTEGER},
+      </if>
+      <if test="CR051 != null" >
+        CR051 = #{CR051,jdbcType=DECIMAL},
+      </if>
+      <if test="CR052 != null" >
+        CR052 = #{CR052,jdbcType=DECIMAL},
+      </if>
+      <if test="CR053 != null" >
+        CR053 = #{CR053,jdbcType=DECIMAL},
+      </if>
+      <if test="CR054 != null" >
+        CR054 = #{CR054,jdbcType=INTEGER},
+      </if>
+      <if test="CR055 != null" >
+        CR055 = #{CR055,jdbcType=INTEGER},
+      </if>
+      <if test="CR056 != null" >
+        CR056 = #{CR056,jdbcType=INTEGER},
+      </if>
+      <if test="CR057 != null" >
+        CR057 = #{CR057,jdbcType=DECIMAL},
+      </if>
+      <if test="CR058 != null" >
+        CR058 = #{CR058,jdbcType=DECIMAL},
+      </if>
+      <if test="CR059 != null" >
+        CR059 = #{CR059,jdbcType=DECIMAL},
+      </if>
+      <if test="CR060 != null" >
+        CR060 = #{CR060,jdbcType=DECIMAL},
+      </if>
+      <if test="CR061 != null" >
+        CR061 = #{CR061,jdbcType=DECIMAL},
+      </if>
+      <if test="CR062 != null" >
+        CR062 = #{CR062,jdbcType=DECIMAL},
+      </if>
+      <if test="CR063 != null" >
+        CR063 = #{CR063,jdbcType=DECIMAL},
+      </if>
+      <if test="CR064 != null" >
+        CR064 = #{CR064,jdbcType=VARCHAR},
+      </if>
+      <if test="CR065 != null" >
+        CR065 = #{CR065,jdbcType=VARCHAR},
+      </if>
+      <if test="CR066 != null" >
+        CR066 = #{CR066,jdbcType=DECIMAL},
+      </if>
+      <if test="CR067 != null" >
+        CR067 = #{CR067,jdbcType=INTEGER},
+      </if>
+      <if test="CR068 != null" >
+        CR068 = #{CR068,jdbcType=INTEGER},
+      </if>
+      <if test="CR069 != null" >
+        CR069 = #{CR069,jdbcType=INTEGER},
+      </if>
+      <if test="CR070 != null" >
+        CR070 = #{CR070,jdbcType=DECIMAL},
+      </if>
+      <if test="CR071 != null" >
+        CR071 = #{CR071,jdbcType=DECIMAL},
+      </if>
+      <if test="CR072 != null" >
+        CR072 = #{CR072,jdbcType=DECIMAL},
+      </if>
+      <if test="CR073 != null" >
+        CR073 = #{CR073,jdbcType=VARCHAR},
+      </if>
+      <if test="CR074 != null" >
+        CR074 = #{CR074,jdbcType=DECIMAL},
+      </if>
+      <if test="CR075 != null" >
+        CR075 = #{CR075,jdbcType=INTEGER},
+      </if>
+      <if test="CR076 != null" >
+        CR076 = #{CR076,jdbcType=DECIMAL},
+      </if>
+      <if test="CR077 != null" >
+        CR077 = #{CR077,jdbcType=INTEGER},
+      </if>
+      <if test="CR078 != null" >
+        CR078 = #{CR078,jdbcType=DECIMAL},
+      </if>
+      <if test="CR079 != null" >
+        CR079 = #{CR079,jdbcType=INTEGER},
+      </if>
+      <if test="CR080 != null" >
+        CR080 = #{CR080,jdbcType=DECIMAL},
+      </if>
+      <if test="CR081 != null" >
+        CR081 = #{CR081,jdbcType=INTEGER},
+      </if>
+      <if test="CR082 != null" >
+        CR082 = #{CR082,jdbcType=INTEGER},
+      </if>
+      <if test="CR083 != null" >
+        CR083 = #{CR083,jdbcType=DECIMAL},
+      </if>
+      <if test="CR084 != null" >
+        CR084 = #{CR084,jdbcType=DECIMAL},
+      </if>
+      <if test="CR085 != null" >
+        CR085 = #{CR085,jdbcType=DECIMAL},
+      </if>
+      <if test="CR086 != null" >
+        CR086 = #{CR086,jdbcType=DECIMAL},
+      </if>
+      <if test="CR087 != null" >
+        CR087 = #{CR087,jdbcType=VARCHAR},
+      </if>
+      <if test="CR088 != null" >
+        CR088 = #{CR088,jdbcType=VARCHAR},
+      </if>
+      <if test="CR089 != null" >
+        CR089 = #{CR089,jdbcType=VARCHAR},
+      </if>
+      <if test="CR090 != null" >
+        CR090 = #{CR090,jdbcType=VARCHAR},
+      </if>
+      <if test="CR091 != null" >
+        CR091 = #{CR091,jdbcType=VARCHAR},
+      </if>
+      <if test="CR092 != null" >
+        CR092 = #{CR092,jdbcType=VARCHAR},
+      </if>
+      <if test="CR093 != null" >
+        CR093 = #{CR093,jdbcType=INTEGER},
+      </if>
+      <if test="CR094 != null" >
+        CR094 = #{CR094,jdbcType=INTEGER},
+      </if>
+      <if test="CR095 != null" >
+        CR095 = #{CR095,jdbcType=INTEGER},
+      </if>
+      <if test="CR096 != null" >
+        CR096 = #{CR096,jdbcType=DECIMAL},
+      </if>
+      <if test="CR097 != null" >
+        CR097 = #{CR097,jdbcType=INTEGER},
+      </if>
+      <if test="CR098 != null" >
+        CR098 = #{CR098,jdbcType=INTEGER},
+      </if>
+      <if test="CR099 != null" >
+        CR099 = #{CR099,jdbcType=INTEGER},
+      </if>
+      <if test="CR100 != null" >
+        CR100 = #{CR100,jdbcType=DECIMAL},
+      </if>
+      <if test="CR101 != null" >
+        CR101 = #{CR101,jdbcType=VARCHAR},
+      </if>
+      <if test="CR102 != null" >
+        CR102 = #{CR102,jdbcType=INTEGER},
+      </if>
+      <if test="CR103 != null" >
+        CR103 = #{CR103,jdbcType=INTEGER},
+      </if>
+    </set>
+    where CR001 = #{CR001,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportIndicator" >
+    update t_credit_report_indicator
+    set CR002 = #{CR002,jdbcType=VARCHAR},
+      CR003 = #{CR003,jdbcType=VARCHAR},
+      CR004 = #{CR004,jdbcType=VARCHAR},
+      CR005 = #{CR005,jdbcType=VARCHAR},
+      CR006 = #{CR006,jdbcType=VARCHAR},
+      CR007 = #{CR007,jdbcType=VARCHAR},
+      CR008 = #{CR008,jdbcType=VARCHAR},
+      CR009 = #{CR009,jdbcType=VARCHAR},
+      CR010 = #{CR010,jdbcType=VARCHAR},
+      CR011 = #{CR011,jdbcType=VARCHAR},
+      CR012 = #{CR012,jdbcType=VARCHAR},
+      CR013 = #{CR013,jdbcType=VARCHAR},
+      CR014 = #{CR014,jdbcType=VARCHAR},
+      CR015 = #{CR015,jdbcType=VARCHAR},
+      CR016 = #{CR016,jdbcType=VARCHAR},
+      CR017 = #{CR017,jdbcType=VARCHAR},
+      CR018 = #{CR018,jdbcType=VARCHAR},
+      CR019 = #{CR019,jdbcType=VARCHAR},
+      CR020 = #{CR020,jdbcType=VARCHAR},
+      CR021 = #{CR021,jdbcType=VARCHAR},
+      CR022 = #{CR022,jdbcType=VARCHAR},
+      CR023 = #{CR023,jdbcType=VARCHAR},
+      CR024 = #{CR024,jdbcType=VARCHAR},
+      CR025 = #{CR025,jdbcType=VARCHAR},
+      CR026 = #{CR026,jdbcType=VARCHAR},
+      CR027 = #{CR027,jdbcType=INTEGER},
+      CR028 = #{CR028,jdbcType=INTEGER},
+      CR029 = #{CR029,jdbcType=VARCHAR},
+      CR030 = #{CR030,jdbcType=INTEGER},
+      CR031 = #{CR031,jdbcType=VARCHAR},
+      CR032 = #{CR032,jdbcType=INTEGER},
+      CR033 = #{CR033,jdbcType=VARCHAR},
+      CR034 = #{CR034,jdbcType=INTEGER},
+      CR035 = #{CR035,jdbcType=INTEGER},
+      CR036 = #{CR036,jdbcType=INTEGER},
+      CR037 = #{CR037,jdbcType=INTEGER},
+      CR038 = #{CR038,jdbcType=DECIMAL},
+      CR039 = #{CR039,jdbcType=INTEGER},
+      CR040 = #{CR040,jdbcType=INTEGER},
+      CR041 = #{CR041,jdbcType=INTEGER},
+      CR042 = #{CR042,jdbcType=DECIMAL},
+      CR043 = #{CR043,jdbcType=INTEGER},
+      CR044 = #{CR044,jdbcType=INTEGER},
+      CR045 = #{CR045,jdbcType=INTEGER},
+      CR046 = #{CR046,jdbcType=DECIMAL},
+      CR047 = #{CR047,jdbcType=INTEGER},
+      CR048 = #{CR048,jdbcType=INTEGER},
+      CR049 = #{CR049,jdbcType=INTEGER},
+      CR050 = #{CR050,jdbcType=INTEGER},
+      CR051 = #{CR051,jdbcType=DECIMAL},
+      CR052 = #{CR052,jdbcType=DECIMAL},
+      CR053 = #{CR053,jdbcType=DECIMAL},
+      CR054 = #{CR054,jdbcType=INTEGER},
+      CR055 = #{CR055,jdbcType=INTEGER},
+      CR056 = #{CR056,jdbcType=INTEGER},
+      CR057 = #{CR057,jdbcType=DECIMAL},
+      CR058 = #{CR058,jdbcType=DECIMAL},
+      CR059 = #{CR059,jdbcType=DECIMAL},
+      CR060 = #{CR060,jdbcType=DECIMAL},
+      CR061 = #{CR061,jdbcType=DECIMAL},
+      CR062 = #{CR062,jdbcType=DECIMAL},
+      CR063 = #{CR063,jdbcType=DECIMAL},
+      CR064 = #{CR064,jdbcType=VARCHAR},
+      CR065 = #{CR065,jdbcType=VARCHAR},
+      CR066 = #{CR066,jdbcType=DECIMAL},
+      CR067 = #{CR067,jdbcType=INTEGER},
+      CR068 = #{CR068,jdbcType=INTEGER},
+      CR069 = #{CR069,jdbcType=INTEGER},
+      CR070 = #{CR070,jdbcType=DECIMAL},
+      CR071 = #{CR071,jdbcType=DECIMAL},
+      CR072 = #{CR072,jdbcType=DECIMAL},
+      CR073 = #{CR073,jdbcType=VARCHAR},
+      CR074 = #{CR074,jdbcType=DECIMAL},
+      CR075 = #{CR075,jdbcType=INTEGER},
+      CR076 = #{CR076,jdbcType=DECIMAL},
+      CR077 = #{CR077,jdbcType=INTEGER},
+      CR078 = #{CR078,jdbcType=DECIMAL},
+      CR079 = #{CR079,jdbcType=INTEGER},
+      CR080 = #{CR080,jdbcType=DECIMAL},
+      CR081 = #{CR081,jdbcType=INTEGER},
+      CR082 = #{CR082,jdbcType=INTEGER},
+      CR083 = #{CR083,jdbcType=DECIMAL},
+      CR084 = #{CR084,jdbcType=DECIMAL},
+      CR085 = #{CR085,jdbcType=DECIMAL},
+      CR086 = #{CR086,jdbcType=DECIMAL},
+      CR087 = #{CR087,jdbcType=VARCHAR},
+      CR088 = #{CR088,jdbcType=VARCHAR},
+      CR089 = #{CR089,jdbcType=VARCHAR},
+      CR090 = #{CR090,jdbcType=VARCHAR},
+      CR091 = #{CR091,jdbcType=VARCHAR},
+      CR092 = #{CR092,jdbcType=VARCHAR},
+      CR093 = #{CR093,jdbcType=INTEGER},
+      CR094 = #{CR094,jdbcType=INTEGER},
+      CR095 = #{CR095,jdbcType=INTEGER},
+      CR096 = #{CR096,jdbcType=DECIMAL},
+      CR097 = #{CR097,jdbcType=INTEGER},
+      CR098 = #{CR098,jdbcType=INTEGER},
+      CR099 = #{CR099,jdbcType=INTEGER},
+      CR100 = #{CR100,jdbcType=DECIMAL},
+      CR101 = #{CR101,jdbcType=VARCHAR},
+      CR102 = #{CR102,jdbcType=INTEGER},
+      CR103 = #{CR103,jdbcType=INTEGER}
+    where CR001 = #{CR001,jdbcType=VARCHAR}
+  </update>
+</mapper>

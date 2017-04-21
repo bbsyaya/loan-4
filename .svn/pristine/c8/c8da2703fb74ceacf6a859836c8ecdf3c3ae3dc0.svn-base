@@ -1,0 +1,49 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<!-- 展业机构信息 -->
+<div title="机构信息" style="padding:20px; margin:auto;width: 90%">
+   	<table style = "width:100%">
+   		<tr>
+	   		<td style="width:15%;word-break;" class="tdtitle">规则编号:</td>
+	   		<td style="width:35%;word-break;"><input type="text" class="ruleNo" name="ruleNo" value="${tApprovedRulesConfig.ruleNo}" size="30"></td>
+	   		<td class="tdtitle">产品代码:</td>
+	   		<td><input type="text" class="prodId" name="prodId" value="${tApprovedRulesConfig.prodId}" size="30"></td>
+   		</tr>
+   		<tr>
+	   		<td class="tdtitle">渠道:</td>
+	   		<td><input type="text" class="channel" name="channel" value="${tApprovedRulesConfig.channel}" size="30"></td>
+	   		<td class="tdtitle">地区:</td>
+	   		<td><input type="text" class="region" name="region" value="${tApprovedRulesConfig.region}" size="30"></td>
+   		</tr>
+   		<tr>
+	   		<td class="tdtitle">年龄:</td>
+	   		<td><input type="text" class="age" name="age"  value="${tApprovedRulesConfig.age}"/></td>
+	   		<td class="tdtitle">额度上限:</td>
+	   		<td><input type="text" class="amt_uplimit" name="amt_uplimit" value="${tApprovedRulesConfig.amt_uplimit}" size="30"></td>
+   		</tr>
+   		<tr>
+	   		<td class="tdtitle">是否生效:</td>
+	   		<td><input type="text" class="deleted_flag" name="deleted_flag"  value="${tApprovedRulesConfig.deleted_flag}"/></td>
+	   		<td class="tdtitle">生效时间:</td>
+	   		<td><input type="text" class="valid_date" name="valid_date" value="${tApprovedRulesConfig.valid_date}" size="30"></td>
+   		</tr>
+   		<tr>
+	   		<td class="tdtitle">失效时间:</td>
+	   		<td><input type="text" class="invalid_date" name="invalid_date"  value="${tApprovedRulesConfig.invalid_date}"/></td>
+	   		<td class="tdtitle">创建时间:</td>
+	   		<td><input type="text" class="create_date" name="create_date" value="${tApprovedRulesConfig.create_date}" size="30"></td>
+   		</tr>
+   		<tr>
+	   		<td class="tdtitle">修改时间:</td>
+	   		<td><input type="text" class="modify_date" name="modify_date"  value="${tApprovedRulesConfig.modify_date}"/></td>
+   		</tr>
+   	</table>
+   	<br/><br/>
+   	<div style="text-align: center">
+   		<input type="hidden" id="orgId" value="${institution.orgId}"/>
+	   	<a href="javascript:void(0)" id="save" width="100px" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveApprovedRulesConfig(${oprFlag})">保存</a>&nbsp;&nbsp;
+	   	<a href="javascript:void(0)" id="cancel" width="100px" class="easyui-linkbutton" iconCls="icon-no" onclick="cancelApprovedRulesConfig(${oprFlag})">返回</a>
+   	</div>
+</div>

@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hrbb.loan.pos.dao.PUBTRANEXTMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.PUBTRANEXT" >
+    <result column="batchno" property="batchno" jdbcType="CHAR" />
+    <result column="memocode" property="memocode" jdbcType="CHAR" />
+    <result column="keyword" property="keyword" jdbcType="CHAR" />
+    <result column="trandate" property="trandate" jdbcType="CHAR" />
+    <result column="frntdate" property="frntdate" jdbcType="CHAR" />
+    <result column="serseqno" property="serseqno" jdbcType="INTEGER" />
+    <result column="channel" property="channel" jdbcType="CHAR" />
+    <result column="openbrc" property="openbrc" jdbcType="CHAR" />
+    <result column="profitbrc" property="profitbrc" jdbcType="CHAR" />
+    <result column="cnapsbankno" property="cnapsbankno" jdbcType="CHAR" />
+    <result column="accptbrcname1" property="accptbrcname1" jdbcType="CHAR" />
+    <result column="bmszh" property="bmszh" jdbcType="CHAR" />
+    <result column="bmshm" property="bmshm" jdbcType="CHAR" />
+    <result column="backcnapsno" property="backcnapsno" jdbcType="CHAR" />
+    <result column="accptbrcname2" property="accptbrcname2" jdbcType="CHAR" />
+    <result column="bmstxtype" property="bmstxtype" jdbcType="CHAR" />
+    <result column="bmsywzlm" property="bmsywzlm" jdbcType="CHAR" />
+    <result column="amt1" property="amt1" jdbcType="DECIMAL" />
+    <result column="amt2" property="amt2" jdbcType="DECIMAL" />
+    <result column="amt3" property="amt3" jdbcType="DECIMAL" />
+    <result column="memo1" property="memo1" jdbcType="CHAR" />
+    <result column="memo2" property="memo2" jdbcType="CHAR" />
+    <result column="memo3" property="memo3" jdbcType="CHAR" />
+    <result column="memo4" property="memo4" jdbcType="VARCHAR" />
+    <result column="memo5" property="memo5" jdbcType="VARCHAR" />
+  </resultMap>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.PUBTRANEXT" >
+    insert into pubtranext (batchno, memocode, keyword, 
+      trandate, frntdate, serseqno, 
+      channel, openbrc, profitbrc, 
+      cnapsbankno, accptbrcname1, bmszh, 
+      bmshm, backcnapsno, accptbrcname2, 
+      bmstxtype, bmsywzlm, amt1, 
+      amt2, amt3, memo1, memo2, 
+      memo3, memo4, memo5)
+    values (#{batchno,jdbcType=CHAR}, #{memocode,jdbcType=CHAR}, #{keyword,jdbcType=CHAR}, 
+      #{trandate,jdbcType=CHAR}, #{frntdate,jdbcType=CHAR}, #{serseqno,jdbcType=INTEGER}, 
+      #{channel,jdbcType=CHAR}, #{openbrc,jdbcType=CHAR}, #{profitbrc,jdbcType=CHAR}, 
+      #{cnapsbankno,jdbcType=CHAR}, #{accptbrcname1,jdbcType=CHAR}, #{bmszh,jdbcType=CHAR}, 
+      #{bmshm,jdbcType=CHAR}, #{backcnapsno,jdbcType=CHAR}, #{accptbrcname2,jdbcType=CHAR}, 
+      #{bmstxtype,jdbcType=CHAR}, #{bmsywzlm,jdbcType=CHAR}, #{amt1,jdbcType=DECIMAL}, 
+      #{amt2,jdbcType=DECIMAL}, #{amt3,jdbcType=DECIMAL}, #{memo1,jdbcType=CHAR}, #{memo2,jdbcType=CHAR}, 
+      #{memo3,jdbcType=CHAR}, #{memo4,jdbcType=VARCHAR}, #{memo5,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.PUBTRANEXT" >
+    insert into pubtranext
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="batchno != null" >
+        batchno,
+      </if>
+      <if test="memocode != null" >
+        memocode,
+      </if>
+      <if test="keyword != null" >
+        keyword,
+      </if>
+      <if test="trandate != null" >
+        trandate,
+      </if>
+      <if test="frntdate != null" >
+        frntdate,
+      </if>
+      <if test="serseqno != null" >
+        serseqno,
+      </if>
+      <if test="channel != null" >
+        channel,
+      </if>
+      <if test="openbrc != null" >
+        openbrc,
+      </if>
+      <if test="profitbrc != null" >
+        profitbrc,
+      </if>
+      <if test="cnapsbankno != null" >
+        cnapsbankno,
+      </if>
+      <if test="accptbrcname1 != null" >
+        accptbrcname1,
+      </if>
+      <if test="bmszh != null" >
+        bmszh,
+      </if>
+      <if test="bmshm != null" >
+        bmshm,
+      </if>
+      <if test="backcnapsno != null" >
+        backcnapsno,
+      </if>
+      <if test="accptbrcname2 != null" >
+        accptbrcname2,
+      </if>
+      <if test="bmstxtype != null" >
+        bmstxtype,
+      </if>
+      <if test="bmsywzlm != null" >
+        bmsywzlm,
+      </if>
+      <if test="amt1 != null" >
+        amt1,
+      </if>
+      <if test="amt2 != null" >
+        amt2,
+      </if>
+      <if test="amt3 != null" >
+        amt3,
+      </if>
+      <if test="memo1 != null" >
+        memo1,
+      </if>
+      <if test="memo2 != null" >
+        memo2,
+      </if>
+      <if test="memo3 != null" >
+        memo3,
+      </if>
+      <if test="memo4 != null" >
+        memo4,
+      </if>
+      <if test="memo5 != null" >
+        memo5,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="batchno != null" >
+        #{batchno,jdbcType=CHAR},
+      </if>
+      <if test="memocode != null" >
+        #{memocode,jdbcType=CHAR},
+      </if>
+      <if test="keyword != null" >
+        #{keyword,jdbcType=CHAR},
+      </if>
+      <if test="trandate != null" >
+        #{trandate,jdbcType=CHAR},
+      </if>
+      <if test="frntdate != null" >
+        #{frntdate,jdbcType=CHAR},
+      </if>
+      <if test="serseqno != null" >
+        #{serseqno,jdbcType=INTEGER},
+      </if>
+      <if test="channel != null" >
+        #{channel,jdbcType=CHAR},
+      </if>
+      <if test="openbrc != null" >
+        #{openbrc,jdbcType=CHAR},
+      </if>
+      <if test="profitbrc != null" >
+        #{profitbrc,jdbcType=CHAR},
+      </if>
+      <if test="cnapsbankno != null" >
+        #{cnapsbankno,jdbcType=CHAR},
+      </if>
+      <if test="accptbrcname1 != null" >
+        #{accptbrcname1,jdbcType=CHAR},
+      </if>
+      <if test="bmszh != null" >
+        #{bmszh,jdbcType=CHAR},
+      </if>
+      <if test="bmshm != null" >
+        #{bmshm,jdbcType=CHAR},
+      </if>
+      <if test="backcnapsno != null" >
+        #{backcnapsno,jdbcType=CHAR},
+      </if>
+      <if test="accptbrcname2 != null" >
+        #{accptbrcname2,jdbcType=CHAR},
+      </if>
+      <if test="bmstxtype != null" >
+        #{bmstxtype,jdbcType=CHAR},
+      </if>
+      <if test="bmsywzlm != null" >
+        #{bmsywzlm,jdbcType=CHAR},
+      </if>
+      <if test="amt1 != null" >
+        #{amt1,jdbcType=DECIMAL},
+      </if>
+      <if test="amt2 != null" >
+        #{amt2,jdbcType=DECIMAL},
+      </if>
+      <if test="amt3 != null" >
+        #{amt3,jdbcType=DECIMAL},
+      </if>
+      <if test="memo1 != null" >
+        #{memo1,jdbcType=CHAR},
+      </if>
+      <if test="memo2 != null" >
+        #{memo2,jdbcType=CHAR},
+      </if>
+      <if test="memo3 != null" >
+        #{memo3,jdbcType=CHAR},
+      </if>
+      <if test="memo4 != null" >
+        #{memo4,jdbcType=VARCHAR},
+      </if>
+      <if test="memo5 != null" >
+        #{memo5,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

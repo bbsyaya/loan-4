@@ -1,0 +1,37 @@
+package com.hrbb.loan.pos.service.bean;
+
+import java.io.Serializable;
+
+public class ExpiredMessage implements Serializable{
+	
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5209214216723120792L;
+
+	private String expiredDate;
+	
+	private String expiredReason;
+
+	public String getExpiredDate() {
+		return expiredDate;
+	}
+
+	public void setExpiredDate(String expiredDate) {
+		this.expiredDate = expiredDate;
+	}
+
+	public String getExpiredReason() {
+		return expiredReason;
+	}
+
+	public void setExpiredReason(String expiredReason) {
+		this.expiredReason = expiredReason;
+	}
+	
+	 public String toString() {
+	        return "\"expireddate\":\"" + expiredDate + "\","
+	                + "\"expiredreason\":\"" + expiredReason + "\",";
+	    }
+}

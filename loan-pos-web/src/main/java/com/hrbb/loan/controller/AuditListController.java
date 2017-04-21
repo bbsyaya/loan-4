@@ -1,0 +1,423 @@
+/**
+ * 
+ *哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.controller;
+
+import java.io.PrintWriter;
+import java.text.DecimalFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.biz.backstage.inter.BusinessDictionaryBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.CreditApplyAprvInfoBiz;
+import com.hrbb.loan.pos.dao.entity.TCreditApply;
+import com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo;
+import com.hrbb.loan.pos.dao.entity.TCreditApplyReturnInfo;
+import com.hrbb.loan.pos.service.LoanPosCreditApplyReturnInfoService;
+import com.hrbb.loan.pos.service.LoanPosCreditApplyService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.web.security.entity.AccessPrivilege;
+
+/**
+ * 
+ * @author marco
+ * @version $Id: AuditListController.java, v 0.1 2015-3-11 上午11:35:10 marco Exp
+ *          $
+ */
+@Controller
+@RequestMapping("/auditList")
+public class AuditListController {
+
+	private Logger logger = LoggerFactory.getLogger(AuditListController.class);
+
+	@Autowired
+	@Qualifier("creditApplyAprvInfoBiz")
+	private CreditApplyAprvInfoBiz biz;
+	
+	@Autowired
+	private LoanPosCreditApplyService loanPosCreditApplyService;
+	
+	@Autowired
+	@Qualifier("loanPosCreditApplyReturnInfoService")
+	private LoanPosCreditApplyReturnInfoService applyReturnInfoService;
+	
+	
+	@Autowired
+	@Qualifier("businessDictionaryBiz")
+	private BusinessDictionaryBiz bizBD;
+	
+	/**
+	 * <h2>获取审批意见</h2>
+	 * 
+	 * @param loanid
+	 * @return modelAndView
+	 */
+	@RequestMapping("/getInforAuditList")
+	public ModelAndView getInforAuditList(
+			@RequestParam(value = "loanId", required = false) String loanId,
+			HttpServletRequest request,PrintWriter out) {
+		StringBuffer htmlStr = new StringBuffer("");
+		
+		Map<String,ApproveTrack> result = Maps.newHashMap();
+		
+		/*申请信息 */
+		TCreditApply apply = loanPosCreditApplyService.queryCreditApply(loanId);
+		if(apply!=null){
+			ApproveTrack track = new ApproveTrack(ApproveTrack.TYPE_NEW);
+			track.setTracker(apply.getOperId());
+			track.setTrackDateTime(apply.getBeginDate());
+			track.setTrackChoose("新增申请");
+			/*htmlscript output*/
+			htmlStr.append(track.toHtmlScript());
+		}
+		
+		/*审批意见*/
+		TCreditApplyAprvInfo r = new TCreditApplyAprvInfo();
+		r.setLoanId(loanId);
+		// 资料审核意见
+		List<TCreditApplyAprvInfo> l = biz.selectInforAuditList(r);
+		if (l != null && l.size() > 0) {
+			AccessPrivilege access = (AccessPrivilege)request.getSession().getAttribute("accessPrivilege");
+			//build output on sever side
+			for(TCreditApplyAprvInfo opinion:l){
+				int tmpType = ApproveTrack.TYPE_APR;
+				if(opinion.getApprState()!=null && opinion.getApprState().startsWith("9")) tmpType = ApproveTrack.TYPE_END;
+				
+				ApproveTrack track = new ApproveTrack(tmpType);
+				track.setTrackStatus(opinion.getApprState());
+				track.setTracker(opinion.getApprvId());
+				track.setTrackDateTime(opinion.getAppEndTime());
+				track.setTrackChoose(opinion.getApprResult());
+				//初审内部意见所有人可见
+				if(opinion.getApprState().equals("20")){
+					track.setTrackOpinion(opinion.getApprInfo()==null?"":opinion.getApprInfo().replaceAll("\r\n", "<br>"));
+				}
+				//复审内部意见仅复审1~4可见
+//				if(opinion.getApprState().startsWith("3")){
+					if(access.hasAnyPrivilege("ROLE_APPR_LV1;ROLE_APPR_LV2;ROLE_APPR_LV3;ROLE_APPR_LV4")){	//风险复审1~3可见内部意见，其余人只能看外部意见
+						track.setTrackOpinion(opinion.getApprInfo()==null?"":opinion.getApprInfo().replaceAll("\r\n", "<br>"));
+						if(opinion.getApprAmount()!=null) track.setTrackApprAmt(opinion.getApprAmount().doubleValue());
+						if(opinion.getApprInte()!=null) track.setTrackApprInt(opinion.getApprInte().doubleValue());
+						track.setHideResult(false);
+					}
+//				}
+//				if(access.hasAnyPrivilege("ROLE_APPR_LV1;ROLE_APPR_LV2;ROLE_APPR_LV3;ROLE_APPR_LV4")){	//风险复审1~3可见内部意见，其余人只能看外部意见
+//					track.setTrackOpinion(opinion.getApprInfo()==null?"":opinion.getApprInfo().replaceAll("\r\n", "<br>"));
+//				}else{
+//					//track.setTrackOpinion(opinion.getApprInfoExt()==null?"":opinion.getApprInfoExt().replaceAll("\r\n", "<br>"));
+//					track.setTrackOpinion(bizBD.getApprInfoExtMsg(opinion.getApprInfoExt()));
+//				}
+				track.setTitle(opinion.getApprStateTitle());
+				
+				result.put(track.getTrackDateTime(), track);
+			}
+		}
+		
+		/*回池意见*/
+		Map<String,Object> req = Maps.newHashMap();
+		req.put("loanId", loanId);
+		List<TCreditApplyReturnInfo> returnRecords = applyReturnInfoService.selectAllByKey(req);
+		if(returnRecords!=null && returnRecords.size()>0){
+			for(TCreditApplyReturnInfo row:returnRecords){
+				ApproveTrack track = new ApproveTrack(ApproveTrack.TYPE_APR);
+				track.setTracker(row.getClaimUserId());
+				track.setTrackDateTime(row.getReturnTime());
+				track.setTrackChoose("任务回池");
+				track.setTrackOpinion(row.getReturnReason());
+				track.setTitle("任务回池");
+				
+				result.put(track.getTrackDateTime(), track);
+			}
+		}
+		
+		/*把审批意见混合排序*/
+		String[] arrayKey = new String[result.size()];
+		result.keySet().toArray(arrayKey);
+		Arrays.sort(arrayKey);		//按时间排序
+		
+		/*排序后的结果输出*/
+		int count = 0;
+		for(String key:arrayKey){
+			ApproveTrack tmp = result.get(key);
+			tmp.setSerial(++count);
+			htmlStr.append(tmp.toHtmlScript(count==arrayKey.length?true:false));
+		}
+		
+		out.print(htmlStr);
+		
+		return null;
+	}
+}
+
+class ApproveTrack{
+	public static final int TYPE_NEW = 0;
+	public static final int TYPE_APR = 1;
+	public static final int TYPE_END = 2;
+	public static final int TYPE_UNKNOWN = -1;
+	
+	private final DecimalFormat format = new DecimalFormat("#,##0.00");
+	
+	private String tracker = "";
+	private String trackDate = "";
+	private String trackTime = "";
+	private String trackDateTime = "";
+	private String trackChoose = "";
+	private String trackOpinion = "";
+	private String title = "";
+	private int type = TYPE_UNKNOWN;
+	private int serial = 0;
+	private String trackApprAmt = "";
+	private String trackApprInt = "";
+	private String trackStatus = "";
+	private boolean hideResult = true;
+	
+	public boolean isHideResult() {
+		return hideResult;
+	}
+	
+	public void setHideResult(boolean hideResult) {
+		this.hideResult = hideResult;
+	}
+
+	public String getTrackStatus() {
+		return trackStatus;
+	}
+
+	public void setTrackStatus(String trackStatus) {
+		this.trackStatus = trackStatus;
+	}
+
+	public String getTrackApprAmt() {
+		return isHideResult()?"***":trackApprAmt;
+	}
+
+	public void setTrackApprAmt(double trackApprAmt) {
+		this.trackApprAmt = format.format(trackApprAmt);
+	}
+
+	public String getTrackApprInt() {
+		return isHideResult()?"***":trackApprInt;
+	}
+
+	public void setTrackApprInt(double trackApprInt) {
+		this.trackApprInt = format.format(trackApprInt);
+	}
+
+	public int getSerial() {
+		return serial;
+	}
+
+	public void setSerial(int serial) {
+		this.serial = serial;
+	}
+
+	public ApproveTrack(int type){
+		this.type = type;
+	}
+	
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getTracker() {
+		return tracker;
+	}
+	public void setTracker(String tracker) {
+		this.tracker = tracker;
+	}
+	public String getTrackDate() {
+		return trackDate;
+	}
+	public void setTrackDateTime(Date trackDate) {
+		this.trackDateTime = DateUtil.formatDate(trackDate, DateUtil.HRRB_LONG_DATETIME_FORMAT);
+		String[] var = this.trackDateTime.split(" ");
+		this.trackDate = var[0];
+		this.trackTime = var[1];
+	}
+	public String getTrackDateTime() {
+		return trackDateTime;
+	}
+	public String getTrackTime() {
+		return trackTime;
+	}
+	public String getTrackChoose() {
+		return trackChoose;
+	}
+	public void setTrackChoose(String trackChoose) {
+		this.trackChoose = trackChoose;
+	}
+	public String getTrackOpinion() {
+		return trackOpinion;
+	}
+	public void setTrackOpinion(String trackOpinion) {
+		this.trackOpinion = trackOpinion;
+	}
+	public String toHtmlScript(){
+		return toHtmlScript(false);
+	}
+	public String toHtmlScript(boolean isTail){
+		StringBuffer htmlStr = new StringBuffer("");
+		switch(type){
+			case TYPE_NEW:
+				htmlStr.append("<table width=\"800\" height=\"165\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">")
+					.append("  <tr>")
+					.append("    <td width=\"80\" height=\"50\"><table width=\"100%\" height=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">")
+					.append("        <tr>")
+					.append("          <td width=\"45%\">&nbsp;</td>")
+					.append("          <td width=\"10%\">&nbsp;</td>")
+					.append("          <td width=\"45%\">&nbsp;</td>")
+					.append("        </tr>")
+					.append("    </table></td>")
+					.append("    <td width=\"120\">&nbsp;</td>")
+					.append("    <td width=\"600\" rowspan=\"3\">")
+					.append("		<span style=\"font-size: 18px;font-weight: bold;\">").append(this.getTrackChoose()).append("</span>")
+					.append("	 </td>")
+					.append("  </tr>")
+					.append("  <tr>")
+					.append("    <td height=\"68\"><div align=\"center\"><img src=\"../img/op_new.png\" width=\"64\" height=\"64\"></div></td>")
+					.append("    <td width=\"88\"><table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">")
+					.append("        <tr>")
+					.append("          <td><div align=\"center\" style=\"font-size: 16px;font-weight: bold;\">").append(this.getTracker()).append("</div></td>")
+					.append("        </tr>")
+					.append("        <tr>")
+					.append("          <td><div align=\"center\">").append(this.getTrackDate()).append("</div></td>")
+					.append("        </tr>")
+					.append("        <tr>")
+					.append("          <td><div align=\"center\">").append(this.getTrackTime()).append("</div></td>")
+					.append("        </tr>")
+					.append("    </table></td>")
+					.append("  </tr>")
+					.append("  <tr>")
+					.append("    <td height=\"50\"><table width=\"100%\" height=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">")
+					.append("        <tr>")
+					.append("          <td width=\"45%\">&nbsp;</td>")
+					.append("          <td width=\"10%\"><div style=\"height:50px; width:1px; border-left:10px #99CCFF solid\"></div></td>")
+					.append("          <td width=\"45%\">&nbsp;</td>")
+					.append("        </tr>")
+					.append("    </table></td>")
+					.append("    <td width=\"88\">&nbsp;</td>")
+					.append("  </tr>")
+					.append("</table>");
+				break;
+			case TYPE_APR:
+				htmlStr.append("<table width=\"800\" height=\"165\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">")
+					.append("  <tr>")
+					.append("    <td width=\"80\" height=\"50\">")
+					.append("		<table width=\"100%\" height=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">")
+					.append("		  <tr>")
+					.append("			<td width=\"45%\">&nbsp;</td>")
+					.append("			<td width=\"10%\"><div style=\"height:50px; width:1px; border-left:10px #99CCFF solid\"></div></td>")
+					.append("			<td width=\"45%\">&nbsp;</td>")
+					.append("		  </tr>")
+					.append("		</table>	")
+					.append("	</td>")
+					.append("    <td width=\"120\">&nbsp;</td>")
+					.append("    <td width=\"600\" rowspan=\"3\">")
+					.append("	<fieldset style=\"padding:5px; color:#333; border:#06c dashed 1px; height:120px\">")
+					.append("				<legend class='dialog-label' style=\"color:#06c; font-weight:400; background:#fff;\">").append(this.getSerial()).append(". ").append(this.getTitle()).append("</legend>")
+					.append("	<span style=\"font-size: 18px;font-weight: bold;\">").append(this.getTrackChoose()).append("</span></br>");
+					if(this.getTrackStatus().matches("(31|33|34|35)")){
+						htmlStr.append("<span style=\"font-size: 14px;\">&nbsp;&nbsp;").append("审批金额：").append(this.getTrackApprAmt()).append(" 元&nbsp;&nbsp;|&nbsp;&nbsp;审批利率：").append(this.getTrackApprInt()).append("%</span></br>");
+//					}else{
+//						htmlStr.append("<span style=\"font-size: 14px;\">&nbsp;&nbsp;").append("审批金额：*** 元&nbsp;&nbsp;|&nbsp;&nbsp;审批利率：***%</span></br>");
+					}
+					htmlStr.append(this.getTrackOpinion())
+					.append("	</fieldset>")
+					.append("	</td>")
+					.append("  </tr>")
+					.append("  <tr>")
+					.append("    <td height=\"68\"><div align=\"center\"><img src=\"../img/op_user.png\" width=\"64\" height=\"64\"></div></td>")
+					.append("    <td width=\"120\"><table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">")
+					.append("        <tr>")
+					.append("          <td><div align=\"center\" style=\"font-size: 16px;font-weight: bold;\">").append(this.getTracker()).append("</div></td>")
+					.append("        </tr>")
+					.append("        <tr>")
+					.append("          <td><div align=\"center\">").append(this.getTrackDate()).append("</div></td>")
+					.append("        </tr>")
+					.append("        <tr>")
+					.append("          <td><div align=\"center\">").append(this.getTrackTime()).append("</div></td>")
+					.append("        </tr>")
+					.append("    </table></td>")
+					.append("  </tr>")
+					.append("  <tr>")
+					.append("    <td height=\"50\"><table width=\"100%\" height=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">")
+					.append("      <tr>")
+					.append("        <td width=\"45%\">&nbsp;</td>")
+					.append("        <td width=\"10%\">").append(isTail?"&nbsp;":"<div style=\"height:50px; width:1px; border-left:10px #99CCFF solid\"></div>").append("</td>")
+					.append("        <td width=\"45%\">&nbsp;</td>")
+					.append("      </tr>")
+					.append("    </table></td>")
+					.append("    <td width=\"120\">&nbsp;</td>")
+					.append("  </tr>")
+					.append("</table>");
+				break;
+			case TYPE_END:
+				htmlStr.append("<table width=\"800\" height=\"165\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">")
+					.append("  <tr>")
+					.append("    <td width=\"80\" height=\"50\"><table width=\"100%\" height=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">")
+					.append("        <tr>")
+					.append("          <td width=\"45%\">&nbsp;</td>")
+					.append("          <td width=\"10%\"><div style=\"height:50px; width:1px; border-left:10px #99CCFF solid\"></div></td>")
+					.append("          <td width=\"45%\">&nbsp;</td>")
+					.append("        </tr>")
+					.append("    </table></td>")
+					.append("    <td width=\"120\">&nbsp;</td>")
+					.append("    <td width=\"600\" rowspan=\"3\">")
+					.append("	<fieldset style=\"padding:5px; color:#333; border:#06c dashed 1px; height:120px\">")
+					.append("				<legend class='dialog-label' style=\"color:#06c; font-weight:400; background:#fff;\">").append(this.getSerial()).append(". ").append(this.getTitle()).append("</legend>")
+					.append("	<span style=\"font-size: 18px;font-weight: bold;\">").append(this.getTrackChoose()).append("</span></br>")
+					.append(this.getTrackOpinion())
+					.append("	</fieldset>")
+					.append("  </tr>")
+					.append("  <tr>")
+					.append("    <td height=\"68\"><div align=\"center\"><img src=\"../img/op_accept.png\" width=\"64\" height=\"64\"></div></td>")
+					.append("    <td width=\"120\"><table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">")
+					.append("        <tr>")
+					.append("          <td><div align=\"center\" style=\"font-size: 16px;font-weight: bold;\">").append(this.getTracker()).append("</div></td>")
+					.append("        </tr>")
+					.append("        <tr>")
+					.append("          <td><div align=\"center\">").append(this.getTrackDate()).append("</div></td>")
+					.append("        </tr>")
+					.append("        <tr>")
+					.append("          <td><div align=\"center\">").append(this.getTrackTime()).append("</div></td>")
+					.append("        </tr>")
+					.append("    </table></td>")
+					.append("  </tr>")
+					.append("  <tr>")
+					.append("    <td height=\"50\"><table width=\"100%\" height=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">")
+					.append("        <tr>")
+					.append("          <td width=\"45%\">&nbsp;</td>")
+					.append("          <td width=\"10%\">&nbsp;</td>")
+					.append("          <td width=\"45%\">&nbsp;</td>")
+					.append("        </tr>")
+					.append("    </table></td>")
+					.append("    <td width=\"120\">&nbsp;</td>")
+					.append("  </tr>")
+					.append("</table>");
+				break;
+			default:
+				
+		}
+		return htmlStr.toString();
+	}
+}

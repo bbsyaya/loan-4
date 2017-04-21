@@ -1,0 +1,63 @@
+package com.hrbb.loan.hessian.impl;
+
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.hessian.inter.IPoliceHessianService;
+import com.hrbb.loan.pos.biz.backstage.inter.IPoliceAndAICConnectBiz;
+import com.hrbb.sh.framework.ConnectPoliceService;
+
+@Component("policeHessianService")
+public class PoliceHessianServiceImpl implements IPoliceHessianService{
+	
+	Logger logger = LoggerFactory.getLogger(PoliceHessianServiceImpl.class);
+	
+	@Autowired
+	private ConnectPoliceService connectPoliceService;
+	
+	@Autowired
+	private IPoliceAndAICConnectBiz policeAndAICConnectBiz;
+
+	@Override
+	public Map<String, String> getCustPoliceInfo(Map<String, String> reqMap) {
+		Map<String, String> respMap = Maps.newHashMap();
+		String custName = reqMap.get("custName");
+		String idNo = reqMap.get("idNo");
+		if(policeAndAICConnectBiz.hasPoliceInfo(idNo, custName)){
+			//成功为00
+			respMap.put("returnCode", "00");
+			respMap.put("returnMsg", "已查询");
+			logger.debug("[]该客户的公安信息已查询过", custName);
+			return respMap;
+		}else{
+			//需要查询
+			Map<String, String> reqXmlMap = policeAndAICConnectBiz.getPolicReqXmp(idNo, custName);
+			String license = reqXmlMap.get("license");
+			String reqXml = reqXmlMap.get("reqXml");
+			String url = reqXmlMap.get("url");
+			String resXml = null;
+			try{
+				resXml = connectPoliceService.connectPolice(url, reqXml, license);
+			}catch(Exception e){
+				respMap.put("returnCode", "01");
+				respMap.put("returnMsg", "查询异常");
+				logger.error("调用公安查询接口异常:" + e.getMessage());
+			}
+			Map<String, Object> analMap = policeAndAICConnectBiz.getPoliceInfo(reqXml);
+			respMap.put("returnCode", (String)analMap.get("returnCode"));
+			respMap.put("returnMsg", (String)analMap.get("returnMsg"));
+			logger.debug(custName + "查询公安查询接口完成");
+			return respMap;
+		}
+		
+	}
+	
+	
+	
+	
+}

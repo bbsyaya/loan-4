@@ -1,0 +1,76 @@
+package com.hrbb.loan.pos.dao;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+
+public interface TReceiptInfoDao {
+	int deleteByPrimaryKey(String receiptId);
+
+	int insert(TReceiptInfo record);
+
+	int insertSelective(TReceiptInfo record);
+
+	TReceiptInfo selectByPrimaryKey(String receiptId);
+
+	int updateByPrimaryKeySelective(TReceiptInfo record);
+
+	int updateByPrimaryKey(TReceiptInfo record);
+
+	List<TReceiptInfo> selectSelectiveMap(Map<String, Object> map);
+
+	String getContNoByReceiptId(String receiptId);
+
+	String getReceiptTotalAmountByContNo(String contno);
+
+	Double getLoanTotalBalanceByReceiptId(String listid);
+
+	String getReceiptIdByPayApplyId(String listid);
+
+	List<TReceiptInfo> selectRecordInfoHB16();
+
+	List<TReceiptInfo> selectRecordInfoHB18();
+
+	List<TReceiptInfo> selectRecordInfoHB19();
+
+	String getBeginDateByPayApplyId(String listid);
+
+	List<TReceiptInfo> getReceiptList(Map<String, Object> reqMap);
+
+	List<TReceiptInfo> getAllReceipts(Map<String, Object> reqMap);
+
+    /**
+     * 更新借据
+     * 
+     * @param reqMap
+     */
+    int updateReceiptSelective(Map<String, Object> reqMap);
+
+    /**
+     * 通过用款编号查询借据
+     * 
+     * @param receiptId
+     * @return
+     */
+    TReceiptInfo selectByPayApplyId(String receiptId);
+    
+    /**
+     * 获取放款指令发送成功的借据列表
+     * 
+     * @param reqMap
+     * @return
+     */
+    List<TReceiptInfo> getReceiptList10();
+    
+    /**
+     * 消费贷 还款管理     2.6.1   到期提醒.
+     * 
+     * @param queryMap
+     * @return
+     */
+    List<Map<String, Object>> selectListMapsByTimer(Map<String, Object> queryMap);
+
+	Map<String, Object> getReceiptMapByReceiptId(String receiptId);
+}

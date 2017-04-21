@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCallbackRecordMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCallbackRecord" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="loanId" property="loanId" jdbcType="VARCHAR" />
+    <result column="contNo" property="contNo" jdbcType="VARCHAR" />
+    <result column="respCode" property="respCode" jdbcType="VARCHAR" />
+    <result column="created_at" property="created_at" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updated_at" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, loanId, contNo, respCode, created_at, updated_at
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_callback_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_callback_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCallbackRecord" >
+    insert into t_callback_record (id, loanId, contNo, 
+      respCode, created_at, updated_at
+      )
+    values (#{id,jdbcType=INTEGER}, #{loanId,jdbcType=VARCHAR}, #{contNo,jdbcType=VARCHAR}, 
+      #{respCode,jdbcType=VARCHAR}, #{created_at,jdbcType=TIMESTAMP}, #{updated_at,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCallbackRecord" >
+    insert into t_callback_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="loanId != null" >
+        loanId,
+      </if>
+      <if test="contNo != null" >
+        contNo,
+      </if>
+      <if test="respCode != null" >
+        respCode,
+      </if>
+      <if test="created_at != null" >
+        created_at,
+      </if>
+      <if test="updated_at != null" >
+        updated_at,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="loanId != null" >
+        #{loanId,jdbcType=VARCHAR},
+      </if>
+      <if test="contNo != null" >
+        #{contNo,jdbcType=VARCHAR},
+      </if>
+      <if test="respCode != null" >
+        #{respCode,jdbcType=VARCHAR},
+      </if>
+      <if test="created_at != null" >
+        #{created_at,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updated_at != null" >
+        #{updated_at,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCallbackRecord" >
+    update t_callback_record
+    <set >
+      <if test="loanId != null" >
+        loanId = #{loanId,jdbcType=VARCHAR},
+      </if>
+      <if test="contNo != null" >
+        contNo = #{contNo,jdbcType=VARCHAR},
+      </if>
+      <if test="respCode != null" >
+        respCode = #{respCode,jdbcType=VARCHAR},
+      </if>
+      <if test="created_at != null" >
+        created_at = #{created_at,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updated_at != null" >
+        updated_at = #{updated_at,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCallbackRecord" >
+    update t_callback_record
+    set loanId = #{loanId,jdbcType=VARCHAR},
+      contNo = #{contNo,jdbcType=VARCHAR},
+      respCode = #{respCode,jdbcType=VARCHAR},
+      created_at = #{created_at,jdbcType=TIMESTAMP},
+      updated_at = #{updated_at,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

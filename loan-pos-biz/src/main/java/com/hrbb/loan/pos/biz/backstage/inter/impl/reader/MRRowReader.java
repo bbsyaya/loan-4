@@ -1,0 +1,335 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.biz.backstage.inter.impl.reader;
+
+import java.math.BigDecimal;
+import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.hrbb.loan.pos.dao.entity.TCreditReportIndicator;
+import com.hrbb.loan.pos.service.LoanPosCreditApplyService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.MessageDigest;
+import com.hrbb.loan.pos.util.constants.BusinessDictionaryConstants;
+import com.hrbb.loan.pos.util.excel.IRowReader;
+
+/**
+ * 
+ * @author maosheng
+ * @version $Id: MRRowReader.java, v 0.1 2015-5-7 下午6:22:38 maosheng Exp $
+ */
+public class MRRowReader implements IRowReader{
+	
+	Logger logger = LoggerFactory.getLogger(MRRowReader.class);
+
+  //数据起始行
+    protected int rowStart = 2;
+    //批处理数据条数
+    protected int batchNum = 2000;
+
+    
+  //待处理结果Map
+    private Map<String, TCreditReportIndicator> insertMap = null;
+    
+    //reader对应excel版本
+    private int readerVersion = READER_VER_UNKOWN;
+    
+    //转换日期元数据定义
+    private RowMeta[] rowMeta = null;
+    
+    private boolean exceptionTrigger = false;
+    
+    public MRRowReader(){
+        /*
+        74.cr002
+        79.cr007
+        101.cr029
+        103.cr031
+        105.cr033
+        136.cr064
+        137.cr065
+         */
+        RowMeta[] rm = {new RowMeta(74,"yyyy/MM/dd","yyyy.MM.dd",RowMeta.META_TYPE_DATE),
+                        new RowMeta(79,"yyyy/MM/dd","yyyy.MM.dd",RowMeta.META_TYPE_DATE),
+                        new RowMeta(101,"yyyy/MM/dd","yyyy/MM/dd",RowMeta.META_TYPE_DATE),
+                        new RowMeta(103,"yyyy/MM/dd","yyyy.MM",RowMeta.META_TYPE_DATE),
+                        new RowMeta(105,"yyyy/MM/dd","yyyy.MM",RowMeta.META_TYPE_DATE),
+                        new RowMeta(136,"yyyy/MM/dd","yyyy/MM/dd",RowMeta.META_TYPE_DATE),
+                        new RowMeta(137,"yyyy/MM/dd","yyyy/MM/dd",RowMeta.META_TYPE_DATE)};
+       
+        rowMeta = rm;
+
+    }
+    
+    
+       
+    public void getRows(int sheetIndex, int curRow, List<String> rowlist) {
+        if(curRow < rowStart-1) return;
+        
+        if(exceptionTrigger) return;
+
+        
+        if(rowMeta != null){
+            for(RowMeta rm: rowMeta){
+                String dateVal = rowlist.get(rm.getIndex());
+                if(StringUtils.isNotBlank(dateVal)){
+                    try {
+                        Date date = null;
+/*                        if(getVersion() == READER_VER_07 && rm.getType()==RowMeta.META_TYPE_DATE){      //07版本的日期做转化
+                            date = HSSFDateUtil.getJavaDate(Double.valueOf(dateVal));
+                        }else{*/
+                            date = DateUtil.parse2Date(dateVal, rm.getFromFormat());
+                        //}
+                        String formatedDate = DateUtil.formatDate(date, rm.getToFormat());
+                        rowlist.set(rm.getIndex(), formatedDate);       //replace value
+                        
+                    } catch (ParseException e) {
+                        exceptionTrigger = true;
+                    }
+                }
+            }
+        }
+        if(exceptionTrigger) return;
+        processRow(rowlist);
+    }
+    
+    
+    
+    
+    
+    @Override
+    public void setVersion(int ver) {
+        this.readerVersion = ver;
+    }
+    
+    public int getVersion() {
+        return readerVersion;
+    }
+    
+    public void addHandleMap(Map<String,TCreditReportIndicator> map){
+        insertMap = map;
+    }
+    
+    public boolean fireTrigger() {
+        return exceptionTrigger;
+    }
+    
+    protected Map<String, TCreditReportIndicator> processRow(List<String> row) {
+        TCreditReportIndicator tc = new TCreditReportIndicator();
+        
+        
+        tc.setCR001(row.get(73));
+        tc.setCR002(row.get(74));
+        tc.setCR003(row.get(75));
+        tc.setCR004(row.get(76));
+        tc.setCR005(row.get(77));
+        tc.setCR006(row.get(78));
+        tc.setCR007(row.get(79));
+        tc.setCR008(row.get(80));
+        tc.setCR009(row.get(81));
+        tc.setCR010(row.get(82));
+        tc.setCR011(row.get(83));
+        tc.setCR012(row.get(84));
+        tc.setCR013(row.get(85));
+        tc.setCR014(row.get(86));
+        tc.setCR015(row.get(87));
+        tc.setCR016(row.get(88));
+        tc.setCR017(row.get(89));
+        tc.setCR018(row.get(90));
+        tc.setCR019(row.get(91));
+        tc.setCR020(row.get(92));
+        tc.setCR021(row.get(93));
+        tc.setCR022(row.get(94));
+        tc.setCR023(row.get(95));
+        tc.setCR024(row.get(96));
+        tc.setCR025(row.get(97));
+        tc.setCR026(row.get(98));
+        tc.setCR027(Integer.valueOf(row.get(99)));
+        tc.setCR028(Integer.valueOf(row.get(100)));
+        tc.setCR029(row.get(101));
+        tc.setCR030(Integer.valueOf(row.get(102)));
+        tc.setCR031(row.get(103));
+        tc.setCR032(Integer.valueOf(row.get(104)));
+        tc.setCR033(row.get(105));
+        if(StringUtils.isNotBlank(row.get(106))){
+            tc.setCR034(Integer.valueOf(row.get(106)));
+        }
+        if(StringUtils.isNotBlank(row.get(107))){
+            tc.setCR035(Integer.valueOf(row.get(107)));
+        }
+        if(StringUtils.isNotBlank(row.get(108))){
+            tc.setCR036(Integer.valueOf(row.get(108)));
+        }
+        if(StringUtils.isNotBlank(row.get(109))){
+            tc.setCR037(Integer.valueOf(row.get(109)));
+        }
+        tc.setCR038(getBigDecimal(row.get(110)));
+        if(StringUtils.isNotBlank(row.get(111))){
+            tc.setCR039(Integer.valueOf(row.get(111)));
+        }
+        if(StringUtils.isNotBlank(row.get(112))){
+            tc.setCR040(Integer.valueOf(row.get(112)));
+        }
+        if(StringUtils.isNotBlank(row.get(113))){
+            tc.setCR041(Integer.valueOf(row.get(113)));
+        }
+        tc.setCR042(getBigDecimal(row.get(114)));
+        if(StringUtils.isNotBlank(row.get(115))){
+            tc.setCR043(Integer.valueOf(row.get(115)));
+        }
+        if(StringUtils.isNotBlank(row.get(116))){
+            tc.setCR044(Integer.valueOf(row.get(116)));
+        }
+        if(StringUtils.isNotBlank(row.get(117))){
+            tc.setCR045(Integer.valueOf(row.get(117)));
+        }
+        tc.setCR046(getBigDecimal(row.get(118)));
+        if(StringUtils.isNotBlank(row.get(119))){
+            tc.setCR047(Integer.valueOf(row.get(119)));
+        }
+        if(StringUtils.isNotBlank(row.get(120))){
+            tc.setCR048(Integer.valueOf(row.get(120)));
+        }
+        if(StringUtils.isNotBlank(row.get(121))){
+            tc.setCR049(Integer.valueOf(row.get(121)));
+        }
+        if(StringUtils.isNotBlank(row.get(122))){
+            tc.setCR050(Integer.valueOf(row.get(122)));
+        }
+        tc.setCR051(getBigDecimal(row.get(123)));
+        tc.setCR052(getBigDecimal(row.get(124)));
+        tc.setCR053(getBigDecimal(row.get(125)));
+        if(StringUtils.isNotBlank(row.get(126))){
+            tc.setCR054(Integer.valueOf(row.get(126)));
+        }
+        if(StringUtils.isNotBlank(row.get(127))){
+            tc.setCR055(Integer.valueOf(row.get(127)));
+        }
+        if(StringUtils.isNotBlank(row.get(128))){
+            tc.setCR056(Integer.valueOf(row.get(128)));
+        }
+        tc.setCR057(getBigDecimal(row.get(129)));
+        tc.setCR058(getBigDecimal(row.get(130)));
+        tc.setCR059(getBigDecimal(row.get(131)));
+        tc.setCR060(getBigDecimal(row.get(132)));
+        tc.setCR061(getBigDecimal(row.get(133)));
+        tc.setCR062(getBigDecimal(row.get(134)));
+        tc.setCR063(getBigDecimal(row.get(135)));
+        tc.setCR064(row.get(136));
+        tc.setCR065(row.get(137));
+        tc.setCR066(getBigDecimal(row.get(138)));
+        if(StringUtils.isNotBlank(row.get(139))){
+            tc.setCR067(Integer.valueOf(row.get(139)));
+        }
+        if(StringUtils.isNotBlank(row.get(140))){
+            tc.setCR068(Integer.valueOf(row.get(140)));
+        }
+        if(StringUtils.isNotBlank(row.get(141))){
+            tc.setCR069(Integer.valueOf(row.get(141)));
+        }
+        tc.setCR070(getBigDecimal(row.get(142)));
+        tc.setCR071(getBigDecimal(row.get(143)));
+        tc.setCR072(getBigDecimal(row.get(144)));
+        tc.setCR073(row.get(145));
+        tc.setCR074(getBigDecimal(row.get(146)));
+        if(StringUtils.isNotBlank(row.get(147))){
+            tc.setCR075(Integer.valueOf(row.get(147)));
+        }
+        tc.setCR076(getBigDecimal(row.get(148)));
+        if(StringUtils.isNotBlank(row.get(149))){
+            tc.setCR077(Integer.valueOf(row.get(149)));
+        }
+        tc.setCR078(getBigDecimal(row.get(150)));
+        if(StringUtils.isNotBlank(row.get(151))){
+            tc.setCR079(Integer.valueOf(row.get(151)));
+        }
+        tc.setCR080(getBigDecimal(row.get(152)));
+        if(StringUtils.isNotBlank(row.get(153))){
+            tc.setCR081(Integer.valueOf(row.get(153)));
+        }
+        if(StringUtils.isNotBlank(row.get(154))){
+            tc.setCR082(Integer.valueOf(row.get(154)));
+        }
+        tc.setCR083(getBigDecimal(row.get(155)));
+        tc.setCR084(getBigDecimal(row.get(156)));
+        tc.setCR085(getBigDecimal(row.get(157)));
+        tc.setCR086(getBigDecimal(row.get(158)));
+        tc.setCR087(row.get(159));
+        tc.setCR088(row.get(160));
+        tc.setCR089(row.get(161));
+        tc.setCR090(row.get(162));
+        tc.setCR091(row.get(163));
+        tc.setCR092(row.get(164));
+        if(StringUtils.isNotBlank(row.get(165))){
+            tc.setCR093(Integer.valueOf(row.get(165)));
+        }
+        if(StringUtils.isNotBlank(row.get(166))){
+            tc.setCR094(Integer.valueOf(row.get(166)));
+        }
+        if(StringUtils.isNotBlank(row.get(167))){
+            tc.setCR095(Integer.valueOf(row.get(167)));
+        }
+        tc.setCR096(getBigDecimal(row.get(168)));
+        if(StringUtils.isNotBlank(row.get(169))){
+            tc.setCR097(Integer.valueOf(row.get(169)));
+        }else{
+            tc.setCR097(0);
+        }
+        if(StringUtils.isNotBlank(row.get(170))){
+            tc.setCR098(Integer.valueOf(row.get(170)));
+        }
+        if(StringUtils.isNotBlank(row.get(171))){
+            tc.setCR099(Integer.valueOf(row.get(171)));
+        }
+        tc.setCR100(getBigDecimal(row.get(172)));
+        if(StringUtils.isNotBlank(row.get(183))){
+            tc.setCR102(Integer.valueOf(row.get(183)));
+        }
+        tc.setCR104(getBigDecimal(row.get(176)));
+        tc.setCR105(getBigDecimal(row.get(175)));
+        tc.setCR106(getBigDecimal(row.get(180)));
+        tc.setCR107(getBigDecimal(row.get(179)));
+        tc.setCR108(getBigDecimal(row.get(181)));
+        tc.setCR109(getBigDecimal(row.get(182)));
+        tc.setCR110(getBigDecimal(row.get(132)));
+        String loanId = row.get(5);
+        insertMap.put(loanId, tc);
+        return insertMap;
+    }
+    
+    public String getFormatDate(String str){
+       String formatedDate="";
+        try {
+            Date date = DateUtil.parse2Date(str,"yyyy/MM/dd");   
+            formatedDate = DateUtil.formatDate(date, "yyyy-MM-dd");       
+            }catch (ParseException e) {
+               logger.error("发生异常:"+ e.getMessage());
+            }
+        return formatedDate;
+    }
+    
+    public static BigDecimal getBigDecimal(String str){
+        BigDecimal bigDecimal = new BigDecimal(0).setScale(6);
+        if(StringUtils.isNotBlank(str)){
+            return new BigDecimal(str).setScale(6);
+        }        
+        return bigDecimal;       
+     }
+}

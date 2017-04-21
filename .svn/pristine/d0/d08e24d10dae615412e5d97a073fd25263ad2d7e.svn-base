@@ -1,0 +1,58 @@
+package com.hrbb.loan.pos.biz.backstage.inter.impl.reader;
+
+import java.util.Date;
+import java.util.List;
+
+import com.hrbb.loan.pos.dao.entity.TSmsMessage;
+import com.hrbb.loan.pos.service.SendSmsMessageService;
+import com.hrbb.loan.pos.util.excel.IRowReader;
+
+/**
+ * @author zhangwei5@hrbb.com.cn
+ * @date 2015年10月14日下午7:41:21 
+ */
+public class SmsRowReader implements IRowReader {
+    
+    private SendSmsMessageService sendSmsMessageService;
+    //批处理数据条数
+    protected int batchNum = 2000;
+    
+    //待处理结果列表
+    private List<TSmsMessage> insertList = null;
+
+    public void getRows(int sheetIndex, int curRow, List<String> rowlist) {
+        insertList.add(instance(rowlist));
+        if(insertList.size() >= batchNum){
+            sendSmsMessageService.batchInsertSmsMessage(insertList);
+            insertList.clear();
+        }
+    }
+
+    public void setVersion(int ver) {
+    }
+    
+    
+    private TSmsMessage instance(List<String> row){
+        TSmsMessage smsMessage = new TSmsMessage();
+        smsMessage.setMobile(row.get(0));
+        smsMessage.setSendContent(row.get(1));
+        smsMessage.setTempId(RowMeta.TEMPID);
+        smsMessage.setCreateTime(new Date());
+        return smsMessage;
+    }
+
+    /**
+     * @param messages
+     */
+    public void addHandleList(List<TSmsMessage> messages) {
+        insertList = messages;
+    }
+
+
+    public void addService(SendSmsMessageService sendSmsMessageService) {
+        this.sendSmsMessageService = sendSmsMessageService;
+    }
+
+    
+    
+}

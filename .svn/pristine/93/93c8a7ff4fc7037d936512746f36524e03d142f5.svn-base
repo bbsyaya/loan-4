@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TPDFParamMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TPDFParam" >
+    <id column="contNo" property="contNo" jdbcType="VARCHAR" />
+    <result column="loanId" property="loanId" jdbcType="VARCHAR" />
+    <result column="imageFilePackageName" property="imageFilePackageName" jdbcType="VARCHAR" />
+    <result column="signDate" property="signDate" jdbcType="VARCHAR" />
+    <result column="repayMethod" property="repayMethod" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.hrbb.loan.pos.dao.entity.TPDFParam" extends="BaseResultMap" >
+    <result column="signature" property="signature" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    contNo, loanId, imageFilePackageName, signDate, repayMethod
+  </sql>
+  <sql id="Blob_Column_List" >
+    signature
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_pdf_param
+    where contNo = #{contNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_pdf_param
+    where contNo = #{contNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TPDFParam" >
+    insert into t_pdf_param (contNo, loanId, imageFilePackageName, 
+      signDate, repayMethod, signature
+      )
+    values (#{contNo,jdbcType=VARCHAR}, #{loanId,jdbcType=VARCHAR}, #{imageFilePackageName,jdbcType=VARCHAR}, 
+      #{signDate,jdbcType=VARCHAR}, #{repayMethod,jdbcType=VARCHAR}, #{signature,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TPDFParam" >
+    insert into t_pdf_param
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="contNo != null" >
+        contNo,
+      </if>
+      <if test="loanId != null" >
+        loanId,
+      </if>
+      <if test="imageFilePackageName != null" >
+        imageFilePackageName,
+      </if>
+      <if test="signDate != null" >
+        signDate,
+      </if>
+      <if test="repayMethod != null" >
+        repayMethod,
+      </if>
+      <if test="signature != null" >
+        signature,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="contNo != null" >
+        #{contNo,jdbcType=VARCHAR},
+      </if>
+      <if test="loanId != null" >
+        #{loanId,jdbcType=VARCHAR},
+      </if>
+      <if test="imageFilePackageName != null" >
+        #{imageFilePackageName,jdbcType=VARCHAR},
+      </if>
+      <if test="signDate != null" >
+        #{signDate,jdbcType=VARCHAR},
+      </if>
+      <if test="repayMethod != null" >
+        #{repayMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="signature != null" >
+        #{signature,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TPDFParam" >
+    update t_pdf_param
+    <set >
+      <if test="loanId != null" >
+        loanId = #{loanId,jdbcType=VARCHAR},
+      </if>
+      <if test="imageFilePackageName != null" >
+        imageFilePackageName = #{imageFilePackageName,jdbcType=VARCHAR},
+      </if>
+      <if test="signDate != null" >
+        signDate = #{signDate,jdbcType=VARCHAR},
+      </if>
+      <if test="repayMethod != null" >
+        repayMethod = #{repayMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="signature != null" >
+        signature = #{signature,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where contNo = #{contNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.hrbb.loan.pos.dao.entity.TPDFParam" >
+    update t_pdf_param
+    set loanId = #{loanId,jdbcType=VARCHAR},
+      imageFilePackageName = #{imageFilePackageName,jdbcType=VARCHAR},
+      signDate = #{signDate,jdbcType=VARCHAR},
+      repayMethod = #{repayMethod,jdbcType=VARCHAR},
+      signature = #{signature,jdbcType=LONGVARCHAR}
+    where contNo = #{contNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TPDFParam" >
+    update t_pdf_param
+    set loanId = #{loanId,jdbcType=VARCHAR},
+      imageFilePackageName = #{imageFilePackageName,jdbcType=VARCHAR},
+      signDate = #{signDate,jdbcType=VARCHAR},
+      repayMethod = #{repayMethod,jdbcType=VARCHAR}
+    where contNo = #{contNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

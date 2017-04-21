@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/tx
+		 http://www.springframework.org/schema/tx/spring-tx.xsd
+		 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <context:component-scan base-package="com.hrbb.loan.pos.dao.impl"/>
+    <!-- test -->
+    <!-- <util:properties id="app" location="classpath:app.properties"/> -->
+    <!-- prod -->
+     <util:properties id="datasource" location="classpath:datasource-config.properties"/> 
+    <!--<import resource="classpath*:spring/spring-quartz.xml"/>-->
+
+    <!--<context:component-scan base-package="com.jiutong"/>-->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="#{datasource.jdbcDriver}"/>
+        <property name="jdbcUrl" value="#{datasource.jdbcUrl}"/>
+        <property name="user" value="#{datasource.jdbcUser}"/>
+        <property name="password" value="#{datasource.jdbcPass}"/>
+        <property name="initialPoolSize" value="#{datasource.jdbcInitPoolSize}"/>
+        <property name="testConnectionOnCheckout" value="#{datasource.jdbcTestConnectionOnCheckout}"/>
+        <property name="idleConnectionTestPeriod" value="#{datasource.jdbcIdleConnectionTestPeriod}"/>
+        <property name="maxIdleTime" value="#{datasource.jdbcMaxIdleTime}"/>
+    </bean>
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <property name="mapperLocations">
+            <list>
+                <value>classpath*:sql-mapper/*Mapper.xml</value>
+                <value>classpath*:config/mapper/*Mapper.xml</value>
+            </list>
+        </property>
+    </bean>
+    
+    <!-- <bean id="sqlSessionFactory2" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <property name="mapperLocations">
+            <list>
+                <value>classpath*:sql-mapper/*Mapper.xml</value>
+                <value>classpath*:config/mapper/*Mapper.xml</value>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="template" class=""> -->
+
+    <bean name="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+ </beans>

@@ -1,0 +1,115 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.dao.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+import org.springframework.stereotype.Repository;
+
+import com.hrbb.loan.pos.dao.TApproveResultDao;
+import com.hrbb.loan.pos.dao.entity.TApproveResult;
+
+/**
+ * 
+ * @author marco
+ * @version $Id: TApproveResultDaoImpl.java, v 0.1 2015-3-16 下午8:34:44 marco Exp $
+ */
+@Repository("tApproveResultDao")
+public class TApproveResultDaoImpl extends SqlSessionDaoSupport  implements TApproveResultDao{
+
+	/** 
+	 * @see com.hrbb.loan.pos.dao.TApproveResultDao#deleteByPrimaryKey(java.lang.String)
+	 */
+	@Override
+	public int deleteByPrimaryKey(String approveId) {
+		return 0;
+	}
+
+	/** 
+	 * @see com.hrbb.loan.pos.dao.TApproveResultDao#insert(com.hrbb.loan.pos.dao.entity.TApproveResult)
+	 */
+	@Override
+	public int insert(TApproveResult record) {
+		return 0;
+	}
+
+	/** 
+	 * @see com.hrbb.loan.pos.dao.TApproveResultDao#insertSelective(com.hrbb.loan.pos.dao.entity.TApproveResult)
+	 */
+	@Override
+	public int insertSelective(TApproveResult record) {
+		return getSqlSession().insert("TApproveResultMapper.insertSelective", record);
+	}
+
+	/** 
+	 * @see com.hrbb.loan.pos.dao.TApproveResultDao#selectByPrimaryKey(java.lang.String)
+	 */
+	@Override
+	public TApproveResult selectByPrimaryKey(String approveId) {
+		return getSqlSession().selectOne("TApproveResultMapper.selectByPrimaryKey", approveId);
+	}
+
+	/** 
+	 * @see com.hrbb.loan.pos.dao.TApproveResultDao#updateByPrimaryKeySelective(com.hrbb.loan.pos.dao.entity.TApproveResult)
+	 */
+	@Override
+	public int updateByPrimaryKeySelective(TApproveResult record) {
+		return 0;
+	}
+
+	/** 
+	 * @see com.hrbb.loan.pos.dao.TApproveResultDao#updateByPrimaryKey(com.hrbb.loan.pos.dao.entity.TApproveResult)
+	 */
+	@Override
+	public int updateByPrimaryKey(TApproveResult record) {
+		return 0;
+	}
+
+    /** 
+     * @see com.hrbb.loan.pos.dao.TApproveResultDao#selectByLoanId(java.lang.String)
+     */
+    @Override
+    public TApproveResult selectByLoanId(String loanId) {
+        return getSqlSession().selectOne("TApproveResultMapper.selectByLoanId", loanId);
+    }
+
+	@Override
+	public List<Map<String, Object>> getExpiredRecord(Map<String, Object> reqMap) {
+		return getSqlSession().selectList("TApproveResultMapper.getExpiredRecord", reqMap);
+	}
+
+	@Override
+	public int updateExpiredRecord(Map<String, Object> reqMap) {
+		return getSqlSession().update("TApproveResultMapper.updateExpiredRecord", reqMap);
+		
+	}
+
+	@Override
+	public void batchUpdateRecord(List<Map<String, Object>> reqList) {
+		getSqlSession().update("TApproveResultMapper.batchUpdateExpiredRecord", reqList);
+		
+	}
+    
+	@Override
+	public Map<String, Object> getApproveMap(String approveId) {
+		 return getSqlSession().selectOne("TApproveResultMapper.getApproveMap", approveId);
+	}
+
+	@Override
+	public List<Map<String, Object>> getCallTask(Map<String, Object> reqMap) {
+		return getSqlSession().selectList("TApproveResultMapper.selectCallTask", reqMap);
+	}
+	
+	/** 
+	 * @see com.hrbb.loan.pos.dao.TApproveResultDao#updateByPrimaryKey(com.hrbb.loan.pos.dao.entity.TApproveResult)
+	 */
+	@Override
+	public int updateForReconsider(TApproveResult record) {
+		return getSqlSession().update("TApproveResultMapper.updateForReconsider", record);
+	}
+}

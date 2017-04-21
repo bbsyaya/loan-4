@@ -1,0 +1,42 @@
+package com.hrbb.loan.spi.TC;
+
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+
+import com.hrbb.sh.framework.HServiceException;
+import com.hrbb.sh.framework.HttpRequestSender;
+
+public class TCSendMessage {
+	private static Logger logger = Logger.getLogger(TCSendMessage.class);
+
+	private final static String fileName = "C:\\Users\\Charlie\\Desktop\\58接口测试\\58t15_a.txt";
+
+	private final static String url = String.format(
+			"http://%s:11097/frontier/frontierEncrypted", "221.212.155.77");
+
+	private static HttpRequestSender service;
+
+	private static void sendMessage(String url) throws HServiceException,
+			IOException {
+		String post = FileUtils.readFileToString(new File(fileName));
+		FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(
+				"D:\\hrbb\\workspace\\loan\\loan-pos-web\\src\\test\\resources\\58t-context.xml");
+		service = (HttpRequestSender) context.getBean("httpRequestSender");
+		service.sendEncryptedWithCompanion(url, post, "58tc");
+//		service.sendJsonString(url, post);
+		context.close();
+	}
+
+	public static void main(String[] args) {
+		try {
+			sendMessage("http://csd.58v5.cn/channel/hrbb/notify");
+		} catch (Exception ex) {
+			logger.error(ex);
+		}
+
+	}
+}

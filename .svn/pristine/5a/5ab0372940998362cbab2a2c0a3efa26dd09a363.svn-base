@@ -1,0 +1,29 @@
+package com.hrbb.loan.pos.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo;
+
+public interface TPaybackApplyInfoDao {
+    int deleteByPrimaryKey(String paybackApplyId);
+
+    int insert(TPaybackApplyInfo record);
+
+    int insertSelective(TPaybackApplyInfo record);
+
+    TPaybackApplyInfo selectByPrimaryKey(String paybackApplyId);
+
+    int updateByPrimaryKeySelective(TPaybackApplyInfo record);
+
+    int updateByPrimaryKey(TPaybackApplyInfo record);
+
+	List<TPaybackApplyInfo> getPaybackApplyInfo(Map<String, Object> reqMap);
+
+	int updatePaybackStatus(Map<String, Object> updateMap);
+	
+	List<Map<String, Object>> selectPaybackDetailsByMaps(Map<String, Object> map);
+	
+	List<Map<String, Object>> selectPaybackDetailsBySlApp(Map<String, Object> map);
+
+}

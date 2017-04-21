@@ -1,0 +1,23 @@
+package com.hrbb.loan.pos.dao.entity;
+
+public class TCreditApplyAprvHisKey {
+	private String appNum;
+
+    private String loanId;
+
+    public String getAppNum() {
+        return appNum;
+    }
+
+    public void setAppNum(String appNum) {
+        this.appNum = appNum == null ? null : appNum.trim();
+    }
+
+    public String getLoanId() {
+        return loanId;
+    }
+
+    public void setLoanId(String loanId) {
+        this.loanId = loanId == null ? null : loanId.trim();
+    }
+}

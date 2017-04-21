@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TSmsTemplateMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TSmsTemplate" >
+    <id column="tempId" property="tempId" jdbcType="VARCHAR" />
+    <result column="tempName" property="tempName" jdbcType="VARCHAR" />
+    <result column="plaformId" property="plaformId" jdbcType="VARCHAR" />
+    <result column="smsContent" property="smsContent" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="CHAR" />
+    <result column="resv1" property="resv1" jdbcType="VARCHAR" />
+    <result column="resv2" property="resv2" jdbcType="VARCHAR" />
+    <result column="resv3" property="resv3" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    tempId, tempName, plaformId, smsContent, status, resv1, resv2, resv3
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_sms_template
+    where tempId = #{tempId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_sms_template
+    where tempId = #{tempId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TSmsTemplate" >
+    insert into t_sms_template (tempId, tempName, plaformId, 
+      smsContent, status, resv1, 
+      resv2, resv3)
+    values (#{tempId,jdbcType=VARCHAR}, #{tempName,jdbcType=VARCHAR}, #{plaformId,jdbcType=VARCHAR}, 
+      #{smsContent,jdbcType=VARCHAR}, #{status,jdbcType=CHAR}, #{resv1,jdbcType=VARCHAR}, 
+      #{resv2,jdbcType=VARCHAR}, #{resv3,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TSmsTemplate" >
+    insert into t_sms_template
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="tempId != null" >
+        tempId,
+      </if>
+      <if test="tempName != null" >
+        tempName,
+      </if>
+      <if test="plaformId != null" >
+        plaformId,
+      </if>
+      <if test="smsContent != null" >
+        smsContent,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="resv1 != null" >
+        resv1,
+      </if>
+      <if test="resv2 != null" >
+        resv2,
+      </if>
+      <if test="resv3 != null" >
+        resv3,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="tempId != null" >
+        #{tempId,jdbcType=VARCHAR},
+      </if>
+      <if test="tempName != null" >
+        #{tempName,jdbcType=VARCHAR},
+      </if>
+      <if test="plaformId != null" >
+        #{plaformId,jdbcType=VARCHAR},
+      </if>
+      <if test="smsContent != null" >
+        #{smsContent,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=CHAR},
+      </if>
+      <if test="resv1 != null" >
+        #{resv1,jdbcType=VARCHAR},
+      </if>
+      <if test="resv2 != null" >
+        #{resv2,jdbcType=VARCHAR},
+      </if>
+      <if test="resv3 != null" >
+        #{resv3,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TSmsTemplate" >
+    update t_sms_template
+    <set >
+      <if test="tempName != null" >
+        tempName = #{tempName,jdbcType=VARCHAR},
+      </if>
+      <if test="plaformId != null" >
+        plaformId = #{plaformId,jdbcType=VARCHAR},
+      </if>
+      <if test="smsContent != null" >
+        smsContent = #{smsContent,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=CHAR},
+      </if>
+      <if test="resv1 != null" >
+        resv1 = #{resv1,jdbcType=VARCHAR},
+      </if>
+      <if test="resv2 != null" >
+        resv2 = #{resv2,jdbcType=VARCHAR},
+      </if>
+      <if test="resv3 != null" >
+        resv3 = #{resv3,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where tempId = #{tempId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TSmsTemplate" >
+    update t_sms_template
+    set tempName = #{tempName,jdbcType=VARCHAR},
+      plaformId = #{plaformId,jdbcType=VARCHAR},
+      smsContent = #{smsContent,jdbcType=VARCHAR},
+      status = #{status,jdbcType=CHAR},
+      resv1 = #{resv1,jdbcType=VARCHAR},
+      resv2 = #{resv2,jdbcType=VARCHAR},
+      resv3 = #{resv3,jdbcType=VARCHAR}
+    where tempId = #{tempId,jdbcType=VARCHAR}
+  </update>
+</mapper>

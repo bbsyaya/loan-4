@@ -1,0 +1,79 @@
+package com.hrbb.loan.pos.dao.entity;
+
+public class TPDFParam {
+    private String contNo;
+
+    private String loanId;
+
+    private String imageFilePackageName;
+
+    private String signDate;
+
+    private String repayMethod;
+
+    private String signature;
+    
+    public TPDFParam() {
+        super();
+    }
+
+    public TPDFParam(String contNo, String loanId, String imageFilePackageName, String signDate, String repayMethod, String signature) {
+        super();
+        this.contNo = contNo;
+        this.loanId = loanId;
+        this.imageFilePackageName = imageFilePackageName;
+        this.signDate = signDate;
+        this.repayMethod = repayMethod;
+        this.signature = signature;
+    }
+
+
+
+    public String getContNo() {
+        return contNo;
+    }
+
+    public void setContNo(String contNo) {
+        this.contNo = contNo == null ? null : contNo.trim();
+    }
+
+    public String getLoanId() {
+        return loanId;
+    }
+
+    public void setLoanId(String loanId) {
+        this.loanId = loanId == null ? null : loanId.trim();
+    }
+
+    public String getImageFilePackageName() {
+        return imageFilePackageName;
+    }
+
+    public void setImageFilePackageName(String imageFilePackageName) {
+        this.imageFilePackageName = imageFilePackageName == null ? null : imageFilePackageName.trim();
+    }
+
+    public String getSignDate() {
+        return signDate;
+    }
+
+    public void setSignDate(String signDate) {
+        this.signDate = signDate == null ? null : signDate.trim();
+    }
+
+    public String getRepayMethod() {
+        return repayMethod;
+    }
+
+    public void setRepayMethod(String repayMethod) {
+        this.repayMethod = repayMethod == null ? null : repayMethod.trim();
+    }
+
+    public String getSignature() {
+        return signature;
+    }
+
+    public void setSignature(String signature) {
+        this.signature = signature == null ? null : signature.trim();
+    }
+}

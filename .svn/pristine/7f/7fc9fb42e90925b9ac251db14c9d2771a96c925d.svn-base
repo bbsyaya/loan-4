@@ -1,0 +1,18 @@
+package com.hrbb.loan.pos.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.hrbb.loan.pos.dao.entity.TCfgChannelAccount;
+
+public interface RepaymentApplyService {
+	public String applyRepayment(Map<String, Object> request) throws Exception;
+	
+	public List<Map<String, Object>> queryRepaymentListByZzApp(Map<String, Object> map);
+
+	public String paybackApply(Map<String, Object> properties) throws Exception;
+	
+	public List<TCfgChannelAccount> getEffectAccount();
+	
+	public TCfgChannelAccount getChannelAccount(String channel);
+}

@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>  
+ 	<!-- jdbc驱动 -->
+    <classPathEntry  location="C:\Users\cjq\.m2\repository\mysql\mysql-connector-java\5.1.32\mysql-connector-java-5.1.32.jar"/>  
+    <context id="DB2Tables"  targetRuntime="MyBatis3">  
+        <commentGenerator>  
+            <property name="suppressDate" value="true"/>  
+
+            <property name="suppressAllComments" value="true"/>  
+        </commentGenerator>  
+		<!-- url,用户名,密码 -->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://10.1.5.226:3306/hrbbifloan" userId="mysql" password="mysql">  
+        </jdbcConnection>  
+        <javaTypeResolver>  
+            <property name="forceBigDecimals" value="false"/>  
+        </javaTypeResolver>  
+		<!-- 生成entity路径 -->
+        <javaModelGenerator targetPackage="com.hrbb.loan.pos.dao.entity" targetProject="loan-pos-dal">  
+            <property name="enableSubPackages" value="true"/>  
+            <property name="trimStrings" value="true"/>  
+        </javaModelGenerator>  
+		<!-- 生成sql映射路径 -->
+        <sqlMapGenerator targetPackage="com.hrbb.loan.pos.dao.mapper" targetProject="loan-pos-dal">  
+            <property name="enableSubPackages" value="true"/>  
+        </sqlMapGenerator>  
+		<!-- 生成dao的路径 -->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.hrbb.loan.pos.dao" targetProject="loan-pos-dal">  
+            <property name="enableSubPackages" value="true"/>  
+        </javaClientGenerator>  
+		<!-- 要生成的表 -->
+		<!-- <table tableName="t_approve_reject" domainObjectName="TApproveReject" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table> 
+        <table tableName="t_approve_adjust" domainObjectName="TApproveAdjust" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table> 
+        
+        <table tableName="t_credit_apply_info" domainObjectName="TCreditApply" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table> 
+         <table tableName="t_approve_result" domainObjectName="TApproveResult" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table> 
+       
+         <table tableName="t_contract_info" domainObjectName="TContractManagement" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table> 
+        
+        <table tableName="t_credit_apply_aprv_info" domainObjectName="TCreditApplyAprv" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table> 
+        <table tableName="t_credit_apply_aprv_his" domainObjectName="TCreditApplyAprvHis" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>  
+        <table tableName="t_customer_info" domainObjectName="TCustomer" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table> 
+        <table tableName="t_customer_base_info" domainObjectName="TCustomerBase" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_blackinfo_info" domainObjectName="TBlacklistInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table> 
+       <table tableName="t_channel_poscust_info" domainObjectName="TChannelPostcustInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_announce" domainObjectName="TCreditReportAnnounce" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_asset" domainObjectName="TCreditReportAsset" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_award" domainObjectName="TCreditReportAward" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_brief" domainObjectName="TCreditReportBrief" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_creditcard" domainObjectName="TCreditReportCreditCard" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_creditcard_brief" domainObjectName="TCreditReportCreditCardBrief" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_creditinfo" domainObjectName="TCreditReportCreditInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_dissent" domainObjectName="TCreditReportDissent" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_execution" domainObjectName="TCreditReportExecution" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_guarantee" domainObjectName="TCreditReportGuarantee" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_housing" domainObjectName="TCreditReportHousing" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_identity" domainObjectName="TCreditReportIdentity" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_indicator" domainObjectName="TCreditReportIndicator" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_institution" domainObjectName="TCreditReportInstitution" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_judgment" domainObjectName="TCreditReportJudgment" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_loan_info" domainObjectName="TCreditReportLoanInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_normal" domainObjectName="TCreditReportNormal" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_npl" domainObjectName="TCreditReportNpl" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_overdue" domainObjectName="TCreditReportOverdue" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_overdue_5years" domainObjectName="TCreditReportOverdue5Years" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_overdue_detail" domainObjectName="TCreditReportOverdueDetail" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_penalty" domainObjectName="TCreditReportPenalty" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_pension_deposit" domainObjectName="TCreditReportPensionDeposit" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_pension_issue" domainObjectName="TCreditReportPensionIssue" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_profession" domainObjectName="TCreditReportProfession" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_qualify" domainObjectName="TCreditReportQualify" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_query_brief" domainObjectName="TCreditReportQueryBrief" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_query_detail" domainObjectName="TCreditReportQueryDetail" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_quid" domainObjectName="TCreditReportQuid" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_relief" domainObjectName="TCreditReportRelief" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_residence" domainObjectName="TCreditReportResidence" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_semicard" domainObjectName="TCreditReportSemicard" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_semicard_brief" domainObjectName="TCreditReportSemicardBrief" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_special" domainObjectName="TCreditReportSpecial" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_spouse" domainObjectName="TCreditReportSpouse" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_taxarrear" domainObjectName="TCreditReportTaxarrear" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_telpayment" domainObjectName="TCreditReportTelpayment" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_credit_report_vehicle" domainObjectName="TCreditReportVehicle" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table> 
+        <table tableName="t_aic_alidebt_info" domainObjectName="TAICAlidebtInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+		<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_police_info" domainObjectName="TPoliceInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_drivinglicense_info" domainObjectName="TDrivinglicenseInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_aic_basic_info" domainObjectName="TAICBasicInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_aic_case_info" domainObjectName="TAICCaseInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_aic_entinv_info" domainObjectName="TAICEntinvInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_aic_orderlist_info" domainObjectName="TAICOrderlistInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_aic_person_info" domainObjectName="TAICPersonInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_aic_punish_break_info" domainObjectName="TAICPunishBreakInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_aic_punished_info" domainObjectName="TAICPunishedInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+                <table tableName="t_aic_shareholder_info" domainObjectName="TAICShareHolder" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table> 
+        <table tableName="t_activity_type_info" domainObjectName="TActivityTypeInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_activity_dim_info" domainObjectName="TActivityDimInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_activity_info" domainObjectName="TActivityInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+               <table tableName="t_aic_mordetail_info" domainObjectName="TAICMordetailInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+                <table tableName="t_aic_morgua_info" domainObjectName="TAICMorguaInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_aic_sharesfrost_info" domainObjectName="TAICSharesFrostInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_aic_sharesimpawn_info" domainObjectName="TAICSharesimpawnInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_aic_alter_info" domainObjectName="TAICAlterInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table> 
+      <table tableName="t_sms_message_hist" domainObjectName="TSmsMessageHist" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/> 
+        </table> 
+        <table tableName="pcc_hlw_loan" domainObjectName="PccHlwLoan" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="pcc_hlw_loan_fact" domainObjectName="PccHlwLoanFact" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="pcc_hlw_loan_repay" domainObjectName="PccHlwLoanRepay" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="pcc_hlw_tran_spc" domainObjectName="PccHlwTranSpc" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/> 
+       </table>
+          <table tableName="t_ups_billcardstat_query_info" domainObjectName="tUpsBillcardstatQueryInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table> 
+        <table tableName="t_biz_operation_record" domainObjectName="tBizOperationRecord" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table> 
+         <table tableName="t_ups_index_consume_city" domainObjectName="tUpsIndexConsumeCity" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_ups_index_consume_gategories" domainObjectName="tUpsIndexConsumeGategories" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_ups_index_month_consume_condition" domainObjectName="tUpsIndexMonthConsumeCondition" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table> 
+          <table tableName="t_channel_mapper_dictionary" domainObjectName="tChannelMapperDictionary" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table> 
+        <table tableName="t_transaction_relative" domainObjectName="tTransactionRelative" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_cfg_cnaps_info" domainObjectName="tCfgCnapsInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        <table tableName="t_payment_apply_backpool" domainObjectName="TPaymentApplyBackpool" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+        
+        <table tableName="t_bd_executor" domainObjectName="TBdExecutor" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        	<property name="useActualColumnNames" value="true"/>
+        </table>
+      	<table tableName="t_bd_institution" domainObjectName="TBdInstitution" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+       		<property name="useActualColumnNames" value="true"/>
+        </table>
+       	<table tableName="t_callback_record" domainObjectName="TCallbackRecord" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+       		<property name="useActualColumnNames" value="true"/>
+        </table>-->
+        <table tableName="t_bd_region" domainObjectName="TBdRegion" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+       		<property name="useActualColumnNames" value="true"/>
+        </table>
+        
+    </context>  
+</generatorConfiguration>

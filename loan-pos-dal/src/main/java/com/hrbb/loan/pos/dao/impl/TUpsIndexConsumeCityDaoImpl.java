@@ -1,0 +1,54 @@
+package com.hrbb.loan.pos.dao.impl;
+
+import java.util.List;
+
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+import org.springframework.stereotype.Repository;
+
+import com.hrbb.loan.pos.dao.TUpsIndexConsumeCityDao;
+import com.hrbb.loan.pos.dao.entity.TUpsIndexConsumeCity;
+
+@Repository("TUpsIndexConsumeCityDao")
+public class TUpsIndexConsumeCityDaoImpl extends SqlSessionDaoSupport implements TUpsIndexConsumeCityDao {
+
+    @Override
+    public int deleteByPrimaryKey(Integer id) {
+        return getSqlSession().delete("TUpsIndexConsumeCityMapper.deleteByPrimaryKey",id);
+    }
+
+    @Override
+    public int insert(TUpsIndexConsumeCity record) {
+        return getSqlSession().insert("TUpsIndexConsumeCityMapper.insert",record);
+    }
+
+    @Override
+    public int insertSelective(TUpsIndexConsumeCity record) {
+        return getSqlSession().insert("TUpsIndexConsumeCityMapper.insertSelective", record);
+    }
+
+    @Override
+    public TUpsIndexConsumeCity selectByPrimaryKey(Integer id) {
+        return getSqlSession().selectOne("TUpsIndexConsumeCityMapper.selectByPrimaryKey", id);
+    }
+
+    @Override
+    public int updateByPrimaryKeySelective(TUpsIndexConsumeCity record) {
+        return getSqlSession().update("TUpsIndexConsumeCityMapper.updateByPrimaryKey",record);
+    }
+
+    @Override
+    public int updateByPrimaryKey(TUpsIndexConsumeCity record) {
+        return getSqlSession().update("TUpsIndexConsumeCityMapper.updateByPrimaryKeySelective", record);
+    }
+
+    @Override
+    public int insertBatch(List<TUpsIndexConsumeCity> record) {
+        return getSqlSession().insert("TUpsIndexConsumeCityMapper.insertBatch", record);
+    }
+    
+    @Override
+    public List<TUpsIndexConsumeCity> selectListByFileUuid(String fileUuid){
+        return getSqlSession().selectList("TUpsIndexConsumeCityMapper.selectByFileUuid", fileUuid);
+    }
+
+}

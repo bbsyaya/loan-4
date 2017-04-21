@@ -1,0 +1,40 @@
+package com.hrbb.loan.pos.service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import com.hrbb.loan.pos.dao.entity.TChannelMapperDictionary;
+
+/**
+ * 
+ * @author cjq
+ * @since 2015-08-06
+ * @version $Id: ChannelMapperDictionaryService.java, v 0.1 2015年8月6日 下午2:30:55 cjq Exp $
+ */
+public interface ChannelMapperDictionaryService {
+    
+    /**
+     * 
+     * @param reqMap
+     * @return
+     */
+    List<Map<String, Object>> getCode(Map<String, Object> reqMap);
+    
+    /**
+     * 计算指定银行符合代扣条件的限额
+     * 
+     * @param innerCode
+     * @return
+     */
+    BigDecimal getMinLimit(String innerCode);
+    
+    /**
+     * 通过银行编号查询
+     * 
+     * @param cardno
+     * @return
+     */
+    TChannelMapperDictionary getTChannelMapperDictionaryByCardno(String cardno);
+    
+}

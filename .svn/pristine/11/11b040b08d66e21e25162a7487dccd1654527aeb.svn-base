@@ -1,0 +1,18 @@
+package com.hrbb.loan.pos.dao;
+
+import com.hrbb.loan.pos.dao.entity.TSmsTemplate;
+
+public interface TSmsTemplateDao {
+    int deleteByPrimaryKey(String tempId);
+
+    int insert(TSmsTemplate record);
+
+    int insertSelective(TSmsTemplate record);
+
+    TSmsTemplate selectByPrimaryKey(String tempId);
+
+    int updateByPrimaryKeySelective(TSmsTemplate record);
+
+    int updateByPrimaryKey(TSmsTemplate record);
+
+}

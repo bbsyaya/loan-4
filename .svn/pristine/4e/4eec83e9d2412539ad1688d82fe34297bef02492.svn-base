@@ -1,0 +1,37 @@
+package com.hrbb.loan.pos.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.hrbb.loan.pos.dao.entity.TBdExecutor;
+import com.hrbb.loan.pos.dao.entity.TRiskChannelConfig;
+import com.hrbb.loan.pos.dao.entity.TRiskZoneConfig;
+
+public interface ModelParamConfigService {
+    /**
+     * 展业机构人员
+     * 
+     * @param reqMap
+     * @return
+     */
+
+	List<TRiskZoneConfig> queryRiskZoneConfig(Map<String, Object> reqMap);
+
+	long countRiskZoneConfig(Map<String, Object> reqMap);
+
+	TRiskZoneConfig selectRiskzoneConfigByRegcode(String string);
+
+	int saveRiskzoneConfig(Map<String, Object> reqMap);
+
+	TRiskZoneConfig selectRiskZoneConfigByID(Integer id);
+
+	int modifyRiskzoneConfig(Map<String, Object> reqMap);
+
+	int deleteRiskzoneConfig(String id);
+
+	List<TRiskChannelConfig> queryRiskChannelConfig(Map<String, Object> reqMap);
+
+	long countRiskChannelConfig(Map<String, Object> reqMap);
+
+	TRiskChannelConfig selectRiskChannelConfigByID(Integer id);
+}

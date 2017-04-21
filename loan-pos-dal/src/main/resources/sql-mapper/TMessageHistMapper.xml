@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="TMessageHistMapper">
+                  
+    <resultMap type="com.hrbb.loan.pos.dao.entity.TMessageHist" id="messageResult">	
+        <result column="id" property="id"  jdbcType="INTEGER"/>
+		<result column="messageType" property="messageType"/>
+		<result column="messageInfo" property="messageInfo"/>
+		<result column="messageAddi" property="messageAddi"/>
+		<result column="custId" property="custId"/>
+		<result column="loanId" property="loanId"/>
+		<result column="contNo" property="contNo"/>
+		<result column="listId" property="listId"/>
+		<result column="loanAcNo" property="loanAcNo"/>
+		<result column="createTime" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="timerDate" property="timerDate" jdbcType="DATE"/>
+		<result column="stdshNo" property="stdshNo"/>
+		<result column="stdMerNo" property="stdMerNo"/>
+        <result column="sendTime" property="sendTime" jdbcType="TIMESTAMP"/>
+		<result column="channel" property="channel"/>
+		<result column="inChannelKind" property="inChannelKind"/>
+	</resultMap>
+	
+	<insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TMessageHist">
+		insert into t_message_hist (messageType, messageInfo, messageAddi, custId, loanId, contNo, listId, loanAcNo,
+		createTime, timerDate, stdshNo, stdMerNo, channel, inChannelKind) 
+		 values(#{messageType}, #{messageInfo}, #{messageAddi}, #{custId}, #{loanId}, #{contNo}, #{listId},#{loanAcNo},
+		now(), #{timerDate}, #{stdshNo}, #{stdMerNo}, #{channel}, #{inChannelKind})
+	</insert>
+
+	<!-- 根据ID删除 -->
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from t_message
+		where id = #{id}
+	</delete>
+
+	<select id="selectAll" resultMap="messageResult">
+		select 
+		id, messageType, messageInfo, messageAddi, custId, loanId, contNo, listId, loanAcNo,
+		timerDate, stdshNo, stdMerNo, sendTime, channel, inChannelKind
+		from t_message
+		where timerDate is null OR ( timerDate is not null AND now() > timerDate )
+	</select>
+	
+</mapper>

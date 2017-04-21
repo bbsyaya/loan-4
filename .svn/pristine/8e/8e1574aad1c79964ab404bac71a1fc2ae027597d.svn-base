@@ -1,0 +1,19 @@
+package com.hrbb.loan.pos.dao;
+
+import com.hrbb.loan.pos.dao.entity.TPDFParam;
+
+public interface TPDFParamDao {
+    int deleteByPrimaryKey(String contNo);
+
+    int insert(TPDFParam record);
+
+    int insertSelective(TPDFParam record);
+
+    TPDFParam selectByPrimaryKey(String contNo);
+
+    int updateByPrimaryKeySelective(TPDFParam record);
+
+    int updateByPrimaryKeyWithBLOBs(TPDFParam record);
+
+    int updateByPrimaryKey(TPDFParam record);
+}

@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditReportTelpaymentMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditReportTelpayment" >
+    <id column="serialNo" property="serialNo" jdbcType="VARCHAR" />
+    <result column="reportNo" property="reportNo" jdbcType="VARCHAR" />
+    <result column="carrier" property="carrier" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="registerDate" property="registerDate" jdbcType="VARCHAR" />
+    <result column="state" property="state" jdbcType="VARCHAR" />
+    <result column="arrearMoney" property="arrearMoney" jdbcType="DECIMAL" />
+    <result column="arrearMonths" property="arrearMonths" jdbcType="VARCHAR" />
+    <result column="accountMonth" property="accountMonth" jdbcType="VARCHAR" />
+    <result column="status24m" property="status24m" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    serialNo, reportNo, carrier, type, registerDate, state, arrearMoney, arrearMonths, 
+    accountMonth, status24m
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_report_telpayment
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_credit_report_telpayment
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportTelpayment" >
+    insert into t_credit_report_telpayment (serialNo, reportNo, carrier, 
+      type, registerDate, state, 
+      arrearMoney, arrearMonths, accountMonth, 
+      status24m)
+    values (#{serialNo,jdbcType=VARCHAR}, #{reportNo,jdbcType=VARCHAR}, #{carrier,jdbcType=VARCHAR}, 
+      #{type,jdbcType=VARCHAR}, #{registerDate,jdbcType=VARCHAR}, #{state,jdbcType=VARCHAR}, 
+      #{arrearMoney,jdbcType=DECIMAL}, #{arrearMonths,jdbcType=VARCHAR}, #{accountMonth,jdbcType=VARCHAR}, 
+      #{status24m,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportTelpayment" >
+    insert into t_credit_report_telpayment
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="carrier != null" >
+        carrier,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="registerDate != null" >
+        registerDate,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="arrearMoney != null" >
+        arrearMoney,
+      </if>
+      <if test="arrearMonths != null" >
+        arrearMonths,
+      </if>
+      <if test="accountMonth != null" >
+        accountMonth,
+      </if>
+      <if test="status24m != null" >
+        status24m,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="carrier != null" >
+        #{carrier,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="registerDate != null" >
+        #{registerDate,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=VARCHAR},
+      </if>
+      <if test="arrearMoney != null" >
+        #{arrearMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="arrearMonths != null" >
+        #{arrearMonths,jdbcType=VARCHAR},
+      </if>
+      <if test="accountMonth != null" >
+        #{accountMonth,jdbcType=VARCHAR},
+      </if>
+      <if test="status24m != null" >
+        #{status24m,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="Map" >
+    insert into t_credit_report_telpayment
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="carrier != null" >
+        carrier,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="registerDate != null" >
+        registerDate,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="arrearMoney != null" >
+        arrearMoney,
+      </if>
+      <if test="arrearMonths != null" >
+        arrearMonths,
+      </if>
+      <if test="accountMonth != null" >
+        accountMonth,
+      </if>
+      <if test="status24m != null" >
+        status24m,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="carrier != null" >
+        #{carrier,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="registerDate != null" >
+        #{registerDate,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=VARCHAR},
+      </if>
+      <if test="arrearMoney != null" >
+        #{arrearMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="arrearMonths != null" >
+        #{arrearMonths,jdbcType=VARCHAR},
+      </if>
+      <if test="accountMonth != null" >
+        #{accountMonth,jdbcType=VARCHAR},
+      </if>
+      <if test="status24m != null" >
+        #{status24m,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportTelpayment" >
+    update t_credit_report_telpayment
+    <set >
+      <if test="reportNo != null" >
+        reportNo = #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="carrier != null" >
+        carrier = #{carrier,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="registerDate != null" >
+        registerDate = #{registerDate,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=VARCHAR},
+      </if>
+      <if test="arrearMoney != null" >
+        arrearMoney = #{arrearMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="arrearMonths != null" >
+        arrearMonths = #{arrearMonths,jdbcType=VARCHAR},
+      </if>
+      <if test="accountMonth != null" >
+        accountMonth = #{accountMonth,jdbcType=VARCHAR},
+      </if>
+      <if test="status24m != null" >
+        status24m = #{status24m,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportTelpayment" >
+    update t_credit_report_telpayment
+    set reportNo = #{reportNo,jdbcType=VARCHAR},
+      carrier = #{carrier,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR},
+      registerDate = #{registerDate,jdbcType=VARCHAR},
+      state = #{state,jdbcType=VARCHAR},
+      arrearMoney = #{arrearMoney,jdbcType=DECIMAL},
+      arrearMonths = #{arrearMonths,jdbcType=VARCHAR},
+      accountMonth = #{accountMonth,jdbcType=VARCHAR},
+      status24m = #{status24m,jdbcType=VARCHAR}
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

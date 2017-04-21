@@ -1,0 +1,56 @@
+package com.hrbb.loan.pos.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.hrbb.loan.pos.dao.entity.TBdExecutor;
+import com.hrbb.loan.pos.dao.entity.TBdInstitution;
+
+/**
+ * 展业管理
+ * 
+ * @author cjq
+ * @version $Id: BDManagementService.java, v 0.1 2015年9月10日 下午2:42:29 cjq Exp $
+ */
+public interface BDManagementService {
+    
+    /**
+     * 展业机构列表
+     * 
+     * @return
+     */
+    List<TBdInstitution> queryTbdInstitutions(Map<String,Object> reqMap);
+
+    /**
+     * 展业机构条数
+     * 
+     * @param reqMap
+     * @return
+     */
+    Long countTbdInstitutions(Map<String, Object> reqMap);
+    
+    
+    /**
+     * 展业机构人员
+     * 
+     * @param reqMap
+     * @return
+     */
+    List<TBdExecutor> queryBDExecutors(Map<String,Object> reqMap);
+    
+    /**
+     * 展业机构人员条数
+     * 
+     * @param reqMap
+     * @return
+     */
+    Long countTbdExecutors(Map<String,Object> reqMap);
+    
+    /**
+     * 通过机构号查询机构
+     * 
+     * @param BelongOrg
+     * @return
+     */
+    TBdInstitution selectByBelongOrg(Integer BelongOrg);
+}

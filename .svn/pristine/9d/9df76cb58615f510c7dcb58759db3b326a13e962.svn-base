@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRiskCheckCalcIndexMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TRiskCheckCalcIndex" >
+    <id column="loanId" property="loanId" jdbcType="VARCHAR" />
+    <result column="CalcIndex01" property="calcIndex01" jdbcType="CHAR" />
+    <result column="CalcIndex02" property="calcIndex02" jdbcType="CHAR" />
+    <result column="CalcIndex03" property="calcIndex03" jdbcType="CHAR" />
+    <result column="CalcIndex04" property="calcIndex04" jdbcType="CHAR" />
+    <result column="CalcIndex05" property="calcIndex05" jdbcType="CHAR" />
+    <result column="CalcIndex06" property="calcIndex06" jdbcType="CHAR" />
+    <result column="CalcIndex07" property="calcIndex07" jdbcType="CHAR" />
+    <result column="CalcIndex08" property="calcIndex08" jdbcType="CHAR" />
+    <result column="CalcIndex09" property="calcIndex09" jdbcType="CHAR" />
+    <result column="CalcIndex10" property="calcIndex10" jdbcType="CHAR" />
+    <result column="CalcIndex11" property="calcIndex11" jdbcType="CHAR" />
+    <result column="CalcIndex12" property="calcIndex12" jdbcType="CHAR" />
+    <result column="CalcIndex13" property="calcIndex13" jdbcType="CHAR" />
+    <result column="CalcIndex14" property="calcIndex14" jdbcType="CHAR" />
+    <result column="CalcIndex15" property="calcIndex15" jdbcType="CHAR" />
+    <result column="CalcIndex16" property="calcIndex16" jdbcType="CHAR" />
+    <result column="CalcIndex17" property="calcIndex17" jdbcType="CHAR" />
+    <result column="CalcIndex18" property="calcIndex18" jdbcType="CHAR" />
+    <result column="CalcIndex19" property="calcIndex19" jdbcType="CHAR" />
+    <result column="CalcIndex20" property="calcIndex20" jdbcType="CHAR" />
+    <result column="CalcIndex20_index" property="calcIndex20_index" jdbcType="INTEGER" />
+    <result column="CalcIndex21" property="calcIndex21" jdbcType="CHAR" />
+    <result column="CalcIndex21_index" property="calcIndex21_index" jdbcType="INTEGER" />
+    <result column="CalcIndex22" property="calcIndex22" jdbcType="CHAR" />
+    <result column="CalcIndex23" property="calcIndex23" jdbcType="CHAR" />
+    <result column="CalcIndex23_index" property="calcIndex23_index" jdbcType="INTEGER" />
+    <result column="CalcIndex24" property="calcIndex24" jdbcType="CHAR" />
+    <result column="CalcIndex25" property="calcIndex25" jdbcType="CHAR" />
+    <result column="CalcIndex26" property="calcIndex26" jdbcType="CHAR" />
+    <result column="CalcIndex27" property="calcIndex27" jdbcType="CHAR" />
+    <result column="CalcIndex28" property="calcIndex28" jdbcType="CHAR" />
+    <result column="CalcIndex29" property="calcIndex29" jdbcType="CHAR" />
+    <result column="CalcIndex30" property="calcIndex30" jdbcType="CHAR" />
+    <result column="CalcIndex31" property="calcIndex31" jdbcType="CHAR" />
+    <result column="CalcIndex32" property="calcIndex32" jdbcType="CHAR" />
+    <result column="CalcIndex33" property="calcIndex33" jdbcType="CHAR" />
+    <result column="CalcIndex34" property="calcIndex34" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    loanId, CalcIndex01, CalcIndex02, CalcIndex03, CalcIndex04, CalcIndex05, CalcIndex06, 
+    CalcIndex07, CalcIndex08, CalcIndex09, CalcIndex10, CalcIndex11, CalcIndex12, CalcIndex13, 
+    CalcIndex14, CalcIndex15, CalcIndex16, CalcIndex17, CalcIndex18, CalcIndex19, CalcIndex20, 
+    CalcIndex20_index, CalcIndex21, CalcIndex21_index, CalcIndex22, CalcIndex23, CalcIndex23_index, 
+    CalcIndex24, CalcIndex25, CalcIndex26, CalcIndex27, CalcIndex28, CalcIndex29, CalcIndex30,
+    CalcIndex31, CalcIndex32
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_risk_check_calcindex
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_risk_check_calcindex
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TRiskCheckCalcIndex" >
+    insert into t_risk_check_calcindex (loanId, CalcIndex01, CalcIndex02, 
+      CalcIndex03, CalcIndex04, CalcIndex05, 
+      CalcIndex06, CalcIndex07, CalcIndex08, 
+      CalcIndex09, CalcIndex10, CalcIndex11, 
+      CalcIndex12, CalcIndex13, CalcIndex14, 
+      CalcIndex15, CalcIndex16, CalcIndex17, 
+      CalcIndex18, CalcIndex19, CalcIndex20, 
+      CalcIndex20_index, CalcIndex21, CalcIndex21_index, 
+      CalcIndex22, CalcIndex23, CalcIndex23_index, 
+      CalcIndex24, CalcIndex25, CalcIndex26, 
+      CalcIndex27, CalcIndex28, CalcIndex29, 
+      CalcIndex30, CalcIndex31, CalcIndex32)
+    values (#{loanId,jdbcType=VARCHAR}, #{calcIndex01,jdbcType=CHAR}, #{calcIndex02,jdbcType=CHAR}, 
+      #{calcIndex03,jdbcType=CHAR}, #{calcIndex04,jdbcType=CHAR}, #{calcIndex05,jdbcType=CHAR}, 
+      #{calcIndex06,jdbcType=CHAR}, #{calcIndex07,jdbcType=CHAR}, #{calcIndex08,jdbcType=CHAR}, 
+      #{calcIndex09,jdbcType=CHAR}, #{calcIndex10,jdbcType=CHAR}, #{calcIndex11,jdbcType=CHAR}, 
+      #{calcIndex12,jdbcType=CHAR}, #{calcIndex13,jdbcType=CHAR}, #{calcIndex14,jdbcType=CHAR}, 
+      #{calcIndex15,jdbcType=CHAR}, #{calcIndex16,jdbcType=CHAR}, #{calcIndex17,jdbcType=CHAR}, 
+      #{calcIndex18,jdbcType=CHAR}, #{calcIndex19,jdbcType=CHAR}, #{calcIndex20,jdbcType=CHAR}, 
+      #{calcIndex20_index,jdbcType=INTEGER}, #{calcIndex21,jdbcType=CHAR}, #{calcIndex21_index,jdbcType=INTEGER}, 
+      #{calcIndex22,jdbcType=CHAR}, #{calcIndex23,jdbcType=CHAR}, #{calcIndex23_index,jdbcType=INTEGER}, 
+      #{calcIndex24,jdbcType=CHAR}, #{calcIndex25,jdbcType=CHAR}, #{calcIndex26,jdbcType=CHAR}, 
+      #{calcIndex27,jdbcType=CHAR}, #{calcIndex28,jdbcType=CHAR}, #{calcIndex29,jdbcType=CHAR}, 
+      #{calcIndex30,jdbcType=CHAR}, #{calcIndex31,jdbcType=CHAR}, #{calcIndex32,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TRiskCheckCalcIndex" >
+    insert into t_risk_check_calcindex
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="loanId != null" >
+        loanId,
+      </if>
+      <if test="calcIndex01 != null" >
+        CalcIndex01,
+      </if>
+      <if test="calcIndex02 != null" >
+        CalcIndex02,
+      </if>
+      <if test="calcIndex03 != null" >
+        CalcIndex03,
+      </if>
+      <if test="calcIndex04 != null" >
+        CalcIndex04,
+      </if>
+      <if test="calcIndex05 != null" >
+        CalcIndex05,
+      </if>
+      <if test="calcIndex06 != null" >
+        CalcIndex06,
+      </if>
+      <if test="calcIndex07 != null" >
+        CalcIndex07,
+      </if>
+      <if test="calcIndex08 != null" >
+        CalcIndex08,
+      </if>
+      <if test="calcIndex09 != null" >
+        CalcIndex09,
+      </if>
+      <if test="calcIndex10 != null" >
+        CalcIndex10,
+      </if>
+      <if test="calcIndex11 != null" >
+        CalcIndex11,
+      </if>
+      <if test="calcIndex12 != null" >
+        CalcIndex12,
+      </if>
+      <if test="calcIndex13 != null" >
+        CalcIndex13,
+      </if>
+      <if test="calcIndex14 != null" >
+        CalcIndex14,
+      </if>
+      <if test="calcIndex15 != null" >
+        CalcIndex15,
+      </if>
+      <if test="calcIndex16 != null" >
+        CalcIndex16,
+      </if>
+      <if test="calcIndex17 != null" >
+        CalcIndex17,
+      </if>
+      <if test="calcIndex18 != null" >
+        CalcIndex18,
+      </if>
+      <if test="calcIndex19 != null" >
+        CalcIndex19,
+      </if>
+      <if test="calcIndex20 != null" >
+        CalcIndex20,
+      </if>
+      <if test="calcIndex20_index != null" >
+        CalcIndex20_index,
+      </if>
+      <if test="calcIndex21 != null" >
+        CalcIndex21,
+      </if>
+      <if test="calcIndex21_index != null" >
+        CalcIndex21_index,
+      </if>
+      <if test="calcIndex22 != null" >
+        CalcIndex22,
+      </if>
+      <if test="calcIndex23 != null" >
+        CalcIndex23,
+      </if>
+      <if test="calcIndex23_index != null" >
+        CalcIndex23_index,
+      </if>
+      <if test="calcIndex24 != null" >
+        CalcIndex24,
+      </if>
+      <if test="calcIndex25 != null" >
+        CalcIndex25,
+      </if>
+      <if test="calcIndex26 != null" >
+        CalcIndex26,
+      </if>
+      <if test="calcIndex27 != null" >
+        CalcIndex27,
+      </if>
+      <if test="calcIndex28 != null" >
+        CalcIndex28,
+      </if>
+      <if test="calcIndex29 != null" >
+        CalcIndex29,
+      </if>
+      <if test="calcIndex30 != null" >
+        CalcIndex30,
+      </if>
+      <if test="calcIndex31 != null" >
+        CalcIndex31,
+      </if>
+      <if test="calcIndex32 != null" >
+        CalcIndex32,
+      </if>
+      <if test="calcIndex33 != null" >
+        CalcIndex33,
+      </if>
+      <if test="calcIndex34 != null" >
+        CalcIndex34,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="loanId != null" >
+        #{loanId,jdbcType=VARCHAR},
+      </if>
+      <if test="calcIndex01 != null" >
+        #{calcIndex01,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex02 != null" >
+        #{calcIndex02,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex03 != null" >
+        #{calcIndex03,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex04 != null" >
+        #{calcIndex04,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex05 != null" >
+        #{calcIndex05,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex06 != null" >
+        #{calcIndex06,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex07 != null" >
+        #{calcIndex07,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex08 != null" >
+        #{calcIndex08,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex09 != null" >
+        #{calcIndex09,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex10 != null" >
+        #{calcIndex10,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex11 != null" >
+        #{calcIndex11,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex12 != null" >
+        #{calcIndex12,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex13 != null" >
+        #{calcIndex13,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex14 != null" >
+        #{calcIndex14,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex15 != null" >
+        #{calcIndex15,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex16 != null" >
+        #{calcIndex16,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex17 != null" >
+        #{calcIndex17,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex18 != null" >
+        #{calcIndex18,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex19 != null" >
+        #{calcIndex19,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex20 != null" >
+        #{calcIndex20,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex20_index != null" >
+        #{calcIndex20_index,jdbcType=INTEGER},
+      </if>
+      <if test="calcIndex21 != null" >
+        #{calcIndex21,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex21_index != null" >
+        #{calcIndex21_index,jdbcType=INTEGER},
+      </if>
+      <if test="calcIndex22 != null" >
+        #{calcIndex22,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex23 != null" >
+        #{calcIndex23,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex23_index != null" >
+        #{calcIndex23_index,jdbcType=INTEGER},
+      </if>
+      <if test="calcIndex24 != null" >
+        #{calcIndex24,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex25 != null" >
+        #{calcIndex25,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex26 != null" >
+        #{calcIndex26,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex27 != null" >
+        #{calcIndex27,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex28 != null" >
+        #{calcIndex28,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex29 != null" >
+        #{calcIndex29,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex30 != null" >
+        #{calcIndex30,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex31 != null" >
+        #{calcIndex31,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex32 != null" >
+        #{calcIndex32,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex33 != null" >
+        #{calcIndex33,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex34 != null" >
+        #{calcIndex34,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TRiskCheckCalcIndex" >
+    update t_risk_check_calcindex
+    <set >
+      <if test="calcIndex01 != null" >
+        CalcIndex01 = #{calcIndex01,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex02 != null" >
+        CalcIndex02 = #{calcIndex02,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex03 != null" >
+        CalcIndex03 = #{calcIndex03,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex04 != null" >
+        CalcIndex04 = #{calcIndex04,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex05 != null" >
+        CalcIndex05 = #{calcIndex05,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex06 != null" >
+        CalcIndex06 = #{calcIndex06,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex07 != null" >
+        CalcIndex07 = #{calcIndex07,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex08 != null" >
+        CalcIndex08 = #{calcIndex08,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex09 != null" >
+        CalcIndex09 = #{calcIndex09,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex10 != null" >
+        CalcIndex10 = #{calcIndex10,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex11 != null" >
+        CalcIndex11 = #{calcIndex11,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex12 != null" >
+        CalcIndex12 = #{calcIndex12,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex13 != null" >
+        CalcIndex13 = #{calcIndex13,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex14 != null" >
+        CalcIndex14 = #{calcIndex14,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex15 != null" >
+        CalcIndex15 = #{calcIndex15,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex16 != null" >
+        CalcIndex16 = #{calcIndex16,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex17 != null" >
+        CalcIndex17 = #{calcIndex17,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex18 != null" >
+        CalcIndex18 = #{calcIndex18,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex19 != null" >
+        CalcIndex19 = #{calcIndex19,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex20 != null" >
+        CalcIndex20 = #{calcIndex20,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex20_index != null" >
+        CalcIndex20_index = #{calcIndex20_index,jdbcType=INTEGER},
+      </if>
+      <if test="calcIndex21 != null" >
+        CalcIndex21 = #{calcIndex21,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex21_index != null" >
+        CalcIndex21_index = #{calcIndex21_index,jdbcType=INTEGER},
+      </if>
+      <if test="calcIndex22 != null" >
+        CalcIndex22 = #{calcIndex22,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex23 != null" >
+        CalcIndex23 = #{calcIndex23,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex23_index != null" >
+        CalcIndex23_index = #{calcIndex23_index,jdbcType=INTEGER},
+      </if>
+      <if test="calcIndex24 != null" >
+        CalcIndex24 = #{calcIndex24,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex25 != null" >
+        CalcIndex25 = #{calcIndex25,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex26 != null" >
+        CalcIndex26 = #{calcIndex26,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex27 != null" >
+        CalcIndex27 = #{calcIndex27,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex28 != null" >
+        CalcIndex28 = #{calcIndex28,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex29 != null" >
+        CalcIndex29 = #{calcIndex29,jdbcType=CHAR},
+      </if>
+      <if test="calcIndex30 != null" >
+        CalcIndex30 = #{calcIndex30,jdbcType=CHAR},
+      </if>
+    </set>
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TRiskCheckCalcIndex" >
+    update t_risk_check_calcindex
+    set CalcIndex01 = #{calcIndex01,jdbcType=CHAR},
+      CalcIndex02 = #{calcIndex02,jdbcType=CHAR},
+      CalcIndex03 = #{calcIndex03,jdbcType=CHAR},
+      CalcIndex04 = #{calcIndex04,jdbcType=CHAR},
+      CalcIndex05 = #{calcIndex05,jdbcType=CHAR},
+      CalcIndex06 = #{calcIndex06,jdbcType=CHAR},
+      CalcIndex07 = #{calcIndex07,jdbcType=CHAR},
+      CalcIndex08 = #{calcIndex08,jdbcType=CHAR},
+      CalcIndex09 = #{calcIndex09,jdbcType=CHAR},
+      CalcIndex10 = #{calcIndex10,jdbcType=CHAR},
+      CalcIndex11 = #{calcIndex11,jdbcType=CHAR},
+      CalcIndex12 = #{calcIndex12,jdbcType=CHAR},
+      CalcIndex13 = #{calcIndex13,jdbcType=CHAR},
+      CalcIndex14 = #{calcIndex14,jdbcType=CHAR},
+      CalcIndex15 = #{calcIndex15,jdbcType=CHAR},
+      CalcIndex16 = #{calcIndex16,jdbcType=CHAR},
+      CalcIndex17 = #{calcIndex17,jdbcType=CHAR},
+      CalcIndex18 = #{calcIndex18,jdbcType=CHAR},
+      CalcIndex19 = #{calcIndex19,jdbcType=CHAR},
+      CalcIndex20 = #{calcIndex20,jdbcType=CHAR},
+      CalcIndex20_index = #{calcIndex20_index,jdbcType=INTEGER},
+      CalcIndex21 = #{calcIndex21,jdbcType=CHAR},
+      CalcIndex21_index = #{calcIndex21_index,jdbcType=INTEGER},
+      CalcIndex22 = #{calcIndex22,jdbcType=CHAR},
+      CalcIndex23 = #{calcIndex23,jdbcType=CHAR},
+      CalcIndex23_index = #{calcIndex23_index,jdbcType=INTEGER},
+      CalcIndex24 = #{calcIndex24,jdbcType=CHAR},
+      CalcIndex25 = #{calcIndex25,jdbcType=CHAR},
+      CalcIndex26 = #{calcIndex26,jdbcType=CHAR},
+      CalcIndex27 = #{calcIndex27,jdbcType=CHAR},
+      CalcIndex28 = #{calcIndex28,jdbcType=CHAR},
+      CalcIndex29 = #{calcIndex29,jdbcType=CHAR},
+      CalcIndex30 = #{calcIndex30,jdbcType=CHAR}
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </update>
+</mapper>

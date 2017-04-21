@@ -1,0 +1,410 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.biz.backstage.inter.impl;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import com.hrbb.loan.pos.biz.backstage.inter.SynFileBiz;
+import com.hrbb.loan.pos.biz.constants.SynFileConstants;
+import com.hrbb.loan.pos.dao.entity.TPaybackRunningRecord;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+import com.hrbb.loan.pos.factory.StatusChannelMapFactory;
+import com.hrbb.loan.pos.service.PaybackRunningRecordService;
+import com.hrbb.loan.pos.service.ReceiptInfoService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.FileUtil;
+import com.hrbb.loan.pos.util.MathUtils;
+import com.hrbb.loan.pos.util.SignUtil;
+
+/**
+ * 数据同步接口
+ * 
+ * @author marco
+ * @version $Id: LedgerBizImpl.java, v 0.1 2015-4-24 下午4:20:22 marco Exp $
+ */
+@Component("synFileBiz")
+public class SynFileBizImpl implements SynFileBiz {
+
+	private Logger LOG = LoggerFactory.getLogger(SynFileBizImpl.class);
+
+	@Value("#{systemInfo[synchroFilePath]}")
+	private String synchroFilePath;
+
+	@Autowired
+	@Qualifier("receiptInfoService")
+	private ReceiptInfoService serviceRI;
+
+	@Autowired
+	@Qualifier("paybackRunningRecordService")
+	private PaybackRunningRecordService servicePBRR;
+
+	/**
+	 * @see com.hrbb.loan.pos.biz.backstage.inter.LedgerBiz#makeSynFile()
+	 */
+	@Override
+	public boolean makeSynFile(String no) {
+		LOG.debug("SynFileBizImpl.makeSynFile begin");
+		String today = DateUtil.getTodayDatePattern1();
+		// 取得路径
+		String pathStr = synchroFilePath + today;
+		LOG.debug("取得路径pathStr=" + pathStr);
+		// 判断路径存在
+		if (!FileUtil.createDirectory(pathStr)) {
+			LOG.debug("创建路径失败！");
+			return false;
+		} else {
+			LOG.debug("路径存在");
+		}
+
+		// 取得路径和文件名
+		// 文件名
+		String fileName = null;
+		if (SynFileConstants.NO_HB16.equals(no)) {
+			fileName = SynFileConstants.NO_HB16;
+		} else if (SynFileConstants.NO_HB17.equals(no)) {
+			fileName = SynFileConstants.NO_HB17;
+		} else if (SynFileConstants.NO_HB18.equals(no)) {
+			fileName = SynFileConstants.NO_HB18;
+		} else if (SynFileConstants.NO_HB19.equals(no)) {
+			fileName = SynFileConstants.NO_HB19;
+		} else {
+			LOG.error("参数不存在no=" + no);
+			return false;
+		}
+		fileName = fileName.concat(SynFileConstants.STRING_UNDERLINE)
+				.concat(today).concat(FileUtil.FILETYPE_DAT);
+		LOG.debug("创建文件fileName=" + fileName);
+		pathStr = pathStr.concat(FileUtil.SYNFILE_PATH_PREFIX).concat(fileName);
+		// 创建文件
+		if (!FileUtil.createFile(pathStr)) {
+			LOG.error("创建文件失败！");
+			return false;
+		} else {
+			LOG.info("创建文件成功pathStr=" + pathStr);
+		}
+
+		// 取得数据，生成文件内容
+		String info = null;
+		if (SynFileConstants.NO_HB16.equals(no)) {
+			info = getInfoHB16();
+		} else if (SynFileConstants.NO_HB17.equals(no)) {
+			info = getInfoHB17();
+		} else if (SynFileConstants.NO_HB18.equals(no)) {
+			info = getInfoHB18();
+		} else if (SynFileConstants.NO_HB19.equals(no)) {
+			info = getInfoHB19();
+		} else {
+			LOG.error("参数不存在no=" + no);
+			return false;
+		}
+		// 写文件
+		LOG.debug("写文件pathStr=" + pathStr);
+		// 设置文件的编码格式
+		if (!FileUtil.writeFile(pathStr, info, FileUtil.CHARSET_UTF_8)) {
+			LOG.error("写文件失败！");
+			return false;
+		} else {
+			LOG.info("写文件成功");
+		}
+		LOG.debug("SynFileBizImpl.makeSynFile end");
+		return false;
+	}
+
+	/**
+	 * 台账数据同步接口 取得数据，生成文件内容
+	 * 
+	 * @return sb
+	 */
+	private String getInfoHB16() {
+		LOG.debug("取得台账数据getInfoHB16 begin");
+		// 查询台账数据
+		List<TReceiptInfo> l = serviceRI.selectRecordInfoHB16();
+		int count = l.size();
+		LOG.debug("数据条数count=" + count);
+		StringBuffer sb = new StringBuffer();
+		String today = DateUtil.getTodayDatePattern1();
+		// 信息头
+		sb.append(today).append(FileUtil.SYNFILE_COLUMN_APPEND_PREFIX)
+				.append(count);
+		// 没有数据时
+		if (count == 0) {
+			// 有数据时
+		} else {
+			BigDecimal innerOwnedInterest = null;
+			BigDecimal outterOwnedInterest = null;
+			String finishDate = null;
+
+			for (TReceiptInfo i : l) {
+				// 换行
+				sb.append(FileUtil.SYNFILE_NEWLINE_PREFIX);
+				// 授信额度编号
+				sb.append(i.getPayApplyId()
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 合同号
+				sb.append(i.getContNo() + FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 借据号
+				sb.append(i.getReceiptId()
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 贷款金额
+				sb.append(i.getPayApplyAmt()
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 贷款开始日期
+				sb.append(DateUtil.getDatePattern1(i.getBeginDate())
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 贷款结束日期
+				sb.append(DateUtil.getDatePattern1(i.getEndDate())
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 贷款实际结清日期
+				finishDate = i.getFinishDate() == null ? "" : DateUtil
+						.getDatePattern1(i.getFinishDate());
+				sb.append(finishDate + FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 贷款利率
+				sb.append(i.getLoanInterest()
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 还款方式
+				sb.append(StatusChannelMapFactory.getChannelReturnKind("UM", i.getPaybackWay())
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 贷款余额
+				sb.append(i.getLoanTotalBalance()
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 逾期本金
+				sb.append(i.getOverdueBalance()
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 逾期利息
+				innerOwnedInterest = i.getInnerOwnedInterest() == null ? BigDecimal.ZERO
+						: i.getInnerOwnedInterest();
+				outterOwnedInterest = i.getOutterOwnedInterest() == null ? BigDecimal.ZERO
+						: i.getOutterOwnedInterest();
+				sb.append(innerOwnedInterest.add(outterOwnedInterest)
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 罚息
+				sb.append(0 + FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 贷款状态
+				// 已结清
+				if (SynFileConstants.CLEARSTATUS_01.equals(i.getClearStatus())) {
+					sb.append(SynFileConstants.CLEARSTATUS_01);
+				} else {
+					// 逾期
+					if (i.getOverdueBalance()!=null && i.getOverdueBalance().compareTo(BigDecimal.ZERO) > 0) {
+						sb.append(SynFileConstants.CLEARSTATUS_03);
+						// 正常
+					} else {
+						sb.append(SynFileConstants.CLEARSTATUS_02);
+					}
+				}
+				sb.append(FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 商户ＩＤ
+				sb.append(i.getChannelPosCustId());
+			}
+			LOG.debug("sb.toString()=" + sb.toString());
+			// MD5摘要
+			String signMD5 = SignUtil.genMD5(sb.toString(), SignUtil.CHAR_SET);
+			LOG.debug("signMD5=" + signMD5);
+			// 换行
+			sb.append(FileUtil.SYNFILE_NEWLINE_PREFIX).append(signMD5);
+		}
+		LOG.debug("file=" + sb.toString());
+		LOG.debug("取得台账数据getInfoHB16 end");
+		return sb.toString();
+	}
+
+	/**
+	 * 当日还款明细同步接口取得数据，生成文件内容
+	 * 
+	 * @return sb
+	 */
+	private String getInfoHB17() {
+		LOG.debug("取得当日还款明细数据getInfoHB17 begin");
+		// 查询台账数据
+		List<TPaybackRunningRecord> l = servicePBRR.selectRecordInfoHB17();
+		int count = l.size();
+		LOG.debug("数据条数count=" + count);
+		StringBuffer sb = new StringBuffer();
+		String today = DateUtil.getTodayDatePattern1();
+		// 信息头
+		sb.append(today).append(FileUtil.SYNFILE_COLUMN_APPEND_PREFIX)
+				.append(count);
+		// 没有数据时
+		if (count == 0) {
+			// 有数据时
+		} else {
+			for (TPaybackRunningRecord i : l) {
+				// 换行
+				sb.append(FileUtil.SYNFILE_NEWLINE_PREFIX);
+				// 借据号
+				sb.append(i.getReceiptId()
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 还款业务流水号
+				sb.append(i.getStdshno()
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 还款流水号
+				sb.append(i.getPaybackRunningRecordId()
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 还款类型
+				sb.append(StatusChannelMapFactory.getChannelReturnKind("UM", i.getPaybackWay())
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 归还本金
+				sb.append(i.getActualCapital()
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 归还利息
+				sb.append(i.getActualInterest()
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 归还罚息
+				sb.append(0 + FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 还款日期
+				sb.append(DateUtil.getDatePattern1(i.getActualPaybackDate())
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 商户ＩＤ
+				sb.append(i.getChannelPosCustId());
+			}
+			LOG.debug("sb.toString()=" + sb.toString());
+			// MD5摘要
+			String signMD5 = SignUtil.genMD5(sb.toString(), SignUtil.CHAR_SET);
+			LOG.debug("signMD5=" + signMD5);
+			// 换行
+			sb.append(FileUtil.SYNFILE_NEWLINE_PREFIX).append(signMD5);
+		}
+		LOG.debug("file=" + sb.toString());
+		LOG.debug("取得当日还款明细数据getInfoHB17 end");
+		return sb.toString();
+	}
+
+	/**
+	 * 当日放款明细同步接口取得数据，生成文件内容
+	 * 
+	 * @return sb
+	 */
+	private String getInfoHB18() {
+		LOG.debug("取得当日放款明细数据getInfoHB18 begin");
+		// 查询数据
+		List<TReceiptInfo> l = serviceRI.selectRecordInfoHB18();
+		int count = l.size();
+		LOG.debug("数据条数count=" + count);
+		StringBuffer sb = new StringBuffer();
+		String today = DateUtil.getTodayDatePattern1();
+		// 信息头
+		sb.append(today).append(FileUtil.SYNFILE_COLUMN_APPEND_PREFIX)
+				.append(count);
+		// 没有数据时
+		if (count == 0) {
+			// 有数据时
+		} else {
+			for (TReceiptInfo i : l) {
+				// 换行
+				sb.append(FileUtil.SYNFILE_NEWLINE_PREFIX);
+				// 提款流水号
+				sb.append(i.getPayApplyId()
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 借据号
+				sb.append(i.getReceiptId()
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 放款金额
+				sb.append(i.getPayApplyAmt()
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 起息日
+				sb.append(DateUtil.getDatePattern1(i.getBeginDate())
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 到期日
+				sb.append(DateUtil.getDatePattern1(i.getEndDate())
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 数据日期
+				sb.append(Integer.parseInt(today)
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 商户ＩＤ
+				sb.append(i.getChannelPosCustId());
+			}
+			LOG.debug("sb.toString()=" + sb.toString());
+			// MD5摘要
+			String signMD5 = SignUtil.genMD5(sb.toString(), SignUtil.CHAR_SET);
+			LOG.debug("signMD5=" + signMD5);
+			// 换行
+			sb.append(FileUtil.SYNFILE_NEWLINE_PREFIX).append(signMD5);
+		}
+		LOG.debug("file=" + sb.toString());
+		LOG.debug("取得当日放款明细数据getInfoHB18 end");
+		return sb.toString();
+	}
+
+	/**
+	 * 佣金代收明细文件取得数据，生成文件内容
+	 * 
+	 * @return sb
+	 */
+	private String getInfoHB19() {
+		LOG.debug("佣金代收明细文件getInfoHB19 begin");
+		// 查询台账数据
+		List<TReceiptInfo> l = serviceRI.selectRecordInfoHB19();
+		int count = l.size();
+		LOG.debug("数据条数count=" + count);
+		StringBuffer sb = new StringBuffer();
+		String today = DateUtil.getTodayDatePattern1();
+		// 信息头
+		sb.append(today).append(FileUtil.SYNFILE_COLUMN_APPEND_PREFIX)
+				.append(count);
+		// 没有数据时
+		if (count == 0) {
+			// 有数据时
+		} else {
+			for (TReceiptInfo i : l) {
+				// 换行
+				sb.append(FileUtil.SYNFILE_NEWLINE_PREFIX);
+				// 交易日期
+				sb.append(Integer.parseInt(today)
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 商户ID
+				sb.append(i.getPosCustId()
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 姓名
+				sb.append(i.getCustName()
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 账号
+				sb.append(i.getPayAccount()
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 身份证号
+				sb.append(i.getPaperId()
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 贷款金额
+				sb.append(i.getPayApplyAmt()
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 申请流水号
+				sb.append(i.getStdshno()
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 协议编号
+				sb.append(i.getContNo() + FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 合同编号
+				sb.append(i.getContNo() + FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 转账金额
+				sb.append(MathUtils.format1(i.getAmt())
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 数据文件日期
+				sb.append(Integer.parseInt(today)
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 还款账号
+				sb.append(i.getPayAccount()
+						+ FileUtil.SYNFILE_COLUMN_APPEND_PREFIX);
+				// 商户ＩＤ
+				sb.append(i.getChannelPosCustId());
+			}
+			LOG.debug("sb.toString()=" + sb.toString());
+			// MD5摘要
+			String signMD5 = SignUtil.genMD5(sb.toString(), SignUtil.CHAR_SET);
+			LOG.debug("signMD5=" + signMD5);
+			// 换行
+			sb.append(FileUtil.SYNFILE_NEWLINE_PREFIX).append(signMD5);
+		}
+		LOG.debug("file=" + sb.toString());
+		LOG.debug("佣金代收明细文件getInfoHB19 end");
+		return sb.toString();
+	}
+}

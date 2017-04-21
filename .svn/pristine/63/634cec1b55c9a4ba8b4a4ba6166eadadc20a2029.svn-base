@@ -1,0 +1,22 @@
+package com.hrbb.loan.pos.util;
+
+import java.util.Random;
+
+/**
+ *<h1>产生随机数工具类</h1>
+ *@author Johnson Song
+ *@version Id: RandomUtil.java, v 1.0 2015-2-26 上午11:13:40 Johnson Song Exp
+ */
+public class RandomUtil {
+	
+	
+	public static String getRandom(int n){
+		return (int) ((new Random(System.nanoTime()).nextDouble()
+                ) * Math.pow(10, n))+"";
+	}
+	
+	public static void main(String[] args) {
+		
+		System.out.println(System.nanoTime());
+	}
+}

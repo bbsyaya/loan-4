@@ -1,0 +1,181 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.biz.expressions.mult;
+
+import java.math.BigDecimal;
+
+import com.hrbb.loan.pos.biz.expressions.bean.ScoreProfileBean;
+import com.hrbb.loan.pos.dao.entity.TCustomer;
+import com.hrbb.loan.pos.service.bean.AICQueryBean;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.MathUtils;
+
+/**
+ * 1.2.2.1 基础信息评分测算
+ * 
+ * @author XLY
+ * @version $Id: BaseFormula.java, v 0.1 2015-3-10 上午9:37:10 XLY Exp $
+ */
+public class BaseFormula {
+
+	public static final BigDecimal SP1_1;
+	public static final BigDecimal SP1_2;
+
+	public static final BigDecimal SP2_1;
+	public static final BigDecimal SP2_2;
+
+	public static final BigDecimal SP3_1;
+
+	public static final BigDecimal SP4_1;
+	public static final BigDecimal SP4_2;
+	public static final BigDecimal SP4_3;
+	public static final BigDecimal SP4_4;
+
+	public static final String SP5_1;
+	public static final BigDecimal SP6_1;
+
+	static {
+		SP1_1 = new BigDecimal(15);
+		SP1_2 = new BigDecimal(3);
+
+		SP2_1 = new BigDecimal(2);
+		SP2_2 = new BigDecimal(1);
+
+		SP3_1 = new BigDecimal(0);
+
+		SP4_1 = new BigDecimal(45);
+		SP4_2 = new BigDecimal(25);
+		SP4_3 = new BigDecimal(0.15);
+		SP4_4 = new BigDecimal(3.75);
+
+		SP5_1 = "20";
+
+		SP6_1 = new BigDecimal(0);
+	}
+
+	/**
+	 * 计算基础信息评分
+	 * 
+	 * @param tc
+	 * @param ab
+	 * @return
+	 */
+	public static ScoreProfileBean computer(TCustomer tc, BigDecimal regCapital) {
+		ScoreProfileBean sb = new ScoreProfileBean();
+		sb.setSp1(formulaSP1(tc.getBusiYear() == null ? BigDecimal.ZERO
+				: new BigDecimal(tc.getBusiYear())));
+		sb.setSp2(formulaSP2(tc.getLocalHouseNum() == null ? BigDecimal.ZERO
+				: new BigDecimal(tc.getLocalHouseNum())));
+		sb.setSp3(formulaSP3(regCapital));
+		// sb.setSp4(formulaSP4(DateUtil.getAge(tc.getBirtDate())));
+		sb.setSp4(formulaSP4(DateUtil.getAgeByYear(tc.getBirtDate())));
+		sb.setSp5(formulaSP5(tc.getMarrSign()));
+		sb.setSp6(formulaSP6(tc.getChildNum() == null ? BigDecimal.ZERO
+				: new BigDecimal(tc.getChildNum())));
+		sb.setScoreProfile(sb.getSp1().add(sb.getSp2()).add(sb.getSp3())
+				.add(sb.getSp4()).add(sb.getSp5()).add(sb.getSp6()));
+		return sb;
+	}
+
+	/**
+	 * 
+	 * 基础计算，返回值
+	 * 
+	 * @param busiYear
+	 * @param localHouseNum
+	 * @param regCapital
+	 * @param age
+	 * @param marrSign
+	 * @param childNum
+	 * @return
+	 */
+	public static BigDecimal scoreProfile(BigDecimal busiYear,
+			BigDecimal localHouseNum, BigDecimal regCapital, BigDecimal age,
+			String marrSign, BigDecimal childNum) {
+		return formulaSP1(busiYear).add(formulaSP2(localHouseNum))
+				.add(formulaSP3(regCapital)).add(formulaSP4(age))
+				.add(formulaSP5(marrSign)).add(formulaSP6(childNum));
+	}
+
+	/**
+	 * SP1-
+	 * 
+	 * @param busiYear
+	 *            工作年限
+	 * @return
+	 */
+	public static BigDecimal formulaSP1(BigDecimal busiYear) {
+		if (SP1_1.compareTo(busiYear) > 0) {
+			return MathUtils.div(busiYear, SP1_2);
+		}
+		return MathUtils.div(SP1_1, SP1_2);
+	}
+
+	/**
+	 * 
+	 * @param localHouseNum
+	 *            经营地房产数
+	 * @return
+	 */
+	public static BigDecimal formulaSP2(BigDecimal localHouseNum) {
+		if (localHouseNum.compareTo(SP2_2) < 0)
+			return BigDecimal.ZERO;
+		if (localHouseNum.compareTo(SP2_1) >= 0)
+			return new BigDecimal(5);
+		return new BigDecimal(4);
+	}
+
+	/**
+	 * 
+	 * @param regCapital
+	 *            注册资本--工商查询
+	 * @return
+	 */
+	public static BigDecimal formulaSP3(BigDecimal regCapital) {
+		if (regCapital == null)
+			return BigDecimal.ZERO;
+		if (regCapital.compareTo(SP3_1) > 0)
+			return new BigDecimal(3);
+		return BigDecimal.ZERO;
+	}
+
+	/**
+	 * 
+	 * @param age
+	 *            年龄--申请表
+	 * @return
+	 */
+	public static BigDecimal formulaSP4(BigDecimal age) {
+		BigDecimal min = (SP4_1.compareTo(age) < 0) ? SP4_1 : age;
+		BigDecimal max = SP4_2.compareTo(min) > 0 ? SP4_2 : min;
+		BigDecimal result = SP4_3.multiply(max).subtract(SP4_4);
+		return result.compareTo(BigDecimal.ZERO) > 0 ? result : BigDecimal.ZERO;
+	}
+
+	/**
+	 * 
+	 * @param marrSign
+	 *            婚姻状况 0,未婚，1，已婚
+	 * @return
+	 */
+	public static BigDecimal formulaSP5(String marrSign) {
+		if (SP5_1.equals(marrSign))
+			return new BigDecimal(3);
+		return BigDecimal.ZERO;
+	}
+
+	/**
+	 * 
+	 * @param childNum
+	 *            子女人数
+	 * @return
+	 */
+	public static BigDecimal formulaSP6(BigDecimal childNum) {
+		if (SP6_1.compareTo(childNum) < 0)
+			return new BigDecimal(2);
+		return BigDecimal.ZERO;
+	}
+}

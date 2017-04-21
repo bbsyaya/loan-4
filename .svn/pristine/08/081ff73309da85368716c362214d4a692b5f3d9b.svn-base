@@ -1,0 +1,23 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.spi.TC2;
+
+import org.springframework.stereotype.Service;
+
+import com.hrbb.loan.spi.TC.TCPaymentApplyServiceImpl;
+
+/**
+ * 
+ * T62用款申请
+ * 
+ * @author marco
+ * @version $Id: TC2PaymentApplyServiceImpl.java, v 0.1 2015-8-20 上午11:34:55
+ *          marco Exp $
+ */
+@Service("tc2PaymentApply")
+public class TC2PaymentApplyServiceImpl extends TCPaymentApplyServiceImpl {
+
+}

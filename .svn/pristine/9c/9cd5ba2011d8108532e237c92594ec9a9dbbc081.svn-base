@@ -1,0 +1,121 @@
+package com.hrbb.loan.pos.service.impl;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import com.hrbb.loan.pos.dao.TCallingTaskDao;
+import com.hrbb.loan.pos.dao.entity.TCallingTask;
+import com.hrbb.loan.pos.service.CallingTaskService;
+import com.hrbb.loan.pos.service.LoanPosBusinessCodeService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.constants.ReviewNoteConstants;
+
+@Service("CallingTaskService")
+public class CallingTaskServiceImpl implements CallingTaskService {
+
+	@Autowired
+	@Qualifier("tCallingTaskDao")
+	TCallingTaskDao dao;
+	
+	@Autowired
+	LoanPosBusinessCodeService loanPosBusinessCodeService;
+
+	@Override
+	public List<Map<String, Object>> selectSelective(Map<String, Object> reqMap) {
+		// TODO Auto-generated method stub
+		List<Map<String, Object>> l = dao.selectSelective(reqMap);
+		
+		for (Map<String, Object> map : l) {
+			if (map.get("generateTime")!=null) {
+				
+				try {
+					map.put("generateTime", DateUtil.getDateToString3((Date)map.get("generateTime")).toString());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			if (map.get("claimTime")!=null) {
+				
+				try {
+					map.put("claimTime", DateUtil.getDateToString3((Date)map.get("claimTime")).toString());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			if (map.get("callingType") !=null){
+				map.put("callingTypeName", loanPosBusinessCodeService.getItemNameByNo("CallingType",map.get("callingType").toString()));
+			}
+		}
+		return l;
+	}
+	@Override
+	public long selectSelectiveForReviewCount(Map<String, Object> reqMap) {
+		// TODO Auto-generated method stub
+		return dao.selectSelectiveForReviewCount(reqMap);
+	}
+
+	@Override
+	public TCallingTask selectOne(String taskNo) {
+		// TODO Auto-generated method stub
+		TCallingTask callingTask = (TCallingTask)dao.selectByPrimaryKey(taskNo);
+		if (callingTask.getGenerateTime()!=null) {
+			try {
+				String datesString = DateUtil.getDateToString3(callingTask.getGenerateTime());
+				callingTask.setGenerateTime(DateUtil.getDatePattern3(datesString.toString()));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return callingTask;
+	}
+
+	@Override
+	public boolean updateTaskClaimer(Map<String, Object> reqMap) {
+		// TODO Auto-generated method stub
+		String[] taskNoes = reqMap.get("taskNo").toString().split(
+				ReviewNoteConstants.STRING_SEPARATOR_CODE);
+		int count = 0;
+		for (int i = 0; i < taskNoes.length; i++) {
+			reqMap.put("taskNo", taskNoes[i]);
+			int num = dao.updateTaskClaimer(reqMap);
+			if (num >0) {
+				count++;
+			}
+		}
+		if (count<=0) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public boolean updateGenerateTime(Map<String, Object> reqMap) {
+		// TODO Auto-generated method stub
+		int count = dao.updateGenerateTime(reqMap);
+		if (count>0) {
+			return true;
+		}
+		return false;
+	}
+	@Override
+	public List<TCallingTask> getTCallingTask(Map<String, Object> reqMap) {
+		return dao.getTCallingTask(reqMap);
+	}
+	@Override
+	public int updateTcallingTask1(Map<String, Object> map) {
+		return dao.updateTcallingTask1(map);
+		
+	}
+	@Override
+	public int updateTcallingTask2(Map<String, Object> map) {
+		return dao.updateTcallingTask2(map);
+	}
+}

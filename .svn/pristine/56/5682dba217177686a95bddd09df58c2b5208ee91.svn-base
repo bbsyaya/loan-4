@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TReviewAssignTaskMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TReviewAssignTask" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="ruletype" property="ruletype" jdbcType="VARCHAR" />
+    <result column="rulecontent" property="rulecontent" jdbcType="VARCHAR" />
+    <result column="approvePerson" property="approvePerson" jdbcType="VARCHAR" />
+    <result column="valid_date" property="valid_date" jdbcType="DATE" />
+    <result column="invalid_date" property="invalid_date" jdbcType="DATE" />
+    <result column="modify_date" property="modify_date" jdbcType="DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, ruletype, rulecontent, approvePerson, valid_date, invalid_date, modify_date
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_review_assigntask_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="getReviewPersonByRule" resultType="java.lang.String" parameterType="java.lang.String" >
+    select approvePerson
+    from t_review_assigntask_info
+    where rulecontent like #{ruleContent,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_review_assigntask_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TReviewAssignTask" >
+    insert into t_review_assigntask_info (id, ruletype, rulecontent, 
+      approvePerson, valid_date, invalid_date, 
+      modify_date)
+    values (#{id,jdbcType=INTEGER}, #{ruletype,jdbcType=VARCHAR}, #{rulecontent,jdbcType=VARCHAR}, 
+      #{approvePerson,jdbcType=VARCHAR}, #{valid_date,jdbcType=DATE}, #{invalid_date,jdbcType=DATE}, 
+      #{modify_date,jdbcType=DATE})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TReviewAssignTask" >
+    insert into t_review_assigntask_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="ruletype != null" >
+        ruletype,
+      </if>
+      <if test="rulecontent != null" >
+        rulecontent,
+      </if>
+      <if test="approvePerson != null" >
+        approvePerson,
+      </if>
+      <if test="valid_date != null" >
+        valid_date,
+      </if>
+      <if test="invalid_date != null" >
+        invalid_date,
+      </if>
+      <if test="modify_date != null" >
+        modify_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="ruletype != null" >
+        #{ruletype,jdbcType=VARCHAR},
+      </if>
+      <if test="rulecontent != null" >
+        #{rulecontent,jdbcType=VARCHAR},
+      </if>
+      <if test="approvePerson != null" >
+        #{approvePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="valid_date != null" >
+        #{valid_date,jdbcType=DATE},
+      </if>
+      <if test="invalid_date != null" >
+        #{invalid_date,jdbcType=DATE},
+      </if>
+      <if test="modify_date != null" >
+        #{modify_date,jdbcType=DATE},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TReviewAssignTask" >
+    update t_review_assigntask_info
+    <set >
+      <if test="ruletype != null" >
+        ruletype = #{ruletype,jdbcType=VARCHAR},
+      </if>
+      <if test="rulecontent != null" >
+        rulecontent = #{rulecontent,jdbcType=VARCHAR},
+      </if>
+      <if test="approvePerson != null" >
+        approvePerson = #{approvePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="valid_date != null" >
+        valid_date = #{valid_date,jdbcType=DATE},
+      </if>
+      <if test="invalid_date != null" >
+        invalid_date = #{invalid_date,jdbcType=DATE},
+      </if>
+      <if test="modify_date != null" >
+        modify_date = #{modify_date,jdbcType=DATE},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TReviewAssignTask" >
+    update t_review_assigntask_info
+    set ruletype = #{ruletype,jdbcType=VARCHAR},
+      rulecontent = #{rulecontent,jdbcType=VARCHAR},
+      approvePerson = #{approvePerson,jdbcType=VARCHAR},
+      valid_date = #{valid_date,jdbcType=DATE},
+      invalid_date = #{invalid_date,jdbcType=DATE},
+      modify_date = #{modify_date,jdbcType=DATE}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

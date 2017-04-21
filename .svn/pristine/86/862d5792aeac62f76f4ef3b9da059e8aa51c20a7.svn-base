@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditReportQualifyMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditReportQualify" >
+    <id column="serialNo" property="serialNo" jdbcType="VARCHAR" />
+    <result column="reportNo" property="reportNo" jdbcType="VARCHAR" />
+    <result column="competency" property="competency" jdbcType="VARCHAR" />
+    <result column="grade" property="grade" jdbcType="VARCHAR" />
+    <result column="awardDate" property="awardDate" jdbcType="VARCHAR" />
+    <result column="endDate" property="endDate" jdbcType="VARCHAR" />
+    <result column="revokeDate" property="revokeDate" jdbcType="VARCHAR" />
+    <result column="authority" property="authority" jdbcType="VARCHAR" />
+    <result column="area" property="area" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    serialNo, reportNo, competency, grade, awardDate, endDate, revokeDate, authority, 
+    area
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_report_qualify
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_credit_report_qualify
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportQualify" >
+    insert into t_credit_report_qualify (serialNo, reportNo, competency, 
+      grade, awardDate, endDate, 
+      revokeDate, authority, area
+      )
+    values (#{serialNo,jdbcType=VARCHAR}, #{reportNo,jdbcType=VARCHAR}, #{competency,jdbcType=VARCHAR}, 
+      #{grade,jdbcType=VARCHAR}, #{awardDate,jdbcType=VARCHAR}, #{endDate,jdbcType=VARCHAR}, 
+      #{revokeDate,jdbcType=VARCHAR}, #{authority,jdbcType=VARCHAR}, #{area,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportQualify" >
+    insert into t_credit_report_qualify
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="competency != null" >
+        competency,
+      </if>
+      <if test="grade != null" >
+        grade,
+      </if>
+      <if test="awardDate != null" >
+        awardDate,
+      </if>
+      <if test="endDate != null" >
+        endDate,
+      </if>
+      <if test="revokeDate != null" >
+        revokeDate,
+      </if>
+      <if test="authority != null" >
+        authority,
+      </if>
+      <if test="area != null" >
+        area,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="competency != null" >
+        #{competency,jdbcType=VARCHAR},
+      </if>
+      <if test="grade != null" >
+        #{grade,jdbcType=VARCHAR},
+      </if>
+      <if test="awardDate != null" >
+        #{awardDate,jdbcType=VARCHAR},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=VARCHAR},
+      </if>
+      <if test="revokeDate != null" >
+        #{revokeDate,jdbcType=VARCHAR},
+      </if>
+      <if test="authority != null" >
+        #{authority,jdbcType=VARCHAR},
+      </if>
+      <if test="area != null" >
+        #{area,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="map" >
+    insert into t_credit_report_qualify
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="competency != null" >
+        competency,
+      </if>
+      <if test="grade != null" >
+        grade,
+      </if>
+      <if test="awardDate != null" >
+        awardDate,
+      </if>
+      <if test="endDate != null" >
+        endDate,
+      </if>
+      <if test="revokeDate != null" >
+        revokeDate,
+      </if>
+      <if test="authority != null" >
+        authority,
+      </if>
+      <if test="area != null" >
+        area,
+      </if>
+       <if test="queryId != null">
+      	queryId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="competency != null" >
+        #{competency,jdbcType=VARCHAR},
+      </if>
+      <if test="grade != null" >
+        #{grade,jdbcType=VARCHAR},
+      </if>
+      <if test="awardDate != null" >
+        #{awardDate,jdbcType=VARCHAR},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=VARCHAR},
+      </if>
+      <if test="revokeDate != null" >
+        #{revokeDate,jdbcType=VARCHAR},
+      </if>
+      <if test="authority != null" >
+        #{authority,jdbcType=VARCHAR},
+      </if>
+      <if test="area != null" >
+        #{area,jdbcType=VARCHAR},
+      </if>
+       <if test="queryId != null">
+      	#{queryId},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportQualify" >
+    update t_credit_report_qualify
+    <set >
+      <if test="reportNo != null" >
+        reportNo = #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="competency != null" >
+        competency = #{competency,jdbcType=VARCHAR},
+      </if>
+      <if test="grade != null" >
+        grade = #{grade,jdbcType=VARCHAR},
+      </if>
+      <if test="awardDate != null" >
+        awardDate = #{awardDate,jdbcType=VARCHAR},
+      </if>
+      <if test="endDate != null" >
+        endDate = #{endDate,jdbcType=VARCHAR},
+      </if>
+      <if test="revokeDate != null" >
+        revokeDate = #{revokeDate,jdbcType=VARCHAR},
+      </if>
+      <if test="authority != null" >
+        authority = #{authority,jdbcType=VARCHAR},
+      </if>
+      <if test="area != null" >
+        area = #{area,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportQualify" >
+    update t_credit_report_qualify
+    set reportNo = #{reportNo,jdbcType=VARCHAR},
+      competency = #{competency,jdbcType=VARCHAR},
+      grade = #{grade,jdbcType=VARCHAR},
+      awardDate = #{awardDate,jdbcType=VARCHAR},
+      endDate = #{endDate,jdbcType=VARCHAR},
+      revokeDate = #{revokeDate,jdbcType=VARCHAR},
+      authority = #{authority,jdbcType=VARCHAR},
+      area = #{area,jdbcType=VARCHAR}
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

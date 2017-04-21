@@ -1,0 +1,31 @@
+package com.hrbb.loan.pos.biz.backstage.inter;
+
+import com.hrbb.loan.pos.dao.entity.TFixLineInfo;
+
+/**
+ * @author zhangwei5@hrbb.com.cn
+ * @date 2015年10月8日下午3:28:38 
+ */
+public interface IId5Service {
+
+    /**异步查询固话综合信息并保存或更新固话信息
+     * @param loanId 申请编号
+     * @return 固话查询结果
+     */
+    void asyncQueryFixedLineData(String loanId);
+
+    /**
+     * 先查db,db没有，则查第三方接口
+     * @param loanId 申请编号
+     * @return 固话查询结果
+     */
+    TFixLineInfo queryFixLineInfoDBfirst(String loanId);
+
+    /**
+     * 直接查询第三方接口
+     * @param loanId 申请编号
+     * @return 固话综合信息
+     */
+    TFixLineInfo queryFixLineInfoForUpdate(String loanId);
+
+}

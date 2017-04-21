@@ -1,0 +1,31 @@
+<!-- 马总发红包-电子账户 -->
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:fram="http://framework.facade.common.transcore.pinganfu.com/">
+	<soapenv:Header />
+	<soapenv:Body>
+		<fram:execProxyPayoff>
+			<arg0>
+				<customerName>马明哲</customerName>
+				<bankCardInfo>
+					<accountName>林子轩</accountName>
+					<bankId>1043</bankId>
+					<bankName>平安银行</bankName>
+					<cardCode>PAB</cardCode>
+					<cardNumber>621626000019633222</cardNumber>
+				</bankCardInfo>
+				<busiChannel>W</busiChannel>
+				<customerId>2000010000000002</customerId>
+				<dcFlag>D</dcFlag>
+				<extFeilds>dd</extFeilds>
+				<orderNo>${orderNo}</orderNo>
+				<productCode>200020030000</productCode>
+				<registerFlag>0</registerFlag>
+				<toCredentialType>1</toCredentialType>
+				<toCustomerId>1000010000026540</toCustomerId> <!--  00 -->
+				<transAmt>10000000</transAmt>
+				<transFactAmt>10000000</transFactAmt>
+				<transType>60</transType>
+			</arg0>
+		</fram:execProxyPayoff>
+	</soapenv:Body>
+</soapenv:Envelope>

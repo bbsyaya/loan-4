@@ -1,0 +1,220 @@
+package com.hrbb.loan.spi.ZZ;
+
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.ftp.client.param.ParamReqBean;
+import com.hrbb.loan.ftp.client.param.ParamResBean;
+import com.hrbb.loan.ftp.client.utils.HttpClient;
+import com.hrbb.loan.pos.dao.TCreditApplyForReviewDao;
+import com.hrbb.loan.pos.dao.entity.TCreditApply;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.loan.spiconstants.CreditApplyHServiceConstants;
+import com.hrbb.loan.spiconstants.HServiceReturnCode;
+import com.hrbb.sh.framework.HResponse;
+import com.hrbb.sh.framework.HServiceException;
+
+/**
+ * TransType:AP0004 -> 补充资料上传.
+ * 
+ * @author xiongshaogang
+ * @version $Id: ZZAPPAddInforServiceImpl.java, v 0.1 2015年4月21日 下午2:01:29 xiongshaogang Exp $
+ */
+@Service("zzAppAddInfo")
+public class ZZAPPAddInforServiceImpl extends ZZAPPFoundationServiceImpl {
+
+	private final Logger logger = LoggerFactory
+			.getLogger(ZZAPPAddInforServiceImpl.class);
+
+	@Autowired
+	@Qualifier("tCreditApplyForReviewDao")
+	private TCreditApplyForReviewDao tCreditApplyForReviewDao;
+
+	@Value("#{systemInfo[url]}")
+	private String URL;
+
+	/**
+	 * @see com.hrbb.sh.framework.HService#serve(com.hrbb.sh.framework.HRequest)
+	 */
+	@Override
+	protected HResponse doProcesser(HResponse resp, Map<String, String> headerMap,
+                                    Map<String, String> bodyMap) throws HServiceException {
+
+		logger.debug("in ZZAPPAddInforServiceImpl...");
+		
+		// 1. 查询申请信息
+        TCreditApply tCreditApply = tCreditApplyForReviewDao.selectOne(bodyMap.get(CreditApplyHServiceConstants.loanid));
+        if (tCreditApply == null) {
+            bodyMap.put("respcode", HServiceReturnCode.LOANID_EXIST_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.LOANID_EXIST_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.LOANID_EXIST_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.LOANID_EXIST_ERROR.getReturnMessage());
+            resp.setRespTime(new Date());
+            logger.error("申请信息不存在");
+            return getBlankHResponse(resp, headerMap, bodyMap);
+        } else {
+            if (!StringUtil.isEmpty(bodyMap.get(CreditApplyHServiceConstants.bankaccno))
+                    && !bodyMap.get(CreditApplyHServiceConstants.bankaccno).equals(tCreditApply.getBankAccno())) {
+                bodyMap.put("respcode", HServiceReturnCode.OTHER_ERROR.getReturnCode());
+                bodyMap.put("respmsg", HServiceReturnCode.OTHER_ERROR.getReturnMessage());
+                resp.setRespCode(HServiceReturnCode.OTHER_ERROR.getReturnCode());
+                resp.setRespMessage(HServiceReturnCode.OTHER_ERROR.getReturnMessage());
+                resp.setRespTime(new Date());
+                return getBlankHResponse(resp, headerMap, bodyMap);
+            } else if (!StringUtil.isEmpty(bodyMap.get(CreditApplyHServiceConstants.custname))
+                    && !bodyMap.get(CreditApplyHServiceConstants.custname).equals(tCreditApply.getCustName())) {
+                bodyMap.put("respcode", HServiceReturnCode.OTHER_ERROR.getReturnCode());
+                bodyMap.put("respmsg", HServiceReturnCode.OTHER_ERROR.getReturnMessage());
+                resp.setRespCode(HServiceReturnCode.OTHER_ERROR.getReturnCode());
+                resp.setRespMessage(HServiceReturnCode.OTHER_ERROR.getReturnMessage());
+                resp.setRespTime(new Date());
+                return getBlankHResponse(resp, headerMap, bodyMap);
+            } else if (!StringUtil.isEmpty(bodyMap.get(CreditApplyHServiceConstants.paperid))
+                    && !bodyMap.get(CreditApplyHServiceConstants.paperid).equals(tCreditApply.getPaperId())) {
+                bodyMap.put("respcode", HServiceReturnCode.OTHER_ERROR.getReturnCode());
+                bodyMap.put("respmsg", HServiceReturnCode.OTHER_ERROR.getReturnMessage());
+                resp.setRespCode(HServiceReturnCode.OTHER_ERROR.getReturnCode());
+                resp.setRespMessage(HServiceReturnCode.OTHER_ERROR.getReturnMessage());
+                resp.setRespTime(new Date());
+                return getBlankHResponse(resp, headerMap, bodyMap);
+            }
+        }
+		
+		// 2. 通知下载归档
+		ParamReqBean paramReqBean = new ParamReqBean();
+		paramReqBean.setApplyNo(bodyMap.get(CreditApplyHServiceConstants.loanid));
+		paramReqBean.setKeyValue(
+				CreditApplyHServiceConstants.ftp_map_key_instno,
+				CreditApplyHServiceConstants.ftp_instno_ap);
+		paramReqBean.setCustId(tCreditApply.getCustId());
+		logger.debug("CustId=" + tCreditApply.getCustId());
+		paramReqBean.setVersion(CreditApplyHServiceConstants.ftp_version);
+		paramReqBean.setBizType(CreditApplyHServiceConstants.ftp_biztype);
+		paramReqBean.setTransType(CreditApplyHServiceConstants.ftp_transtype);
+		paramReqBean.setKeyValue(
+				CreditApplyHServiceConstants.ftp_map_key_prefix,
+				CreditApplyHServiceConstants.ftp_prefix_app);
+		paramReqBean.setKeyValue(
+				CreditApplyHServiceConstants.ftp_map_key_remotefilename,
+				bodyMap.get(CreditApplyHServiceConstants.imagefilepackagename));
+		paramReqBean.setKeyValue(
+				CreditApplyHServiceConstants.ftp_map_key_LocalSubFolderNameDef,
+				bodyMap.get(bodyMap.get(CreditApplyHServiceConstants.loanid)));
+
+		paramReqBean.setKeyValue(CreditApplyHServiceConstants.ftp_map_key_url,
+				URL + "creditApplyUpdate/updateBackToAddit.do");
+		logger.debug("url="
+				+ paramReqBean
+						.getValueByKey(CreditApplyHServiceConstants.ftp_map_key_url));
+        ParamResBean paramResBean = HttpClient.send(paramReqBean);
+		if (paramResBean == null) {
+		    bodyMap.put("respcode", HServiceReturnCode.FTP_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.FTP_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.FTP_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.FTP_ERROR.getReturnMessage());
+            resp.setRespTime(new Date());
+            return getBlankHResponse(resp, headerMap, bodyMap);
+		}
+		logger.debug("paramResBean = " + paramResBean.toURLParam());
+		
+		// 3. 回写成功
+		Map<String, Object> rootMap = Maps.newHashMap();
+		bodyMap = Maps.newHashMap();
+		bodyMap.put("respcode", HServiceReturnCode.SUCCESS.getReturnCode());
+		bodyMap.put("respmsg", HServiceReturnCode.SUCCESS.getReturnMessage());
+		
+		// 3.1 签名处理
+        Map<String, Object> signMap = Maps.newHashMap();
+        for (Iterator<String> it = bodyMap.keySet().iterator(); it.hasNext();) {
+            String key = it.next();
+            signMap.put(key, bodyMap.get(key));
+        }
+        headerMap.put("Mac", sign(signMap, null));
+        
+        rootMap.put("HrbbHeader", headerMap);
+        rootMap.put("HrbbBody", bodyMap);
+        resp.setRespCode(HServiceReturnCode.SUCCESS.getReturnCode());
+        resp.setRespMessage(HServiceReturnCode.SUCCESS.getReturnMessage());
+        resp.setRespTime(new Date());
+        resp.setProperties(rootMap);
+        logger.info("回写数据: " + resp.toString());
+        logger.debug("out ZZAPPAddInforServiceImpl...");
+		return resp;
+	}
+	
+	/**
+     * 请求包校验处理.
+     * 
+     * @param headerMap
+     * @param bodyMap
+     * @return
+     * @throws Exception 
+     */
+    protected boolean validate(Map<String, String> headerMap, Map<String, String> bodyMap,
+                             HResponse resp) throws HServiceException {
+        if (!validateHeader(headerMap, bodyMap, resp)) {
+            return false;
+        }
+        
+        // 申请编号
+        if (StringUtil.isEmpty(bodyMap.get("loanid"))) {
+            logger.error("申请编号为空:[]", bodyMap.get("loanid"));
+            bodyMap.put("respcode", HServiceReturnCode.LOANID_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.LOANID_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.LOANID_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.LOANID_ERROR.getReturnMessage());
+            return false;
+        }
+        
+        // 补充内容类型
+//        if (StringUtil.isEmpty(headerMap.get("addittype"))) {
+//            logger.error("补充内容类型为空:[]", headerMap.get("addittype"));
+//            bodyMap.put("respcode", HServiceReturnCode.OTHER_ERROR.getReturnCode());
+//            bodyMap.put("respmsg", HServiceReturnCode.OTHER_ERROR.getReturnMessage());
+//            resp.setRespCode(HServiceReturnCode.OTHER_ERROR.getReturnCode());
+//            resp.setRespMessage(HServiceReturnCode.OTHER_ERROR.getReturnMessage());
+//            return false;
+//        }
+        
+        // 补充内容说明
+        if (StringUtil.isEmpty(bodyMap.get("additspec"))) {
+            logger.error("补充内容说明为空:[]", bodyMap.get("additspec"));
+            bodyMap.put("respcode", HServiceReturnCode.IMAGEFILEPACKAGENAME_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.IMAGEFILEPACKAGENAME_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.IMAGEFILEPACKAGENAME_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.IMAGEFILEPACKAGENAME_ERROR.getReturnMessage());
+            return false;
+        }
+        
+        // 影像资料补充明细
+        if (StringUtil.isEmpty(bodyMap.get("imgadditdetail"))) {
+            logger.error("影像资料补充明细为空:[]", bodyMap.get("imgadditdetail"));
+            bodyMap.put("respcode", HServiceReturnCode.IMAGEFILEPACKAGENAME_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.IMAGEFILEPACKAGENAME_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.IMAGEFILEPACKAGENAME_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.IMAGEFILEPACKAGENAME_ERROR.getReturnMessage());
+            return false;
+        }
+        
+        // 影像资料文件包名
+        if (StringUtil.isEmpty(bodyMap.get("imagefilepackagename"))) {
+            logger.error("影像资料文件包名为空:[]", bodyMap.get("imagefilepackagename"));
+            bodyMap.put("respcode", HServiceReturnCode.IMAGEFILEPACKAGENAME_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.IMAGEFILEPACKAGENAME_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.IMAGEFILEPACKAGENAME_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.IMAGEFILEPACKAGENAME_ERROR.getReturnMessage());
+            return false;
+        }
+        
+        return true;
+    }
+}

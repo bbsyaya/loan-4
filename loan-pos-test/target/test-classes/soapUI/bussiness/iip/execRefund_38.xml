@@ -1,0 +1,23 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:fram="http://framework.facade.common.transcore.pinganfu.com/">
+	<soapenv:Header />
+	<soapenv:Body>
+		<fram:execRefund>
+			<arg0>
+				<busiChannel>W</busiChannel>
+				<feeAmt>0</feeAmt>
+				<flag>00</flag>
+				<oldTransId>${oldTransId}</oldTransId>
+				<orderNo>${orderNo}</orderNo>
+				<refundDetail>
+					<refundAmt>1000000</refundAmt>
+					<toAcctId>0</toAcctId>
+				</refundDetail>
+				<refundFeeAmt>0</refundFeeAmt>
+				<sumRefundAmt>1000000</sumRefundAmt>
+				<transDesc>dd</transDesc>
+				<transType>38</transType> <!-- 38 商户退款  ,20 会员退款 ,50线下退货   -->
+			</arg0>
+		</fram:execRefund>
+	</soapenv:Body>
+</soapenv:Envelope>

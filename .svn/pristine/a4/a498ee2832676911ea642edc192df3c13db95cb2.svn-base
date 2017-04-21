@@ -1,0 +1,106 @@
+/**
+ * 
+ */
+package com.hrbb.loan.pos.dao.impl;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+import org.springframework.stereotype.Repository;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.dao.TRepaymentPlanDao;
+import com.hrbb.loan.pos.dao.entity.TRepaymentPlan;
+
+/**
+ * <p>Title: TRepaymentPlanDaoImpl.java </p>
+ * <p>Description:  </p>
+ * <p>Copyright: Copyright (C) 2015 Hrbb Ltd. Co.</p> 
+ *     
+ * @author linzhaolin@hrbb.com.cn
+ * @version 
+ * @date 2015年7月30日
+ *
+ * logs: 1. 
+ */
+@Repository("tRepaymentPlanDao")
+public class TRepaymentPlanDaoImpl extends SqlSessionDaoSupport implements TRepaymentPlanDao {
+	
+	/* (non-Javadoc)
+	 * @see com.hrbb.loan.pos.dao.TRepaymentPlanDao#deleteByPrimaryKey(java.lang.Integer)
+	 */
+	@Override
+	public int deleteByPrimaryKey(Integer id) {
+		return getSqlSession().delete("TRepaymentPlanMapper.deleteByPrimaryKey", id);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.hrbb.loan.pos.dao.TRepaymentPlanDao#insert(com.hrbb.loan.pos.dao.entity.TRepaymentPlan)
+	 */
+	@Override
+	public int insert(TRepaymentPlan record) {
+		return getSqlSession().insert("TRepaymentPlanMapper.insert", record);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.hrbb.loan.pos.dao.TRepaymentPlanDao#insertSelective(com.hrbb.loan.pos.dao.entity.TRepaymentPlan)
+	 */
+	@Override
+	public int insertSelective(TRepaymentPlan record) {
+		// TODO Auto-generated method stub
+		return getSqlSession().insert("TRepaymentPlanMapper.insertSelective", record);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.hrbb.loan.pos.dao.TRepaymentPlanDao#selectByPrimaryKey(java.lang.Integer)
+	 */
+	@Override
+	public TRepaymentPlan selectByPrimaryKey(Integer id) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectOne("TRepaymentPlanMapper.selectByPrimaryKey", id);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.hrbb.loan.pos.dao.TRepaymentPlanDao#updateByPrimaryKeySelective(com.hrbb.loan.pos.dao.entity.TRepaymentPlan)
+	 */
+	@Override
+	public int updateSelective(TRepaymentPlan record) {
+		// TODO Auto-generated method stub
+		return getSqlSession().update(
+				"TRepaymentPlanMapper.updateSelective", record);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.hrbb.loan.pos.dao.TRepaymentPlanDao#updateByPrimaryKey(com.hrbb.loan.pos.dao.entity.TRepaymentPlan)
+	 */
+	@Override
+	public int updateByPrimaryKey(TRepaymentPlan record) {
+		// TODO Auto-generated method stub
+		return getSqlSession().update(
+				"TRepaymentPlanMapper.updateByPrimaryKey", record);
+	}
+
+	@Override
+	public TRepaymentPlan getRecentlyPlan(String receiptId) {
+		return getSqlSession().selectOne("TRepaymentPlanMapper.getRecentlyPlan", receiptId);
+	}
+
+	@Override
+	public List<TRepaymentPlan> getAllPlan(String receiptId) {
+		Map<String,Object> reqVar = Maps.newHashMap();
+		reqVar.put("receiptId", receiptId);
+		return getSqlSession().selectList("TRepaymentPlanMapper.getRepaymentPlans", reqVar);
+	}
+
+	@Override
+	public List<TRepaymentPlan> getRepaymentPlans(String receiptId,
+			Date dateFrom) {
+		Map<String,Object> reqVar = Maps.newHashMap();
+		reqVar.put("receiptId", receiptId);
+		reqVar.put("dateFrom", dateFrom);
+		return getSqlSession().selectList("TRepaymentPlanMapper.getRepaymentPlans", reqVar);
+	}
+
+}

@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditReportCreditCardBriefMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditReportCreditCardBrief" >
+    <id column="reportNo" property="reportNo" jdbcType="VARCHAR" />
+    <result column="financeCorps" property="financeCorps" jdbcType="INTEGER" />
+    <result column="financeOrgs" property="financeOrgs" jdbcType="INTEGER" />
+    <result column="accounts" property="accounts" jdbcType="INTEGER" />
+    <result column="creditLimit" property="creditLimit" jdbcType="DECIMAL" />
+    <result column="creditMax" property="creditMax" jdbcType="DECIMAL" />
+    <result column="creditMin" property="creditMin" jdbcType="DECIMAL" />
+    <result column="usedCredit" property="usedCredit" jdbcType="DECIMAL" />
+    <result column="avgAmt6m" property="avgAmt6m" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    reportNo, financeCorps, financeOrgs, accounts, creditLimit, creditMax, creditMin, 
+    usedCredit, avgAmt6m
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_report_creditcard_brief
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_credit_report_creditcard_brief
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportCreditCardBrief" >
+    insert into t_credit_report_creditcard_brief (reportNo, financeCorps, financeOrgs, 
+      accounts, creditLimit, creditMax, 
+      creditMin, usedCredit, avgAmt6m
+      )
+    values (#{reportNo,jdbcType=VARCHAR}, #{financeCorps,jdbcType=INTEGER}, #{financeOrgs,jdbcType=INTEGER}, 
+      #{accounts,jdbcType=INTEGER}, #{creditLimit,jdbcType=DECIMAL}, #{creditMax,jdbcType=DECIMAL}, 
+      #{creditMin,jdbcType=DECIMAL}, #{usedCredit,jdbcType=DECIMAL}, #{avgAmt6m,jdbcType=DECIMAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportCreditCardBrief" >
+    insert into t_credit_report_creditcard_brief
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="financeCorps != null" >
+        financeCorps,
+      </if>
+      <if test="financeOrgs != null" >
+        financeOrgs,
+      </if>
+      <if test="accounts != null" >
+        accounts,
+      </if>
+      <if test="creditLimit != null" >
+        creditLimit,
+      </if>
+      <if test="creditMax != null" >
+        creditMax,
+      </if>
+      <if test="creditMin != null" >
+        creditMin,
+      </if>
+      <if test="usedCredit != null" >
+        usedCredit,
+      </if>
+      <if test="avgAmt6m != null" >
+        avgAmt6m,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="financeCorps != null" >
+        #{financeCorps,jdbcType=INTEGER},
+      </if>
+      <if test="financeOrgs != null" >
+        #{financeOrgs,jdbcType=INTEGER},
+      </if>
+      <if test="accounts != null" >
+        #{accounts,jdbcType=INTEGER},
+      </if>
+      <if test="creditLimit != null" >
+        #{creditLimit,jdbcType=DECIMAL},
+      </if>
+      <if test="creditMax != null" >
+        #{creditMax,jdbcType=DECIMAL},
+      </if>
+      <if test="creditMin != null" >
+        #{creditMin,jdbcType=DECIMAL},
+      </if>
+      <if test="usedCredit != null" >
+        #{usedCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="avgAmt6m != null" >
+        #{avgAmt6m,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <insert id="insertSelectiveMap" parameterType="Map" >
+    insert into t_credit_report_creditcard_brief
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="financeCorps != null" >
+        financeCorps,
+      </if>
+      <if test="financeOrgs != null" >
+        financeOrgs,
+      </if>
+      <if test="accounts != null" >
+        accounts,
+      </if>
+      <if test="creditLimit != null" >
+        creditLimit,
+      </if>
+      <if test="creditMax != null" >
+        creditMax,
+      </if>
+      <if test="creditMin != null" >
+        creditMin,
+      </if>
+      <if test="usedCredit != null" >
+        usedCredit,
+      </if>
+      <if test="avgAmt6m != null" >
+        avgAmt6m,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="financeCorps != null" >
+        #{financeCorps,jdbcType=INTEGER},
+      </if>
+      <if test="financeOrgs != null" >
+        #{financeOrgs,jdbcType=INTEGER},
+      </if>
+      <if test="accounts != null" >
+        #{accounts,jdbcType=INTEGER},
+      </if>
+      <if test="creditLimit != null" >
+        #{creditLimit,jdbcType=DECIMAL},
+      </if>
+      <if test="creditMax != null" >
+        #{creditMax,jdbcType=DECIMAL},
+      </if>
+      <if test="creditMin != null" >
+        #{creditMin,jdbcType=DECIMAL},
+      </if>
+      <if test="usedCredit != null" >
+        #{usedCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="avgAmt6m != null" >
+        #{avgAmt6m,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportCreditCardBrief" >
+    update t_credit_report_creditcard_brief
+    <set >
+      <if test="financeCorps != null" >
+        financeCorps = #{financeCorps,jdbcType=INTEGER},
+      </if>
+      <if test="financeOrgs != null" >
+        financeOrgs = #{financeOrgs,jdbcType=INTEGER},
+      </if>
+      <if test="accounts != null" >
+        accounts = #{accounts,jdbcType=INTEGER},
+      </if>
+      <if test="creditLimit != null" >
+        creditLimit = #{creditLimit,jdbcType=DECIMAL},
+      </if>
+      <if test="creditMax != null" >
+        creditMax = #{creditMax,jdbcType=DECIMAL},
+      </if>
+      <if test="creditMin != null" >
+        creditMin = #{creditMin,jdbcType=DECIMAL},
+      </if>
+      <if test="usedCredit != null" >
+        usedCredit = #{usedCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="avgAmt6m != null" >
+        avgAmt6m = #{avgAmt6m,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportCreditCardBrief" >
+    update t_credit_report_creditcard_brief
+    set financeCorps = #{financeCorps,jdbcType=INTEGER},
+      financeOrgs = #{financeOrgs,jdbcType=INTEGER},
+      accounts = #{accounts,jdbcType=INTEGER},
+      creditLimit = #{creditLimit,jdbcType=DECIMAL},
+      creditMax = #{creditMax,jdbcType=DECIMAL},
+      creditMin = #{creditMin,jdbcType=DECIMAL},
+      usedCredit = #{usedCredit,jdbcType=DECIMAL},
+      avgAmt6m = #{avgAmt6m,jdbcType=DECIMAL}
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,31 @@
+package com.hrbb.loan.pos.service.impl;
+
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.stereotype.Service;
+
+import com.hrbb.loan.pos.dao.TCreditApplyUpdateSyncDao;
+import com.hrbb.loan.pos.dao.TPaybackRunningRecordDao;
+import com.hrbb.loan.pos.dao.impl.TCreditApplyUpdateSyncDaoImpl;
+import com.hrbb.loan.pos.service.loanPosCreditApplyUpdateSyncService;
+@Service("loanPosCreditApplyUpdateSyncService")
+public class loanPosCreditApplyUpdateSyncServiceImpl implements
+		loanPosCreditApplyUpdateSyncService {
+	@Autowired
+	private TCreditApplyUpdateSyncDao tCreditApplyUpdateSyncDao;
+//	private static TCreditApplyUpdateSyncDaoImpl dao;
+	@Override
+	public Map<String, Object> getCreditApplyUpdateSyncInfo(String loanId) {
+		// TODO Auto-generated method stub
+		
+		 /*FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(
+	 				"D:\\hrbb\\workspace\\loan\\loan-pos-web\\src\\test\\resources\\58t-context.xml");
+	 		dao = (TCreditApplyUpdateSyncDaoImpl) context.getBean("tCreditApplyUpdateSyncDao");*/
+		return tCreditApplyUpdateSyncDao.getCreditApplyUpdateSyncInfo(loanId);
+		
+		
+	}
+
+}

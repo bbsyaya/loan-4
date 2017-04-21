@@ -1,0 +1,30 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:fram="http://framework.facade.common.transcore.pinganfu.com/">
+	<soapenv:Header />
+	<soapenv:Body>
+		<fram:transactionCheckIn>
+			<arg0>
+				<busiChannel>P</busiChannel>
+				<customerId>1000010000026540</customerId> <!-- 00类型 -->
+				<customerName>二维码商户</customerName>
+				<ccy>CNY</ccy>
+				<dcFlag>C</dcFlag>
+				<extFeilds>{"mobile":"15000956051"}</extFeilds>
+				<orderNo>${orderNo}</orderNo>
+				<productCode>100010010000</productCode>
+				<registerFlag>0</registerFlag>
+				<subLedgerFlag>0</subLedgerFlag>
+				<toCustomerId>1000010000000734</toCustomerId> <!--    -->
+				<transAmount>100000</transAmount>
+				<transTotalAmount>100000</transTotalAmount>
+				<transType>04</transType>
+<!--				<bankCardInfo>
+	               <accountName>李锐</accountName>
+	               <bankName>平安银行</bankName>
+	               <cardCode>PAB</cardCode>
+	               <cardNumber>655485484548454</cardNumber>
+	           	</bankCardInfo> -->
+			</arg0>
+		</fram:transactionCheckIn>
+	</soapenv:Body>
+</soapenv:Envelope>

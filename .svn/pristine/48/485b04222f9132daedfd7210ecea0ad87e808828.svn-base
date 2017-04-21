@@ -1,0 +1,7 @@
+#Synchro File Path
+synchrofilepath=/home/loan-pos-synchrofile/synchrofile/
+#UM
+custID_UM=UMI
+#dataTransfer File Path
+#dataTransferfilepath=/home/loan-pos-dataTransferfile/dataTransferfile/all.json
+#dataTransferfilepath=C\:workPOSLOANdataTransferall.json

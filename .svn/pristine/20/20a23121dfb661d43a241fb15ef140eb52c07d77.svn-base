@@ -1,0 +1,1658 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TContractInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TContractManagement" >
+    <id column="contNo" property="contNo" jdbcType="VARCHAR" />
+    <result column="cnContNo" property="cnContNo" jdbcType="VARCHAR" />
+    <result column="acctContNo" property="acctContNo" jdbcType="VARCHAR"/>
+    <result column="approveId" property="approveId" jdbcType="VARCHAR"/>
+    <result column="contKind" property="contKind" jdbcType="VARCHAR" />
+    <result column="loanId" property="loanId" jdbcType="VARCHAR" />
+    <result column="custId" property="custId" jdbcType="VARCHAR" />
+    <result column="custName" property="custName" jdbcType="VARCHAR" />
+    <result column="prodId" property="prodId" jdbcType="VARCHAR" />
+    <result column="posCustName" property="posCustName" jdbcType="VARCHAR" />
+    <result column="prodName" property="prodName" jdbcType="VARCHAR" />
+    <result column="loanForm" property="loanForm" jdbcType="VARCHAR" />
+    <result column="apprTotalAmt" property="apprTotalAmt" jdbcType="DECIMAL" />
+    <result column="contTotalAmt" property="contTotalAmt" jdbcType="DECIMAL" />
+    <result column="termUnit" property="termUnit" jdbcType="VARCHAR" />
+    <result column="applyTerm" property="applyTerm" jdbcType="VARCHAR" />
+    <result column="contTerm" property="contTerm" jdbcType="VARCHAR" />
+    <result column="beginDate" property="beginDate" jdbcType="TIMESTAMP" />
+    <result column="endDate" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="assuKind" property="assuKind" jdbcType="VARCHAR" />
+    <result column="inChannelKind" property="inChannelKind" jdbcType="VARCHAR" />
+    <result column="repayMethod" property="repayMethod" jdbcType="VARCHAR" />
+    <result column="paybackMethod" property="paybackMethod" jdbcType="VARCHAR" />
+    <result column="retuSourRemark" property="retuSourRemark" jdbcType="VARCHAR" />
+    <result column="amt" property="amt" jdbcType="DECIMAL" />
+    <result column="moreInteRate" property="moreInteRate" jdbcType="DECIMAL" />
+    <result column="inteRate" property="inteRate" jdbcType="DECIMAL" />
+    <result column="reckDay" property="reckDay" jdbcType="VARCHAR" />
+    <result column="riskRemark" property="riskRemark" jdbcType="VARCHAR" />
+    <result column="approveMoneyKind" property="approveMoneyKind" jdbcType="VARCHAR" />
+    <result column="apprOperId" property="apprOperId" jdbcType="VARCHAR" />
+    <result column="apprBankId" property="apprBankId" jdbcType="VARCHAR" />
+    <result column="apprOperLev" property="apprOperLev" jdbcType="VARCHAR" />
+    <result column="signDate" property="signDate" jdbcType="DATE" />
+    <result column="initOperId" property="initOperId" jdbcType="VARCHAR" />
+    <result column="bankId" property="bankId" jdbcType="VARCHAR" />
+    <result column="operId" property="operId" jdbcType="VARCHAR" />
+    <result column="acBankId" property="acBankId" jdbcType="VARCHAR" />
+    <result column="contStatus" property="contStatus" jdbcType="VARCHAR" />
+    <result column="apprDate" property="apprDate" jdbcType="TIMESTAMP" />
+    <result column="apprEndDate" property="apprEndDate" jdbcType="TIMESTAMP" />
+    <result column="lastChanPerson" property="lastChanPerson" jdbcType="VARCHAR" />
+    <result column="lastChanBankId" property="lastChanBankId" jdbcType="VARCHAR" />
+    <result column="lastChanDate" property="lastChanDate" jdbcType="TIMESTAMP" />
+    <result column="agentBankId" property="agentBankId" jdbcType="VARCHAR" />
+    <result column="agentOperId" property="agentOperId" jdbcType="VARCHAR" />
+    <result column="retuDay" property="retuDay" jdbcType="VARCHAR" />
+    <result column="fundSour" property="fundSour" jdbcType="VARCHAR" />
+    <result column="posCustId" property="posCustId" jdbcType="VARCHAR" />
+    <result column="creditLine" property="creditLine" jdbcType="DECIMAL" />
+    <result column="creditInterest" property="creditInterest" jdbcType="VARCHAR" />
+    <result column="agreementStatus" property="agreementStatus" jdbcType="VARCHAR" />
+    <result column="channel" property="channel" jdbcType="VARCHAR" />
+    <result column="approveTerm" property="approveTerm" jdbcType="VARCHAR" />
+    <result column="approveTermUnit" property="approveTermUnit" jdbcType="VARCHAR" />
+    <result column="freezeReason" property="freezeReason" jdbcType="VARCHAR" />
+    <result column="unFreezeReason" property="unFreezeReason" jdbcType="VARCHAR" />
+    <result column="freezePerson" property="freezePerson" jdbcType="VARCHAR" />
+    <result column="unfreezePerson" property="unfreezePerson" jdbcType="VARCHAR" />
+    <result column="freezeDate" property="freezeDate" jdbcType="TIMESTAMP" />
+    <result column="unfreezeDate" property="unfreezeDate" jdbcType="TIMESTAMP" />
+    <result column="editReason" property="editReason" jdbcType="VARCHAR" />
+    <result column="editPerson" property="editPerson" jdbcType="VARCHAR" />
+    <result column="editDate" property="editDate" jdbcType="TIMESTAMP" />
+    <result column="acceptAccount" property="acceptAccount" jdbcType="VARCHAR" />
+    <result column="approveInterest" property="approveInterest" jdbcType="DECIMAL" />
+    <result column="accountOpenBank" property="accountOpenBank" jdbcType="VARCHAR" />
+    <result column="accountBranchBank" property="accountBranchBank" jdbcType="VARCHAR" />
+    <result column="accountSubBranchBank" property="accountSubBranchBank" jdbcType="VARCHAR" />
+    <result column="loanNum" property="loanNum" jdbcType="VARCHAR"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    contNo, cnContNo,acctContNo, approveId, contKind, loanId, custId, custName, prodId, posCustName, prodName, 
+    loanForm, apprTotalAmt, contTotalAmt, termUnit, applyTerm, contTerm, beginDate, endDate, 
+    assuKind, inChannelKind, paybackMethod, repayMethod, retuSourRemark, amt, moreInteRate, inteRate, 
+    reckDay, riskRemark, approveMoneyKind, apprOperId, apprBankId, apprOperLev, signDate, 
+    initOperId, bankId, operId, acBankId, contStatus, apprDate, apprEndDate, lastChanPerson, 
+    lastChanBankId, lastChanDate, agentBankId, agentOperId, retuDay, fundSour, posCustId, 
+    creditLine, creditInterest, agreementStatus, channel, approveTerm, approveTermUnit, 
+    freezeReason, unFreezeReason, freezePerson, unfreezePerson, freezeDate, unfreezeDate, 
+    editReason, editPerson, editDate, acceptAccount, approveInterest, accountOpenBank, 
+    accountBranchBank, accountSubBranchBank,loanNum
+  </sql>
+  
+  <sql id="Base_Column_List1" >
+    t1.contNo, t1.cnContNo,t1.acctContNo, t1.approveId,t1.contKind, t1.loanId, t1.custId, t1.custName, t1.prodId, t1.posCustName, t1.prodName, 
+    t1.loanForm, t1.apprTotalAmt, t1.contTotalAmt, t1.termUnit, t1.applyTerm, t1.contTerm, t1.beginDate, t1.endDate, 
+    t1.assuKind, t1.inChannelKind, t1.paybackMethod, t1.repayMethod, t1.retuSourRemark, t1.amt, t1.moreInteRate, t1.inteRate, 
+    t1.reckDay, t1.riskRemark, t1.approveMoneyKind, t1.apprOperId, t1.apprBankId, t1.apprOperLev, t1.signDate, 
+    t1.initOperId, t1.bankId, t1.operId, t1.acBankId, t1.contStatus, t1.apprDate, t1.apprEndDate, t1.lastChanPerson, 
+    t1.lastChanBankId, t1.lastChanDate, t1.agentBankId, t1.agentOperId, t1.retuDay, t1.fundSour, t1.posCustId, 
+    t1.creditLine, t1.creditInterest, t1.agreementStatus, t1.channel, t1.approveTerm, t1.approveTermUnit, 
+    t1.freezeReason, t1.unFreezeReason, t1.freezePerson, t1.unfreezePerson, t1.freezeDate, t1.unfreezeDate, 
+    t1.editReason, t1.editPerson, t1.editDate, t1.acceptAccount, t1.approveInterest, t1.accountOpenBank, 
+    t1.accountBranchBank, t1.accountSubBranchBank,loanNum
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_contract_info
+    where contNo = #{contNo,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByLoanId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_contract_info
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </select>
+  <select id="getApproveMap" resultType="Map" parameterType="java.lang.String" >
+    select t1.channel,t1.inChannelKind,t1.custName,t1.posCustName,t2.applyCommitDate,t2.applyAmt,t2.applyMoneyKind,t2.applyTerm,t2.approveDate,t2.approveAmount,t2.approveMoneyKind,
+    t2.approveInterest,t2.approveTerm,t2.paybackMethod,t2.acceptAccount,t2.accountOpenBank,t2.accountBranchBank,t2.accountSubBranchBank from t_approve_result t2 inner join t_credit_apply_info t1 on
+    t1.loanId=t2.loanId
+    where t1.loanId = #{loanId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectSelectiveMap" resultType="map" parameterType="map">
+  	select 
+  	<include refid="Base_Column_List1" />
+  	,t3.paperId 
+  	from t_contract_info t1, t_customer_info t3
+  	where 1 =1 
+  	AND t1.custId = t3.custId
+  	<if test="agreementStatus != null">
+  		AND t1.agreementStatus = #{agreementStatus}	
+  	</if>
+  	<if test="contNoLike != null">
+  		AND t1.contNo LIKE #{contNoLike}
+  	</if>
+  	<if test="posCustNameLike != null">
+  		AND t1.posCustName LIKE #{posCustNameLike}
+  	</if>
+  	<if test="custNameLike != null">
+  		AND t1.custName LIKE #{custNameLike}
+  	</if>
+  	<if test="custIdLike != null">
+  		AND t1.custId LIKE #{custIdLike}
+  	</if>
+  	<if test="paperIdLike != null">
+  		AND t3.paperId LIKE #{paperIdLike}
+  	</if>
+  	<if test="contNo != null">
+  		AND t1.contNo = #{contNo}
+  	</if>
+	<if test="startPage != null">
+    	LIMIT #{startPage}, #{limit}
+    </if>
+  </select>
+  
+  <select id="countSelectiveMap" resultType="long" parameterType="map">
+  	SELECT COUNT(*) FROM t_contract_info t1,t_customer_info t3
+  	where 1 =1 
+  	AND t1.custId = t3.custId
+  	<if test="agreementStatus != null">
+  		AND t1.agreementStatus = #{agreementStatus}
+  	</if>
+  	<if test="contNoLike != null">
+  		AND t1.contNo LIKE #{contNoLike}
+  	</if>
+  	<if test="posCustNameLike != null">
+  		AND t1.posCustName LIKE #{posCustNameLike}
+  	</if>
+  	<if test="custNameLike != null">
+  		AND t1.custName LIKE #{custNameLike}
+  	</if>
+  	<if test="custIdLike != null">
+  		AND t1.custId LIKE #{custIdLike}
+  	</if>
+  	<if test="paperIdLike != null">
+  		AND t3.paperId LIKE #{paperIdLike}
+  	</if>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_contract_info
+    where contNo = #{contNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TContractInfo" >
+    insert into t_contract_info (contNo, cnContNo,acctContNo, approveId, contKind, 
+      loanId, custId, custName, 
+      prodId, posCustName, prodName, 
+      loanForm, apprTotalAmt, contTotalAmt, 
+      termUnit, applyTerm, contTerm, 
+      beginDate, endDate, assuKind, 
+      inChannelKind, paybackMethod, retuSourRemark, 
+      amt, moreInteRate, inteRate, 
+      reckDay, riskRemark, approveMoneyKind, 
+      apprOperId, apprBankId, apprOperLev, 
+      signDate, initOperId, bankId, 
+      operId, acBankId, contStatus, 
+      apprDate, apprEndDate, lastChanPerson, 
+      lastChanBankId, lastChanDate, agentBankId, 
+      agentOperId, retuDay, fundSour, 
+      posCustId, creditLine, creditInterest, 
+      agreementStatus, channel, approveTerm, 
+      approveTermUnit, freezeReason, unFreezeReason, 
+      freezePerson, unfreezePerson, freezeDate, 
+      unfreezeDate, editReason, editPerson, 
+      editDate, acceptAccount, approveInterest, 
+      accountOpenBank, accountBranchBank, accountSubBranchBank,loanNum
+      )
+    values (#{contNo,jdbcType=VARCHAR}, #{cnContNo,jdbcType=VARCHAR},#{acctContNo,jdbcType=VARCHAR},#{approveId,jdbcType=VARCHAR}, #{contKind,jdbcType=VARCHAR}, 
+      #{loanId,jdbcType=VARCHAR}, #{custId,jdbcType=VARCHAR}, #{custName,jdbcType=VARCHAR}, 
+      #{prodId,jdbcType=VARCHAR}, #{posCustName,jdbcType=VARCHAR}, #{prodName,jdbcType=VARCHAR}, 
+      #{loanForm,jdbcType=VARCHAR}, #{apprTotalAmt,jdbcType=DECIMAL}, #{contTotalAmt,jdbcType=DECIMAL}, 
+      #{termUnit,jdbcType=VARCHAR}, #{applyTerm,jdbcType=VARCHAR}, #{contTerm,jdbcType=VARCHAR}, 
+      #{beginDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}, #{assuKind,jdbcType=VARCHAR}, 
+      #{inChannelKind,jdbcType=VARCHAR}, #{paybackMethod,jdbcType=VARCHAR}, #{retuSourRemark,jdbcType=VARCHAR}, 
+      #{amt,jdbcType=DECIMAL}, #{moreInteRate,jdbcType=DECIMAL}, #{inteRate,jdbcType=DECIMAL}, 
+      #{reckDay,jdbcType=VARCHAR}, #{riskRemark,jdbcType=VARCHAR}, #{approveMoneyKind,jdbcType=VARCHAR}, 
+      #{apprOperId,jdbcType=VARCHAR}, #{apprBankId,jdbcType=VARCHAR}, #{apprOperLev,jdbcType=VARCHAR}, 
+      #{signDate,jdbcType=DATE}, #{initOperId,jdbcType=VARCHAR}, #{bankId,jdbcType=VARCHAR}, 
+      #{operId,jdbcType=VARCHAR}, #{acBankId,jdbcType=VARCHAR}, #{contStatus,jdbcType=VARCHAR}, 
+      #{apprDate,jdbcType=TIMESTAMP}, #{apprEndDate,jdbcType=TIMESTAMP}, #{lastChanPerson,jdbcType=VARCHAR}, 
+      #{lastChanBankId,jdbcType=VARCHAR}, #{lastChanDate,jdbcType=TIMESTAMP}, #{agentBankId,jdbcType=VARCHAR}, 
+      #{agentOperId,jdbcType=VARCHAR}, #{retuDay,jdbcType=VARCHAR}, #{fundSour,jdbcType=VARCHAR}, 
+      #{posCustId,jdbcType=VARCHAR}, #{creditLine,jdbcType=DECIMAL}, #{creditInterest,jdbcType=VARCHAR}, 
+      #{agreementStatus,jdbcType=VARCHAR}, #{channel,jdbcType=VARCHAR}, #{approveTerm,jdbcType=VARCHAR}, 
+      #{approveTermUnit,jdbcType=VARCHAR}, #{freezeReason,jdbcType=VARCHAR}, #{unFreezeReason,jdbcType=VARCHAR}, 
+      #{freezePerson,jdbcType=VARCHAR}, #{unfreezePerson,jdbcType=VARCHAR}, #{freezeDate,jdbcType=TIMESTAMP}, 
+      #{unfreezeDate,jdbcType=TIMESTAMP}, #{editReason,jdbcType=VARCHAR}, #{editPerson,jdbcType=VARCHAR}, 
+      #{editDate,jdbcType=TIMESTAMP}, #{acceptAccount,jdbcType=VARCHAR}, #{approveInterest,jdbcType=DECIMAL}, 
+      #{accountOpenBank,jdbcType=VARCHAR}, #{accountBranchBank,jdbcType=VARCHAR}, #{accountSubBranchBank,jdbcType=VARCHAR},#{loanNum,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TContractInfo" >
+   insert into t_contract_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="contNo != null" >
+        contNo,
+      </if>
+      <if test="cnContNo != null" >
+        cnContNo,
+      </if>
+      <if test="acctContNo != null">
+      	acctContNo,    
+      </if>
+      <if test="approveId != null" >
+        approveId,
+      </if>
+      <if test="contKind != null" >
+        contKind,
+      </if>
+      <if test="loanId != null" >
+        loanId,
+      </if>
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="custName != null" >
+        custName,
+      </if>
+      <if test="prodId != null" >
+        prodId,
+      </if>
+      <if test="posCustName != null" >
+        posCustName,
+      </if>
+      <if test="prodName != null" >
+        prodName,
+      </if>
+      <if test="loanForm != null" >
+        loanForm,
+      </if>
+      <if test="apprTotalAmt != null" >
+        apprTotalAmt,
+      </if>
+      <if test="contTotalAmt != null" >
+        contTotalAmt,
+      </if>
+      <if test="termUnit != null" >
+        termUnit,
+      </if>
+      <if test="applyTerm != null" >
+        applyTerm,
+      </if>
+      <if test="contTerm != null" >
+        contTerm,
+      </if>
+      <if test="beginDate != null" >
+        beginDate,
+      </if>
+      <if test="endDate != null" >
+        endDate,
+      </if>
+      <if test="assuKind != null" >
+        assuKind,
+      </if>
+      <if test="inChannelKind != null" >
+        inChannelKind,
+      </if>
+      <if test="paybackMethod != null" >
+        paybackMethod,
+      </if>
+      <if test="retuSourRemark != null" >
+        retuSourRemark,
+      </if>
+      <if test="amt != null" >
+        amt,
+      </if>
+      <if test="moreInteRate != null" >
+        moreInteRate,
+      </if>
+      <if test="inteRate != null" >
+        inteRate,
+      </if>
+      <if test="reckDay != null" >
+        reckDay,
+      </if>
+      <if test="riskRemark != null" >
+        riskRemark,
+      </if>
+      <if test="approveMoneyKind != null" >
+        approveMoneyKind,
+      </if>
+      <if test="apprOperId != null" >
+        apprOperId,
+      </if>
+      <if test="apprBankId != null" >
+        apprBankId,
+      </if>
+      <if test="apprOperLev != null" >
+        apprOperLev,
+      </if>
+      <if test="signDate != null" >
+        signDate,
+      </if>
+      <if test="initOperId != null" >
+        initOperId,
+      </if>
+      <if test="bankId != null" >
+        bankId,
+      </if>
+      <if test="operId != null" >
+        operId,
+      </if>
+      <if test="acBankId != null" >
+        acBankId,
+      </if>
+      <if test="contStatus != null" >
+        contStatus,
+      </if>
+      <if test="apprDate != null" >
+        apprDate,
+      </if>
+      <if test="apprEndDate != null" >
+        apprEndDate,
+      </if>
+      <if test="lastChanPerson != null" >
+        lastChanPerson,
+      </if>
+      <if test="lastChanBankId != null" >
+        lastChanBankId,
+      </if>
+      <if test="lastChanDate != null" >
+        lastChanDate,
+      </if>
+      <if test="agentBankId != null" >
+        agentBankId,
+      </if>
+      <if test="agentOperId != null" >
+        agentOperId,
+      </if>
+      <if test="retuDay != null" >
+        retuDay,
+      </if>
+      <if test="fundSour != null" >
+        fundSour,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="creditLine != null" >
+        creditLine,
+      </if>
+      <if test="creditInterest != null" >
+        creditInterest,
+      </if>
+      <if test="agreementStatus != null" >
+        agreementStatus,
+      </if>
+      <if test="channel != null" >
+        channel,
+      </if>
+      <if test="approveTerm != null" >
+        approveTerm,
+      </if>
+      <if test="approveTermUnit != null" >
+        approveTermUnit,
+      </if>
+      <if test="freezeReason != null" >
+        freezeReason,
+      </if>
+      <if test="unFreezeReason != null" >
+        unFreezeReason,
+      </if>
+      <if test="freezePerson != null" >
+        freezePerson,
+      </if>
+      <if test="unfreezePerson != null" >
+        unfreezePerson,
+      </if>
+      <if test="freezeDate != null" >
+        freezeDate,
+      </if>
+      <if test="unfreezeDate != null" >
+        unfreezeDate,
+      </if>
+      <if test="editReason != null" >
+        editReason,
+      </if>
+      <if test="editPerson != null" >
+        editPerson,
+      </if>
+      <if test="editDate != null" >
+        editDate,
+      </if>
+      <if test="acceptAccount != null" >
+        acceptAccount,
+      </if>
+      <if test="approveInterest != null" >
+        approveInterest,
+      </if>
+      <if test="accountOpenBank != null" >
+        accountOpenBank,
+      </if>
+      <if test="accountBranchBank != null" >
+        accountBranchBank,
+      </if>
+      <if test="accountSubBranchBank != null" >
+        accountSubBranchBank,
+      </if>
+      <if test="loanNum != null">
+        loanNum,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="contNo != null" >
+        #{contNo,jdbcType=VARCHAR},
+      </if>
+      <if test="cnContNo != null" >
+        #{cnContNo,jdbcType=VARCHAR},
+      </if>
+      <if test="acctContNo !=null">
+        #{acctContNo,jdbcType=VARCHAR},
+      </if>
+      <if test="approveId != null" >
+        #{approveId,jdbcType=VARCHAR},
+      </if>
+      <if test="contKind != null" >
+        #{contKind,jdbcType=VARCHAR},
+      </if>
+      <if test="loanId != null" >
+        #{loanId,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="custName != null" >
+        #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="prodId != null" >
+        #{prodId,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustName != null" >
+        #{posCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="prodName != null" >
+        #{prodName,jdbcType=VARCHAR},
+      </if>
+      <if test="loanForm != null" >
+        #{loanForm,jdbcType=VARCHAR},
+      </if>
+      <if test="apprTotalAmt != null" >
+        #{apprTotalAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="contTotalAmt != null" >
+        #{contTotalAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="termUnit != null" >
+        #{termUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="applyTerm != null" >
+        #{applyTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="contTerm != null" >
+        #{contTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null" >
+        #{beginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="assuKind != null" >
+        #{assuKind,jdbcType=VARCHAR},
+      </if>
+      <if test="inChannelKind != null" >
+        #{inChannelKind,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackMethod != null" >
+        #{paybackMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="retuSourRemark != null" >
+        #{retuSourRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="amt != null" >
+        #{amt,jdbcType=DECIMAL},
+      </if>
+      <if test="moreInteRate != null" >
+        #{moreInteRate,jdbcType=DECIMAL},
+      </if>
+      <if test="inteRate != null" >
+        #{inteRate,jdbcType=DECIMAL},
+      </if>
+      <if test="reckDay != null" >
+        #{reckDay,jdbcType=VARCHAR},
+      </if>
+      <if test="riskRemark != null" >
+        #{riskRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="approveMoneyKind != null" >
+        #{approveMoneyKind,jdbcType=VARCHAR},
+      </if>
+      <if test="apprOperId != null" >
+        #{apprOperId,jdbcType=VARCHAR},
+      </if>
+      <if test="apprBankId != null" >
+        #{apprBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="apprOperLev != null" >
+        #{apprOperLev,jdbcType=VARCHAR},
+      </if>
+      <if test="signDate != null" >
+        #{signDate,jdbcType=DATE},
+      </if>
+      <if test="initOperId != null" >
+        #{initOperId,jdbcType=VARCHAR},
+      </if>
+      <if test="bankId != null" >
+        #{bankId,jdbcType=VARCHAR},
+      </if>
+      <if test="operId != null" >
+        #{operId,jdbcType=VARCHAR},
+      </if>
+      <if test="acBankId != null" >
+        #{acBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="contStatus != null" >
+        #{contStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="apprDate != null" >
+        #{apprDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="apprEndDate != null" >
+        #{apprEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastChanPerson != null" >
+        #{lastChanPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="lastChanBankId != null" >
+        #{lastChanBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastChanDate != null" >
+        #{lastChanDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="agentBankId != null" >
+        #{agentBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="agentOperId != null" >
+        #{agentOperId,jdbcType=VARCHAR},
+      </if>
+      <if test="retuDay != null" >
+        #{retuDay,jdbcType=VARCHAR},
+      </if>
+      <if test="fundSour != null" >
+        #{fundSour,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="creditLine != null" >
+        #{creditLine,jdbcType=DECIMAL},
+      </if>
+      <if test="creditInterest != null" >
+        #{creditInterest,jdbcType=VARCHAR},
+      </if>
+      <if test="agreementStatus != null" >
+        #{agreementStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="channel != null" >
+        #{channel,jdbcType=VARCHAR},
+      </if>
+      <if test="approveTerm != null" >
+        #{approveTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="approveTermUnit != null" >
+        #{approveTermUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="freezeReason != null" >
+        #{freezeReason,jdbcType=VARCHAR},
+      </if>
+      <if test="unFreezeReason != null" >
+        #{unFreezeReason,jdbcType=VARCHAR},
+      </if>
+      <if test="freezePerson != null" >
+        #{freezePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="unfreezePerson != null" >
+        #{unfreezePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="freezeDate != null" >
+        #{freezeDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="unfreezeDate != null" >
+        #{unfreezeDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="editReason != null" >
+        #{editReason,jdbcType=VARCHAR},
+      </if>
+      <if test="editPerson != null" >
+        #{editPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="editDate != null" >
+        #{editDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="acceptAccount != null" >
+        #{acceptAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="approveInterest != null" >
+        #{approveInterest,jdbcType=DECIMAL},
+      </if>
+      <if test="accountOpenBank != null" >
+        #{accountOpenBank,jdbcType=VARCHAR},
+      </if>
+      <if test="accountBranchBank != null" >
+        #{accountBranchBank,jdbcType=VARCHAR},
+      </if>
+      <if test="accountSubBranchBank != null" >
+        #{accountSubBranchBank,jdbcType=VARCHAR},
+      </if>
+      <if test="loanNum != null">
+        #{loanNum,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <insert id="insertSelectiveMap" parameterType="map" >
+    insert into t_contract_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="contNo != null" >
+        contNo,
+      </if>
+      <if test="cnContNo != null" >
+        cnContNo,
+      </if>
+      <if test="acctContNo !=null">
+        acctContNo,
+      </if>
+       <if test="approveId != null" >
+        approveId,
+      </if>
+      <if test="contKind != null" >
+        contKind,
+      </if>
+      <if test="loanId != null" >
+        loanId,
+      </if>
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="custName != null" >
+        custName,
+      </if>
+      <if test="prodId != null" >
+        prodId,
+      </if>
+      <if test="posCustName != null" >
+        posCustName,
+      </if>
+      <if test="prodName != null" >
+        prodName,
+      </if>
+      <if test="loanForm != null" >
+        loanForm,
+      </if>
+      <if test="apprTotalAmt != null" >
+        apprTotalAmt,
+      </if>
+      <if test="contTotalAmt != null" >
+        contTotalAmt,
+      </if>
+      <if test="termUnit != null" >
+        termUnit,
+      </if>
+      <if test="applyTerm != null" >
+        applyTerm,
+      </if>
+      <if test="contTerm != null" >
+        contTerm,
+      </if>
+      <if test="beginDate != null" >
+        beginDate,
+      </if>
+      <if test="endDate != null" >
+        endDate,
+      </if>
+      <if test="assuKind != null" >
+        assuKind,
+      </if>
+      <if test="inChannelKind != null" >
+        inChannelKind,
+      </if>
+      <if test="paybackMethod != null" >
+        paybackMethod,
+      </if>
+      <if test="retuSourRemark != null" >
+        retuSourRemark,
+      </if>
+      <if test="amt != null" >
+        amt,
+      </if>
+      <if test="moreInteRate != null" >
+        moreInteRate,
+      </if>
+      <if test="inteRate != null" >
+        inteRate,
+      </if>
+      <if test="reckDay != null" >
+        reckDay,
+      </if>
+      <if test="riskRemark != null" >
+        riskRemark,
+      </if>
+      <if test="approveMoneyKind != null" >
+        approveMoneyKind,
+      </if>
+      <if test="apprOperId != null" >
+        apprOperId,
+      </if>
+      <if test="apprBankId != null" >
+        apprBankId,
+      </if>
+      <if test="apprOperLev != null" >
+        apprOperLev,
+      </if>
+      <if test="signDate != null" >
+        signDate,
+      </if>
+      <if test="initOperId != null" >
+        initOperId,
+      </if>
+      <if test="bankId != null" >
+        bankId,
+      </if>
+      <if test="operId != null" >
+        operId,
+      </if>
+      <if test="acBankId != null" >
+        acBankId,
+      </if>
+      <if test="contStatus != null" >
+        contStatus,
+      </if>
+      <if test="apprDate != null" >
+        apprDate,
+      </if>
+      <if test="apprEndDate != null" >
+        apprEndDate,
+      </if>
+      <if test="lastChanPerson != null" >
+        lastChanPerson,
+      </if>
+      <if test="lastChanBankId != null" >
+        lastChanBankId,
+      </if>
+      <if test="lastChanDate != null" >
+        lastChanDate,
+      </if>
+      <if test="agentBankId != null" >
+        agentBankId,
+      </if>
+      <if test="agentOperId != null" >
+        agentOperId,
+      </if>
+      <if test="retuDay != null" >
+        retuDay,
+      </if>
+      <if test="fundSour != null" >
+        fundSour,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="creditLine != null" >
+        creditLine,
+      </if>
+      <if test="creditInterest != null" >
+        creditInterest,
+      </if>
+      <if test="agreementStatus != null" >
+        agreementStatus,
+      </if>
+      <if test="channel != null" >
+        channel,
+      </if>
+      <if test="approveTerm != null" >
+        approveTerm,
+      </if>
+      <if test="approveTermUnit != null" >
+        approveTermUnit,
+      </if>
+      <if test="freezeReason != null" >
+        freezeReason,
+      </if>
+      <if test="unFreezeReason != null" >
+        unFreezeReason,
+      </if>
+      <if test="freezePerson != null" >
+        freezePerson,
+      </if>
+      <if test="unfreezePerson != null" >
+        unfreezePerson,
+      </if>
+      <if test="freezeDate != null" >
+        freezeDate,
+      </if>
+      <if test="unfreezeDate != null" >
+        unfreezeDate,
+      </if>
+      <if test="editReason != null" >
+        editReason,
+      </if>
+      <if test="editPerson != null" >
+        editPerson,
+      </if>
+      <if test="editDate != null" >
+        editDate,
+      </if>
+      <if test="acceptAccount != null" >
+        acceptAccount,
+      </if>
+      <if test="approveInterest != null" >
+        approveInterest,
+      </if>
+      <if test="accountOpenBank != null" >
+        accountOpenBank,
+      </if>
+      <if test="accountBranchBank != null" >
+        accountBranchBank,
+      </if>
+      <if test="accountSubBranchBank != null" >
+        accountSubBranchBank,
+      </if>
+      <if test="loanNum != null">
+        loanNum,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="contNo != null" >
+        #{contNo,jdbcType=VARCHAR},
+      </if>
+      <if test="cnContNo != null" >
+        #{cnContNo,jdbcType=VARCHAR},
+      </if>
+      <if test="acctContNo !=null">
+        #{acctContNo,jdbcType=VARCHAR},
+      </if>
+       <if test="approveId != null" >
+        #{approveId,jdbcType=VARCHAR},
+      </if>
+      <if test="contKind != null" >
+        #{contKind,jdbcType=VARCHAR},
+      </if>
+      <if test="loanId != null" >
+        #{loanId,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="custName != null" >
+        #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="prodId != null" >
+        #{prodId,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustName != null" >
+        #{posCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="prodName != null" >
+        #{prodName,jdbcType=VARCHAR},
+      </if>
+      <if test="loanForm != null" >
+        #{loanForm,jdbcType=VARCHAR},
+      </if>
+      <if test="apprTotalAmt != null" >
+        #{apprTotalAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="contTotalAmt != null" >
+        #{contTotalAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="termUnit != null" >
+        #{termUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="applyTerm != null" >
+        #{applyTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="contTerm != null" >
+        #{contTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null" >
+        #{beginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="assuKind != null" >
+        #{assuKind,jdbcType=VARCHAR},
+      </if>
+      <if test="inChannelKind != null" >
+        #{inChannelKind,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackMethod != null" >
+        #{paybackMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="retuSourRemark != null" >
+        #{retuSourRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="amt != null" >
+        #{amt,jdbcType=DECIMAL},
+      </if>
+      <if test="moreInteRate != null" >
+        #{moreInteRate,jdbcType=DECIMAL},
+      </if>
+      <if test="inteRate != null" >
+        #{inteRate,jdbcType=DECIMAL},
+      </if>
+      <if test="reckDay != null" >
+        #{reckDay,jdbcType=VARCHAR},
+      </if>
+      <if test="riskRemark != null" >
+        #{riskRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="approveMoneyKind != null" >
+        #{approveMoneyKind,jdbcType=VARCHAR},
+      </if>
+      <if test="apprOperId != null" >
+        #{apprOperId,jdbcType=VARCHAR},
+      </if>
+      <if test="apprBankId != null" >
+        #{apprBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="apprOperLev != null" >
+        #{apprOperLev,jdbcType=VARCHAR},
+      </if>
+      <if test="signDate != null" >
+        #{signDate,jdbcType=DATE},
+      </if>
+      <if test="initOperId != null" >
+        #{initOperId,jdbcType=VARCHAR},
+      </if>
+      <if test="bankId != null" >
+        #{bankId,jdbcType=VARCHAR},
+      </if>
+      <if test="operId != null" >
+        #{operId,jdbcType=VARCHAR},
+      </if>
+      <if test="acBankId != null" >
+        #{acBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="contStatus != null" >
+        #{contStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="apprDate != null" >
+        #{apprDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="apprEndDate != null" >
+        #{apprEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastChanPerson != null" >
+        #{lastChanPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="lastChanBankId != null" >
+        #{lastChanBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastChanDate != null" >
+        #{lastChanDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="agentBankId != null" >
+        #{agentBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="agentOperId != null" >
+        #{agentOperId,jdbcType=VARCHAR},
+      </if>
+      <if test="retuDay != null" >
+        #{retuDay,jdbcType=VARCHAR},
+      </if>
+      <if test="fundSour != null" >
+        #{fundSour,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="creditLine != null" >
+        #{creditLine,jdbcType=DECIMAL},
+      </if>
+      <if test="creditInterest != null" >
+        #{creditInterest,jdbcType=VARCHAR},
+      </if>
+      <if test="agreementStatus != null" >
+        #{agreementStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="channel != null" >
+        #{channel,jdbcType=VARCHAR},
+      </if>
+      <if test="approveTerm != null" >
+        #{approveTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="approveTermUnit != null" >
+        #{approveTermUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="freezeReason != null" >
+        #{freezeReason,jdbcType=VARCHAR},
+      </if>
+      <if test="unFreezeReason != null" >
+        #{unFreezeReason,jdbcType=VARCHAR},
+      </if>
+      <if test="freezePerson != null" >
+        #{freezePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="unfreezePerson != null" >
+        #{unfreezePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="freezeDate != null" >
+        #{freezeDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="unfreezeDate != null" >
+        #{unfreezeDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="editReason != null" >
+        #{editReason,jdbcType=VARCHAR},
+      </if>
+      <if test="editPerson != null" >
+        #{editPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="editDate != null" >
+        #{editDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="acceptAccount != null" >
+        #{acceptAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="approveInterest != null" >
+        #{approveInterest,jdbcType=DECIMAL},
+      </if>
+      <if test="accountOpenBank != null" >
+        #{accountOpenBank,jdbcType=VARCHAR},
+      </if>
+      <if test="accountBranchBank != null" >
+        #{accountBranchBank,jdbcType=VARCHAR},
+      </if>
+      <if test="accountSubBranchBank != null" >
+        #{accountSubBranchBank,jdbcType=VARCHAR},
+      </if>
+      <if test="loanNum != null">
+        #{loanNum,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TContractInfo" >
+     update t_contract_info
+    <set >
+      <if test="cnContNo != null" >
+        cnContNo = #{cnContNo,jdbcType=VARCHAR},
+      </if>
+      <if test="acctContNo != null">
+        acctContNo = #{acctContNo,jdbcType=VARCHAR},
+      </if>
+      <if test="approveId != null" >
+        approveId = #{approveId,jdbcType=VARCHAR},
+      </if>
+      <if test="contKind != null" >
+        contKind = #{contKind,jdbcType=VARCHAR},
+      </if>
+      <if test="loanId != null" >
+        loanId = #{loanId,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        custId = #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="custName != null" >
+        custName = #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="prodId != null" >
+        prodId = #{prodId,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustName != null" >
+        posCustName = #{posCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="prodName != null" >
+        prodName = #{prodName,jdbcType=VARCHAR},
+      </if>
+      <if test="loanForm != null" >
+        loanForm = #{loanForm,jdbcType=VARCHAR},
+      </if>
+      <if test="apprTotalAmt != null" >
+        apprTotalAmt = #{apprTotalAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="contTotalAmt != null" >
+        contTotalAmt = #{contTotalAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="termUnit != null" >
+        termUnit = #{termUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="applyTerm != null" >
+        applyTerm = #{applyTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="contTerm != null" >
+        contTerm = #{contTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null" >
+        beginDate = #{beginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        endDate = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="assuKind != null" >
+        assuKind = #{assuKind,jdbcType=VARCHAR},
+      </if>
+      <if test="inChannelKind != null" >
+        inChannelKind = #{inChannelKind,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackMethod != null" >
+        paybackMethod = #{paybackMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="retuSourRemark != null" >
+        retuSourRemark = #{retuSourRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="amt != null" >
+        amt = #{amt,jdbcType=DECIMAL},
+      </if>
+      <if test="moreInteRate != null" >
+        moreInteRate = #{moreInteRate,jdbcType=DECIMAL},
+      </if>
+      <if test="inteRate != null" >
+        inteRate = #{inteRate,jdbcType=DECIMAL},
+      </if>
+      <if test="reckDay != null" >
+        reckDay = #{reckDay,jdbcType=VARCHAR},
+      </if>
+      <if test="riskRemark != null" >
+        riskRemark = #{riskRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="approveMoneyKind != null" >
+        approveMoneyKind = #{approveMoneyKind,jdbcType=VARCHAR},
+      </if>
+      <if test="apprOperId != null" >
+        apprOperId = #{apprOperId,jdbcType=VARCHAR},
+      </if>
+      <if test="apprBankId != null" >
+        apprBankId = #{apprBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="apprOperLev != null" >
+        apprOperLev = #{apprOperLev,jdbcType=VARCHAR},
+      </if>
+      <if test="signDate != null" >
+        signDate = #{signDate,jdbcType=DATE},
+      </if>
+      <if test="initOperId != null" >
+        initOperId = #{initOperId,jdbcType=VARCHAR},
+      </if>
+      <if test="bankId != null" >
+        bankId = #{bankId,jdbcType=VARCHAR},
+      </if>
+      <if test="operId != null" >
+        operId = #{operId,jdbcType=VARCHAR},
+      </if>
+      <if test="acBankId != null" >
+        acBankId = #{acBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="contStatus != null" >
+        contStatus = #{contStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="apprDate != null" >
+        apprDate = #{apprDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="apprEndDate != null" >
+        apprEndDate = #{apprEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastChanPerson != null" >
+        lastChanPerson = #{lastChanPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="lastChanBankId != null" >
+        lastChanBankId = #{lastChanBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastChanDate != null" >
+        lastChanDate = #{lastChanDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="agentBankId != null" >
+        agentBankId = #{agentBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="agentOperId != null" >
+        agentOperId = #{agentOperId,jdbcType=VARCHAR},
+      </if>
+      <if test="retuDay != null" >
+        retuDay = #{retuDay,jdbcType=VARCHAR},
+      </if>
+      <if test="fundSour != null" >
+        fundSour = #{fundSour,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustId != null" >
+        posCustId = #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="creditLine != null" >
+        creditLine = #{creditLine,jdbcType=DECIMAL},
+      </if>
+      <if test="creditInterest != null" >
+        creditInterest = #{creditInterest,jdbcType=VARCHAR},
+      </if>
+      <if test="agreementStatus != null" >
+        agreementStatus = #{agreementStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="channel != null" >
+        channel = #{channel,jdbcType=VARCHAR},
+      </if>
+      <if test="approveTerm != null" >
+        approveTerm = #{approveTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="approveTermUnit != null" >
+        approveTermUnit = #{approveTermUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="freezeReason != null" >
+        freezeReason = #{freezeReason,jdbcType=VARCHAR},
+      </if>
+      <if test="unFreezeReason != null" >
+        unFreezeReason = #{unFreezeReason,jdbcType=VARCHAR},
+      </if>
+      <if test="freezePerson != null" >
+        freezePerson = #{freezePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="unfreezePerson != null" >
+        unfreezePerson = #{unfreezePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="freezeDate != null" >
+        freezeDate = #{freezeDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="unfreezeDate != null" >
+        unfreezeDate = #{unfreezeDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="editReason != null" >
+        editReason = #{editReason,jdbcType=VARCHAR},
+      </if>
+      <if test="editPerson != null" >
+        editPerson = #{editPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="editDate != null" >
+        editDate = #{editDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="acceptAccount != null" >
+        acceptAccount = #{acceptAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="approveInterest != null" >
+        approveInterest = #{approveInterest,jdbcType=DECIMAL},
+      </if>
+      <if test="accountOpenBank != null" >
+        accountOpenBank = #{accountOpenBank,jdbcType=VARCHAR},
+      </if>
+      <if test="accountBranchBank != null" >
+        accountBranchBank = #{accountBranchBank,jdbcType=VARCHAR},
+      </if>
+      <if test="accountSubBranchBank != null" >
+        accountSubBranchBank = #{accountSubBranchBank,jdbcType=VARCHAR},
+      </if>
+      <if test="loanNum != null">
+        loanNum=#{loanNum,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where contNo = #{contNo,jdbcType=VARCHAR}
+  </update>
+  
+  <update id="updateSelectiveMap" parameterType="map" >
+    update t_contract_info
+    <set >
+      <if test="cnContNo != null" >
+        cnContNo = #{cnContNo,jdbcType=VARCHAR},
+      </if>
+      <if test="acctContNo != null">
+        acctContNo = #{acctContNo,jdbcType=VARCHAR},
+      </if>
+       <if test="approveId != null" >
+        approveId = #{approveId,jdbcType=VARCHAR},
+      </if>
+      <if test="contKind != null" >
+        contKind = #{contKind,jdbcType=VARCHAR},
+      </if>
+      <if test="loanId != null" >
+        loanId = #{loanId,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        custId = #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="custName != null" >
+        custName = #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="prodId != null" >
+        prodId = #{prodId,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustName != null" >
+        posCustName = #{posCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="prodName != null" >
+        prodName = #{prodName,jdbcType=VARCHAR},
+      </if>
+      <if test="loanForm != null" >
+        loanForm = #{loanForm,jdbcType=VARCHAR},
+      </if>
+      <if test="apprTotalAmt != null" >
+        apprTotalAmt = #{apprTotalAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="contTotalAmt != null" >
+        contTotalAmt = #{contTotalAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="termUnit != null" >
+        termUnit = #{termUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="applyTerm != null" >
+        applyTerm = #{applyTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="contTerm != null" >
+        contTerm = #{contTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null" >
+        beginDate = #{beginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        endDate = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="assuKind != null" >
+        assuKind = #{assuKind,jdbcType=VARCHAR},
+      </if>
+      <if test="inChannelKind != null" >
+        inChannelKind = #{inChannelKind,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackMethod != null" >
+        paybackMethod = #{paybackMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="retuSourRemark != null" >
+        retuSourRemark = #{retuSourRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="amt != null" >
+        amt = #{amt,jdbcType=DECIMAL},
+      </if>
+      <if test="moreInteRate != null" >
+        moreInteRate = #{moreInteRate,jdbcType=DECIMAL},
+      </if>
+      <if test="inteRate != null" >
+        inteRate = #{inteRate,jdbcType=DECIMAL},
+      </if>
+      <if test="reckDay != null" >
+        reckDay = #{reckDay,jdbcType=VARCHAR},
+      </if>
+      <if test="riskRemark != null" >
+        riskRemark = #{riskRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="approveMoneyKind != null" >
+        approveMoneyKind = #{approveMoneyKind,jdbcType=VARCHAR},
+      </if>
+      <if test="apprOperId != null" >
+        apprOperId = #{apprOperId,jdbcType=VARCHAR},
+      </if>
+      <if test="apprBankId != null" >
+        apprBankId = #{apprBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="apprOperLev != null" >
+        apprOperLev = #{apprOperLev,jdbcType=VARCHAR},
+      </if>
+      <if test="signDate != null" >
+        signDate = #{signDate,jdbcType=DATE},
+      </if>
+      <if test="initOperId != null" >
+        initOperId = #{initOperId,jdbcType=VARCHAR},
+      </if>
+      <if test="bankId != null" >
+        bankId = #{bankId,jdbcType=VARCHAR},
+      </if>
+      <if test="operId != null" >
+        operId = #{operId,jdbcType=VARCHAR},
+      </if>
+      <if test="acBankId != null" >
+        acBankId = #{acBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="contStatus != null" >
+        contStatus = #{contStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="apprDate != null" >
+        apprDate = #{apprDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="apprEndDate != null" >
+        apprEndDate = #{apprEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastChanPerson != null" >
+        lastChanPerson = #{lastChanPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="lastChanBankId != null" >
+        lastChanBankId = #{lastChanBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastChanDate != null" >
+        lastChanDate = #{lastChanDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="agentBankId != null" >
+        agentBankId = #{agentBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="agentOperId != null" >
+        agentOperId = #{agentOperId,jdbcType=VARCHAR},
+      </if>
+      <if test="retuDay != null" >
+        retuDay = #{retuDay,jdbcType=VARCHAR},
+      </if>
+      <if test="fundSour != null" >
+        fundSour = #{fundSour,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustId != null" >
+        posCustId = #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="creditLine != null" >
+        creditLine = #{creditLine,jdbcType=DECIMAL},
+      </if>
+      <if test="creditInterest != null" >
+        creditInterest = #{creditInterest,jdbcType=VARCHAR},
+      </if>
+      <if test="agreementStatus != null" >
+        agreementStatus = #{agreementStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="channel != null" >
+        channel = #{channel,jdbcType=VARCHAR},
+      </if>
+      <if test="approveTerm != null" >
+        approveTerm = #{approveTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="approveTermUnit != null" >
+        approveTermUnit = #{approveTermUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="freezeReason != null" >
+        freezeReason = #{freezeReason,jdbcType=VARCHAR},
+      </if>
+      <if test="unFreezeReason != null" >
+        unFreezeReason = #{unFreezeReason,jdbcType=VARCHAR},
+      </if>
+      <if test="freezePerson != null" >
+        freezePerson = #{freezePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="unfreezePerson != null" >
+        unfreezePerson = #{unfreezePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="freezeDate != null" >
+        freezeDate = #{freezeDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="unfreezeDate != null" >
+        unfreezeDate = #{unfreezeDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="editReason != null" >
+        editReason = #{editReason,jdbcType=VARCHAR},
+      </if>
+      <if test="editPerson != null" >
+        editPerson = #{editPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="editDate != null" >
+        editDate = #{editDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="acceptAccount != null" >
+        acceptAccount = #{acceptAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="approveInterest != null" >
+        approveInterest = #{approveInterest,jdbcType=DECIMAL},
+      </if>
+      <if test="accountOpenBank != null" >
+        accountOpenBank = #{accountOpenBank,jdbcType=VARCHAR},
+      </if>
+      <if test="accountBranchBank != null" >
+        accountBranchBank = #{accountBranchBank,jdbcType=VARCHAR},
+      </if>
+      <if test="accountSubBranchBank != null" >
+        accountSubBranchBank = #{accountSubBranchBank,jdbcType=VARCHAR},
+      </if>
+      <if test="loanNum != null">
+        loanNum = #{loanNum,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where contNo = #{contNo,jdbcType=VARCHAR}
+  </update>
+  
+  
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TContractInfo" >
+    update t_contract_info
+    set cnContNo = #{cnContNo,jdbcType=VARCHAR},
+    	acctContNo = #{acctContNo,jdbcType=VARCHAR},
+      approveId = #{approveId,jdbcType=VARCHAR},
+      contKind = #{contKind,jdbcType=VARCHAR},
+      loanId = #{loanId,jdbcType=VARCHAR},
+      custId = #{custId,jdbcType=VARCHAR},
+      custName = #{custName,jdbcType=VARCHAR},
+      prodId = #{prodId,jdbcType=VARCHAR},
+      posCustName = #{posCustName,jdbcType=VARCHAR},
+      prodName = #{prodName,jdbcType=VARCHAR},
+      loanForm = #{loanForm,jdbcType=VARCHAR},
+      apprTotalAmt = #{apprTotalAmt,jdbcType=DECIMAL},
+      contTotalAmt = #{contTotalAmt,jdbcType=DECIMAL},
+      termUnit = #{termUnit,jdbcType=VARCHAR},
+      applyTerm = #{applyTerm,jdbcType=VARCHAR},
+      contTerm = #{contTerm,jdbcType=VARCHAR},
+      beginDate = #{beginDate,jdbcType=TIMESTAMP},
+      endDate = #{endDate,jdbcType=TIMESTAMP},
+      assuKind = #{assuKind,jdbcType=VARCHAR},
+      inChannelKind = #{inChannelKind,jdbcType=VARCHAR},
+      paybackMethod = #{paybackMethod,jdbcType=VARCHAR},
+      retuSourRemark = #{retuSourRemark,jdbcType=VARCHAR},
+      amt = #{amt,jdbcType=DECIMAL},
+      moreInteRate = #{moreInteRate,jdbcType=DECIMAL},
+      inteRate = #{inteRate,jdbcType=DECIMAL},
+      reckDay = #{reckDay,jdbcType=VARCHAR},
+      riskRemark = #{riskRemark,jdbcType=VARCHAR},
+      approveMoneyKind = #{approveMoneyKind,jdbcType=VARCHAR},
+      apprOperId = #{apprOperId,jdbcType=VARCHAR},
+      apprBankId = #{apprBankId,jdbcType=VARCHAR},
+      apprOperLev = #{apprOperLev,jdbcType=VARCHAR},
+      signDate = #{signDate,jdbcType=DATE},
+      initOperId = #{initOperId,jdbcType=VARCHAR},
+      bankId = #{bankId,jdbcType=VARCHAR},
+      operId = #{operId,jdbcType=VARCHAR},
+      acBankId = #{acBankId,jdbcType=VARCHAR},
+      contStatus = #{contStatus,jdbcType=VARCHAR},
+      apprDate = #{apprDate,jdbcType=TIMESTAMP},
+      apprEndDate = #{apprEndDate,jdbcType=TIMESTAMP},
+      lastChanPerson = #{lastChanPerson,jdbcType=VARCHAR},
+      lastChanBankId = #{lastChanBankId,jdbcType=VARCHAR},
+      lastChanDate = #{lastChanDate,jdbcType=TIMESTAMP},
+      agentBankId = #{agentBankId,jdbcType=VARCHAR},
+      agentOperId = #{agentOperId,jdbcType=VARCHAR},
+      retuDay = #{retuDay,jdbcType=VARCHAR},
+      fundSour = #{fundSour,jdbcType=VARCHAR},
+      posCustId = #{posCustId,jdbcType=VARCHAR},
+      creditLine = #{creditLine,jdbcType=DECIMAL},
+      creditInterest = #{creditInterest,jdbcType=VARCHAR},
+      agreementStatus = #{agreementStatus,jdbcType=VARCHAR},
+      channel = #{channel,jdbcType=VARCHAR},
+      approveTerm = #{approveTerm,jdbcType=VARCHAR},
+      approveTermUnit = #{approveTermUnit,jdbcType=VARCHAR},
+      freezeReason = #{freezeReason,jdbcType=VARCHAR},
+      unFreezeReason = #{unFreezeReason,jdbcType=VARCHAR},
+      freezePerson = #{freezePerson,jdbcType=VARCHAR},
+      unfreezePerson = #{unfreezePerson,jdbcType=VARCHAR},
+      freezeDate = #{freezeDate,jdbcType=TIMESTAMP},
+      unfreezeDate = #{unfreezeDate,jdbcType=TIMESTAMP},
+      editReason = #{editReason,jdbcType=VARCHAR},
+      editPerson = #{editPerson,jdbcType=VARCHAR},
+      editDate = #{editDate,jdbcType=TIMESTAMP},
+      acceptAccount = #{acceptAccount,jdbcType=VARCHAR},
+      approveInterest = #{approveInterest,jdbcType=DECIMAL},
+      accountOpenBank = #{accountOpenBank,jdbcType=VARCHAR},
+      accountBranchBank = #{accountBranchBank,jdbcType=VARCHAR},
+      accountSubBranchBank = #{accountSubBranchBank,jdbcType=VARCHAR},
+      loanNum = #{loanNum,jdbcType=VARCHAR}
+    where contNo = #{contNo,jdbcType=VARCHAR}
+  </update>
+  
+  
+  <select id="selectContractByZzApp" resultType="Map" parameterType="Map">
+    select tconi.loanId as loanid, tconi.custId as custid, tconi.custName as custname, tcusi.paperKind as paperkind, tcusi.paperId as paperid,
+    tconi.contNo as contno, tconi.cnContNo as cncontno, date_format(tconi.beginDate,'%Y%m%d%H%m%s') as begindate, date_format(tconi.endDate,'%Y%m%d%H%m%s') as enddate, tconi.creditLine as conttotalamt,
+    tconi.creditInterest as interate, tcai.returnKind as retukind, tcai.bankAccno as DEPESUBSACNO, tconi.agreementStatus as contstatus,
+    tconi.editReason as adjustreason, date_format(tconi.editDate,'%Y%m%d%H%m%s') as refreshdate
+    from      t_contract_info tconi 
+    left join t_customer_info     tcusi on tconi.custId = tcusi.custId
+    left join t_credit_apply_info tcai  on tconi.loanId = tcai.loanId
+    where tcai.deleteFlag = '0' and tcai.channel ='ZZ' and (tcai.inChannelKind = '01' or tcai.inChannelKind = '05') and tcai.prodId = '1001020306'
+    <if test="paperId != null">
+    	and tcusi.paperId = #{paperId}
+    </if>
+    <if test="paperKind != null">
+    	and tcusi.paperKind = #{paperKind}
+    </if>
+    <if test="custId != null">
+    	and tconi.custId = #{custId}
+    </if>
+    <if test="custName != null">
+    	and tconi.custName = #{custName}
+    </if>
+    <if test="loanId != null">
+    	and tconi.loanId = #{loanId}
+    </if>
+    <if test="contNo != null">
+    	and tconi.contNo = #{contNo}
+    </if>
+    <if test="cnContNo != null">
+    	and tconi.cnContNo = #{cnContNo}
+    </if>
+    <if test="beginDate != null">
+    	and tconi.beginDate >= #{beginDate,jdbcType=TIMESTAMP}
+    </if>
+    <if test="endDate != null">
+    	<![CDATA[ and tconi.beginDate <= #{endDate,jdbcType=TIMESTAMP} ]]>
+    </if>
+    order by tconi.beginDate desc
+  </select>
+  
+  <select id="selectAvailableContracts" resultType="map" parameterType="map">
+	    select t3.paperId,
+    	<include refid="Base_Column_List1"></include>
+	 	from  t_contract_info t1 , t_customer_info t3 
+	 	where t1.custId = t3.custId 
+	 	<if test="contNoLike != null">
+	 	    and t1.contNo = #{contNoLike,jdbcType=VARCHAR}
+	 	</if>
+	 	<if test="posCustNameLike != null">
+	 	    and t1.posCustName = #{posCustNameLike,jdbcType=VARCHAR}
+	 	</if>
+	 	<if test="custNameLike != null">
+	 	    and t1.custName = #{custNameLike,jdbcType=VARCHAR}
+	 	</if>
+	 	<if test="paperIdLike != null">
+	 	    and t3.paperId = #{paperIdLike,jdbcType=VARCHAR}
+	 	</if>
+	 	<!-- 
+	 	and t1.agreementStatus in ('01','02','03','06')
+	 	 -->
+	 	<if test="agreementStatus != null">
+	 	    and t1.agreementStatus = #{agreementStatus,jdbcType=VARCHAR}
+	 	</if>
+	 	and t1.endDate &gt;= curDate()
+	 	limit #{startPage}, #{limit}
+  </select>
+  
+   <select id="countAvailableContracts" resultType="Long" parameterType="map">
+	    select count(*)
+	 	from t_contract_info t1 , t_customer_info t3 
+	 	where t1.custId = t3.custId
+	 	<if test="contNoLike != null">
+	 	    and t1.contNo = #{contNoLike,jdbcType=VARCHAR}
+	 	</if>
+	 	<if test="posCustNameLike != null">
+	 	    and t1.posCustName = #{posCustNameLike,jdbcType=VARCHAR}
+	 	</if>
+	 	<if test="custNameLike != null">
+	 	    and t1.custName = #{custNameLike,jdbcType=VARCHAR}
+	 	</if>
+	 	<if test="paperIdLike != null">
+	 	    and t3.paperId = #{paperIdLike,jdbcType=VARCHAR}
+	 	</if>
+	 	<if test="agreementStatus != null">
+	 	    and t1.agreementStatus = #{agreementStatus,jdbcType=VARCHAR}
+	 	</if>
+	 	and t1.endDate &gt;= curDate()
+  </select>
+</mapper>

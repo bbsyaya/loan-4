@@ -1,0 +1,41 @@
+package com.hrbb.test;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+
+import com.hrbb.loan.pos.biz.backstage.inter.SynFileBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.SynFileUploadBiz;
+import com.hrbb.loan.pos.biz.constants.SynFileConstants;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.test.UnitTest;
+
+public class SynFileBizImplTest extends UnitTest {
+
+	@Autowired
+	@Qualifier("synFileBiz")
+	private SynFileBiz biz;
+
+	@Autowired
+	@Qualifier("synFileUploadBiz")
+	private SynFileUploadBiz bizUpload;
+
+	@Value("#{systemInfo[synchroFilePath]}")
+	private String synchroFilePath;
+
+	@Test
+	public void testServe() {
+
+		String today = DateUtil.getTodayDatePattern1();
+		// 取得路径
+		String pathStr = synchroFilePath + today;
+		// 作成文件
+		biz.makeSynFile(pathStr, today, SynFileConstants.NO_HB16);
+		biz.makeSynFile(pathStr, today, SynFileConstants.NO_HB17);
+		biz.makeSynFile(pathStr, today, SynFileConstants.NO_HB18);
+		biz.makeSynFile(pathStr, today, SynFileConstants.NO_HB19);
+		// 上传文件
+		bizUpload.upload(pathStr, today);
+	}
+}

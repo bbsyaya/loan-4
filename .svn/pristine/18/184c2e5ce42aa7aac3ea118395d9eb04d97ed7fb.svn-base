@@ -1,0 +1,49 @@
+package com.hrbb.loan.pos.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.hrbb.loan.pos.dao.TBdExecutorDao;
+import com.hrbb.loan.pos.dao.TBdInstitutionDao;
+import com.hrbb.loan.pos.dao.entity.TBdExecutor;
+import com.hrbb.loan.pos.dao.entity.TBdInstitution;
+import com.hrbb.loan.pos.service.BDManagementService;
+
+@Service("BDManagementService")
+public class BDManagementServiceImpl implements BDManagementService {
+
+    @Autowired
+    private TBdInstitutionDao bdInstitutionDao;
+    
+    @Autowired
+    private TBdExecutorDao bdExecutorDao;
+    
+    @Override
+    public List<TBdInstitution> queryTbdInstitutions(Map<String, Object> reqMap) {
+        return bdInstitutionDao.selectListBySelective(reqMap);
+    }
+    
+    @Override
+    public Long countTbdInstitutions(Map<String, Object> reqMap) {
+        return bdInstitutionDao.countListBySelective(reqMap);
+    }
+
+    @Override
+    public List<TBdExecutor> queryBDExecutors(Map<String, Object> reqMap) {
+        return bdExecutorDao.selectListBySelective(reqMap);
+    }
+
+    @Override
+    public Long countTbdExecutors(Map<String, Object> reqMap) {
+        return bdExecutorDao.countListBySelective(reqMap);
+    }
+
+    @Override
+    public TBdInstitution selectByBelongOrg(Integer BelongOrg) {
+        return bdInstitutionDao.selectByPrimaryKey(BelongOrg);
+    }
+
+}

@@ -1,0 +1,106 @@
+package com.hrbb.loan.pos.dao.entity;
+
+import java.util.Date;
+
+public class TCallingTask {
+    private String taskNo;
+
+    private Date generateTime;
+
+    private String callingType;
+
+    private String claimerId;
+
+    private String claimerName;
+
+    private Date claimTime;
+
+    private Date callingTime;
+
+    private String relaBizNo;
+
+    private String relaBizPhase;
+    
+    private String dealInfo;
+
+    public String getTaskNo() {
+        return taskNo;
+    }
+
+    public void setTaskNo(String taskNo) {
+        this.taskNo = taskNo == null ? null : taskNo.trim();
+    }
+
+    public Date getGenerateTime() {
+        return generateTime;
+    }
+
+    public void setGenerateTime(Date generateTime) {
+        this.generateTime = generateTime;
+    }
+
+    public String getCallingType() {
+        return callingType;
+    }
+
+    public void setCallingType(String callingType) {
+        this.callingType = callingType == null ? null : callingType.trim();
+    }
+
+    public String getClaimerId() {
+        return claimerId;
+    }
+
+    public void setClaimerId(String claimerId) {
+        this.claimerId = claimerId == null ? null : claimerId.trim();
+    }
+
+    public String getClaimerName() {
+        return claimerName;
+    }
+
+    public void setClaimerName(String claimerName) {
+        this.claimerName = claimerName == null ? null : claimerName.trim();
+    }
+
+    public Date getClaimTime() {
+        return claimTime;
+    }
+
+    public void setClaimTime(Date claimTime) {
+        this.claimTime = claimTime;
+    }
+
+    public Date getCallingTime() {
+        return callingTime;
+    }
+
+    public void setCallingTime(Date callingTime) {
+        this.callingTime = callingTime;
+    }
+
+    public String getRelaBizNo() {
+        return relaBizNo;
+    }
+
+    public void setRelaBizNo(String relaBizNo) {
+        this.relaBizNo = relaBizNo == null ? null : relaBizNo.trim();
+    }
+
+    public String getRelaBizPhase() {
+        return relaBizPhase;
+    }
+
+    public void setRelaBizPhase(String relaBizPhase) {
+        this.relaBizPhase = relaBizPhase == null ? null : relaBizPhase.trim();
+    }
+    
+
+    public String getDealInfo() {
+        return dealInfo;
+    }
+
+    public void setDealInfo(String dealInfo) {
+        this.dealInfo = dealInfo;
+    }
+}

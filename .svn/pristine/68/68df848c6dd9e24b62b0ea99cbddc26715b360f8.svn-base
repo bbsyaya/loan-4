@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditReportNplMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditReportNpl" >
+    <id column="reportNo" property="reportNo" jdbcType="VARCHAR" />
+    <result column="badDebits" property="badDebits" jdbcType="INTEGER" />
+    <result column="balance" property="balance" jdbcType="DECIMAL" />
+    <result column="disposals" property="disposals" jdbcType="INTEGER" />
+    <result column="balance2" property="balance2" jdbcType="DECIMAL" />
+    <result column="quids" property="quids" jdbcType="INTEGER" />
+    <result column="balance3" property="balance3" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    reportNo, badDebits, balance, disposals, balance2, quids, balance3
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_report_npl
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_credit_report_npl
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportNpl" >
+    insert into t_credit_report_npl (reportNo, badDebits, balance, 
+      disposals, balance2, quids, 
+      balance3)
+    values (#{reportNo,jdbcType=VARCHAR}, #{badDebits,jdbcType=INTEGER}, #{balance,jdbcType=DECIMAL}, 
+      #{disposals,jdbcType=INTEGER}, #{balance2,jdbcType=DECIMAL}, #{quids,jdbcType=INTEGER}, 
+      #{balance3,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportNpl" >
+    insert into t_credit_report_npl
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="badDebits != null" >
+        badDebits,
+      </if>
+      <if test="balance != null" >
+        balance,
+      </if>
+      <if test="disposals != null" >
+        disposals,
+      </if>
+      <if test="balance2 != null" >
+        balance2,
+      </if>
+      <if test="quids != null" >
+        quids,
+      </if>
+      <if test="balance3 != null" >
+        balance3,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="badDebits != null" >
+        #{badDebits,jdbcType=INTEGER},
+      </if>
+      <if test="balance != null" >
+        #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="disposals != null" >
+        #{disposals,jdbcType=INTEGER},
+      </if>
+      <if test="balance2 != null" >
+        #{balance2,jdbcType=DECIMAL},
+      </if>
+      <if test="quids != null" >
+        #{quids,jdbcType=INTEGER},
+      </if>
+      <if test="balance3 != null" >
+        #{balance3,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="map" >
+    insert into t_credit_report_npl
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="badDebits != null" >
+        badDebits,
+      </if>
+      <if test="balance != null" >
+        balance,
+      </if>
+      <if test="disposals != null" >
+        disposals,
+      </if>
+      <if test="balance2 != null" >
+        balance2,
+      </if>
+      <if test="quids != null" >
+        quids,
+      </if>
+      <if test="balance3 != null" >
+        balance3,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="badDebits != null" >
+        #{badDebits,jdbcType=INTEGER},
+      </if>
+      <if test="balance != null" >
+        #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="disposals != null" >
+        #{disposals,jdbcType=INTEGER},
+      </if>
+      <if test="balance2 != null" >
+        #{balance2,jdbcType=DECIMAL},
+      </if>
+      <if test="quids != null" >
+        #{quids,jdbcType=INTEGER},
+      </if>
+      <if test="balance3 != null" >
+        #{balance3,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportNpl" >
+    update t_credit_report_npl
+    <set >
+      <if test="badDebits != null" >
+        badDebits = #{badDebits,jdbcType=INTEGER},
+      </if>
+      <if test="balance != null" >
+        balance = #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="disposals != null" >
+        disposals = #{disposals,jdbcType=INTEGER},
+      </if>
+      <if test="balance2 != null" >
+        balance2 = #{balance2,jdbcType=DECIMAL},
+      </if>
+      <if test="quids != null" >
+        quids = #{quids,jdbcType=INTEGER},
+      </if>
+      <if test="balance3 != null" >
+        balance3 = #{balance3,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportNpl" >
+    update t_credit_report_npl
+    set badDebits = #{badDebits,jdbcType=INTEGER},
+      balance = #{balance,jdbcType=DECIMAL},
+      disposals = #{disposals,jdbcType=INTEGER},
+      balance2 = #{balance2,jdbcType=DECIMAL},
+      quids = #{quids,jdbcType=INTEGER},
+      balance3 = #{balance3,jdbcType=DECIMAL}
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

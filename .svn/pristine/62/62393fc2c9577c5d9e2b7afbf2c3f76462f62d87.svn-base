@@ -1,0 +1,225 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.biz.expressions.index;
+
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.util.Date;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.hrbb.loan.pos.dao.entity.TCreditReportIndicator;
+import com.hrbb.loan.pos.dao.entity.TRiskCheckModelIndex;
+import com.hrbb.loan.pos.biz.constants.RiskCheckConstants;
+import com.hrbb.loan.pos.service.bean.PosSerialHandledInfoBean;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.MathUtils;
+import com.hrbb.loan.pos.util.StringUtil;
+
+/**
+ * 计算ModelIndexBean
+ * 
+ * @author XLY
+ * @version $Id: ModelIndexFormula.java, v 0.1 2015-3-13 下午3:36:40 XLY Exp $
+ */
+public class ModelIndexFormula {
+
+	private final static Logger logger = LoggerFactory
+			.getLogger(ModelIndexFormula.class);
+
+	/**
+	 * 
+	 * 
+	 * @param posInfoBean
+	 *            pos流水统计信息
+	 * @param crBean
+	 *            信用报告原始信息
+	 * @param tCreditApplyBean
+	 *            贷款申请相关信息
+	 */
+	public static TRiskCheckModelIndex initModelIndexBean(
+			PosSerialHandledInfoBean ps, TCreditReportIndicator cr) {
+		TRiskCheckModelIndex mb = new TRiskCheckModelIndex();
+		mb.setModelIndex01(cr.getCR027() + cr.getCR028());
+		mb.setModelIndex02(cr.getCR056());
+		mb.setModelIndex03(cr.getCR027() + cr.getCR028() + cr.getCR056());
+
+		Date cr029 = null;
+		if (StringUtil.isNotEmpty(cr.getCR029())) {
+			try {
+				cr029 = DateUtil.getDatePattern9(cr.getCR029());
+			} catch (Exception e) {
+				logger.debug("cr029=" + cr.getCR029());
+				logger.error(e.toString());
+			}
+		}
+		Date cr002 = null;
+		if (StringUtil.isNotEmpty(cr.getCR002())) {
+			try {
+				cr002 = DateUtil.getDatePattern9(cr.getCR002());
+			} catch (Exception e) {
+				logger.debug("cr002=" + cr.getCR002());
+				logger.error(e.toString());
+			}
+		}
+		if (cr029 != null && cr002 != null) {
+			// mb.setModelIndex04(DateUtil.getDiffMonth(cr029, cr002));
+			mb.setModelIndex04(DateUtil.getDiffMonthByDay(cr029, cr002));
+		}
+		Date cr031 = null;
+		if (StringUtil.isNotEmpty(cr.getCR031())) {
+			try {
+				cr031 = DateUtil.getStrToDateYearMonth2(cr.getCR031());
+			} catch (ParseException e) {
+				logger.debug("cr031=" + cr.getCR031());
+				logger.error(e.toString());
+			}
+		}
+		if (cr031 == null) {
+			mb.setModelIndex05(BigDecimal.ZERO);
+		}
+		if (cr031 != null && cr002 != null) {
+			// mb.setModelIndex05(DateUtil.getDiffMonth(cr031, cr002));
+			mb.setModelIndex05(DateUtil.getDiffMonthByDay(cr031, cr002));
+		}
+
+		mb.setModelIndex06(MathUtils.getMax(mb.getModelIndex04(),
+				mb.getModelIndex05()));
+		mb.setModelIndex07(cr.getCR027() + cr.getCR028() + cr.getCR055());
+		mb.setModelIndex08(cr.getCR057().add(cr.getCR063()));
+		mb.setModelIndex09(cr.getCR036() + cr.getCR040());
+		// 申请人信用卡没有逾期
+		if (null == cr.getCR064()) {
+			mb.setModelIndex10(BigDecimal.ZERO);
+		} else {
+			Date cr064 = null;
+			try {
+				cr064 = DateUtil.getStrToDateYearMonth(cr.getCR064());
+			} catch (ParseException e) {
+				logger.debug("cr064=" + cr.getCR064());
+				logger.error(e.toString());
+			}
+			if (cr064 != null && cr002 != null) {
+				// mb.setModelIndex10(DateUtil.getDiffMonth(cr064, cr002));
+				mb.setModelIndex10(DateUtil.getDiffMonthByDay(cr064, cr002));
+			}
+		}
+		// 申请人贷款没有逾期
+		if (null == cr.getCR065()) {
+			mb.setModelIndex11(new BigDecimal(-1));
+		} else {
+			Date cr065 = null;
+			try {
+				cr065 = DateUtil.getStrToDateYearMonth(cr.getCR065());
+			} catch (ParseException e) {
+				logger.debug("cr065=" + cr.getCR065());
+				logger.error(e.toString());
+			}
+			if (cr065 != null && cr002 != null) {
+				// mb.setModelIndex11(DateUtil.getDiffMonth(cr065, cr002));
+				mb.setModelIndex11(DateUtil.getDiffMonthByDay(cr065, cr002));
+			}
+		}
+		// FIXME CR.未贷记卡逾期账户数 --这里用的是：贷记卡逾期账户数
+		if (cr.getCR056() == 0) {
+			mb.setModelIndex12(BigDecimal.ZERO);
+		} else {
+			mb.setModelIndex12(MathUtils.divInt(cr.getCR040(), cr.getCR056(), 6));
+		}
+		if (cr.getCR027() + cr.getCR028() == 0) {
+			mb.setModelIndex13(BigDecimal.ZERO);
+		} else {
+			mb.setModelIndex13(MathUtils.divInt(cr.getCR036(), cr.getCR027()
+					+ cr.getCR028(), 6));
+		}
+		if (cr.getCR057().compareTo(BigDecimal.ZERO) == 0) {
+			mb.setModelIndex14(BigDecimal.ZERO);
+		} else {
+			mb.setModelIndex14(MathUtils.div(cr.getCR061(), cr.getCR057()));
+		}
+		// 没有查询次数时
+		if (cr.getCR069() == 0) {
+			mb.setModelIndex15(BigDecimal.ZERO);
+		} else {
+			mb.setModelIndex15(MathUtils.divInt(cr.getCR068(), cr.getCR069(), 6));
+		}
+		mb.setModelIndex16(cr.getCR060().add(cr.getCR066()));
+		mb.setModelIndex17(cr.getCR083().add(cr.getCR061()));
+		mb.setModelIndex18(MathUtils.getMax(cr.getCR063(), cr.getCR058()));
+		mb.setModelIndex19(mb.getModelIndex06());
+		mb.setModelIndex20(cr.getCR068());
+		mb.setModelIndex21(ps.getTotalNumPosMth6().intValue());
+		mb.setModelIndex22(cr.getCR081());
+		// from posSerial
+		// mb.setModelIndex23(ps.getRepeativeCardPct());
+		// mb.setModelIndex24(ps.getMthlyCreditCardPct().intValue());
+		mb.setModelIndex23(ps.getTradeAmt6());
+		mb.setModelIndex24(ps.getTradeNum6().intValue());
+		mb.setModelIndex25(ps.getTotalNumPosMth().intValue());
+		mb.setModelIndex29(ps.getRecentNumPosMth().intValue());
+		mb.setModelIndex26(MathUtils.div(mb.getModelIndex23(), new BigDecimal(
+				mb.getModelIndex29())));
+		// mb.setModelIndex27(MathUtils.div(new
+		// BigDecimal(mb.getModelIndex24()),
+		// new BigDecimal(mb.getModelIndex29())).intValue());
+		if (mb.getModelIndex29() == 0) {
+			mb.setModelIndex27(BigDecimal.ZERO);
+		} else {
+			mb.setModelIndex27(MathUtils.divInt(mb.getModelIndex24(),
+					mb.getModelIndex29(), 2));
+		}
+		mb.setModelIndex28(ps.getStDev());
+		mb.setModelIndex30(ps.getLatestYrmth() == null ? null : ps
+				.getLatestYrmth().intValue());
+		mb.setModelIndex31(ps.getBizHrSalesRatio());
+		mb.setModelIndex32(MathUtils.div(mb.getModelIndex23(), new BigDecimal(
+				mb.getModelIndex24())));
+		mb.setModelIndex33(ps.getCountMonth4().intValue());
+		// mb.setModelIndex34(ps.getTradeNum4());
+		mb.setModelIndex34(ps.getTradeAmt4());
+		mb.setModelIndex35(MathUtils.div(mb.getModelIndex34(), new BigDecimal(
+				mb.getModelIndex33())));
+		mb.setModelIndex36(ps.getTradeAmtsumMin());
+		mb.setModelIndex37(ps.getTradeAmtsumMax());
+		// 平均月交易金额为0时
+		if (mb.getModelIndex26().compareTo(BigDecimal.ZERO) == 0) {
+			BigDecimal hundred = new BigDecimal(100);
+			mb.setModelIndex38(hundred);
+			mb.setModelIndex39(hundred);
+		} else {
+			mb.setModelIndex38(MathUtils.div(mb.getModelIndex16(),
+					(mb.getModelIndex26().multiply(new BigDecimal(12)))));
+			mb.setModelIndex39(MathUtils.div(mb.getModelIndex17(),
+					mb.getModelIndex26()));
+		}
+		mb.setModelIndex40(cr.getCR037());
+		mb.setModelIndex41(cr.getCR041());
+		mb.setModelIndex42(cr.getCR085());
+		mb.setModelIndex43(cr.getCR086());
+		mb.setModelIndex44(cr.getCR087());
+		if (RiskCheckConstants.Y.equals(cr.getCR088())
+				|| RiskCheckConstants.Y.equals(cr.getCR089())
+				|| RiskCheckConstants.Y.equals(cr.getCR090())
+				|| RiskCheckConstants.Y.equals(cr.getCR091())
+				|| RiskCheckConstants.Y.equals(cr.getCR092())
+				|| cr.getCR097() > 0) {
+			mb.setModelIndex45(RiskCheckConstants.Y);
+		} else {
+			mb.setModelIndex45(RiskCheckConstants.N);
+		}
+		mb.setModelIndex46(cr.getCR039());
+		mb.setModelIndex47(cr.getCR043());
+		mb.setModelIndex48(cr.getCR104());
+		mb.setModelIndex49(cr.getCR106());
+		mb.setModelIndex50(cr.getCR108().add(cr.getCR110()));
+		mb.setModelIndex51(cr.getCR109().add(cr.getCR110()));
+		mb.setModelIndex52(cr.getCR102());
+		mb.setModelIndex53(cr.getCR066());
+		return mb;
+	}
+
+}

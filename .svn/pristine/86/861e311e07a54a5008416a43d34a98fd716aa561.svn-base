@@ -1,0 +1,132 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.controller;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.constants.agreementMrg.AgreementMrgConstants;
+import com.hrbb.loan.controller.helper.ControllerHelper;
+import com.hrbb.loan.pos.biz.backstage.inter.BusinessDictionaryBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.IPDFService;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosContractManagementBiz;
+import com.hrbb.loan.pos.dao.entity.TBusinessDictionary;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.MoneyUtils;
+import com.hrbb.loan.pos.util.ValidateUtil;
+import com.hrbb.loan.pos.util.constants.BusinessDictionaryConstants;
+import com.hrbb.loan.util.HtmlGenerator;
+
+/**
+ * @author yida
+ * @date 2015年10月28日 下午1:53:22
+ */
+@Controller
+@RequestMapping("/pdf")
+public class PDFController {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(PDFController.class);
+    @Autowired
+    private IPDFService pdfService;
+    @Autowired
+    private LoanPosContractManagementBiz loanPosContractManagementBiz;
+    @Autowired
+    private BusinessDictionaryBiz businessDictionaryBiz;
+    
+    /**
+     * @param loanId 申请编号
+     * @param imageFilePackageName pdf文件名
+     * @param signDate 签约日期
+     * @param contNo 合同编号
+     * @param repayMethod 还款方式
+     * @param signature base64图片字符串
+     */
+    @RequestMapping(value ="generate",method = RequestMethod.POST,produces = "text/html;charset=utf-8")
+    @ResponseBody
+    public String generatePdf(@RequestParam String loanId, @RequestParam String imageFilePackageName, @RequestParam String signDate, @RequestParam String contNo,
+            @RequestParam String repayMethod,@RequestParam String signature) {
+        String respMsg = null;
+        //校验输入
+        signDate = signDate.trim();
+        if(!ValidateUtil.checkDate(signDate, "yyyy-MM-dd")){
+            respMsg = "参数signDate="+signDate+"格式不正确,正确格式为yyyy-MM-dd";
+            LOGGER.warn(respMsg);
+            return respMsg;
+        };
+        List<String> repayMethodList = new ArrayList<String>(Arrays.asList("01","02"));
+        repayMethod = repayMethod.trim();
+        if(! repayMethodList.contains(repayMethod)){
+            respMsg = "参数repayMethod="+repayMethod+"值不合法,请确认repayMethod值为01或02";
+            LOGGER.warn(respMsg);
+            return respMsg;
+        }
+        Map<String, Object> reqMap = Maps.newHashMap();
+        reqMap.put(AgreementMrgConstants.CONT_NO_LIKE, ControllerHelper.getLikeString(contNo));
+        List<Map<String, Object>> lists = loanPosContractManagementBiz.selectSelectiveMap(reqMap);
+        if (lists.isEmpty()){
+            respMsg = "合同编号有误，查询不到编号为"+loanId+"的合同信息";
+            LOGGER.warn(respMsg);
+            return respMsg;
+        }
+        //组装model
+        Map<String, Object> contractMap = lists.get(0);
+        Map<String, Object> model = loanPosContractManagementBiz.transferToPdfArgee(contractMap);
+        TBusinessDictionary dictionary = new TBusinessDictionary();
+        dictionary.setCodeNo(BusinessDictionaryConstants.BankNo);
+        dictionary.setItemNo((String)contractMap.get("accountOpenBank"));
+        TBusinessDictionary record = businessDictionaryBiz.selectOne(dictionary);
+        if(null == record){
+            respMsg = "找不到编号为"+(String)contractMap.get("accountOpenBank")+"的开户行信息";
+            LOGGER.warn(respMsg);
+            return respMsg;
+        }
+        String openBankName = record.getItemName();
+        model.put("loanBankName", openBankName);
+        model.put("repayBankName", openBankName);
+        String[] dateStrs = signDate.split("-");
+        String signYear = dateStrs[0];
+        String signMonth = dateStrs[1];
+        String signDay = dateStrs[2];
+        model.put("signYear", signYear);
+        model.put("signMonth", signMonth);
+        model.put("signDay", signDay);
+        model.put("repayMethod", repayMethod.trim());
+        String signImageName = contNo+".jpg";
+        model.put("signUrl", signImageName);
+        //获取协议模板
+        String template = HtmlGenerator.generate("agreement.ftl", model);
+        String resourcePath = null;
+        try {
+            //resourcePath = ResourceUtils.getURL(ResourceUtils.CLASSPATH_URL_PREFIX+"font/").toString();
+            resourcePath = PDFController.class.getClassLoader().getResource("font").toURI().toString();
+            //异步调用生成pdf
+            pdfService.generate(loanId,template,resourcePath,imageFilePackageName,signature,signImageName);
+            respMsg = "通知生成协议消息成功，pdf正在生成中";
+        } catch (Exception e) {
+            LOGGER.error(ExceptionUtils.getFullStackTrace(e));;
+        }
+        return respMsg;
+    }
+    
+    
+    
+
+}

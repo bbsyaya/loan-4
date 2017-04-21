@@ -1,0 +1,205 @@
+package com.hrbb.loan.pos.dao.entity;
+
+import java.util.Date;
+
+public class TApprovingAmountRateUplimitfig {
+    private Integer id;
+
+    private String prodId;
+
+    private String prodName;
+
+    private String channel_rtype_code;
+
+    private String region_rtype_code;
+
+    private String score1;
+
+    private String score2;
+
+    private Double model1_ap_amt;
+
+    private Double model2_ap_amt;
+
+    private Double model1_ap_rate;
+
+    private Double model2_ap_rate;
+
+    private Double final_ap_amt;
+
+    private Double final_ap_rate;
+
+    private String repay_type;
+
+    private String maturity;
+
+    private String deleted_flag;
+
+    private Date valid_date;
+
+    private Date invalid_date;
+
+    private Date create_date;
+
+    private Date modify_date;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getProdId() {
+        return prodId;
+    }
+
+    public void setProdId(String prodId) {
+        this.prodId = prodId == null ? null : prodId.trim();
+    }
+
+    public String getProdName() {
+        return prodName;
+    }
+
+    public void setProdName(String prodName) {
+        this.prodName = prodName == null ? null : prodName.trim();
+    }
+
+    public String getChannel_rtype_code() {
+        return channel_rtype_code;
+    }
+
+    public void setChannel_rtype_code(String channel_rtype_code) {
+        this.channel_rtype_code = channel_rtype_code == null ? null : channel_rtype_code.trim();
+    }
+
+    public String getRegion_rtype_code() {
+        return region_rtype_code;
+    }
+
+    public void setRegion_rtype_code(String region_rtype_code) {
+        this.region_rtype_code = region_rtype_code == null ? null : region_rtype_code.trim();
+    }
+
+    public String getScore1() {
+        return score1;
+    }
+
+    public void setScore1(String score1) {
+        this.score1 = score1 == null ? null : score1.trim();
+    }
+
+    public String getScore2() {
+        return score2;
+    }
+
+    public void setScore2(String score2) {
+        this.score2 = score2 == null ? null : score2.trim();
+    }
+
+    public Double getModel1_ap_amt() {
+        return model1_ap_amt;
+    }
+
+    public void setModel1_ap_amt(Double model1_ap_amt) {
+        this.model1_ap_amt = model1_ap_amt;
+    }
+
+    public Double getModel2_ap_amt() {
+        return model2_ap_amt;
+    }
+
+    public void setModel2_ap_amt(Double model2_ap_amt) {
+        this.model2_ap_amt = model2_ap_amt;
+    }
+
+    public Double getModel1_ap_rate() {
+        return model1_ap_rate;
+    }
+
+    public void setModel1_ap_rate(Double model1_ap_rate) {
+        this.model1_ap_rate = model1_ap_rate;
+    }
+
+    public Double getModel2_ap_rate() {
+        return model2_ap_rate;
+    }
+
+    public void setModel2_ap_rate(Double model2_ap_rate) {
+        this.model2_ap_rate = model2_ap_rate;
+    }
+
+    public Double getFinal_ap_amt() {
+        return final_ap_amt;
+    }
+
+    public void setFinal_ap_amt(Double final_ap_amt) {
+        this.final_ap_amt = final_ap_amt;
+    }
+
+    public Double getFinal_ap_rate() {
+        return final_ap_rate;
+    }
+
+    public void setFinal_ap_rate(Double final_ap_rate) {
+        this.final_ap_rate = final_ap_rate;
+    }
+
+    public String getRepay_type() {
+        return repay_type;
+    }
+
+    public void setRepay_type(String repay_type) {
+        this.repay_type = repay_type == null ? null : repay_type.trim();
+    }
+
+    public String getMaturity() {
+        return maturity;
+    }
+
+    public void setMaturity(String maturity) {
+        this.maturity = maturity == null ? null : maturity.trim();
+    }
+
+    public String getDeleted_flag() {
+        return deleted_flag;
+    }
+
+    public void setDeleted_flag(String deleted_flag) {
+        this.deleted_flag = deleted_flag == null ? null : deleted_flag.trim();
+    }
+
+    public Date getValid_date() {
+        return valid_date;
+    }
+
+    public void setValid_date(Date valid_date) {
+        this.valid_date = valid_date;
+    }
+
+    public Date getInvalid_date() {
+        return invalid_date;
+    }
+
+    public void setInvalid_date(Date invalid_date) {
+        this.invalid_date = invalid_date;
+    }
+
+    public Date getCreate_date() {
+        return create_date;
+    }
+
+    public void setCreate_date(Date create_date) {
+        this.create_date = create_date;
+    }
+
+    public Date getModify_date() {
+        return modify_date;
+    }
+
+    public void setModify_date(Date modify_date) {
+        this.modify_date = modify_date;
+    }
+}

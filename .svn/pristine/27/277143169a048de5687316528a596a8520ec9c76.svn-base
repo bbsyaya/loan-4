@@ -1,0 +1,33 @@
+package com.hrbb.loan.pos.biz.backstage.inter.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.hrbb.loan.pos.biz.backstage.inter.IRepaymentApplyBiz;
+import com.hrbb.loan.pos.service.RepaymentApplyService;
+
+/**
+ * 还款业务实现.
+ * 
+ * @author xiongshaogang
+ * @version $Id: RepaymentApplyBizImpl.java, v 0.1 2015年4月29日 上午10:40:26 xiongshaogang Exp $
+ */
+@Component("repaymentApplyBiz")
+public class RepaymentApplyBizImpl implements IRepaymentApplyBiz {
+
+    Logger logger = LoggerFactory.getLogger(RepaymentApplyBizImpl.class);
+    
+    @Autowired
+    private RepaymentApplyService repaymentApplyService;
+    
+    @Override
+    public List<Map<String, Object>> queryRepaymentApplyDetailsByZzApp(Map<String, Object> queryMap) {
+        return repaymentApplyService.queryRepaymentListByZzApp(queryMap);
+    }
+
+}

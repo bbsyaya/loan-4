@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TReviewNoteMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TReviewNote" >
+    <id column="loanid" property="loanid" jdbcType="VARCHAR" />
+    <id column="reviewid" property="reviewid" jdbcType="INTEGER" />
+    <result column="teltype" property="teltype" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="relationtype" property="relationtype" jdbcType="CHAR" />
+    <result column="result" property="result" jdbcType="CHAR" />
+    <result column="reviewday" property="reviewday" jdbcType="DATE" />
+    <result column="registrarname" property="registrarname" jdbcType="VARCHAR" />
+    <result column="registrationday" property="registrationday" jdbcType="DATE" />
+    <result column="note" property="note" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    loanid, reviewid, teltype, tel, relationtype, result, reviewday, registrarname, registrationday, note
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.hrbb.loan.pos.dao.entity.TReviewNoteKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_review_note
+    where loanid = #{loanid,jdbcType=VARCHAR}
+      and reviewid = #{reviewid,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectSelective" resultMap="BaseResultMap" parameterType="com.hrbb.loan.pos.dao.entity.TReviewNoteKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_review_note
+    where loanid = #{loanid,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectMaxReviewIdByLoanId" resultType="java.lang.Integer" parameterType="com.hrbb.loan.pos.dao.entity.TReviewNoteKey" >
+    select ifnull(max(reviewid),0) reviewid
+    from t_review_note
+    where loanid = #{loanid,jdbcType=VARCHAR}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TReviewNoteKey" >
+    delete from t_review_note
+    where loanid = #{loanid,jdbcType=VARCHAR}
+      and reviewid = #{reviewid,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TReviewNote" >
+    insert into t_review_note (loanid, reviewid, teltype, tel,
+      relationtype, result, reviewday, 
+      registrarname, registrationday, note)
+    values (#{loanid,jdbcType=VARCHAR}, #{reviewid,jdbcType=INTEGER}, #{teltype,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR}, 
+      #{relationtype,jdbcType=CHAR}, #{result,jdbcType=CHAR}, #{reviewday,jdbcType=DATE}, 
+      #{registrarname,jdbcType=VARCHAR}, #{registrationday,jdbcType=DATE}, #{note,jdbcType=VARCHAR})
+  </insert>
+  
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TReviewNote" >
+    insert into t_review_note
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="loanid != null" >
+        loanid,
+      </if>
+      <if test="reviewid != null" >
+        reviewid,
+      </if>
+      <if test="teltype != null" >
+        teltype,
+      </if>
+      <if test="tel != null" >
+        tel,
+      </if>
+      <if test="relationtype != null" >
+        relationtype,
+      </if>
+      <if test="result != null" >
+        result,
+      </if>
+      <if test="reviewday != null" >
+        reviewday,
+      </if>
+      <if test="registrarname != null" >
+        registrarname,
+      </if>
+      <if test="registrationday != null" >
+        registrationday,
+      </if>
+      <if test="note != null" >
+        note,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="loanid != null" >
+        #{loanid,jdbcType=VARCHAR},
+      </if>
+      <if test="reviewid != null" >
+        #{reviewid,jdbcType=INTEGER},
+      </if>
+      <if test="teltype != null" >
+        #{teltype,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="relationtype != null" >
+        #{relationtype,jdbcType=CHAR},
+      </if>
+      <if test="result != null" >
+        #{result,jdbcType=CHAR},
+      </if>
+      <if test="reviewday != null" >
+        #{reviewday,jdbcType=DATE},
+      </if>
+      <if test="registrarname != null" >
+        #{registrarname,jdbcType=VARCHAR},
+      </if>
+      <if test="registrationday != null" >
+        #{registrationday,jdbcType=DATE},
+      </if>
+      <if test="note != null" >
+        #{note,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TReviewNote" >
+    update t_review_note
+    <set >
+      <if test="teltype != null" >
+        teltype = #{teltype,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        tel = #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="relationtype != null" >
+        relationtype = #{relationtype,jdbcType=CHAR},
+      </if>
+      <if test="result != null" >
+        result = #{result,jdbcType=CHAR},
+      </if>
+      <if test="reviewday != null" >
+        reviewday = #{reviewday,jdbcType=DATE},
+      </if>
+      <if test="registrarname != null" >
+        registrarname = #{registrarname,jdbcType=VARCHAR},
+      </if>
+      <if test="registrationday != null" >
+        registrationday = #{registrationday,jdbcType=DATE},
+      </if>
+      <if test="note != null" >
+        note = #{note,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where loanid = #{loanid,jdbcType=VARCHAR}
+      and reviewid = #{reviewid,jdbcType=INTEGER}
+  </update>
+  
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TReviewNote" >
+    update t_review_note
+    set tel = #{tel,jdbcType=VARCHAR},
+      teltype = #{teltype,jdbcType=CHAR},
+      relationtype = #{relationtype,jdbcType=CHAR},
+      result = #{result,jdbcType=CHAR},
+      reviewday = #{reviewday,jdbcType=DATE},
+      registrarname = #{registrarname,jdbcType=VARCHAR},
+      registrationday = #{registrationday,jdbcType=DATE},
+      note = #{note,jdbcType=VARCHAR}
+    where loanid = #{loanid,jdbcType=VARCHAR}
+      and reviewid = #{reviewid,jdbcType=INTEGER}
+  </update>
+  
+  <select id="selectAll" resultMap="BaseResultMap" parameterType="com.hrbb.loan.pos.dao.entity.TReviewNoteKey" >
+    select 
+        rn.loanid, rn.reviewid, rn.tel, rn.reviewday, ul.loginName registrarname, rn.registrationday
+        ,bdnt.itemName relationtype,bdvs.itemName result, bdnp.itemName teltype, rn.note
+    from t_review_note rn
+    left join t_user_login ul on rn.registrarname = ul.userName
+    left join t_business_dictionary bdnp on bdnp.codeNo='NoticePhone' and bdnp.itemNo = rn.teltype
+    left join t_business_dictionary bdnt on bdnt.codeNo='NoticeTarget' and bdnt.itemNo = rn.relationtype
+    left join t_business_dictionary bdvs on bdvs.codeNo='VerifyStatus' and bdvs.itemNo = rn.result
+    where rn.loanid = #{loanid,jdbcType=VARCHAR}
+  </select>
+</mapper>

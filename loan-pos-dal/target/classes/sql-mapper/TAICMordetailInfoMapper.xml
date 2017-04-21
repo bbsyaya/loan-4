@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TAICMordetailInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TAICMordetailInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="posCustId" property="posCustId" jdbcType="VARCHAR" />
+    <result column="orderNo" property="orderNo" jdbcType="VARCHAR" />
+    <result column="morRegId" property="morRegId" jdbcType="VARCHAR" />
+    <result column="mortGagor" property="mortGagor" jdbcType="VARCHAR" />
+    <result column="more" property="more" jdbcType="VARCHAR" />
+    <result column="regOrg" property="regOrg" jdbcType="VARCHAR" />
+    <result column="regiDate" property="regiDate" jdbcType="VARCHAR" />
+    <result column="morType" property="morType" jdbcType="VARCHAR" />
+    <result column="morRegcNo" property="morRegcNo" jdbcType="VARCHAR" />
+    <result column="appRegRea" property="appRegRea" jdbcType="VARCHAR" />
+    <result column="priClasecKind" property="priClasecKind" jdbcType="VARCHAR" />
+    <result column="priClasecAm" property="priClasecAm" jdbcType="VARCHAR" />
+    <result column="pefPerForm" property="pefPerForm" jdbcType="VARCHAR" />
+    <result column="pefPerTo" property="pefPerTo" jdbcType="VARCHAR" />
+    <result column="canDate" property="canDate" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, posCustId, orderNo, morRegId, mortGagor, more, regOrg, regiDate, morType, morRegcNo, 
+    appRegRea, priClasecKind, priClasecAm, pefPerForm, pefPerTo, canDate
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_mordetail_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectSelective" resultType="Map" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_mordetail_info
+    where 1=1
+    <if test="orderNo != null">
+    	AND orderNo = #{orderNo}
+    </if>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_aic_mordetail_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TAICMordetailInfo" >
+    insert into t_aic_mordetail_info (id, posCustId, orderNo, 
+      morRegId, mortGagor, more, 
+      regOrg, regiDate, morType, 
+      morRegcNo, appRegRea, priClasecKind, 
+      priClasecAm, pefPerForm, pefPerTo, 
+      canDate)
+    values (#{id,jdbcType=INTEGER}, #{posCustId,jdbcType=VARCHAR}, #{orderNo,jdbcType=VARCHAR}, 
+      #{morRegId,jdbcType=VARCHAR}, #{mortGagor,jdbcType=VARCHAR}, #{more,jdbcType=VARCHAR}, 
+      #{regOrg,jdbcType=VARCHAR}, #{regiDate,jdbcType=VARCHAR}, #{morType,jdbcType=VARCHAR}, 
+      #{morRegcNo,jdbcType=VARCHAR}, #{appRegRea,jdbcType=VARCHAR}, #{priClasecKind,jdbcType=VARCHAR}, 
+      #{priClasecAm,jdbcType=VARCHAR}, #{pefPerForm,jdbcType=VARCHAR}, #{pefPerTo,jdbcType=VARCHAR}, 
+      #{canDate,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICMordetailInfo" >
+    insert into t_aic_mordetail_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="orderNo != null" >
+        orderNo,
+      </if>
+      <if test="morRegId != null" >
+        morRegId,
+      </if>
+      <if test="mortGagor != null" >
+        mortGagor,
+      </if>
+      <if test="more != null" >
+        more,
+      </if>
+      <if test="regOrg != null" >
+        regOrg,
+      </if>
+      <if test="regiDate != null" >
+        regiDate,
+      </if>
+      <if test="morType != null" >
+        morType,
+      </if>
+      <if test="morRegcNo != null" >
+        morRegcNo,
+      </if>
+      <if test="appRegRea != null" >
+        appRegRea,
+      </if>
+      <if test="priClasecKind != null" >
+        priClasecKind,
+      </if>
+      <if test="priClasecAm != null" >
+        priClasecAm,
+      </if>
+      <if test="pefPerForm != null" >
+        pefPerForm,
+      </if>
+      <if test="pefPerTo != null" >
+        pefPerTo,
+      </if>
+      <if test="canDate != null" >
+        canDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="morRegId != null" >
+        #{morRegId,jdbcType=VARCHAR},
+      </if>
+      <if test="mortGagor != null" >
+        #{mortGagor,jdbcType=VARCHAR},
+      </if>
+      <if test="more != null" >
+        #{more,jdbcType=VARCHAR},
+      </if>
+      <if test="regOrg != null" >
+        #{regOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="regiDate != null" >
+        #{regiDate,jdbcType=VARCHAR},
+      </if>
+      <if test="morType != null" >
+        #{morType,jdbcType=VARCHAR},
+      </if>
+      <if test="morRegcNo != null" >
+        #{morRegcNo,jdbcType=VARCHAR},
+      </if>
+      <if test="appRegRea != null" >
+        #{appRegRea,jdbcType=VARCHAR},
+      </if>
+      <if test="priClasecKind != null" >
+        #{priClasecKind,jdbcType=VARCHAR},
+      </if>
+      <if test="priClasecAm != null" >
+        #{priClasecAm,jdbcType=VARCHAR},
+      </if>
+      <if test="pefPerForm != null" >
+        #{pefPerForm,jdbcType=VARCHAR},
+      </if>
+      <if test="pefPerTo != null" >
+        #{pefPerTo,jdbcType=VARCHAR},
+      </if>
+      <if test="canDate != null" >
+        #{canDate,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICMordetailInfo" >
+    update t_aic_mordetail_info
+    <set >
+      <if test="posCustId != null" >
+        posCustId = #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        orderNo = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="morRegId != null" >
+        morRegId = #{morRegId,jdbcType=VARCHAR},
+      </if>
+      <if test="mortGagor != null" >
+        mortGagor = #{mortGagor,jdbcType=VARCHAR},
+      </if>
+      <if test="more != null" >
+        more = #{more,jdbcType=VARCHAR},
+      </if>
+      <if test="regOrg != null" >
+        regOrg = #{regOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="regiDate != null" >
+        regiDate = #{regiDate,jdbcType=VARCHAR},
+      </if>
+      <if test="morType != null" >
+        morType = #{morType,jdbcType=VARCHAR},
+      </if>
+      <if test="morRegcNo != null" >
+        morRegcNo = #{morRegcNo,jdbcType=VARCHAR},
+      </if>
+      <if test="appRegRea != null" >
+        appRegRea = #{appRegRea,jdbcType=VARCHAR},
+      </if>
+      <if test="priClasecKind != null" >
+        priClasecKind = #{priClasecKind,jdbcType=VARCHAR},
+      </if>
+      <if test="priClasecAm != null" >
+        priClasecAm = #{priClasecAm,jdbcType=VARCHAR},
+      </if>
+      <if test="pefPerForm != null" >
+        pefPerForm = #{pefPerForm,jdbcType=VARCHAR},
+      </if>
+      <if test="pefPerTo != null" >
+        pefPerTo = #{pefPerTo,jdbcType=VARCHAR},
+      </if>
+      <if test="canDate != null" >
+        canDate = #{canDate,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TAICMordetailInfo" >
+    update t_aic_mordetail_info
+    set posCustId = #{posCustId,jdbcType=VARCHAR},
+      orderNo = #{orderNo,jdbcType=VARCHAR},
+      morRegId = #{morRegId,jdbcType=VARCHAR},
+      mortGagor = #{mortGagor,jdbcType=VARCHAR},
+      more = #{more,jdbcType=VARCHAR},
+      regOrg = #{regOrg,jdbcType=VARCHAR},
+      regiDate = #{regiDate,jdbcType=VARCHAR},
+      morType = #{morType,jdbcType=VARCHAR},
+      morRegcNo = #{morRegcNo,jdbcType=VARCHAR},
+      appRegRea = #{appRegRea,jdbcType=VARCHAR},
+      priClasecKind = #{priClasecKind,jdbcType=VARCHAR},
+      priClasecAm = #{priClasecAm,jdbcType=VARCHAR},
+      pefPerForm = #{pefPerForm,jdbcType=VARCHAR},
+      pefPerTo = #{pefPerTo,jdbcType=VARCHAR},
+      canDate = #{canDate,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

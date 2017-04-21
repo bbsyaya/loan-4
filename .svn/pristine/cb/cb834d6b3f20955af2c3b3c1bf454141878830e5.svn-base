@@ -1,0 +1,91 @@
+/**
+ * 
+ */
+package com.hrbb.loan.pos.entity.event.impl;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Map;
+
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.util.DateUtil;
+
+/**
+ * <p>Title: MessageCab.java </p>
+ * <p>Description: 消息推送的通用对象 </p>
+ * <p>Copyright: Copyright (C) 2015 Hrbb Ltd. Co.</p> 
+ *     
+ * @author linzhaolin@hrbb.com.cn
+ * @version 
+ * @date 2015年8月5日
+ *
+ * logs: 1. 
+ */
+public class MessageCab {
+	
+	public static final int  消息推送_授信审批通过 = 1;
+	public static final int  消息推送_授信审批拒绝 = 2;
+	public static final int  消息推送_补件通知 = 3;
+	public static final int  消息推送_放款结果通知 = 5;
+	public static final int  消息推送_协议状态调整 = 6;
+	public static final int  消息推送_还款结果通知 = 7;
+	public static final int  消息推送_到期还款提醒 = 8;
+	public static final int  消息推送_逾期催收通知 = 9;
+	public static final int  消息推送_审批结果失效 = 11;
+	public static final int  消息推送_影像文件缺失通知 = 12;
+	public static final int  消息推送_还款申请失效通知 = 13;
+	
+	private int type;
+	
+	private Map<String,String> attr = Maps.newHashMap();
+	
+	private MessageCab(int type){
+		this.type = type;
+	}
+	
+	public String getType() {
+		return String.valueOf(type);
+	}
+
+	public static MessageCab newMessage(int type){
+		return new MessageCab(type);
+	}
+	
+	public void addAttribute(String key, String value){
+		attr.put(key, value);
+	}
+	
+	public void addAttribute(String key, Date value){
+		addAttribute(key, value, DateUtil.HRRB_SHORT_DATETIME_FORMAT);
+	}
+	
+	public void addAttribute(String key, Date value, String format){
+		attr.put(key, DateUtil.formatDate(value,format));
+	}
+	
+	public void addAttribute(String key, BigDecimal value){
+		attr.put(key, String.valueOf(value));
+	}
+	
+	public void addAttribute(String key, int value){
+		attr.put(key, String.valueOf(value));
+	}
+	
+	public void addAttribute(String key, double value){
+		attr.put(key, String.valueOf(value));
+	}
+	
+	public String getAttribute(String key){
+		return attr.get(key);
+	}
+	
+	public String toMessageString(){
+		String msgStr = JSONObject.toJSONString(attr);
+		return msgStr.substring(1, msgStr.length()-1);		//取{xxxx}中的xxxx
+	}
+	
+	public String toString(){
+		return "type="+getType()+" |MAP="+attr.toString();
+	}
+}

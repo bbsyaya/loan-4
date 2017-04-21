@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TLoanUserMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TLoanUser" >
+    <id column="loanId" property="loanId" jdbcType="VARCHAR" />
+    <result column="userId" property="userId" jdbcType="VARCHAR" />
+    <result column="appSource" property="appSource" jdbcType="VARCHAR" />
+    <result column="payapplyid" property="payapplyid" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    loanId, userId, appSource, payapplyid
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_loan_user
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_loan_user
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TLoanUser" >
+    insert into t_loan_user (loanId, userId, appSource, payapplyid
+      )
+    values (#{loanId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{appSource,jdbcType=VARCHAR}, #{payapplyid,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TLoanUser" >
+    insert into t_loan_user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="loanId != null" >
+        loanId,
+      </if>
+      <if test="userId != null" >
+        userId,
+      </if>
+      <if test="appSource != null" >
+        appSource,
+      </if>
+      <if test="payapplyid != null" >
+        payapplyid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="loanId != null" >
+        #{loanId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="appSource != null" >
+        #{appSource,jdbcType=VARCHAR},
+      </if>
+      <if test="payapplyid != null" >
+        #{payapplyid,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TLoanUser" >
+    update t_loan_user
+    <set >
+      <if test="userId != null" >
+        userId = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="appSource != null" >
+        appSource = #{appSource,jdbcType=VARCHAR},
+      </if>
+      <if test="payapplyid != null" >
+        payapplyid = #{payapplyid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TLoanUser" >
+    update t_loan_user
+    set userId = #{userId,jdbcType=VARCHAR},
+      appSource = #{appSource,jdbcType=VARCHAR},
+      payapplyid = #{payapplyid,jdbcType=VARCHAR}
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </update>
+</mapper>

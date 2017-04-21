@@ -1,0 +1,23 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.biz.constants;
+
+/**
+ * 银商数据同步接口
+ * 
+ * @author marco
+ * @version $Id: LedgerConstants.java, v 0.1 2015-3-10 下午5:31:14 marco Exp $
+ */
+public class SynFileConstants {
+
+	public final static String STRING_UNDERLINE = "_";
+	public final static String KEY_CUSTID_UM = "UMI";
+	// 银商统计报表
+	public final static String NO_STATISTICS = "StatisticsFile";
+	public final static String SHEET_NAME = "data";
+	public final static String REGION = "region";
+	public final static String SYNFILEUM = "download/synFile/";
+}

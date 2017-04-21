@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TPaymentApplyTmpMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TPaymentApplyTmp" >
+    <id column="payApplyId" property="payApplyId" jdbcType="VARCHAR" />
+    <result column="contNo" property="contNo" jdbcType="VARCHAR" />
+    <result column="custId" property="custId" jdbcType="VARCHAR" />
+    <result column="posCustId" property="posCustId" jdbcType="VARCHAR" />
+    <result column="payApplyAmt" property="payApplyAmt" jdbcType="DECIMAL" />
+    <result column="payApplyTerm" property="payApplyTerm" jdbcType="VARCHAR" />
+    <result column="payApplyInterest" property="payApplyInterest" jdbcType="DECIMAL" />
+    <result column="returnType" property="returnType" jdbcType="VARCHAR" />
+    <result column="accNo" property="accNo" jdbcType="VARCHAR" />
+    <result column="expectedDate" property="expectedDate" jdbcType="TIMESTAMP" />
+    <result column="expectedEndDate" property="expectedEndDate" jdbcType="TIMESTAMP" />
+    <result column="applyMemo" property="applyMemo" jdbcType="VARCHAR" />
+    <result column="applyDate" property="applyDate" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="merchantNo" property="merchantNo" jdbcType="VARCHAR" />
+    <result column="merchantDesp" property="merchantDesp" jdbcType="VARCHAR" />
+    <result column="createDate" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="modifiedDate" property="modifiedDate" jdbcType="TIMESTAMP" />
+    <result column="payChannel" property="payChannel" jdbcType="VARCHAR" />
+    <result column="operId" property="operId" jdbcType="VARCHAR" />
+    <result column="lastApproveDate" property="lastApproveDate" jdbcType="TIMESTAMP" />
+    <result column="receiptFlag" property="receiptFlag" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    payApplyId, contNo, custId, posCustId, payApplyAmt, payApplyTerm, payApplyInterest, 
+    returnType, accNo, expectedDate, expectedEndDate, applyMemo, applyDate, status, merchantNo, 
+    merchantDesp, createDate, modifiedDate, payChannel, operId, lastApproveDate, receiptFlag
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_payment_apply_tmp
+    where payApplyId = #{payApplyId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_payment_apply_tmp
+    where payApplyId = #{payApplyId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TPaymentApplyTmp" >
+    insert into t_payment_apply_tmp (payApplyId, contNo, custId, 
+      posCustId, payApplyAmt, payApplyTerm, 
+      payApplyInterest, returnType, accNo, 
+      expectedDate, expectedEndDate, applyMemo, 
+      applyDate, status, merchantNo, 
+      merchantDesp, createDate, modifiedDate, 
+      payChannel, operId, lastApproveDate, 
+      receiptFlag)
+    values (#{payApplyId,jdbcType=VARCHAR}, #{contNo,jdbcType=VARCHAR}, #{custId,jdbcType=VARCHAR}, 
+      #{posCustId,jdbcType=VARCHAR}, #{payApplyAmt,jdbcType=DECIMAL}, #{payApplyTerm,jdbcType=VARCHAR}, 
+      #{payApplyInterest,jdbcType=DECIMAL}, #{returnType,jdbcType=VARCHAR}, #{accNo,jdbcType=VARCHAR}, 
+      #{expectedDate,jdbcType=TIMESTAMP}, #{expectedEndDate,jdbcType=TIMESTAMP}, #{applyMemo,jdbcType=VARCHAR}, 
+      #{applyDate,jdbcType=TIMESTAMP}, #{status,jdbcType=VARCHAR}, #{merchantNo,jdbcType=VARCHAR}, 
+      #{merchantDesp,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{modifiedDate,jdbcType=TIMESTAMP}, 
+      #{payChannel,jdbcType=VARCHAR}, #{operId,jdbcType=VARCHAR}, #{lastApproveDate,jdbcType=TIMESTAMP}, 
+      #{receiptFlag,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TPaymentApplyTmp" >
+    insert into t_payment_apply_tmp
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="payApplyId != null" >
+        payApplyId,
+      </if>
+      <if test="contNo != null" >
+        contNo,
+      </if>
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="payApplyAmt != null" >
+        payApplyAmt,
+      </if>
+      <if test="payApplyTerm != null" >
+        payApplyTerm,
+      </if>
+      <if test="payApplyInterest != null" >
+        payApplyInterest,
+      </if>
+      <if test="returnType != null" >
+        returnType,
+      </if>
+      <if test="accNo != null" >
+        accNo,
+      </if>
+      <if test="expectedDate != null" >
+        expectedDate,
+      </if>
+      <if test="expectedEndDate != null" >
+        expectedEndDate,
+      </if>
+      <if test="applyMemo != null" >
+        applyMemo,
+      </if>
+      <if test="applyDate != null" >
+        applyDate,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="merchantNo != null" >
+        merchantNo,
+      </if>
+      <if test="merchantDesp != null" >
+        merchantDesp,
+      </if>
+      <if test="createDate != null" >
+        createDate,
+      </if>
+      <if test="modifiedDate != null" >
+        modifiedDate,
+      </if>
+      <if test="payChannel != null" >
+        payChannel,
+      </if>
+      <if test="operId != null" >
+        operId,
+      </if>
+      <if test="lastApproveDate != null" >
+        lastApproveDate,
+      </if>
+      <if test="receiptFlag != null" >
+        receiptFlag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="payApplyId != null" >
+        #{payApplyId,jdbcType=VARCHAR},
+      </if>
+      <if test="contNo != null" >
+        #{contNo,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="payApplyAmt != null" >
+        #{payApplyAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="payApplyTerm != null" >
+        #{payApplyTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="payApplyInterest != null" >
+        #{payApplyInterest,jdbcType=DECIMAL},
+      </if>
+      <if test="returnType != null" >
+        #{returnType,jdbcType=VARCHAR},
+      </if>
+      <if test="accNo != null" >
+        #{accNo,jdbcType=VARCHAR},
+      </if>
+      <if test="expectedDate != null" >
+        #{expectedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expectedEndDate != null" >
+        #{expectedEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="applyMemo != null" >
+        #{applyMemo,jdbcType=VARCHAR},
+      </if>
+      <if test="applyDate != null" >
+        #{applyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantNo != null" >
+        #{merchantNo,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantDesp != null" >
+        #{merchantDesp,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifiedDate != null" >
+        #{modifiedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payChannel != null" >
+        #{payChannel,jdbcType=VARCHAR},
+      </if>
+      <if test="operId != null" >
+        #{operId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastApproveDate != null" >
+        #{lastApproveDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="receiptFlag != null" >
+        #{receiptFlag,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TPaymentApplyTmp" >
+    update t_payment_apply_tmp
+    <set >
+      <if test="contNo != null" >
+        contNo = #{contNo,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        custId = #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustId != null" >
+        posCustId = #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="payApplyAmt != null" >
+        payApplyAmt = #{payApplyAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="payApplyTerm != null" >
+        payApplyTerm = #{payApplyTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="payApplyInterest != null" >
+        payApplyInterest = #{payApplyInterest,jdbcType=DECIMAL},
+      </if>
+      <if test="returnType != null" >
+        returnType = #{returnType,jdbcType=VARCHAR},
+      </if>
+      <if test="accNo != null" >
+        accNo = #{accNo,jdbcType=VARCHAR},
+      </if>
+      <if test="expectedDate != null" >
+        expectedDate = #{expectedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expectedEndDate != null" >
+        expectedEndDate = #{expectedEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="applyMemo != null" >
+        applyMemo = #{applyMemo,jdbcType=VARCHAR},
+      </if>
+      <if test="applyDate != null" >
+        applyDate = #{applyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantNo != null" >
+        merchantNo = #{merchantNo,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantDesp != null" >
+        merchantDesp = #{merchantDesp,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        createDate = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifiedDate != null" >
+        modifiedDate = #{modifiedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payChannel != null" >
+        payChannel = #{payChannel,jdbcType=VARCHAR},
+      </if>
+      <if test="operId != null" >
+        operId = #{operId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastApproveDate != null" >
+        lastApproveDate = #{lastApproveDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="receiptFlag != null" >
+        receiptFlag = #{receiptFlag,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where payApplyId = #{payApplyId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TPaymentApplyTmp" >
+    update t_payment_apply_tmp
+    set contNo = #{contNo,jdbcType=VARCHAR},
+      custId = #{custId,jdbcType=VARCHAR},
+      posCustId = #{posCustId,jdbcType=VARCHAR},
+      payApplyAmt = #{payApplyAmt,jdbcType=DECIMAL},
+      payApplyTerm = #{payApplyTerm,jdbcType=VARCHAR},
+      payApplyInterest = #{payApplyInterest,jdbcType=DECIMAL},
+      returnType = #{returnType,jdbcType=VARCHAR},
+      accNo = #{accNo,jdbcType=VARCHAR},
+      expectedDate = #{expectedDate,jdbcType=TIMESTAMP},
+      expectedEndDate = #{expectedEndDate,jdbcType=TIMESTAMP},
+      applyMemo = #{applyMemo,jdbcType=VARCHAR},
+      applyDate = #{applyDate,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=VARCHAR},
+      merchantNo = #{merchantNo,jdbcType=VARCHAR},
+      merchantDesp = #{merchantDesp,jdbcType=VARCHAR},
+      createDate = #{createDate,jdbcType=TIMESTAMP},
+      modifiedDate = #{modifiedDate,jdbcType=TIMESTAMP},
+      payChannel = #{payChannel,jdbcType=VARCHAR},
+      operId = #{operId,jdbcType=VARCHAR},
+      lastApproveDate = #{lastApproveDate,jdbcType=TIMESTAMP},
+      receiptFlag = #{receiptFlag,jdbcType=VARCHAR}
+    where payApplyId = #{payApplyId,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectByObj" resultMap="BaseResultMap" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_payment_apply_tmp
+    where status = #{status} and date_format(modifiedDate,'%Y%m%d') = #{modifiedDate}
+  </select>
+  <insert id="insertSelectiveMap" parameterType="map" >
+    insert into t_payment_apply_tmp
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="payApplyId != null" >
+        payApplyId,
+      </if>
+      <if test="contNo != null" >
+        contNo,
+      </if>
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="payApplyAmt != null" >
+        payApplyAmt,
+      </if>
+      <if test="payApplyTerm != null" >
+        payApplyTerm,
+      </if>
+      <if test="payApplyInterest !=null">
+        payApplyInterest,
+      </if>
+      <if test="payChannel != null"> 
+        payChannel,
+      </if>
+      <if test="returnType != null" >
+        returnType,
+      </if>
+      <if test="accNo != null" >
+        accNo,
+      </if>
+      <if test="expectedDate != null" >
+        expectedDate,
+      </if>
+      <if test="expectedEndDate != null">
+        expectedEndDate,  
+      </if>
+      <if test="applyMemo != null" >
+        applyMemo,
+      </if>
+      <if test="applyDate != null" >
+        applyDate,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="merchantNo != null" >
+        merchantNo,
+      </if>
+      <if test="merchantDesp != null" >
+        merchantDesp,
+      </if>
+      <if test="createDate != null" >
+        createDate,
+      </if>
+      <if test="modifiedDate != null" >
+        modifiedDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="payApplyId != null" >
+        #{payApplyId,jdbcType=VARCHAR},
+      </if>
+      <if test="contNo != null" >
+        #{contNo,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="payApplyAmt != null" >
+        #{payApplyAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="payApplyTerm != null" >
+        #{payApplyTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="payApplyInterest != null">
+        #{payApplyInterest,jdbcType=DECIMAL},
+      </if>
+      <if test="payChannel != null">
+        #{payChannel,jdbcType=VARCHAR},  
+      </if>
+      <if test="returnType != null" >
+        #{returnType,jdbcType=VARCHAR},
+      </if>
+      <if test="accNo != null" >
+        #{accNo,jdbcType=VARCHAR},
+      </if>
+      <if test="expectedDate != null" >
+        #{expectedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expectedEndDate != null">
+      	#{expectedEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="applyMemo != null" >
+        #{applyMemo,jdbcType=VARCHAR},
+      </if>
+      <if test="applyDate != null" >
+        #{applyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantNo != null" >
+        #{merchantNo,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantDesp != null" >
+        #{merchantDesp,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifiedDate != null" >
+        #{modifiedDate,jdbcType=TIMESTAMP},
+      </if>
+       <if test="operId != null" >
+        operId = #{operId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastApproveDate != null" >
+        lastApproveDate = #{lastApproveDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="receiptFlag != null" >
+        receiptFlag = #{receiptFlag,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

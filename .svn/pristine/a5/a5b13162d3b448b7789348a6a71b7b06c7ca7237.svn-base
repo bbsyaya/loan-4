@@ -1,0 +1,41 @@
+package com.hrbb.loan.pos.biz.constants;
+
+/**
+ * 短信类型定义
+ * 
+ */
+public class SmsTypeContants {
+    
+    //注册
+    public static final String REGIST = "POS0001";
+    
+    //密码找回
+    public static final String PASSWORD_GET = "POS0002";
+    
+    //业务受理
+    public static final String CREDIT_APPLY = "POS0003";
+    
+    //补件
+    public static final String PATCH = "POS0004";
+    
+    //协议生效
+    public static final String CONTRACT = "POS0005";
+    
+    //放款
+    public static final String PAY = "POS0006";
+    
+    //还款
+    public static final String PAYBACK = "POS0007";
+    
+    //结清
+    public static final String CLEAR = "POS0008";
+    
+    //未结清
+    public static final String UNCLEAR = "POS0009";
+    
+    //授信拒绝
+    public static final String APPROVE_REFUSE = "POS0010";
+    
+    
+    
+}

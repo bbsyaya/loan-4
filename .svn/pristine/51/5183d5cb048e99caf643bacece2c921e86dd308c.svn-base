@@ -1,0 +1,756 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.tools.main.dataTransfer;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.dao.entity.TBankAccnoInfo;
+import com.hrbb.loan.pos.dao.entity.TCreditApply;
+import com.hrbb.loan.pos.dao.entity.TCustomer;
+import com.hrbb.loan.pos.dao.entity.TPosCustInfo;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.FileUtil;
+import com.hrbb.loan.pos.util.IdUtil;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.loan.pos.util.constants.BusinessDictionaryConstants;
+import com.hrbb.pos.loan.tools.database.LoanDatabase;
+
+/**
+ * 
+ * @author marco
+ * @version $Id: DataTransfer.java, v 0.1 2015-6-12 下午2:00:14 marco Exp $
+ */
+public class DataTransfer {
+	private final static Logger logger = LoggerFactory
+			.getLogger(DataTransfer.class);
+
+	public static ResourceBundle toolsInfo = ResourceBundle
+			.getBundle("toolsInfo");
+
+	public static SimpleDateFormat sdf = new SimpleDateFormat(
+			"yyyy-MM-dd HH:mm:ss");
+
+	private static final String CHARSET = "UTF-8";
+	private static final String BLANK = "";
+	private static final String COMMA = ",";
+	private static final String YEAR_NAME = "年";
+	private static final String YEAR_CODE = "Y";
+	private static final String MONTH_NAME = "月";
+	private static final String MONTH_CODE = "M";
+	private static final String DAY_NAME = "日";
+	private static final String DAY_CODE = "D";
+	private static final String INCHANNELKIND_04 = "04";
+	private static final String CURRSIGN_CNY = "CNY";
+	private static final String REPAYMETHOD_01 = "01";
+	private static final String RETURNKIND_90 = "90";
+	private static final String PAPERKIND_10 = "10";
+	private static final String OCCURTYPE_01 = "01";
+	private static final String LASTOPERID_SYSTEM = "system";
+	private static final String LASTOPERID_SYSTEM_NAME = "系统自动处理";
+
+	private static final String LOAN_PREFIX = "LO";
+	private static final String POSCUSTID_PREFIX = "MH";
+
+	private static final String NO = "NO";
+	private static final String CHANNEL = "channel";
+	private static final String APPLYAMT = "applyAmt";
+	private static final String BANKID = "bankId";
+	private static final String PRODID = "prodId";
+	private static final String PRODID_POS = "1001020306";
+	private static final String PRODID_POS_NAME = "POS贷";
+	private static final String PRODID_CASHFLOW = "1001020305";
+	private static final String PRODID_CASHFLOW_NAME = "流量贷";
+	private static final String PROD_CASHFLOW = "cashflow";
+	private static final String APPLYTERM = "applyTerm";
+	private static final String APPLYSTATUS = "applystatus";
+
+	private static final String BEGINDATE = "beginDate";
+	private static final String PAPERID = "paperId";
+	private static final String CUSTNAME = "custName";
+	private static final String SEXSIGN = "sexSign";
+	private static final String MARRSIGN = "marrSign";
+	private static final String EDUCSIGN = "educSign";
+	private static final String CHILDNUM = "childNum";
+	private static final String BUSIYEAR = "busiYear";
+	private static final String WEIXINNO = "weixinNo";
+	private static final String QQNO = "qqNo";
+	private static final String EMAIL = "email";
+	private static final String MOBILEPHONE = "mobilePhone";
+	private static final String TEL = "tel";
+	private static final String RESIDENTDETAIL = "residentDetail";
+	private static final String CONTACTADDRFLAG = "contactAddrFlag";
+	private static final String FAMILYCUSTNAME = "familyCustName";
+	private static final String MATEPAPERID = "matePaperId";
+	private static final String MATEMOBILEPHONE = "mateMobilephone";
+
+	private static final String POSCUSTID = "posCustId";
+	private static final String POSCUSTNAME = "posCustName";
+	private static final String POSCUSTBUSISCOPE = "posCustBusiScope";
+	private static final String POSCUSTADDRESS = "posCustAddress";
+	private static final String REGICODE = "regiCode";
+	private static final String REGISTDATE = "registDate";
+	private static final String REGCAPITAL = "regCapital";
+	private static final String STATE = "state";
+	private static final String CITY = "city";
+
+	private static final String BANKACCNO = "bankAccno";
+	private static final String BANKNAME = "bankName";
+
+	private static final String CODENO = "codeNo";
+	private static final String ITEMNO = "itemNo";
+	private static final String ITEMNOLIKE = "itemNoLike";
+	private static final String ITEMNOLIKE_PREFIX = "____";
+	private static final String ITEMNAME = "itemName";
+	private static final String STATUS = "status";
+	private static final String STATUS_ACTIVE = "0";
+
+	private static final BigDecimal TEN_THOUSAND = new BigDecimal(10000);
+
+	// 持久层会话工厂
+	private static SqlSessionFactory sqlSessionFactory = null;
+	static {
+		sqlSessionFactory = LoanDatabase.getSqlSessionFactory();
+	}
+
+	/**
+	 * 小贷系统数据迁移
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		logger.debug("小贷系统数据迁移开始。。。");
+		String dataTransferfilepath = toolsInfo
+				.getString("dataTransferfilepath");
+		logger.debug("dataTransferfilepath=" + dataTransferfilepath);
+
+		// 获取数据文件内容
+		String jsonStr = getDataFileStringByJson(dataTransferfilepath);
+		if (StringUtil.isEmpty(jsonStr)) {
+			logger.debug("文件读取失败或文件内容为空！");
+			return;
+		}
+
+		// 格式化数据，并插入数据库
+		insert(jsonStr);
+
+		logger.debug("小贷系统数据迁移结束。");
+	}
+
+	/**
+	 * 获取数据文件内容
+	 * 
+	 * @param filePath
+	 * @return
+	 */
+	private static int insert(String jsonStr) {
+
+		// 读取配置
+		SqlSession sqlSession = sqlSessionFactory.openSession(false);
+
+		JSONObject jsonObject = JSONObject.parseObject(jsonStr);
+		JSONArray data = JSONArray.parseArray(jsonObject.getString("RECORDS"));
+		int cnt = data.size();
+		logger.debug("数据条数cnt=" + cnt);
+
+		TCreditApply ca = null;
+		TBankAccnoInfo bai = null;
+
+		Map<String, Object> reqMap = Maps.newHashMap();
+
+		Date now = new Date();
+		logger.debug("now=" + sdf.format(now));
+		// 插入成功条数
+		int commitCnt = 0;
+
+		StringBuilder errorMsg = new StringBuilder();
+
+		for (int i = 0; i < cnt; ++i) {
+
+			JSONObject jobj = data.getJSONObject(i);
+
+			try {
+				ca = new TCreditApply();
+				ca.setLastOperTime(now);
+				// 设置申请信息
+				setCreditApply(sqlSession, jobj, ca);
+
+				// 申请人信息
+				// 身份证号码
+				String paperId = jobj.getString(PAPERID);
+				logger.debug("PAPERID=" + paperId);
+				if (StringUtil.isNotEmpty(paperId)) {
+					// 申请人姓名
+					reqMap.put(PAPERID, paperId);
+					List<TCustomer> cusList = sqlSession.selectList(
+							"TCustomerMapper.selectSelective", reqMap);
+					reqMap.clear();
+
+					if (cusList == null || cusList.size() == 0) {
+						logger.debug("非存量客户。");
+						String custId = IdUtil.getCustId(paperId);
+						// 插入客户表
+						insertCust(sqlSession, jobj, paperId, custId);
+
+						ca.setCustId(custId);
+						ca.setCustName(jobj.getString(CUSTNAME));
+
+					} else {
+						logger.debug("存量客户。");
+						ca.setCustId(cusList.get(0).getCustId());
+						ca.setCustName(cusList.get(0).getCustName());
+					}
+				}
+
+				// 商户信息
+				String posCustName = jobj.getString(POSCUSTNAME);
+				logger.debug("POSCUSTNAME=" + posCustName);
+
+				if (StringUtil.isNotEmpty(posCustName)) {
+
+					reqMap.put(POSCUSTNAME, posCustName);
+					List<Map<String, Object>> resList = sqlSession.selectList(
+							"TPosCustInfoMapper.selectMap", reqMap);
+					reqMap.clear();
+
+					// 非存量商户
+					if (resList == null || resList.size() == 0) {
+						logger.debug("非存量商户。");
+
+						String posCustId = IdUtil.getId(POSCUSTID_PREFIX);
+						logger.debug("posCustId=" + posCustId);
+						// 插入商户表
+						insertPosCust(sqlSession, jobj, posCustId,
+								ca.getProdId(), ca.getCustId(), posCustName,
+								ca.getRegion());
+
+						ca.setPosCustId(posCustId);
+					} else {
+						logger.debug("存量商户。");
+
+						ca.setPosCustId(resList.get(0).get(POSCUSTID)
+								.toString());
+						logger.debug("posCustId=" + ca.getPosCustId());
+					}
+					ca.setPosCustName(posCustName);
+				}
+
+				// 银行信息
+				String bankAccno = jobj.getString(BANKACCNO);
+				logger.debug("BANKACCNO=" + bankAccno);
+				ca.setBankAccno(bankAccno);
+				if (StringUtil.isNotEmpty(bankAccno)) {
+					bai = sqlSession.selectOne(
+							"TBankAccnoInfoMapper.selectByPrimaryKey",
+							bankAccno);
+					// 非存量银行
+					if (bai == null) {
+						logger.debug("非存量银行。");
+						// 插入银行卡表
+						insertBankAccno(sqlSession, jobj, bankAccno,
+								ca.getCustId(), now);
+					} else {
+						logger.debug("存量银行。");
+					}
+				}
+
+				int result = sqlSession.insert(
+						"TCreditApplyMapper.insertSelective", ca);
+				if (result == 1) {
+					logger.debug("插入申请表成功。");
+				} else {
+					logger.debug("插入申请表失败！");
+				}
+				sqlSession.commit();
+				commitCnt++;
+			} catch (Exception e) {
+				logger.error("出现异常：", e);
+				sqlSession.rollback();
+				errorMsg.append("序号:[" + jobj.getString(NO) + "],")
+						.append("商户名:[" + jobj.getString(POSCUSTNAME) + "],")
+						.append("申请人姓名:[" + jobj.getString(CUSTNAME) + "],")
+						.append("身份证号:[" + jobj.getString(PAPERID)
+								+ "]的申请导入失败，请确认错误日志。\n");
+			}
+		}
+		if (StringUtil.isNotEmpty(errorMsg.toString())) {
+			logger.error(errorMsg.toString());
+		}
+
+		logger.error("总记录数cnt=" + cnt + "；成功插入数据条数commitCnt=" + commitCnt);
+
+		if (sqlSession != null) {
+			sqlSession.close();
+		}
+		return 0;
+	}
+
+	/**
+	 * 设置申请信息
+	 * 
+	 * @param sqlSession
+	 * @param jobj
+	 * @param ca
+	 */
+	private static void setCreditApply(SqlSession sqlSession, JSONObject jobj,
+			TCreditApply ca) {
+
+		Map<String, Object> reqMap = Maps.newHashMap();
+
+		ca.setLoanId(IdUtil.getId(LOAN_PREFIX));
+
+		// 产品代码
+		logger.debug("PRODID=" + jobj.getString(PRODID));
+		// 流量贷
+		if (PROD_CASHFLOW.equals(jobj.getString(PRODID))) {
+			ca.setProdId(PRODID_CASHFLOW);
+			ca.setProdName(PRODID_CASHFLOW_NAME);
+			// POS贷
+		} else {
+			ca.setProdId(PRODID_POS);
+			ca.setProdName(PRODID_POS_NAME);
+		}
+
+		ca.setCurrSign(CURRSIGN_CNY);
+
+		// 申请金额
+		String applyAmt = jobj.getString(APPLYAMT);
+		logger.debug("APPLYAMT=" + jobj.getString(APPLYAMT));
+		if (StringUtil.isEmpty(applyAmt)) {
+			ca.setApplyAmt(BigDecimal.ZERO);
+		} else {
+			ca.setApplyAmt(new BigDecimal(applyAmt.replaceAll(COMMA, BLANK)));
+		}
+
+		// 申请期限
+		String applyTerm = jobj.getString(APPLYTERM);
+		logger.debug("APPLYTERM=" + applyTerm);
+		if (StringUtil.isNotEmpty(applyTerm)) {
+			if (applyTerm.indexOf(YEAR_NAME) >= 0) {
+				ca.setTermUnit(YEAR_CODE);
+				ca.setApplyTerm(applyTerm.replaceAll(YEAR_NAME, BLANK));
+			} else if (applyTerm.indexOf(MONTH_NAME) >= 0) {
+				ca.setTermUnit(MONTH_CODE);
+				ca.setApplyTerm(applyTerm.replaceAll(MONTH_NAME, BLANK));
+			} else if (applyTerm.indexOf(DAY_NAME) >= 0) {
+				ca.setTermUnit(DAY_CODE);
+				ca.setApplyTerm(applyTerm.replaceAll(DAY_NAME, BLANK));
+			} else {
+				ca.setTermUnit(MONTH_CODE);
+				ca.setApplyTerm(applyTerm);
+			}
+		}
+
+		// 申请日期
+		String beginDate = jobj.getString(BEGINDATE);
+		logger.debug("beginDate=" + beginDate);
+		if (StringUtil.isNotEmpty(beginDate)) {
+			try {
+				ca.setBeginDate(DateUtil.getDatePattern9(beginDate));
+			} catch (Exception e) {
+				logger.error("申请日期格式不对！", e);
+			}
+		}
+
+		ca.setReturnKind(RETURNKIND_90);
+		ca.setBankId(jobj.getString(BANKID));
+		logger.debug("BANKID=" + ca.getBankId());
+		ca.setOperId(LASTOPERID_SYSTEM);
+		ca.setApplyStatus(jobj.getString(APPLYSTATUS));
+		logger.debug("APPLYSTATUS=" + ca.getApplyStatus());
+		ca.setLastOperId(LASTOPERID_SYSTEM);
+		ca.setDeleteFlag("0");
+
+		// 区划国标码
+		ca.setRegion(getRegion(sqlSession, jobj));
+
+		ca.setOperName(LASTOPERID_SYSTEM_NAME);
+
+		// 业务来源
+		String channel = jobj.getString(CHANNEL);
+		logger.debug("channelName=" + channel);
+		reqMap.put(CODENO, BusinessDictionaryConstants.BizChannel);
+		reqMap.put(ITEMNAME, channel);
+		reqMap.put(STATUS, STATUS_ACTIVE);
+		List<Map<String, Object>> resListChannel = sqlSession.selectList(
+				"TBusinessDictionaryMapper.selectMap", reqMap);
+		reqMap.clear();
+		if (resListChannel != null && resListChannel.size() > 0) {
+			channel = resListChannel.get(0).get(ITEMNO).toString();
+			logger.debug("channelCode=" + channel);
+			ca.setChannel(channel);
+		}
+
+		ca.setInChannelKind(INCHANNELKIND_04);
+		ca.setOccurType(OCCURTYPE_01);
+		ca.setRegDate(ca.getLastOperTime());
+		ca.setRepayMethod(REPAYMETHOD_01);
+	}
+
+	/**
+	 * 插入客户表
+	 * 
+	 * @param sqlSession
+	 * @param jobj
+	 * @param paperId
+	 * @param custId
+	 * @return
+	 */
+	private static int insertCust(SqlSession sqlSession, JSONObject jobj,
+			String paperId, String custId) {
+		TCustomer c = new TCustomer();
+
+		c.setCustId(custId);
+		c.setCustName(jobj.getString(CUSTNAME));
+		c.setPaperKind(PAPERKIND_10);
+		c.setPaperId(paperId);
+
+		// 出生日期
+		if (paperId.length() < 18) {
+			logger.debug("申请人的身份证号码小于18位！");
+		} else {
+			try {
+				String birtDateStr = paperId.substring(6, 14);
+				logger.debug("birtDateStr=" + birtDateStr);
+				c.setBirtDate(DateUtil.getStrToDate1(birtDateStr));
+			} catch (ParseException e) {
+				logger.debug("申请人的身份证中的出生日期不是日期！");
+			}
+		}
+
+		// 性别
+		String sexSign = jobj.getString(SEXSIGN);
+		logger.debug("SEXSIGN=" + sexSign);
+		c.setSexSign(DataTransferUtil.getSexSign(sexSign));
+
+		// 婚姻状况:0;未婚；1，已婚
+		String marrSign = jobj.getString(MARRSIGN);
+		logger.debug("MARRSIGN=" + marrSign);
+		c.setMarrSign(DataTransferUtil.getMarrSign(marrSign));
+
+		// 最高学历
+		String educSign = jobj.getString(EDUCSIGN);
+		logger.debug("EDUCSIGN=" + educSign);
+		c.setEducSign(DataTransferUtil.getEducSign(educSign));
+
+		// 子女人数
+		String childNum = jobj.getString(CHILDNUM);
+		logger.debug("CHILDNUM=" + childNum);
+		c.setChildNum(childNum);
+
+		// 居住地址-具体
+		String residentDetail = jobj.getString(RESIDENTDETAIL);
+		logger.debug("RESIDENTDETAIL=" + residentDetail);
+		if (StringUtil.isNotEmpty(residentDetail)) {
+			// 截取省市，转化编码
+			c.setResidentDetail(residentDetail);
+		}
+
+		// 联系地址
+		String contactAddrFlag = jobj.getString(CONTACTADDRFLAG);
+		logger.debug("CONTACTADDRFLAG=" + contactAddrFlag);
+		c.setContactAddrFlag(contactAddrFlag);
+
+		// 手机号码
+		String mobilePhone = jobj.getString(MOBILEPHONE);
+		logger.debug("MOBILEPHONE=" + mobilePhone);
+		if (mobilePhone == null) {
+			c.setMobilePhone("");
+		} else {
+			c.setMobilePhone(mobilePhone);
+		}
+		// 固定电话
+		String tel = jobj.getString(TEL);
+		logger.debug("TEL=" + tel);
+		c.setTel(tel);
+		// 微信号
+		String weixinNo = jobj.getString(WEIXINNO);
+		logger.debug("WEIXINNO=" + weixinNo);
+		c.setWeixinNo(weixinNo);
+		// QQ号
+		String qqNo = jobj.getString(QQNO);
+		logger.debug("QQNO=" + qqNo);
+		c.setQqNo(qqNo);
+		// 电子邮件
+		String email = jobj.getString(EMAIL);
+		logger.debug("EMAIL=" + email);
+		c.setEmail(email);
+
+		// 从业年限
+		String busiYear = jobj.getString(BUSIYEAR);
+		logger.debug("BUSIYEAR=" + busiYear);
+		c.setBusiYear(busiYear);
+
+		// 配偶姓名
+		String familyCustName = jobj.getString(FAMILYCUSTNAME);
+		logger.debug("FAMILYCUSTNAME=" + familyCustName);
+		c.setFamilyCustName(familyCustName);
+
+		// 配偶证件类型
+		c.setMatePaperKind(PAPERKIND_10);
+
+		// 配偶证件号码
+		String matePaperId = jobj.getString(MATEPAPERID);
+		logger.debug("MATEPAPERID=" + matePaperId);
+
+		if (StringUtil.isNotEmpty(matePaperId)) {
+			c.setMatePaperId(matePaperId);
+
+			// 出生日期
+			if (matePaperId.length() < 18) {
+				logger.debug("配偶的身份证号码小于18位！");
+			} else {
+				try {
+					String mateBirtDateStr = matePaperId.substring(6, 14);
+					logger.debug("mateBirtDateStr=" + mateBirtDateStr);
+					c.setMateBirtDate(DateUtil.getStrToDate1(mateBirtDateStr));
+				} catch (ParseException e) {
+					logger.debug("配偶的身份证中的出生日期不是日期！");
+				}
+
+				// 性别
+				String mateSexSign = matePaperId.substring(16, 17);
+				logger.debug("mateSexSign(判断奇偶)=" + mateSexSign);
+				c.setMateSexSign(DataTransferUtil.getSexSignByID(mateSexSign));
+			}
+		}
+
+		// 配偶手机
+		String mateMobilephone = jobj.getString(MATEMOBILEPHONE);
+		logger.debug("MATEMOBILEPHONE=" + mateMobilephone);
+		c.setMateMobilephone(mateMobilephone);
+
+		int result = sqlSession.insert("TCustomerMapper.insertSelective", c);
+		if (result == 1) {
+			logger.debug("插入客户表成功。");
+		} else {
+			logger.debug("插入客户表失败！");
+		}
+
+		return result;
+	}
+
+	/**
+	 * 插入商户表
+	 * 
+	 * @param sqlSession
+	 * @param jobj
+	 * @param posCustId
+	 * @param prodId
+	 * @param custId
+	 * @return
+	 */
+	private static int insertPosCust(SqlSession sqlSession, JSONObject jobj,
+			String posCustId, String prodId, String custId, String posCustName,
+			String region) {
+
+		TPosCustInfo pci = new TPosCustInfo();
+		pci.setPosCustId(posCustId);
+		pci.setCustId(custId);
+		pci.setPosCustName(posCustName);
+
+		// 主营业务
+		pci.setPosCustBusiScope(jobj.getString(POSCUSTBUSISCOPE));
+		logger.debug("POSCUSTBUSISCOPE=" + jobj.getString(POSCUSTBUSISCOPE));
+
+		// 互金行业分类(内部)
+		pci.setIndustryTypeId2(DataTransferUtil.getIndustryType(posCustName));
+		logger.debug("IndustryTypeId2=" + pci.getIndustryTypeId2());
+
+		// 实际经营地址详细
+		pci.setPosCustAddress(jobj.getString(POSCUSTADDRESS));
+		logger.debug("POSCUSTADDRESS=" + jobj.getString(POSCUSTADDRESS));
+
+		// 区划国标码
+		pci.setOperAddrCode(region);
+
+		// 营业执照编号
+		pci.setRegiCode(jobj.getString(REGICODE));
+		logger.debug("REGICODE=" + jobj.getString(REGICODE));
+
+		// 注册资本
+		String regCapitalStr = jobj.getString(REGCAPITAL);
+		logger.debug("regCapitalStr=" + regCapitalStr);
+		if (StringUtil.isNotEmpty(regCapitalStr)) {
+			try {
+				BigDecimal regCapital = new BigDecimal(regCapitalStr);
+				pci.setRegCapital(regCapital.multiply(TEN_THOUSAND));
+			} catch (NumberFormatException e) {
+				logger.debug("注册资本转化失败！");
+			}
+		}
+
+		// 注册日期
+		pci.setRegistDate(jobj.getString(REGISTDATE));
+		logger.debug("RegistDate=" + pci.getRegistDate());
+
+		// 是否安装POS机 0未安装 1安装
+		// 流量贷
+		if (PRODID_CASHFLOW.equals(prodId)) {
+			pci.setIsPosInstall("0");
+			// POS贷
+		} else {
+			pci.setIsPosInstall("1");
+		}
+
+		int result = sqlSession.insert("TPosCustInfoMapper.insertSelective",
+				pci);
+		if (result == 1) {
+			logger.debug("插入商户表成功。");
+		} else {
+			logger.debug("插入商户表失败！");
+		}
+		return result;
+	}
+
+	/**
+	 * 插入银行卡表
+	 * 
+	 * @param sqlSession
+	 * @param jobj
+	 * @param bankAccno
+	 * @param custId
+	 * @param now
+	 * @return
+	 */
+	private static int insertBankAccno(SqlSession sqlSession, JSONObject jobj,
+			String bankAccno, String custId, Date now) {
+		TBankAccnoInfo bai = new TBankAccnoInfo();
+		bai.setBankAccno(bankAccno);
+		bai.setCustId(custId);
+		String bankName = jobj.getString(BANKNAME);
+		logger.debug("BANKNAME=" + bankName);
+		bai.setBankBranName(bankName);
+		bai.setCreateTime(now);
+
+		int result = sqlSession.insert("TBankAccnoInfoMapper.insertSelective",
+				bai);
+		if (result == 1) {
+			logger.debug("插入银行卡表成功。");
+		} else {
+			logger.debug("插入银行卡表失败！");
+		}
+		return result;
+	}
+
+	/**
+	 * 获取数据文件内容
+	 * 
+	 * @param filePath
+	 * @return
+	 */
+	private static String getDataFileStringByJson(String filePath) {
+		if (!FileUtil.checkFileExist(filePath)) {
+			logger.error("文件不存在！");
+			return null;
+		}
+		logger.debug("文件存在。");
+		Path path = FileSystems.getDefault().getPath(filePath);
+		// 设置文件的编码格式
+		Charset cs = Charset.forName(CHARSET);
+		BufferedReader br = null;
+		StringBuilder sb = new StringBuilder();
+		try {
+			logger.debug("文件读取开始...");
+			// 文件读取
+			br = Files.newBufferedReader(path, cs);
+			String line = null;
+			while ((line = br.readLine()) != null) {
+				sb.append(line);
+			}
+			logger.debug("文件读取成功。");
+		} catch (IOException e) {
+			logger.error("文件读取失败！", e);
+			return null;
+		} finally {
+			// 关闭BufferedReader
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					logger.error("关闭BufferedReader失败！", e);
+					return null;
+				}
+			}
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * 取得省市编码
+	 * 
+	 * @param sqlSession
+	 * @param jobj
+	 * @return
+	 */
+	private static String getRegion(SqlSession sqlSession, JSONObject jobj) {
+
+		// 区划国标码-省
+		String state = jobj.getString(STATE);
+		logger.debug("state=" + state);
+
+		Map<String, Object> reqMap = Maps.newHashMap();
+
+		String region = "";
+
+		if (StringUtil.isNotEmpty(state)) {
+			reqMap.put(CODENO, BusinessDictionaryConstants.AdminDivision);
+			reqMap.put(ITEMNAME, state);
+			reqMap.put(STATUS, STATUS_ACTIVE);
+			List<Map<String, Object>> resListDB = sqlSession.selectList(
+					"TBusinessDictionaryMapper.selectMap", reqMap);
+			reqMap.clear();
+			// 省
+			if (resListDB != null && resListDB.size() > 0) {
+				region = resListDB.get(0).get(ITEMNO).toString();
+				logger.debug("省region=" + region);
+				// 市
+				String city = jobj.getString(CITY);
+				logger.debug("city=" + city);
+
+				if (StringUtil.isNotEmpty(city)) {
+					reqMap.put(CODENO,
+							BusinessDictionaryConstants.AdminDivision);
+					reqMap.put(ITEMNOLIKE, region.substring(0, 2)
+							+ ITEMNOLIKE_PREFIX);
+					reqMap.put(ITEMNAME, city);
+					List<Map<String, Object>> resListDB2 = sqlSession
+							.selectList("TBusinessDictionaryMapper.selectMap",
+									reqMap);
+					reqMap.clear();
+					if (resListDB2 != null && resListDB2.size() > 0) {
+						region = resListDB2.get(0).get(ITEMNO).toString();
+						logger.debug("市region=" + region);
+					} else {
+						logger.debug("没有市region");
+					}
+				}
+			} else {
+				logger.debug("没有省region");
+			}
+		}
+		return region;
+	}
+}

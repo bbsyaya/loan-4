@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TAICCaseInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TAICCaseInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="posCustId" property="posCustId" jdbcType="VARCHAR" />
+    <result column="orderNo" property="orderNo" jdbcType="VARCHAR" />
+    <result column="caseTime" property="caseTime" jdbcType="VARCHAR" />
+    <result column="caseReason" property="caseReason" jdbcType="VARCHAR" />
+    <result column="caseVal" property="caseVal" jdbcType="VARCHAR" />
+    <result column="caseType" property="caseType" jdbcType="VARCHAR" />
+    <result column="exeSort" property="exeSort" jdbcType="VARCHAR" />
+    <result column="caseResult" property="caseResult" jdbcType="VARCHAR" />
+    <result column="pendecNo" property="pendecNo" jdbcType="VARCHAR" />
+    <result column="pendecissDate" property="pendecissDate" jdbcType="VARCHAR" />
+    <result column="penAuth" property="penAuth" jdbcType="VARCHAR" />
+    <result column="illegFact" property="illegFact" jdbcType="VARCHAR" />
+    <result column="penBasis" property="penBasis" jdbcType="VARCHAR" />
+    <result column="penType" property="penType" jdbcType="VARCHAR" />
+    <result column="penResult" property="penResult" jdbcType="VARCHAR" />
+    <result column="penAm" property="penAm" jdbcType="VARCHAR" />
+    <result column="penExest" property="penExest" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, posCustId, orderNo, caseTime, caseReason, caseVal, caseType, exeSort, caseResult, 
+    pendecNo, pendecissDate, penAuth, illegFact, penBasis, penType, penResult, penAm, 
+    penExest
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_case_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+   <select id="selectBySelectiveMap" resultType="Map" parameterType="Map">
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_case_info
+    where orderNo = #{orderNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_aic_case_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TAICCaseInfo" >
+    insert into t_aic_case_info (id, posCustId, orderNo, 
+      caseTime, caseReason, caseVal, 
+      caseType, exeSort, caseResult, 
+      pendecNo, pendecissDate, penAuth, 
+      illegFact, penBasis, penType, 
+      penResult, penAm, penExest
+      )
+    values (#{id,jdbcType=INTEGER}, #{posCustId,jdbcType=VARCHAR}, #{orderNo,jdbcType=VARCHAR}, 
+      #{caseTime,jdbcType=VARCHAR}, #{caseReason,jdbcType=VARCHAR}, #{caseVal,jdbcType=VARCHAR}, 
+      #{caseType,jdbcType=VARCHAR}, #{exeSort,jdbcType=VARCHAR}, #{caseResult,jdbcType=VARCHAR}, 
+      #{pendecNo,jdbcType=VARCHAR}, #{pendecissDate,jdbcType=VARCHAR}, #{penAuth,jdbcType=VARCHAR}, 
+      #{illegFact,jdbcType=VARCHAR}, #{penBasis,jdbcType=VARCHAR}, #{penType,jdbcType=VARCHAR}, 
+      #{penResult,jdbcType=VARCHAR}, #{penAm,jdbcType=VARCHAR}, #{penExest,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICCaseInfo" >
+    insert into t_aic_case_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="orderNo != null" >
+        orderNo,
+      </if>
+      <if test="caseTime != null" >
+        caseTime,
+      </if>
+      <if test="caseReason != null" >
+        caseReason,
+      </if>
+      <if test="caseVal != null" >
+        caseVal,
+      </if>
+      <if test="caseType != null" >
+        caseType,
+      </if>
+      <if test="exeSort != null" >
+        exeSort,
+      </if>
+      <if test="caseResult != null" >
+        caseResult,
+      </if>
+      <if test="pendecNo != null" >
+        pendecNo,
+      </if>
+      <if test="pendecissDate != null" >
+        pendecissDate,
+      </if>
+      <if test="penAuth != null" >
+        penAuth,
+      </if>
+      <if test="illegFact != null" >
+        illegFact,
+      </if>
+      <if test="penBasis != null" >
+        penBasis,
+      </if>
+      <if test="penType != null" >
+        penType,
+      </if>
+      <if test="penResult != null" >
+        penResult,
+      </if>
+      <if test="penAm != null" >
+        penAm,
+      </if>
+      <if test="penExest != null" >
+        penExest,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="caseTime != null" >
+        #{caseTime,jdbcType=VARCHAR},
+      </if>
+      <if test="caseReason != null" >
+        #{caseReason,jdbcType=VARCHAR},
+      </if>
+      <if test="caseVal != null" >
+        #{caseVal,jdbcType=VARCHAR},
+      </if>
+      <if test="caseType != null" >
+        #{caseType,jdbcType=VARCHAR},
+      </if>
+      <if test="exeSort != null" >
+        #{exeSort,jdbcType=VARCHAR},
+      </if>
+      <if test="caseResult != null" >
+        #{caseResult,jdbcType=VARCHAR},
+      </if>
+      <if test="pendecNo != null" >
+        #{pendecNo,jdbcType=VARCHAR},
+      </if>
+      <if test="pendecissDate != null" >
+        #{pendecissDate,jdbcType=VARCHAR},
+      </if>
+      <if test="penAuth != null" >
+        #{penAuth,jdbcType=VARCHAR},
+      </if>
+      <if test="illegFact != null" >
+        #{illegFact,jdbcType=VARCHAR},
+      </if>
+      <if test="penBasis != null" >
+        #{penBasis,jdbcType=VARCHAR},
+      </if>
+      <if test="penType != null" >
+        #{penType,jdbcType=VARCHAR},
+      </if>
+      <if test="penResult != null" >
+        #{penResult,jdbcType=VARCHAR},
+      </if>
+      <if test="penAm != null" >
+        #{penAm,jdbcType=VARCHAR},
+      </if>
+      <if test="penExest != null" >
+        #{penExest,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="Map" >
+    insert into t_aic_case_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="orderNo != null" >
+        orderNo,
+      </if>
+      <if test="caseTime != null" >
+        caseTime,
+      </if>
+      <if test="caseReason != null" >
+        caseReason,
+      </if>
+      <if test="caseVal != null" >
+        caseVal,
+      </if>
+      <if test="caseType != null" >
+        caseType,
+      </if>
+      <if test="exeSort != null" >
+        exeSort,
+      </if>
+      <if test="caseResult != null" >
+        caseResult,
+      </if>
+      <if test="pendecNo != null" >
+        pendecNo,
+      </if>
+      <if test="pendecissDate != null" >
+        pendecissDate,
+      </if>
+      <if test="penAuth != null" >
+        penAuth,
+      </if>
+      <if test="illegFact != null" >
+        illegFact,
+      </if>
+      <if test="penBasis != null" >
+        penBasis,
+      </if>
+      <if test="penType != null" >
+        penType,
+      </if>
+      <if test="penResult != null" >
+        penResult,
+      </if>
+      <if test="penAm != null" >
+        penAm,
+      </if>
+      <if test="penExest != null" >
+        penExest,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="caseTime != null" >
+        #{caseTime,jdbcType=VARCHAR},
+      </if>
+      <if test="caseReason != null" >
+        #{caseReason,jdbcType=VARCHAR},
+      </if>
+      <if test="caseVal != null" >
+        #{caseVal,jdbcType=VARCHAR},
+      </if>
+      <if test="caseType != null" >
+        #{caseType,jdbcType=VARCHAR},
+      </if>
+      <if test="exeSort != null" >
+        #{exeSort,jdbcType=VARCHAR},
+      </if>
+      <if test="caseResult != null" >
+        #{caseResult,jdbcType=VARCHAR},
+      </if>
+      <if test="pendecNo != null" >
+        #{pendecNo,jdbcType=VARCHAR},
+      </if>
+      <if test="pendecissDate != null" >
+        #{pendecissDate,jdbcType=VARCHAR},
+      </if>
+      <if test="penAuth != null" >
+        #{penAuth,jdbcType=VARCHAR},
+      </if>
+      <if test="illegFact != null" >
+        #{illegFact,jdbcType=VARCHAR},
+      </if>
+      <if test="penBasis != null" >
+        #{penBasis,jdbcType=VARCHAR},
+      </if>
+      <if test="penType != null" >
+        #{penType,jdbcType=VARCHAR},
+      </if>
+      <if test="penResult != null" >
+        #{penResult,jdbcType=VARCHAR},
+      </if>
+      <if test="penAm != null" >
+        #{penAm,jdbcType=VARCHAR},
+      </if>
+      <if test="penExest != null" >
+        #{penExest,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICCaseInfo" >
+    update t_aic_case_info
+    <set >
+      <if test="posCustId != null" >
+        posCustId = #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        orderNo = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="caseTime != null" >
+        caseTime = #{caseTime,jdbcType=VARCHAR},
+      </if>
+      <if test="caseReason != null" >
+        caseReason = #{caseReason,jdbcType=VARCHAR},
+      </if>
+      <if test="caseVal != null" >
+        caseVal = #{caseVal,jdbcType=VARCHAR},
+      </if>
+      <if test="caseType != null" >
+        caseType = #{caseType,jdbcType=VARCHAR},
+      </if>
+      <if test="exeSort != null" >
+        exeSort = #{exeSort,jdbcType=VARCHAR},
+      </if>
+      <if test="caseResult != null" >
+        caseResult = #{caseResult,jdbcType=VARCHAR},
+      </if>
+      <if test="pendecNo != null" >
+        pendecNo = #{pendecNo,jdbcType=VARCHAR},
+      </if>
+      <if test="pendecissDate != null" >
+        pendecissDate = #{pendecissDate,jdbcType=VARCHAR},
+      </if>
+      <if test="penAuth != null" >
+        penAuth = #{penAuth,jdbcType=VARCHAR},
+      </if>
+      <if test="illegFact != null" >
+        illegFact = #{illegFact,jdbcType=VARCHAR},
+      </if>
+      <if test="penBasis != null" >
+        penBasis = #{penBasis,jdbcType=VARCHAR},
+      </if>
+      <if test="penType != null" >
+        penType = #{penType,jdbcType=VARCHAR},
+      </if>
+      <if test="penResult != null" >
+        penResult = #{penResult,jdbcType=VARCHAR},
+      </if>
+      <if test="penAm != null" >
+        penAm = #{penAm,jdbcType=VARCHAR},
+      </if>
+      <if test="penExest != null" >
+        penExest = #{penExest,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TAICCaseInfo" >
+    update t_aic_case_info
+    set posCustId = #{posCustId,jdbcType=VARCHAR},
+      orderNo = #{orderNo,jdbcType=VARCHAR},
+      caseTime = #{caseTime,jdbcType=VARCHAR},
+      caseReason = #{caseReason,jdbcType=VARCHAR},
+      caseVal = #{caseVal,jdbcType=VARCHAR},
+      caseType = #{caseType,jdbcType=VARCHAR},
+      exeSort = #{exeSort,jdbcType=VARCHAR},
+      caseResult = #{caseResult,jdbcType=VARCHAR},
+      pendecNo = #{pendecNo,jdbcType=VARCHAR},
+      pendecissDate = #{pendecissDate,jdbcType=VARCHAR},
+      penAuth = #{penAuth,jdbcType=VARCHAR},
+      illegFact = #{illegFact,jdbcType=VARCHAR},
+      penBasis = #{penBasis,jdbcType=VARCHAR},
+      penType = #{penType,jdbcType=VARCHAR},
+      penResult = #{penResult,jdbcType=VARCHAR},
+      penAm = #{penAm,jdbcType=VARCHAR},
+      penExest = #{penExest,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

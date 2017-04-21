@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TApproveAdjustMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TApproveAdjust" >
+    <id column="approveId" property="approveId" jdbcType="VARCHAR" />
+    <result column="approvenum" property="approvenum" jdbcType="INTEGER" />
+    <result column="adjustreason" property="adjustreason" jdbcType="VARCHAR" />
+    <result column="adjustdt" property="adjustdt" jdbcType="DATE" />
+    <result column="adjustpersonId" property="adjustpersonId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    approveId, approvenum, adjustreason, adjustdt, adjustpersonId
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_approve_adjust
+    where approveId = #{approveId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_approve_adjust
+    where approveId = #{approveId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TApproveAdjust" >
+    insert into t_approve_adjust (approveId, approvenum, adjustreason, 
+      adjustdt, adjustpersonId)
+    values (#{approveId,jdbcType=VARCHAR}, #{approvenum,jdbcType=INTEGER}, #{adjustreason,jdbcType=VARCHAR}, 
+      #{adjustdt,jdbcType=DATE}, #{adjustpersonId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertApproveAdjust" parameterType="Map" >
+    insert into t_approve_adjust
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="approveId != null" >
+        approveId,
+      </if>
+      <if test="approvenum != null" >
+        approvenum,
+      </if>
+      <if test="adjustreason != null" >
+        adjustreason,
+      </if>
+      <if test="adjustdt != null" >
+        adjustdt,
+      </if>
+      <if test="adjustpersonId != null" >
+        adjustpersonId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="approveId != null" >
+        #{approveId,jdbcType=VARCHAR},
+      </if>
+      <if test="approvenum != null" >
+        #{approvenum,jdbcType=INTEGER},
+      </if>
+      <if test="adjustreason != null" >
+        #{adjustreason,jdbcType=VARCHAR},
+      </if>
+      <if test="adjustdt != null" >
+        #{adjustdt,jdbcType=DATE},
+      </if>
+      <if test="adjustpersonId != null" >
+        #{adjustpersonId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TApproveAdjust" >
+    update t_approve_adjust
+    <set >
+      <if test="approvenum != null" >
+        approvenum = #{approvenum,jdbcType=INTEGER},
+      </if>
+      <if test="adjustreason != null" >
+        adjustreason = #{adjustreason,jdbcType=VARCHAR},
+      </if>
+      <if test="adjustdt != null" >
+        adjustdt = #{adjustdt,jdbcType=DATE},
+      </if>
+      <if test="adjustpersonId != null" >
+        adjustpersonId = #{adjustpersonId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where approveId = #{approveId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TApproveAdjust" >
+    update t_approve_adjust
+    set approvenum = #{approvenum,jdbcType=INTEGER},
+      adjustreason = #{adjustreason,jdbcType=VARCHAR},
+      adjustdt = #{adjustdt,jdbcType=DATE},
+      adjustpersonId = #{adjustpersonId,jdbcType=VARCHAR}
+    where approveId = #{approveId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectAdjustMaxApproveNumByApproveId" resultType="java.lang.Integer" parameterType="java.lang.String" >
+    select ifnull(max(approvenum),0) approvenum
+    from t_approve_adjust
+    where approveId = #{approveId,jdbcType=VARCHAR}
+  </select>
+</mapper>

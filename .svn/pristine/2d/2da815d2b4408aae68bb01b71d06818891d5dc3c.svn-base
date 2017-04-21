@@ -1,0 +1,536 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TApproveResultMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TApproveResult" >
+    <id column="approveId" property="approveId" jdbcType="VARCHAR" />
+    <result column="businessSource" property="businessSource" jdbcType="VARCHAR" />
+    <result column="loanId" property="loanId" jdbcType="VARCHAR" />
+    <result column="custId" property="custId" jdbcType="VARCHAR" />
+    <result column="custName" property="custName" jdbcType="VARCHAR" />
+    <result column="posCustId" property="posCustId" jdbcType="VARCHAR" />
+    <result column="posCustName" property="posCustName" jdbcType="VARCHAR" />
+    <result column="applyCommitDate" property="applyCommitDate" jdbcType="DATE" />
+    <result column="applyAmt" property="applyAmt" jdbcType="DECIMAL" />
+    <result column="applyMoneyKind" property="applyMoneyKind" jdbcType="VARCHAR" />
+    <result column="termUnit" property="termUnit" jdbcType="CHAR" />
+    <result column="applyTerm" property="applyTerm" jdbcType="VARCHAR" />
+    <result column="approveDate" property="approveDate" jdbcType="DATE" />
+    <result column="approveAmount" property="approveAmount" jdbcType="DECIMAL" />
+    <result column="approveMoneyKind" property="approveMoneyKind" jdbcType="VARCHAR" />
+    <result column="approveInterest" property="approveInterest" jdbcType="DECIMAL" />
+    <result column="approveTermUnit" property="approveTermUnit" jdbcType="CHAR" />
+    <result column="approveTerm" property="approveTerm" jdbcType="VARCHAR" />
+    <result column="paybackMethod" property="paybackMethod" jdbcType="VARCHAR" />
+    <result column="acceptAccount" property="acceptAccount" jdbcType="VARCHAR" />
+    <result column="accountOpenBank" property="accountOpenBank" jdbcType="VARCHAR" />
+    <result column="accountBranchBank" property="accountBranchBank" jdbcType="VARCHAR" />
+    <result column="accountSubBranchBank" property="accountSubBranchBank" jdbcType="VARCHAR" />
+    <result column="productId" property="productId" jdbcType="VARCHAR" />
+    <result column="approveStatus" property="approveStatus" jdbcType="VARCHAR" />
+    <result column="expiryDate" property="expiryDate" jdbcType="DATE" />
+    <result column="stdshno" property="stdshno" jdbcType="VARCHAR" />
+    <result column="loanPaybackWay" property="loanPaybackWay" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    approveId, businessSource, loanId, custId, custName, posCustId, posCustName, applyCommitDate, 
+    applyAmt, applyMoneyKind, termUnit, applyTerm, approveDate, approveAmount, approveMoneyKind, 
+    approveInterest, approveTermUnit, approveTerm, paybackMethod, acceptAccount, accountOpenBank, 
+    accountBranchBank, accountSubBranchBank, productId, approveStatus, expiryDate, stdshno,loanPaybackWay
+  </sql>
+  <sql id="Base_Column_List1" >
+    t1.approveId, t1.businessSource, t1.loanId, t1.custId, t1.custName, t1.posCustId, t1.posCustName, t1.applyCommitDate, 
+    t1.applyAmt, t1.applyMoneyKind, t1.termUnit, t1.applyTerm, t1.approveDate, t1.approveAmount, t1.approveMoneyKind, 
+    t1.approveInterest, t1.approveTermUnit, t1.approveTerm, t1.paybackMethod, t1.acceptAccount, t1.accountOpenBank, 
+    t1.accountBranchBank, t1.accountSubBranchBank, t1.productId, t1.approveStatus, t1.expiryDate, t1.stdshno,t1.loanPaybackWay
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_approve_result
+    where approveId = #{approveId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByLoanId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_approve_result
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectSelectiveMap" resultType="Map" parameterType="Map" >
+    SELECT t3.bizLoanId,t2.paperId,t1.* from t_approve_result t1 ,t_customer_info t2, t_credit_apply_info t3 where t1.custId=t2.custId and t1.loanId=t3.loanId 
+    
+     <if test="loanIdLike != null">
+    	AND t3.bizLoanId like #{loanIdLike}
+     </if>
+     <if test="custNameLike != null">
+    	AND t1.custName like #{custNameLike}
+     </if>
+    <if test="custIdNoLike != null">
+    	AND t2.custIdNo like #{custIdNoLike}
+    </if>
+    <if test="searchApproveStatus != null">
+       AND t1.approveStatus =#{searchApproveStatus}
+    </if>
+    <if test="startPage != null">
+    	LIMIT #{startPage}, #{limit}
+    </if>
+    </select>
+    
+    <select id="getExpiredRecord" resultType="Map" parameterType="Map">
+	    select a.approveId, 
+	    b.loanId, b.custId, b.stdshno, b.stdmerno, b.channel, b.inChannelKind
+	    from t_approve_result a join t_credit_apply_info b on a.loanId = b.loanId
+	    where 1=1
+	    AND a.approveStatus =#{searchApproveStatus} and a.sendStatus = '0'
+    </select>
+    
+    <update id="updateExpiredRecord" parameterType="map">
+    	update t_approve_result set approveStatus = '09', expiryDate = #{expiryDate}
+    	<![CDATA[where approveStatus = '01' and approveDate <= #{expiredDate}]]>
+    </update>
+    
+    
+    <update id="batchUpdateExpiredRecord" parameterType="List">
+    UPDATE t_approve_result SET sendStatus = '1' WHERE approveId IN
+    <foreach collection="list" item="item" index="index" open="(" separator="," close=")" >
+        #{item.approveId}
+    </foreach>
+</update>
+    
+  <select id="countSelective" resultType="Long" parameterType="Map">
+  	SELECT COUNT(*) FROM t_approve_result 
+  	WHERE 1=1
+  	<if test="searchApproveStatus != null">
+  		AND approveStatus = #{searchApproveStatus}
+  	</if>	
+   </select>
+    <select id="countApprove" resultType="java.lang.Long" parameterType="Map">
+  	SELECT count(*) from t_approve_result t1 ,t_customer_info t2, t_credit_apply_info t3 where t1.custId=t2.custId and t1.loanId=t3.loanId 
+    
+     <if test="loanIdLike != null">
+    	AND t3.bizLoanId like #{loanIdLike}
+     </if>
+     <if test="custNameLike != null">
+    	AND t1.custName like #{custNameLike}
+     </if>
+    <if test="custIdNoLike != null">
+    	AND t2.custIdNo like #{custIdNoLike}
+    </if>
+    <if test="searchApproveStatus != null">
+       AND t1.approveStatus =#{searchApproveStatus}
+    </if>
+   </select>
+    <select id="selectAvailableSelectiveMap" resultMap="BaseResultMap" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List1" />
+    from t_approve_result t1 left join t_contract_info t2 on t1.approveId=t2.approveId 
+    where 1=1
+    <if test="loanIdLike != null">
+    	AND t1.loanId like #{loanIdLike}
+     </if>
+     <if test="custNameLike != null">
+    	AND t1.custName like #{custNameLike}
+     </if>
+     <if test="merchantNameLike != null">
+    	AND t1.merchantName like #{merchantNameLike}
+    </if>
+    <if test="custIdLike != null">
+    	AND t1.custId like #{custIdLike}
+    </if>
+    <if test="custIdNoLike != null">
+    	AND t1.custIdNo like #{custIdNoLike}
+    </if>
+    <if test="searchApproveStatus !=null">
+       AND t1.approveStatus = #{searchApproveStatus}
+    </if>
+       AND t2.approveId is NULL
+    <if test="startPage != null">
+    	LIMIT #{startPage}, #{limit}
+    </if>
+    </select>
+  
+    <select id="countAvailableSelective" resultType="Long" parameterType="Map">
+  	SELECT COUNT(*) FROM t_approve_result t1 left join t_contract_info t2 on t1.approveId=t2.approveId 
+  	WHERE 1=1
+  	<if test="searchApproveStatus != null">
+  		AND t1.approveStatus = #{searchApproveStatus}
+  	</if>	
+  	    AND t2.approveId is NULL
+   </select>
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_approve_result
+    where approveId = #{approveId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TApproveResult" >
+    insert into t_approve_result (approveId, businessSource, loanId, 
+      custId, custName, posCustId, posCustName, 
+      applyCommitDate, applyAmt, applyMoneyKind, 
+      termUnit, applyTerm, approveDate, 
+      approveAmount, approveMoneyKind, approveInterest, 
+      approveTermUnit, approveTerm, paybackMethod, 
+      acceptAccount, accountOpenBank, accountBranchBank, 
+      accountSubBranchBank, productId, approveStatus, expiryDate, stdshno,loanPaybackWay
+      )
+    values (#{approveId,jdbcType=VARCHAR}, #{businessSource,jdbcType=VARCHAR}, #{loanId,jdbcType=VARCHAR}, 
+      #{custId,jdbcType=VARCHAR}, #{custName,jdbcType=VARCHAR}, #{posCustId,jdbcType=VARCHAR}, #{posCustName,jdbcType=VARCHAR}, 
+      #{applyCommitDate,jdbcType=DATE}, #{applyAmt,jdbcType=DECIMAL}, #{applyMoneyKind,jdbcType=VARCHAR}, 
+      #{termUnit,jdbcType=CHAR}, #{applyTerm,jdbcType=VARCHAR}, #{approveDate,jdbcType=DATE}, 
+      #{approveAmount,jdbcType=DECIMAL}, #{approveMoneyKind,jdbcType=VARCHAR}, #{approveInterest,jdbcType=DECIMAL}, 
+      #{approveTermUnit,jdbcType=CHAR}, #{approveTerm,jdbcType=VARCHAR}, #{paybackMethod,jdbcType=VARCHAR}, 
+      #{acceptAccount,jdbcType=VARCHAR}, #{accountOpenBank,jdbcType=VARCHAR}, #{accountBranchBank,jdbcType=VARCHAR}, 
+      #{accountSubBranchBank,jdbcType=VARCHAR}, #{productId,jdbcType=VARCHAR}, #{approveStatus,jdbcType=VARCHAR},
+      #{expiryDate,jdbcType=DATE}, #{stdshno,jdbcType=VARCHAR},#{loanPaybackWay,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TApproveResult" >
+    insert into t_approve_result
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="approveId != null" >
+        approveId,
+      </if>
+      <if test="businessSource != null" >
+        businessSource,
+      </if>
+      <if test="loanId != null" >
+        loanId,
+      </if>
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="custName != null" >
+        custName,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="posCustName != null" >
+        posCustName,
+      </if>
+      <if test="applyCommitDate != null" >
+        applyCommitDate,
+      </if>
+      <if test="applyAmt != null" >
+        applyAmt,
+      </if>
+      <if test="applyMoneyKind != null" >
+        applyMoneyKind,
+      </if>
+      <if test="termUnit != null" >
+        termUnit,
+      </if>
+      <if test="applyTerm != null" >
+        applyTerm,
+      </if>
+      <if test="approveDate != null" >
+        approveDate,
+      </if>
+      <if test="approveAmount != null" >
+        approveAmount,
+      </if>
+      <if test="approveMoneyKind != null" >
+        approveMoneyKind,
+      </if>
+      <if test="approveInterest != null" >
+        approveInterest,
+      </if>
+      <if test="approveTermUnit != null" >
+        approveTermUnit,
+      </if>
+      <if test="approveTerm != null" >
+        approveTerm,
+      </if>
+      <if test="paybackMethod != null" >
+        paybackMethod,
+      </if>
+      <if test="acceptAccount != null" >
+        acceptAccount,
+      </if>
+      <if test="accountOpenBank != null" >
+        accountOpenBank,
+      </if>
+      <if test="accountBranchBank != null" >
+        accountBranchBank,
+      </if>
+      <if test="accountSubBranchBank != null" >
+        accountSubBranchBank,
+      </if>
+      <if test="productId != null" >
+        productId,
+      </if>
+      <if test="approveStatus != null" >
+        approveStatus,
+      </if>
+      <if test="expiryDate != null" >
+        expiryDate,
+      </if>
+      <if test="stdshno != null" >
+        stdshno,
+      </if>
+      <if test="loanPaybackWay != null" >
+        loanPaybackWay,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="approveId != null" >
+        #{approveId,jdbcType=VARCHAR},
+      </if>
+      <if test="businessSource != null" >
+        #{businessSource,jdbcType=VARCHAR},
+      </if>
+      <if test="loanId != null" >
+        #{loanId,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="custName != null" >
+        #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustName != null" >
+        #{posCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="applyCommitDate != null" >
+        #{applyCommitDate,jdbcType=DATE},
+      </if>
+      <if test="applyAmt != null" >
+        #{applyAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="applyMoneyKind != null" >
+        #{applyMoneyKind,jdbcType=VARCHAR},
+      </if>
+      <if test="termUnit != null" >
+        #{termUnit,jdbcType=CHAR},
+      </if>
+      <if test="applyTerm != null" >
+        #{applyTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="approveDate != null" >
+        #{approveDate,jdbcType=DATE},
+      </if>
+      <if test="approveAmount != null" >
+        #{approveAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="approveMoneyKind != null" >
+        #{approveMoneyKind,jdbcType=VARCHAR},
+      </if>
+      <if test="approveInterest != null" >
+        #{approveInterest,jdbcType=DECIMAL},
+      </if>
+      <if test="approveTermUnit != null" >
+        #{approveTermUnit,jdbcType=CHAR},
+      </if>
+      <if test="approveTerm != null" >
+        #{approveTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackMethod != null" >
+        #{paybackMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="acceptAccount != null" >
+        #{acceptAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="accountOpenBank != null" >
+        #{accountOpenBank,jdbcType=VARCHAR},
+      </if>
+      <if test="accountBranchBank != null" >
+        #{accountBranchBank,jdbcType=VARCHAR},
+      </if>
+      <if test="accountSubBranchBank != null" >
+        #{accountSubBranchBank,jdbcType=VARCHAR},
+      </if>
+      <if test="productId != null" >
+        #{productId,jdbcType=VARCHAR},
+      </if>
+      <if test="approveStatus != null" >
+        #{approveStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="expiryDate != null" >
+        #{expiryDate,jdbcType=DATE},
+      </if>
+      <if test="stdshno != null" >
+        #{stdshno,jdbcType=VARCHAR},
+      </if>
+      <if test="loanPaybackWay != null" >
+        #{loanPaybackWay,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="Map" >
+    update t_approve_result
+    <set >
+      <if test="businessSource != null" >
+        businessSource = #{businessSource,jdbcType=VARCHAR},
+      </if>
+      <if test="loanId != null" >
+        loanId = #{loanId,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        custId = #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="custName != null" >
+        custName = #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustId != null" >
+        posCustId = #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustName != null" >
+        posCustName = #{posCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="applyCommitDate != null" >
+        applyCommitDate = #{applyCommitDate,jdbcType=DATE},
+      </if>
+      <if test="applyAmt != null" >
+        applyAmt = #{applyAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="applyMoneyKind != null" >
+        applyMoneyKind = #{applyMoneyKind,jdbcType=VARCHAR},
+      </if>
+      <if test="termUnit != null" >
+        termUnit = #{termUnit,jdbcType=CHAR},
+      </if>
+      <if test="applyTerm != null" >
+        applyTerm = #{applyTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="approveDate != null" >
+        approveDate = #{approveDate,jdbcType=DATE},
+      </if>
+      <if test="approveAmount != null" >
+        approveAmount = #{approveAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="approveMoneyKind != null" >
+        approveMoneyKind = #{approveMoneyKind,jdbcType=VARCHAR},
+      </if>
+      <if test="approveInterest != null" >
+        approveInterest = #{approveInterest,jdbcType=DECIMAL},
+      </if>
+      <if test="approveTermUnit != null" >
+        approveTermUnit = #{approveTermUnit,jdbcType=CHAR},
+      </if>
+      <if test="approveTerm != null" >
+        approveTerm = #{approveTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackMethod != null" >
+        paybackMethod = #{paybackMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="acceptAccount != null" >
+        acceptAccount = #{acceptAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="accountOpenBank != null" >
+        accountOpenBank = #{accountOpenBank,jdbcType=VARCHAR},
+      </if>
+      <if test="accountBranchBank != null" >
+        accountBranchBank = #{accountBranchBank,jdbcType=VARCHAR},
+      </if>
+      <if test="accountSubBranchBank != null" >
+        accountSubBranchBank = #{accountSubBranchBank,jdbcType=VARCHAR},
+      </if>
+      <if test="productId != null" >
+        productId = #{productId,jdbcType=VARCHAR},
+      </if>
+      <if test="approveStatus != null" >
+        approveStatus = #{approveStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="expiryDate != null" >
+        expiryDate = #{expiryDate,jdbcType=DATE},
+      </if>
+      <if test="stdshno != null" >
+        stdshno = #{stdshno,jdbcType=VARCHAR},
+      </if>
+      <if test="loanPaybackWay != null" >
+        loanPaybackWay = #{loanPaybackWay,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where approveId = #{approveId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey1" parameterType="com.hrbb.loan.pos.dao.entity.TApproveResult" >
+    update t_approve_result
+    set businessSource = #{businessSource,jdbcType=VARCHAR},
+      loanId = #{loanId,jdbcType=VARCHAR},
+      custId = #{custId,jdbcType=VARCHAR},
+      custName = #{custName,jdbcType=VARCHAR},
+      applyCommitDate = #{applyCommitDate,jdbcType=TIMESTAMP},
+      applyAmt = #{applyAmt,jdbcType=DECIMAL},
+      applyMoneyKind = #{applyMoneyKind,jdbcType=VARCHAR},
+      termUnit = #{termUnit,jdbcType=CHAR},
+      applyTerm = #{applyTerm,jdbcType=DECIMAL},
+      approveDate = #{approveDate,jdbcType=TIMESTAMP},
+      approveAmount = #{approveAmount,jdbcType=DECIMAL},
+      approveMoneyKind = #{approveMoneyKind,jdbcType=VARCHAR},
+      approveInterest = #{approveInterest,jdbcType=DECIMAL},
+      approveTerm = #{approveTerm,jdbcType=DECIMAL},
+      paybackMethod = #{paybackMethod,jdbcType=VARCHAR},
+      acceptAccount = #{acceptAccount,jdbcType=VARCHAR},
+      accountOpenBank = #{accountOpenBank,jdbcType=VARCHAR},
+      accountBranchBank = #{accountBranchBank,jdbcType=VARCHAR},
+      accountSubBranchBank = #{accountSubBranchBank,jdbcType=VARCHAR},
+      productId = #{productId,jdbcType=INTEGER},
+      approveStatus = #{approveStatus,jdbcType=VARCHAR},
+      expiryDate = #{expiryDate,jdbcType=TIMESTAMP},
+      stdshno = #{stdshno,jdbcType=VARCHAR},
+      loanPaybackWay = #{loanPaybackWay,jdbcType=VARCHAR}
+    where approveId = #{approveId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey2" parameterType="Map" >
+    update t_approve_result
+    set approveStatus = #{approveStatus,jdbcType=VARCHAR},
+    approveAmount = #{approveAmount,jdbcType=DECIMAL},
+    approveMoneyKind = #{approveMoneyKind,jdbcType=VARCHAR},
+    approveInterest = #{approveInterest,jdbcType=DECIMAL},
+    approveTerm = #{approveTerm,jdbcType=DECIMAL}
+    where approveId = #{approveId,jdbcType=INTEGER}
+  </update>
+  <select id="selectSelectiveMap1" resultType="Map" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_approve_result
+    where 1=1
+    <if test="loanIdLike != null">
+    	AND loanId like #{loanIdLike}
+     </if>
+     <if test="custNameLike != null">
+    	AND custName like #{custIdLike}
+     </if>
+     <if test="merchantNameLike != null">
+    	AND merchantName like #{merchantNameLike}
+    </if>
+    <if test="custIdLike != null">
+    	AND custId like #{custIdLike}
+    </if>
+    <if test="custIdNoLike != null">
+    	AND custIdNo like #{custIdNoLike}
+    </if>
+       AND approveStatus =#{searchApproveStatus}
+    
+    <if test="startPage != null">
+    	LIMIT #{startPage}, #{limit}
+    </if>
+    </select>
+  <select id="countSelective1" resultType="Long" parameterType="Map">
+  	SELECT COUNT(*) FROM t_approve_result 
+  	WHERE 1=1
+  	<if test="searchApproveStatus != null">
+  		AND approveStatus = #{searchApproveStatus}
+  	</if>	
+   </select>
+  <select id="getApproveInfo" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_approve_result
+    where approveId = #{approveId,jdbcType=VARCHAR}
+  </select>
+  <select id="getApproveResultInfoByLoanId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_approve_result
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </select>
+  <select id="getApproveMap" resultType="Map" parameterType="java.lang.String" >
+    select t1.channel,t1.inChannelKind,t1.custName,t1.posCustName,t2.applyCommitDate,t2.applyAmt,t2.applyMoneyKind,t2.applyTerm,t2.approveDate,t2.approveAmount,t2.approveMoneyKind,
+    t2.approveInterest,t2.approveTerm,t2.paybackMethod,t2.acceptAccount,t2.accountOpenBank,t2.accountBranchBank,t2.accountSubBranchBank from t_approve_result t2 inner join t_credit_apply_info t1 on
+    t1.loanId=t2.loanId
+    where t2.approveId = #{approveId,jdbcType=VARCHAR}
+  </select>
+</mapper>

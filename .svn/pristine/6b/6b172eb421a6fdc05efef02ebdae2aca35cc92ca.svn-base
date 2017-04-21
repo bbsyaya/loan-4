@@ -1,0 +1,83 @@
+package com.hrbb.loan.pos.dao.entity;
+
+public class TSmsTemplate {
+    private String tempId;
+
+    private String tempName;
+
+    private String plaformId;
+
+    private String smsContent;
+
+    private String status;
+
+    private String resv1;
+
+    private String resv2;
+
+    private String resv3;
+
+    public String getTempId() {
+        return tempId;
+    }
+
+    public void setTempId(String tempId) {
+        this.tempId = tempId == null ? null : tempId.trim();
+    }
+
+    public String getTempName() {
+        return tempName;
+    }
+
+    public void setTempName(String tempName) {
+        this.tempName = tempName == null ? null : tempName.trim();
+    }
+
+    public String getPlaformId() {
+        return plaformId;
+    }
+
+    public void setPlaformId(String plaformId) {
+        this.plaformId = plaformId == null ? null : plaformId.trim();
+    }
+
+    public String getSmsContent() {
+        return smsContent;
+    }
+
+    public void setSmsContent(String smsContent) {
+        this.smsContent = smsContent == null ? null : smsContent.trim();
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status == null ? null : status.trim();
+    }
+
+    public String getResv1() {
+        return resv1;
+    }
+
+    public void setResv1(String resv1) {
+        this.resv1 = resv1 == null ? null : resv1.trim();
+    }
+
+    public String getResv2() {
+        return resv2;
+    }
+
+    public void setResv2(String resv2) {
+        this.resv2 = resv2 == null ? null : resv2.trim();
+    }
+
+    public String getResv3() {
+        return resv3;
+    }
+
+    public void setResv3(String resv3) {
+        this.resv3 = resv3 == null ? null : resv3.trim();
+    }
+}

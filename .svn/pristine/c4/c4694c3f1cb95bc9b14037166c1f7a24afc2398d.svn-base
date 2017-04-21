@@ -1,0 +1,55 @@
+package com.hrbb.loan.pos.dao;
+
+import java.util.List;
+
+import com.hrbb.loan.pos.dao.entity.TUpsBillcardstatSerial;
+import com.hrbb.loan.pos.dao.entity.TUpsIndexConsumeCity;
+import com.hrbb.loan.pos.dao.entity.TUpsIndexConsumeGategories;
+import com.hrbb.loan.pos.dao.entity.TUpsIndexMonthConsumeCondition;
+
+/**
+ * 
+ * @author cjq
+ * @version $Id: TUpsBillcardstatSerialDao.java, v 0.1 2015年7月16日 上午10:50:58 cjq Exp $
+ */
+public interface TUpsBillcardstatSerialDao {
+    
+    /**
+     * 银行流水入库
+     * 
+     * @param upsbillcardstatSercial
+     * @return
+     */
+    int insert(TUpsBillcardstatSerial upsbillcardstatSercial);
+
+    /**
+     * 
+     * @param upsbillcardstatSercials
+     * @return
+     */
+    int insertBatch(List<TUpsBillcardstatSerial> upsBillcardstatSercials);
+    
+    /**
+     * 消费状况汇总
+     * 
+     * @param fileUuid
+     * @return
+     */
+    List<TUpsIndexMonthConsumeCondition> selectCondition(String fileUuid);
+    
+    /**
+     * 消费地区汇总
+     * 
+     * @param fileUuid
+     * @return
+     */
+    List<TUpsIndexConsumeCity> selectCity(String fileUuid);
+    
+    /**
+     * 消费商户汇总
+     * 
+     * @param fileUuid
+     * @return
+     */
+    List<TUpsIndexConsumeGategories> selectMcc(String fileUuid);
+}

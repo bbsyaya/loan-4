@@ -1,0 +1,466 @@
+package com.hrbb.loan.sale.biz.inter.impl;
+
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.dao.TCreditApplyAprvInfoDao;
+import com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo;
+import com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfoKey;
+import com.hrbb.loan.pos.service.BusinessDictionaryService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.IdUtil;
+import com.hrbb.loan.pos.util.ListUtil;
+import com.hrbb.loan.pos.util.MapUtils;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.loan.pos.util.constants.BusinessDictionaryConstants;
+import com.hrbb.loan.pos.util.constants.ReviewNoteConstants;
+import com.hrbb.loan.sale.biz.constants.LoanSaleApplyStatusEnum;
+import com.hrbb.loan.sale.biz.inter.ILoanSaleApplyBiz;
+import com.hrbb.loan.sale.service.LoanSaleApplyService;
+import com.hrbb.loan.sale.service.LoanSaleBlacklistService;
+import com.hrbb.loan.sale.service.LoanSaleCustomerService;
+
+@Component("loanSaleApplyBiz")
+public class LoanSaleApplyBizImpl implements ILoanSaleApplyBiz{
+    Logger logger = LoggerFactory
+            .getLogger(LoanSaleApplyBizImpl.class);
+    @Autowired
+    private LoanSaleCustomerService loanSaleCustomerService;
+    @Autowired
+    private LoanSaleApplyService loanSaleApplyService;
+    @Autowired
+    private LoanSaleBlacklistService loanSaleBlacklistService;
+    @Autowired
+    private TCreditApplyAprvInfoDao tCreditApplyAprvInfoDao;
+    
+	@Autowired
+	@Qualifier("businessDictionaryService")
+	private BusinessDictionaryService businessDictionaryService;
+	
+    private static String channelPosCustId = "channelPosCustId";
+    private static final String createTime = "createTime";
+    public static final String CUST_ID = "custId";
+    public static final String PAPER_ID = "paperId";
+    public static final String CUST_NAME = "custName";
+    public static final String LOAN_ID = "loanId";
+    public static final String POS_CUST_NAME = "posCustName";
+    public static final String POS_CUST_ID = "posCustId";
+    public static final String BANK_ACC_NO = "bankAccno";
+    public static final String LOAN_PREFIX = "LO";
+    public static final String CUST_PREFIX = "CU";
+    public static final String POS_CUST_PREFIX = "MH";
+    public static final String BEGIN_DATE = "beginDate"; //申请时间
+
+    public static final String RELA_ID = "relativeId";
+
+    public static final String RELA_CUST_NAME = "relaCustName";
+
+    public static final String EFF_FLAG = "effectFlag";
+
+    public static final String CERT_TYPE = "certType";
+
+    public static final String INFO_DETAIL = "infoDetail";
+
+    public static final String POS_CHANNEL = "posChannel";
+
+    public static final String POS_KIND = "posKind";
+
+    public static final String RELATIVE_PRFIX = "RE";
+
+    public static final String MERCHANT_ID = "merchantId";
+
+    public static final String MERCHANT_NAME = "merchantName";
+
+    public static final String TRADE_TYPE = "tradeType";
+
+    public static final String MERCHANT_TYPE_CODE = "merchantTypeCode";
+
+    public static final String TRADE_CARD_NO = "tradeCardNo";
+
+    public static final String ROWS = "rows";
+
+    public static final String TOTAL = "total";
+
+    public static final String birtDate = "birtDate";
+
+    public static final String mateBirtDate = "mateBirtDate";
+
+    public static final String industryTypeId2 = "industryTypeId2";
+
+    public static final String industryTypeId = "industryTypeId";
+
+    public static final String posCustProv = "posCustProv";
+
+    public static final String posCustCity = "posCustCity";
+
+    public static final String busiDivision = "busiDivision";
+
+    public static final String operAddrCode = "operAddrCode";
+
+    public static final String stdmerno = "stdmerno";
+
+    public static final String channel = "channel";
+
+    private static final String ReportType = "ReportType";
+
+    private static final String string = "string";
+
+    private static final String CustomerName = "CustomerName";
+
+    private static final String CertType = "CerType";
+
+    private static final String CertID = "CertID";
+
+    private static final String CertPwd = "CertPwd";
+
+    private static final String QueryReason = "QueryReason";
+
+    private static final String TimeLine = "TimeLine";
+
+    private static final String QueryDemand = "QueryDemand";
+
+    private static final String QuerySource = "QuerySource";
+
+    private static final String QueryOrgID = "QueryOrgID";
+
+    private static final String QueryUserID = "QueryUserID";
+
+    private static final String QueryAccount = "QueryAccount";
+
+    private static final String QueryAccountPwd = "QueryAccountPwd";
+
+    private static final String ReportNo = "ReportNo";
+
+    private static final String ReportFormat = "ReportFormat";
+
+    private static final String CustomerAuthorize = "CustomerAuthorize";
+
+    private static final String QueryStrategy = "QueryStrategy";
+
+    private static final String QueryTime = "QueryTime";
+
+    private static final String QuestInfo = "QuestInfo";
+
+    private static final String APPLY_STATUS = "applyStatus";
+
+    // 机构代码(UM：银商)
+    public static final String ftp_instno_um = "UM";
+    // 机构代码(LC：224测试服务器ftp)
+    public static final String ftp_instno_lc = "LC";
+    // 机构代码(AP: 手机)
+    public static final String ftp_instno_ap = "AP";
+    // 阶段前缀(申请：APP)
+    public static final String ftp_prefix_app = "APP";
+    // 阶段前缀(合同：CNT)
+    public static final String ftp_prefix_cnt = "CNT";
+    // 消息版本号
+    public static final String ftp_version = "1.0.0";
+    // 业务类型
+    public static final String ftp_biztype = "0001";
+    // 交易类型
+    public static final String ftp_transtype = "0001";
+    // 接收处理结果(正常)
+    public static final String ftp_resp_code_000 = "000";
+
+    public static final String ftp_map_key_instno = "InstNo";
+    public static final String ftp_map_key_prefix = "Prefix";
+    public static final String ftp_map_key_remotefilename = "RemoteFileName";
+    public static final String ftp_map_key_LocalSubFolderNameDef = "LocalSubFolderNameDef";
+    public static final String ftp_map_key_url = "url";
+    public static final String contract_map_key_returnUrl = "contractManagement/updateContractStatus.do";
+
+    public static final String ftp_map_key_returnUrl = "creditApplyUpdate/updateBackToReview.do";
+
+    public static final String ftp_map_key_returnUrl_imageData = "creditApply/uploadImageDataBackController.do";
+
+    public static final String ftp_map_key_returnUrl_download_file = "creditApplyUpdate/updateApplyStatusForDownloadImages.do";
+    @Override
+    public Map<String, Object> SaleAppApplyReg(Map<String, Object> creMap,
+                                              Map<String, Object> custMap,
+                                              Map<String, Object> posCustMap,
+                                              Map<String, Object> bankMap,
+                                              Map<String, Object> relMap,
+                                              List<Map<String, Object>> bankSerList) {
+        logger.info("in LoanSaleAppApplyBizImpl ...");
+        Map<String, Object> resultMap = Maps.newHashMap();
+        try {
+            // APP端发起请求的结果集体
+            String custId = null;
+            String applyStatus = null;
+            // 查询是否存在该用户，有则更新，无则新增
+            Map<String, Object> queryCustMap = null;    
+            Map<String, Object> queryRelaMap = null;
+            //客户信息
+            if (custMap.get(CUST_NAME) != null && custMap.get(PAPER_ID) != null) {
+                queryCustMap = loanSaleCustomerService
+                        .selectOneCustomerByNameAndPaper(
+                                (String) custMap.get(CUST_NAME),
+                                (String) custMap.get(PAPER_ID));
+            }
+            // 如果客户信息存在则更新
+            if (!queryCustMap.isEmpty()) {
+                logger.info("queryCustMap = " + MapUtils.toString(queryCustMap));
+                custId = (String) queryCustMap.get(CUST_ID);
+                custMap.put(CUST_ID, custId);
+                loanSaleCustomerService.updateCustomerInfoMap(custMap);
+                logger.info("updateCustomerInfoMap  success !");
+            } else {//新增客户信息
+                logger.info("queryCustMap is null");
+                custId = IdUtil.getCustId((String) custMap.get(PAPER_ID));  //生成客户编号custId
+                custMap.put(CUST_ID, custId);
+                loanSaleCustomerService.insertCustomerInfoMap(custMap);     //增加客户信息
+                logger.info("insertCustomerInfoMap  success !");
+//                relMap.put(CUST_ID, custId);
+//                String relaId = IdUtil.getId(RELATIVE_PRFIX);
+//                relMap.put(RELA_ID, relaId);
+//                creMap.put(RELA_ID, relaId);
+//                loanPosCustomerService.insertRelativeInfo(relMap);
+//                logger.info("insertRelativeInfo success !");
+            }
+
+            // 邮件接口
+
+            // 短信接口
+            // 插入记录
+            // String loanId = IdUtil.getId(LOAN_PREFIX); //外部生成后传入
+            String loanId = (String) creMap.get(LOAN_ID); // 直接取值 
+            if (loanId == null || loanId.trim().length() == 0) {
+                loanId = IdUtil.getId(LOAN_PREFIX);
+                creMap.put(LOAN_ID, loanId);
+            }
+            logger.info("loanid 生成 = [" + loanId + "]");
+            //String posCustId = null;
+            creMap.put(LOAN_ID, loanId);
+            creMap.put(CUST_ID, custId);
+            // 查询是否存在该商户
+//            Map<String, Object> posCustQueryMap = loanPosCreditApplyService
+//                    .selectOnePosCustMap((String) posCustMap.get(POS_CUST_NAME));
+
+            // 如果不存在这个商户
+//            if (posCustQueryMap.isEmpty()) {
+//                posCustId = IdUtil.getId(POS_CUST_PREFIX);
+//                posCustMap.put(POS_CUST_ID, posCustId);
+//                posCustMap.put(CUST_ID, custId);
+//                loanPosCreditApplyService.insertPosCustSelectiveMap(posCustMap);
+//                logger.info("insertPosCustSelectiveMap success !");
+//            } else {
+//                posCustId = (String) posCustQueryMap.get("posCustId");
+//            }
+            // 如果不存在这张银行卡号
+            if (loanSaleApplyService.selectOneBankAcc(
+                    (String) bankMap.get(BANK_ACC_NO)).isEmpty()) {
+                bankMap.put(CUST_ID, custId);
+                bankMap.put(createTime, new Date());
+                loanSaleApplyService.insertBankAccSelectiveMap(bankMap);
+                logger.info("insertBankAccSelectiveMap success !");
+            }
+            // 如果这张银行卡存在
+            if (ListUtil.isNotEmpty(bankSerList)) {
+                for (Map<String, Object> insertMap : bankSerList) {
+                    insertMap.put(LOAN_ID, loanId);
+                    insertMap.put(CUST_ID, custId);
+                    insertMap.put(CUST_NAME, custMap.get(CUST_NAME));
+                    loanSaleApplyService.insertBankSerialMap(insertMap);
+                    logger.info("insertBankSerialMap success !");
+                }
+            }
+            //creMap.put(POS_CUST_ID, posCustId);
+            // 如果是已有客户，判断客户是否黑名单客户，如果是,业务状态直接拒绝，否则待处理
+            Map<String, Object> blackMap = Maps.newHashMap();
+            blackMap.put(EFF_FLAG, "0");
+            blackMap.put(CERT_TYPE, BusinessDictionaryConstants.CERT_TYPE_LIC);
+            blackMap.put(INFO_DETAIL, (String) custMap.get(PAPER_ID));
+            if (ListUtil.isNotEmpty(loanSaleBlacklistService
+                    .getBlacklistMap(blackMap))) {
+                applyStatus = BusinessDictionaryConstants.APPLY_STATUS_REFUSE;
+                creMap.put(APPLY_STATUS, applyStatus);
+            }
+            //贷款申请入库
+            //creMap.put(BEGIN_DATE, new Date());
+            loanSaleApplyService.insertCreditApplyMap(creMap);
+            logger.info("loanSaleApplyService insertCreditApplyMap success !");
+            // 渠道商户id与内部商户id映射，先查询t_channel_poscust_info 表
+//            if (posCustMap.get(stdmerno) != null) {
+//                Map<String, Object> channelPosCustMap = loanSaleApplyService
+//                        .selectOneChannelPosCustByEle(
+//                                (String) posCustMap.get(stdmerno),
+//                                (String) creMap.get(channel));
+//                // 如果不存在则插入一条新的记录
+//                if (channelPosCustMap.isEmpty()) {
+//                    Map<String, Object> insertChannelPosCustMap = Maps
+//                            .newHashMap();
+//                    insertChannelPosCustMap.put(channel, creMap.get(channel));
+//                    insertChannelPosCustMap.put(POS_CUST_ID, posCustId);
+//                    insertChannelPosCustMap.put(channelPosCustId,
+//                            posCustMap.get(stdmerno));
+//                    loanPosCreditApplyService
+//                            .insertChannelPosCustSelectiveMap(insertChannelPosCustMap);
+//                    logger.info("insertChannelPosCustSelectiveMap success !");
+//                }
+//            }
+            logger.info("success create custId=[" + custId + "], loanId = ["
+                    + loanId + "]");
+            resultMap.put("custid", custId);
+            resultMap.put("loanid", loanId);
+            return resultMap;
+            // Map<String, Object> relMap, Map<String, Object> posMap,
+            // List<Map<String, Object>>bankSerList
+        } catch (Exception e) {
+            logger.error("creditApplyError: []", e.getMessage());
+            return Maps.newHashMap();
+        }
+    }
+    /**
+     * 消费贷贷款信息查询
+     * 
+     * @param reqMap 查询请求参数
+     * @return       贷款列表信息
+     */
+    public List<Map<String,Object>> querySaleAppApplyInfoList(Map<String,String> reqMap){
+        Map<String, Object> queryMap = Maps.newHashMap();
+        try {
+            initQueryApplyInfo(reqMap,queryMap);    //初始化查询
+            //开始查询
+            List<Map<String, Object>> returnList = loanSaleApplyService.queryListBySaleApp(queryMap);
+            if (!returnList.isEmpty()) {
+                // 批复管理
+                for (Map<String, Object> map : returnList) {
+                    // 补件
+                    if (ReviewNoteConstants.APPLYSTATUS_CODE_21.equals(map.get("apprstate"))
+                        || ReviewNoteConstants.APPLYSTATUS_CODE_32.equals(map.get("apprstate"))) {
+                        TCreditApplyAprvInfoKey tCreditApplyAprvInfoKey = new TCreditApplyAprvInfoKey();
+                        tCreditApplyAprvInfoKey.setLoanId((String) map.get("loanid"));
+                        tCreditApplyAprvInfoKey
+                            .setApprResult(ReviewNoteConstants.APPRRESULT_CODE_31);
+                        TCreditApplyAprvInfo tCreditApplyAprvInfo = tCreditApplyAprvInfoDao
+                            .selectLastOne(tCreditApplyAprvInfoKey);
+                        if (tCreditApplyAprvInfo != null) {
+                            map.put("additspec", tCreditApplyAprvInfo.getNeedReason());                 //补充内容说明
+                            map.put("imgadditdetail", tCreditApplyAprvInfo.getNeedInforCodes());        //影像资料补充说明明细
+                        }
+                        // 拒绝
+                    } else if (ReviewNoteConstants.APPLYSTATUS_CODE_92.equals(map.get("apprstate"))) {
+                        TCreditApplyAprvInfoKey tCreditApplyAprvInfoKey = new TCreditApplyAprvInfoKey();
+                        tCreditApplyAprvInfoKey.setLoanId((String) map.get("loanid"));
+                        tCreditApplyAprvInfoKey
+                            .setApprResult(ReviewNoteConstants.APPRRESULT_CODE_20);
+                        TCreditApplyAprvInfo tCreditApplyAprvInfo = tCreditApplyAprvInfoDao
+                            .selectLastOne(tCreditApplyAprvInfoKey);
+                        if (tCreditApplyAprvInfo != null) {
+                        	//20150728 guoyu 审批意见外部的内容从编号转变为内容
+                        	//map.put("refusereason", tCreditApplyAprvInfo.getApprInfoExt());             //拒绝原因
+                            map.put("refusereason", businessDictionaryService.getApprInfoExtMsg(tCreditApplyAprvInfo.getApprInfoExt()));
+                        }
+                    } 
+                    //申请状态及状态说明
+                    if(ReviewNoteConstants.APPLYSTATUS_CODE_31.equals(map.get("apprstate"))){
+                        map.put("applystate",LoanSaleApplyStatusEnum.IN_CHECK.getStatusCode()); 
+                        map.put("desstate",LoanSaleApplyStatusEnum.IN_CHECK.getStatusMessage());           //审核中
+                    }else if(ReviewNoteConstants.APPLYSTATUS_CODE_21.equals(map.get("apprstate"))||
+                            ReviewNoteConstants.APPLYSTATUS_CODE_32.equals(map.get("apprstate"))){
+                        map.put("applystate",LoanSaleApplyStatusEnum.NEED_ADD_IT.getStatusCode()); 
+                        map.put("desstate",LoanSaleApplyStatusEnum.NEED_ADD_IT.getStatusMessage());        //待补件
+                    }else if(ReviewNoteConstants.APPLYSTATUS_CODE_91.equals(map.get("apprstate"))||
+                            ReviewNoteConstants.APPLYSTATUS_CODE_92.equals(map.get("apprstate"))){
+                        map.put("applystate",LoanSaleApplyStatusEnum.REJECT.getStatusCode());
+                        map.put("desstate",LoanSaleApplyStatusEnum.REJECT.getStatusMessage());             //已拒绝
+                    }
+//                        map.put(LoanSaleApplyStatusEnum.IN_REVIEW.getStatusCode(),
+//                            LoanSaleApplyStatusEnum.IN_REVIEW.getStatusMessage());          //复审中
+                    else if(ReviewNoteConstants.APPLYSTATUS_CODE_90.equals(map.get("apprstate"))){
+                        map.put("applystate",LoanSaleApplyStatusEnum.PASSED.getStatusCode());
+                        map.put("desstate",LoanSaleApplyStatusEnum.PASSED.getStatusMessage());             //已通过
+                    }else if("01".equals(map.get("agreestatus"))){
+                        map.put("applystate",LoanSaleApplyStatusEnum.NEED_DELIVERY.getStatusCode());
+                        map.put("desstate",LoanSaleApplyStatusEnum.NEED_DELIVERY.getStatusMessage());      //待放款
+                    }else if("02".equals(map.get("payoffflag"))){
+                        map.put("applystate",LoanSaleApplyStatusEnum.NO_CLEAR.getStatusCode());
+                        map.put("desstate",LoanSaleApplyStatusEnum.NO_CLEAR.getStatusMessage());           //未结清
+                    }else if("01".equals(map.get("payoffflag"))){
+                        map.put("applystate",LoanSaleApplyStatusEnum.CLEARED.getStatusCode());
+                        map.put("desstate",LoanSaleApplyStatusEnum.CLEARED.getStatusMessage());            //已结清
+                    }else if("1".equals(map.get("acflag"))){
+                        map.put("applystate",LoanSaleApplyStatusEnum.ORERDUE.getStatusCode());
+                        map.put("desstate",LoanSaleApplyStatusEnum.ORERDUE.getStatusMessage());            //已逾期
+                    }else if("04".equals(map.get("agreestatus")) || "09".equals(map.get("agreestatus"))){
+                        map.put("applystate",LoanSaleApplyStatusEnum.INVALID.getStatusCode());
+                        map.put("desstate",    LoanSaleApplyStatusEnum.INVALID.getStatusMessage());            //已作废
+                    }
+                    /*else if (ReviewNoteConstants.APPLYSTATUS_CODE_90.equals(map.get("apprstate"))) {
+                        TApproveResult tApproveResult = tApproveResultDao
+                            .selectByLoanId((String) map.get("loanid"));
+                        if (tApproveResult != null) {
+                            map.put("appmaxcred", tApproveResult.getApproveAmount()); // 授信额度
+                            map.put("apptterm", tApproveResult.getApproveTerm()); // 授信期限
+                            map.put("interate", tApproveResult.getApproveInterest()); // 贷款利率
+                            map.put(
+                                "appenddate",
+                                tApproveResult.getExpiryDate() == null ? "" : DateFormatUtils
+                                    .format(tApproveResult.getExpiryDate(), "yyyyMMdd")); // 授信期限
+                        }
+                        TContractManagement tContractInfo = tContractInfoDao
+                            .selectContractInfoByLoanId((String) map.get("loanid"));
+                        if (tContractInfo != null
+                            && "05|09".indexOf(tContractInfo.getAgreementStatus()) < 0) {
+                            map.put("apprstate", "191"); // 暂放191, 已签约
+                        }
+                        
+                        // 加入倒计时
+                        map.put("loancountdown", calculatingTimeDiff((String)map.get("begindate"), "D", 7));
+                    } else if ("10|20|30|31|33|34".indexOf((String)map.get("apprstate")) > -1) {
+                        // 加入倒计时
+                        map.put("loancountdown", calculatingTimeDiff((String)map.get("begindate"), "D", 2));
+                    }
+                    map.put("reloanflag", "N"); // 是否续贷标记*/
+                }
+            }
+            return returnList;
+        } catch (Exception e) {
+            logger.error("消费贷查询申请明细信息 异常:[]", e.getMessage());
+            return null;
+        }
+    }
+    /**
+     * 初始化消费贷申请查询信息
+     * 
+     * @param reqMap
+     * @param queryMap
+     * @throws Exception 
+     */
+    private void initQueryApplyInfo(Map<String,String> reqMap,Map<String, Object> queryMap) throws Exception{
+        // 拼装查询
+        if (!StringUtil.isEmpty(reqMap.get("loanid"))) {            //申请流水号
+            queryMap.put("loanid", reqMap.get("loanid"));
+        }
+        if (!StringUtil.isEmpty(reqMap.get("custid"))) {            //客户id
+            queryMap.put("custid", reqMap.get("custid"));
+        }
+        if (!StringUtil.isEmpty(reqMap.get("paperid"))) {           //证件号码
+            queryMap.put("paperid", reqMap.get("paperid"));
+        }
+        if(!StringUtil.isEmpty(reqMap.get("paperkind"))){           //证件类型
+            queryMap.put("paperkind", reqMap.get("paperkind"));
+        }
+        if (!StringUtil.isEmpty(reqMap.get("begindate"))) {         //查询开始时间
+            queryMap.put("begindate", new Timestamp(DateUtil.getTimeStamp(reqMap.get("begindate"))));
+        }
+        if (!StringUtil.isEmpty(reqMap.get("enddate"))) {           //查询截止时间
+            queryMap.put("enddate", new Timestamp(DateUtil.getTimeStamp(reqMap.get("enddate"))));
+        }
+        if (!StringUtil.isEmpty(reqMap.get("payapplyid"))) {        //证件类型
+            queryMap.put("payapplyid", reqMap.get("payapplyid"));
+        }
+        if (!StringUtil.isEmpty(reqMap.get("contno"))) {            //合同编号
+            queryMap.put("contno",reqMap.get("contno"));
+        }
+    }
+}

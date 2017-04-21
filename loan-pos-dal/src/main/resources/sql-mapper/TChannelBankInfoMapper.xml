@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TChannelBankInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TChannelBankInfo" >
+    <id column="serial" property="serial" jdbcType="INTEGER" />
+    <result column="channel" property="channel" jdbcType="VARCHAR" />
+    <result column="bankName" property="bankName" jdbcType="VARCHAR" />
+    <result column="mapBankId" property="mapBankId" jdbcType="VARCHAR" />
+    <result column="mapBankName" property="mapBankName" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    serial, channel, bankName, mapBankId, mapBankName, remark
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_channel_bankinfo
+    where serial = #{serial,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getSelectiveMap" resultType="Map" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_channel_bankinfo
+    where 1=1
+    <if test="channel != null">
+    	AND channel = #{channel}
+    </if>
+    <if test="bankName != null">
+    	AND bankName = #{bankName}
+    </if>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_channel_bankinfo
+    where serial = #{serial,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TChannelBankInfo" >
+    insert into t_channel_bankinfo (serial, channel, bankName, 
+      mapBankId, mapBankName, remark
+      )
+    values (#{serial,jdbcType=INTEGER}, #{channel,jdbcType=VARCHAR}, #{bankName,jdbcType=VARCHAR}, 
+      #{mapBankId,jdbcType=VARCHAR}, #{mapBankName,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TChannelBankInfo" >
+    insert into t_channel_bankinfo
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serial != null" >
+        serial,
+      </if>
+      <if test="channel != null" >
+        channel,
+      </if>
+      <if test="bankName != null" >
+        bankName,
+      </if>
+      <if test="mapBankId != null" >
+        mapBankId,
+      </if>
+      <if test="mapBankName != null" >
+        mapBankName,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serial != null" >
+        #{serial,jdbcType=INTEGER},
+      </if>
+      <if test="channel != null" >
+        #{channel,jdbcType=VARCHAR},
+      </if>
+      <if test="bankName != null" >
+        #{bankName,jdbcType=VARCHAR},
+      </if>
+      <if test="mapBankId != null" >
+        #{mapBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="mapBankName != null" >
+        #{mapBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TChannelBankInfo" >
+    update t_channel_bankinfo
+    <set >
+      <if test="channel != null" >
+        channel = #{channel,jdbcType=VARCHAR},
+      </if>
+      <if test="bankName != null" >
+        bankName = #{bankName,jdbcType=VARCHAR},
+      </if>
+      <if test="mapBankId != null" >
+        mapBankId = #{mapBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="mapBankName != null" >
+        mapBankName = #{mapBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where serial = #{serial,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TChannelBankInfo" >
+    update t_channel_bankinfo
+    set channel = #{channel,jdbcType=VARCHAR},
+      bankName = #{bankName,jdbcType=VARCHAR},
+      mapBankId = #{mapBankId,jdbcType=VARCHAR},
+      mapBankName = #{mapBankName,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR}
+    where serial = #{serial,jdbcType=INTEGER}
+  </update>
+</mapper>

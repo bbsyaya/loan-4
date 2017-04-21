@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRepaymentApplyMapper">
+	<resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TRepaymentApply">
+		<id column="repayApplyId" property="repayApplyId" jdbcType="VARCHAR" />
+		<result column="repayApplyNo" property="repayApplyNo" jdbcType="VARCHAR" />
+		<result column="applyNo" property="applyNo" jdbcType="VARCHAR" />
+		<result column="status" property="type" jdbcType="INTEGER" />
+		<result column="type" property="type" jdbcType="VARCHAR" />
+		<result column="preType" property="preType" jdbcType="VARCHAR" />
+		<result column="applyAmt" property="applyAmt" jdbcType="DECIMAL" />
+		<result column="accNo" property="accNo" jdbcType="VARCHAR" />
+		<result column="applyDate" property="applyDate" jdbcType="TIMESTAMP" />
+		<result column="contNo" property="contNo" jdbcType="VARCHAR" />
+		<result column="custId" property="custId" jdbcType="VARCHAR" />
+		<result column="merchantNo" property="merchantNo" jdbcType="VARCHAR" />
+		<result column="createDate" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="modifiedDate" property="modifiedDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		repayApplyId, repayApplyNo, applyNo, status, type, preType,
+		applyAmt, accNo, applyDate,contNo,
+		custId,
+		merchantNo, createDate,
+		modifiedDate
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_repayment_apply
+		where repayApplyId =
+		#{repayApplyId,jdbcType=VARCHAR}
+	</select>
+	<select id="selectByApplyNo" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_repayment_apply
+		where repayApplyNo =
+		#{repayApplyNo,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByApplyNo" parameterType="java.lang.String">
+		delete from
+		t_repayment_apply
+		where repayApplyNo = #{repayApplyId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TRepaymentApply">
+		insert into t_repayment_apply
+		(repayApplyNo, applyNo,
+		status, type, preType, contNo, custId,
+		applyAmt,
+		accNo,
+		applyDate, merchantNo, createDate,
+		modifiedDate)
+		values
+		(#{repayApplyNo,jdbcType=VARCHAR},
+		#{applyNo,jdbcType=VARCHAR},
+		#{status,jdbcType=VARCHAR},
+		#{type,jdbcType=VARCHAR},
+		#{preType,jdbcType=VARCHAR},
+		#{contNo,jdbcType=VARCHAR},
+		#{custId,jdbcType=VARCHAR},
+		#{applyAmt,jdbcType=DECIMAL},
+		#{accNo,jdbcType=VARCHAR},
+		#{applyDate,jdbcType=TIMESTAMP},
+		#{merchantNo,jdbcType=VARCHAR},
+		#{createDate,jdbcType=TIMESTAMP},
+		#{modifiedDate,jdbcType=TIMESTAMP})
+		<selectKey keyProperty="repayApplyId" resultType="int"
+			order="BEFORE">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<update id="updateSelectiveMap" parameterType="map">
+		update t_repayment_apply
+		<set>
+			<if test="status != null">
+				status = #{status,jdbcType=VARCHAR},
+			</if>
+			<if test="modifiedDate != null">
+				modifiedDate = #{modifiedDate,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where repayApplyNo = #{repayApplyNo,jdbcType=VARCHAR}
+	</update>
+
+	<select id="selectRepaymentByZzApp" resultType="Map" parameterType="Map">
+	select * from t_repayment_apply
+    <!-- select tra.custId as custid, tcusi.custName as custname, tcusi.paperKind as paperkind, tcusi.paperId as paperid,
+    tci.loanId as loanid, tra.contNo as contno, tci.cnContNo as cncontno, tpa.payApplyId as payapplyid, tri.beginDate as begindate,
+    tri.endDate as enddate, tri.payApplyAmt as tcapi, tri.loanTotalBalance as bal, tri.innerOwnedInterest + tri.outterOwnedInterest as overinte,
+    tri.loanInterest as interate, tcai.returnKind as retukind, tri.overdueBalance > 0 as acflag, tri.clearStatus as payoffflag
+    from      t_repayment_apply tra 
+    left join t_customer_info     tcusi on tra.custId = tcusi.custId
+    left join t_contract_info	  tci on tra.contno = tci.contno
+    left join t_receipt_info	  tri on tpa.payApplyId = tri.payApplyId
+    left join t_credit_apply_info tcai  on tri.loanId = tcai.loanId -->
+    <!-- where tcai.deleteFlag = '0' and tcai.channel ='ZZ' and tcai.inChannelKind = '01'
+    <if test="paperId != null">
+    	and tcusi.paperId = #{paperId}
+    </if>
+    <if test="paperKind != null">
+    	and tcusi.paperKind = #{paperKind}
+    </if>
+    <if test="custId != null">
+    	and tconi.custId = #{custId}
+    </if>
+    <if test="custName != null">
+    	and tconi.custName = #{custName}
+    </if>
+    <if test="loanId != null">
+    	and tconi.loanId = #{loanId}
+    </if>
+    <if test="contNo != null">
+    	and tconi.contNo = #{contNo}
+    </if>
+    <if test="cnContNo != null">
+    	and tconi.cnContNo = #{cnContNo}
+    </if>
+    <if test="payApplyId != null">
+    	and tpa.payApplyId = #{payApplyId}
+    </if>
+    <if test="beginDate != null">
+    	and tconi.beginDate >= #{beginDate,jdbcType=TIMESTAMP}
+    </if>
+    <if test="endDate != null">
+    	<![CDATA[ and tconi.beginDate <= #{endDate,jdbcType=TIMESTAMP} ]]>
+    </if>
+    order by tconi.beginDate desc -->
+  	</select>
+
+</mapper>

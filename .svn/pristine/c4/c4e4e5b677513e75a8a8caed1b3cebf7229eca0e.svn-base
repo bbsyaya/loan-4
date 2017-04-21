@@ -1,0 +1,26 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+     <div title="还款记录" style="padding:20px;">
+     <table id="paybackRecord" class="easyui-datagrid" width="100%" style="height:480px"
+		    rownumbers="true" pagination="true">
+		<thead>
+			<tr>
+			    <th field="paybackRunningRecordId" width="120">还款记录编号</th> 		  
+			    <th field="paybackApplyId" width="120">还款申请编号</th>
+			    <th field="receiptId" width="120">借据编号</th>
+				<th field="supposedPaybackDate" width="120">应还款日期</th>
+				<th field="supposedTotalAmount" width="120">应还款总金额</th>
+			    <th field="supposedCapital" width="120">应还款本金</th>
+			    <th field="supposedInterest" width="120">应还款利息</th>
+			    <th field="actualPaybackDate" width="120">实还日期</th>
+			    <th field="actualTotalAmount" width="120">实还总金额</th>  
+			    <th field="actualCapital" width="120">实还本金</th>
+			    <th field="actualInterest" width="120">实还利息</th>
+			    <th field="paybackChannel" width="120">还款渠道</th>
+			    <th field="paybackImportId" width="120">还款进项编号</th>
+			    <th field="runningStatus" width="120">流水编号</th>
+			</tr>
+		</thead>
+	</table> 
+     </div>
+     

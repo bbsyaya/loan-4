@@ -1,0 +1,68 @@
+package com.hrbb.loan.pos.biz.backstage.inter.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.hrbb.loan.pos.biz.backstage.inter.ILoanPosBusinessCodeBiz;
+import com.hrbb.loan.pos.service.LoanPosBusinessCodeService;
+
+/**
+ *<h1></h1>
+ *@author Johnson Song
+ *@version Id: LoanPosBusinessBizImpl.java, v 1.0 2015-3-9 下午4:47:07 Johnson Song Exp
+ */
+@Component("loanPosBusinessCodeBiz")
+public class LoanPosBusinessCodeBizImpl implements ILoanPosBusinessCodeBiz{
+	
+	@Autowired
+	private LoanPosBusinessCodeService loanPosBusinessCodeService;
+	@Override
+	public List<Map<String, Object>> getItemNames(String codeNo) {
+		return loanPosBusinessCodeService.getItemNames(codeNo);
+	}
+
+	@Override
+	public String getItemNameByNo(String codeNo, String itemNo) {
+		return loanPosBusinessCodeService.getItemNameByNo(codeNo, itemNo);
+	}
+
+	@Override
+	public List<Map<String, Object>> getProvinceCityOrDic(String itemNoLike) {
+		return loanPosBusinessCodeService.getProvinceCityOrDic(itemNoLike);
+	}
+
+	@Override
+	public List<Map<String, Object>> getSeletiveMap(Map<String, Object> reqMap) {
+		return loanPosBusinessCodeService.getSeletiveMap(reqMap);
+	}
+
+	@Override
+	public List<Map<String, Object>> getItemNamesWithExtOrder(Map<String, Object> reqMap) {
+		return loanPosBusinessCodeService.getItemNamesWithExtOrder(reqMap);
+	}
+
+	@Override
+	public String getExtAttrByNo(String codeNo, String itemNo) {
+		return loanPosBusinessCodeService.getExtAttrByNo(codeNo, itemNo);
+	}
+
+    @Override
+    public String getItemNoByName(String codeNo, String itemName) {
+        return loanPosBusinessCodeService.getItemNoByName(codeNo, itemName);
+    }
+
+	@Override
+	public String getSplitedItemName(String codeNo, String itemNos) {
+		return getSplitedItemName(codeNo, itemNos, ",");
+	}
+
+	@Override
+	public String getSplitedItemName(String codeNo, String itemNos,
+			String splitor) {
+		return null;
+	}
+
+}

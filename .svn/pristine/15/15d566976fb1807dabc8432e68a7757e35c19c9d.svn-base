@@ -1,0 +1,658 @@
+package com.hrbb.loan.pos.biz.backstage.inter.impl;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import jodd.util.StringUtil;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.biz.backstage.inter.IPaymentApplyApprovalBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.IPaymentApplyBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.IPaymentApplyCheckBiz;
+import com.hrbb.loan.pos.dao.entity.TPaymentApply;
+import com.hrbb.loan.pos.service.IGenericConfigService;
+import com.hrbb.loan.pos.service.LoanPosBusinessCodeService;
+import com.hrbb.loan.pos.service.LoanPosContractManagementService;
+import com.hrbb.loan.pos.service.LoanPosCustomerService;
+import com.hrbb.loan.pos.service.LoanPosPaybackService;
+import com.hrbb.loan.pos.service.PaymentApplyService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.IdUtil;
+import com.hrbb.loan.pos.util.constants.BusinessDictionaryConstants;
+
+/**
+ * 
+ * @author jianQing
+ * @version $Id: PaymentApplyBizImpl.java, v 0.1 2015年4月27日 下午5:53:01 jianQing
+ *          Exp $
+ */
+@Component("paymentApplyBiz")
+public class PaymentApplyBizImpl implements IPaymentApplyBiz {
+
+	private static final String HASNO_CONT = "HASNO_CONT";
+	private static final String OVER_PAY_LIMIT = "OVER_PAY_LIMIT";
+
+	private Logger logger = LoggerFactory.getLogger(PaymentApplyBizImpl.class);
+
+	@Autowired
+	private PaymentApplyService paymentApplyService;
+
+	@Autowired
+	private LoanPosContractManagementService loanPosContractManagementService;
+
+	@Autowired
+	private LoanPosBusinessCodeService loanPosBusinessCodeService;
+	
+	@Autowired
+    private IGenericConfigService genericConfigService;
+	
+	@Autowired
+	private IPaymentApplyCheckBiz paymentApplyCheckBiz;
+
+	@Autowired
+	private LoanPosPaybackService loanPosPaybackService;
+	
+	@Autowired
+    private LoanPosCustomerService loanPosCustomerService;
+	
+	@Autowired
+    private IPaymentApplyApprovalBiz paymentApplyApprovalBiz;
+	
+	private final String MERCHANT_DESP = "merchantDesp";
+
+	private final String CONT_NO = "contNo";
+
+	private final String CUST_ID = "custId";
+
+	private final String POS_CUST_ID = "posCustId";
+
+	private final String PAY_APPLY_ID = "payApplyId";
+
+	private final String STATUS = "status";
+
+	private final String POS_CUST_NAME = "posCustName";
+
+	private final String CREATE_DATE = "createDate";
+
+	private final String LIST_ID = "listid";
+
+	private final String ISSUEID = "issueid";
+
+	private final String TOTAL_NUM = "totalnum";
+
+	private final String RET_NUM = "retnum";
+
+	private final String PAYAPPLY_AMT = "payApplyAmt";
+
+	private final String PAYAPPLY_TERM = "payApplyTerm";
+
+	private final String RETURN_TYPE = "returnType";
+
+	private final String ACC_NO = "accNo";
+
+	private final String EXPECTED_DATE = "expectedDate";
+
+	private final String EXPECTED_END_DATE = "expectedEndDate";
+
+	private final String CREDIT_INTEREST = "creditInterest";
+
+	private final String payApplyInterest = "payApplyInterest";
+
+	private final ImmutableMap<String, String> listStatMap = new ImmutableMap.Builder<String, String>()
+			.put("00", "9").put("10", "9").put("80", "9").put("90", "0")
+			.put("91", "0").put("92", "1").put("93", "5").put("94", "1").build();
+	
+	private final ImmutableMap<String, String> listStatMap1 = new ImmutableMap.Builder<String, String>()
+			.put("10|SM", "12").put("90|58", "3").put("90|UM", "3").build();
+
+	private static final String contTotalAmt = "contTotalAmt";
+	private static final String OVER_TERM = "overTerm";
+
+	@SuppressWarnings("unused")
+	@Override
+	public Map<String, Object> insertPaymentApply(Map<String, Object> reqMap) {
+		try {
+			Map<String, Object> respMap = Maps.newHashMap();
+			String payApplyId = IdUtil.getPaymentApplyId();
+			String custId = "";
+			String posCustId = "";
+			String posCustName = "";
+			String creditInterest = "";
+
+			String contNo = (String) reqMap.get(CONT_NO);
+			// 合同金额
+			BigDecimal contAmt = new BigDecimal("0");
+			String payApplyTerm = (String)reqMap.get("payApplyTerm");
+
+			
+
+			Map<String, Object> contMap = loanPosContractManagementService
+					.selectOneMapById(contNo);
+			logger.debug("contMap:" + contMap);
+			if (!contMap.isEmpty()) {
+				String termOver = listStatMap1.get((String)contMap.get("paybackMethod")+"|" + (String)contMap.get("channel"));
+				if(com.hrbb.loan.pos.util.StringUtil.isEmpty(termOver)){
+					termOver = "12";
+				}
+				//用款期限要通过渠道和还款方式判断
+				if(new BigDecimal(payApplyTerm).compareTo(new BigDecimal(termOver)) > 0){
+					respMap.put(OVER_TERM, "1");
+					return respMap;
+				}
+				custId = (String) contMap.get(CUST_ID);
+				posCustId = (String) contMap.get(POS_CUST_ID);
+				posCustName = (String) contMap.get(POS_CUST_NAME);
+				if (contMap.get(CREDIT_INTEREST) != null) {
+					creditInterest = String.valueOf(contMap
+							.get(CREDIT_INTEREST));
+				}
+				if (contMap.get(contTotalAmt) != null) {
+					contAmt = (BigDecimal) contMap.get(contTotalAmt);
+				}
+			} else {
+				// 没有该合同，无法放款
+				respMap.put(HASNO_CONT, "1");
+				return respMap;
+			}
+			// 再查询出该合同所对应的所有借据的总金额
+			/*BigDecimal totalPayApplyAmt = paymentApplyService
+					.getPaymentApplyInfocontno(contNo);
+			logger.info("用款总额度为" + totalPayApplyAmt);
+			BigDecimal zb = new BigDecimal("0.00");
+			BigDecimal ta = totalPayApplyAmt == null ? zb : totalPayApplyAmt;
+			String ct = loanPosPaybackService
+					.getReceiptTotalAmountByContNo(contNo) == null ? "0"
+					: loanPosPaybackService
+							.getReceiptTotalAmountByContNo(contNo);
+			logger.info("该笔申请对应的所有借据总额度为" + ct);
+			BigDecimal bd = new BigDecimal(ct);
+			BigDecimal amt1 = contAmt.subtract(bd);
+			BigDecimal conttouseamt = amt1.subtract(ta);
+			logger.info("可用额度为" + conttouseamt);
+			String payApplyAmt = (String) reqMap.get("payApplyAmt");
+			// 如果可用余额减去申请金额小于0
+			if (conttouseamt.subtract(new BigDecimal(payApplyAmt)).compareTo(
+					new BigDecimal("0")) < 0) {
+				// 超过申请限额不能提起用款
+				int a = conttouseamt.subtract(new BigDecimal(payApplyAmt))
+						.compareTo(new BigDecimal("0"));
+				logger.info("可用余额与申请金额的差值为" + payApplyAmt);
+				respMap.put(OVER_PAY_LIMIT, "1");
+				return respMap;
+			}*/
+			reqMap.put(CUST_ID, custId);
+			reqMap.put(POS_CUST_ID, posCustId);
+			reqMap.put(PAY_APPLY_ID, payApplyId);
+
+			reqMap.put(MERCHANT_DESP, posCustName);
+			reqMap.put(payApplyInterest, creditInterest);
+			reqMap.put(CREATE_DATE, new Date());
+			//待审核状态
+			reqMap.put("status", "00");
+			logger.debug("insertMap:" + reqMap);
+			
+			 // 理论到期日（起息日+期限）
+            Date endDateTemp = (Date)reqMap.get("expectedEndDate");
+            
+            String paybackMethod = String.valueOf(contMap.get("paybackMethod"));		//还款方式
+            if(paybackMethod!=null && paybackMethod.equals("90")){		//利随本清时实际到期日跳过工节假日
+	            Date endDate = DateUtil.getDatePattern3(genericConfigService.getNextWorkingDate(endDateTemp));
+	            reqMap.put("expectedEndDate", endDate);
+			}
+            
+			paymentApplyService.insertPaymentApply(reqMap);
+			//检查用款合法性
+			Map<String, Object> checkReslt = paymentApplyCheckBiz.paymentApplyCheck(payApplyId);
+			logger.debug("用款合格性校验结果为:" + checkReslt.get("respMsg"));
+			if(! checkReslt.isEmpty() && ! ((String)checkReslt.get("respCode")).equals("000")){
+				logger.debug((String)checkReslt.get("respCode"));
+				reqMap.put("status", "94");
+				paymentApplyService.updatePaymentApply(reqMap);
+				respMap.put(OVER_PAY_LIMIT, "1");
+				return respMap;
+			}else{
+				reqMap.put("status", "10");
+				paymentApplyService.updatePaymentApply(reqMap);
+			}
+			
+			if (reqMap.containsKey("channelType")
+					&& reqMap.get("channelType").equals("UM")) {
+				respMap.put(LIST_ID, payApplyId);
+			} else{
+				respMap.put(ISSUEID, payApplyId);
+			}
+			return respMap;
+		} catch (Exception e) {
+			logger.error("用款申请异常:" + e.getMessage());
+			return Maps.newHashMap();
+		}
+	}
+
+	@Override
+	public void updatePaymentApply(Map<String, Object> reqMap) {
+		paymentApplyService.updatePaymentApply(reqMap);
+	}
+
+	@Override
+	public Map<String, Object> queryPaymentByStdmerno(String custId,
+			String payApplyId, String contNo, String stdshno, String stdmerno,
+			String channel, String startnum, String recnum) {
+		try {
+			Map<String, Object> resMap = Maps.newHashMap();
+			List<Map<String, Object>> resList = paymentApplyService
+					.queryByStdmerno(custId, payApplyId, contNo, stdshno,
+							stdmerno, channel, startnum, recnum);
+
+			Long totalCount = paymentApplyService.countPaymentApply(stdshno,
+					stdmerno, channel);
+			if (totalCount < Long.valueOf(recnum)) {
+				resMap.put(TOTAL_NUM, totalCount + "");
+				resMap.put(RET_NUM, totalCount + "");
+			} else {
+				resMap.put(TOTAL_NUM, totalCount + "");
+				resMap.put(RET_NUM, recnum);
+			}
+			for (Map<String, Object> obj : resList) {
+				obj.put("cncontno", obj.get("contno"));
+				obj.put("refusereason", "");
+				if (Objects
+						.firstNonNull(((BigDecimal) obj.get("overdueBalance")),
+								"0").toString().equals("0")) {
+					obj.put("acflag", "0");
+				} else {
+					obj.put("acflag", "1");
+				}
+				obj.remove("overdueBalance");
+				if (Objects.firstNonNull(((BigDecimal) obj.get("bal")), "0")
+						.toString().equals("0")
+						&& Objects.firstNonNull(obj.get("overinte"), "0")
+								.equals("0")) {
+					obj.put("payoffflag", "01");
+				} else {
+					obj.put("payoffflag", "02");
+				}
+				obj.put("bal",
+						Objects.firstNonNull(((BigDecimal) obj.get("bal")), "0")
+								.toString());
+				obj.put("overinte",
+						Objects.firstNonNull(
+								((BigDecimal) obj.get("overinte")), "0")
+								.toString());
+				obj.put("interate",
+						Objects.firstNonNull(
+								((BigDecimal) obj.get("interate")), "0")
+								.toString());
+				obj.put("tcapi",
+						Objects.firstNonNull(((BigDecimal) obj.get("tcapi")),
+								"0").toString());
+				obj.put("retukind", "01"); // 利随本清
+				String listStatString = (String) obj.get("liststat");
+				String listStatStringMap = listStatMap.get(listStatString);
+				// 如果是审批通过待放款状态，则要查询结局表的放款执行状态
+				if ("0".equals(listStatStringMap)) {
+					if ("20".equals((String) obj.get("loanExecuteStatus"))) {
+						// 将状态改为放款成功状态
+						listStatStringMap = "2";
+					}
+				}
+				obj.put("liststat", listStatStringMap);
+				if(channel!=null && !channel.equals("UM")){
+					obj.put("issueid", obj.get("listid").toString());
+					obj.remove("listid");
+					
+				}
+				
+			}
+
+			resMap.put("rows", resList);
+			return resMap;
+
+		} catch (Exception e) {
+			logger.error("查询用款申请异常" + e.getMessage());
+			return Maps.newHashMap();
+		}
+	}
+
+	@Override
+	public List<Map<String, Object>> queryPaymentApply(
+			Map<String, Object> reqMap) {
+		String paymentStatus = (String) reqMap.get("status");
+		if (!StringUtil.isEmpty(paymentStatus) && paymentStatus.equals("90")) {
+			List<Map<String, Object>> lists = paymentApplyService
+					.queryPaymentApply90(reqMap);
+			if (null != lists && lists.size() > 0) {
+				for (Map<String, Object> m : lists) {
+					convertCode(new String[] { "channel", "BizChannel",
+							"channelName" }, m);
+					// 放款执行状态
+					convertCode(new String[] { "loanExecuteStatus",
+							"DeliveryStatus", "loanExecuteStatusName" }, m);
+					
+					// 申请状态
+					convertCode(new String[] { "status",
+							"IssueApplyStatus", "issueStatusName" }, m);
+					
+					// 日期格式化
+					if (null != m.get("applyDate")) {
+						String appDateString = DateUtil
+								.getDateToString3((Date) m.get("applyDate"));
+						m.put("applyDate", appDateString);
+					}
+					if (null != m.get("expectedDate")) {
+						String expectedDateStr = DateUtil
+								.getDateToString3((Date) m.get("expectedDate"));
+						m.put("expectedDate", expectedDateStr);
+					}
+					if (null != m.get("expectedEndDate")) {
+						String expectedEndDateStr = DateUtil
+								.getDateToString3((Date) m
+										.get("expectedEndDate"));
+						m.put("expectedEndDate", expectedEndDateStr);
+					}
+					// //利率格式化
+					// if(null !=m.get("payApplyInterest")){
+					// m.put("payApplyInterest",
+					// m.get("payApplyInterest").toString()+" （%）");
+					// }
+					// //期限
+					// if(!StringUtil.isEmpty((String)m.get("payApplyTerm"))){
+					// m.put("payApplyTerm",
+					// (String)m.get("payApplyTerm")+" （月）");
+					// }
+				}
+				// 计算总条数
+				Long total = paymentApplyService.countPaymentApplys90(reqMap);
+				Map<String, Object> map = Maps.newHashMap();
+				map.put("total", total);
+				lists.add(map);
+			}
+			return lists;
+		}
+		List<Map<String, Object>> lists = paymentApplyService
+				.queryPaymentApply(reqMap);
+		if (null != lists && lists.size() > 0) {
+			for (Map<String, Object> m : lists) {
+				convertCode(new String[] { "channel", "BizChannel",
+						"channelName" }, m);
+				// 申请状态
+				convertCode(new String[] { "status",
+						"IssueApplyStatus", "issueStatusName" }, m);
+				// 日期格式化
+				if (null != m.get("applyDate")) {
+					String appDateString = DateUtil.getDateToString3((Date) m
+							.get("applyDate"));
+					m.put("applyDate", appDateString);
+				}
+				if (null != m.get("expectedDate")) {
+					String expectedDateStr = DateUtil.getDateToString3((Date) m
+							.get("expectedDate"));
+					m.put("expectedDate", expectedDateStr);
+				}
+				if (null != m.get("expectedEndDate")) {
+					String expectedEndDateStr = DateUtil
+							.getDateToString3((Date) m.get("expectedEndDate"));
+					m.put("expectedEndDate", expectedEndDateStr);
+				}
+				// //利率格式化
+				// if(null !=m.get("payApplyInterest")){
+				// m.put("payApplyInterest",
+				// m.get("payApplyInterest").toString()+" %");
+				// }
+				// //期限
+				// if(!StringUtil.isEmpty((String)m.get("payApplyTerm"))){
+				// m.put("payApplyTerm", (String)m.get("payApplyTerm")+" 月");
+				// }
+			}
+			// 计算总条数
+			Long total = paymentApplyService.countPaymentApplys(reqMap);
+			Map<String, Object> map = Maps.newHashMap();
+			map.put("total", total);
+			lists.add(map);
+		}
+		return lists;
+	}
+
+	@Override
+	public List<Map<String, Object>> queryAvailablePaymentApply(
+			Map<String, Object> reqMap) {
+		List<Map<String, Object>> lists = paymentApplyService
+				.queryAvailablePaymentApply(reqMap);
+		if (null != lists && lists.size() > 0) {
+			for (Map<String, Object> m : lists) {
+				convertCode(new String[] { "status", "ApplyStatus",
+						"statusName" }, m);
+				convertCode(new String[] { "channel", "BizChannel",
+						"channelName" }, m);
+				// 日期格式化
+				if (null != m.get("applyDate")) {
+					String appDateString = DateUtil.getDateToString3((Date) m
+							.get("applyDate"));
+					m.put("applyDate", appDateString);
+				}
+				if (null != m.get("expectedDate")) {
+					String expectedDate = DateUtil.getDateToString3((Date) m
+							.get("expectedDate"));
+					m.put("expectedDate", expectedDate);
+				}
+				if (null != m.get("expectedEndDate")) {
+					String expectedEndDate = DateUtil.getDateToString3((Date) m
+							.get("expectedEndDate"));
+					m.put("expectedEndDate", expectedEndDate);
+				}
+			}
+			// 计算总条数
+			Long total = paymentApplyService
+					.countAvailablePaymentApplys(reqMap);
+			Map<String, Object> map = Maps.newHashMap();
+			map.put("total", total);
+			lists.add(map);
+		}
+		return lists;
+	}
+
+	@Override
+	public Map<String, Object> insertPaymentApplyZJ(Map<String, Object> reqMap) {
+		try {
+			Map<String, Object> respMap = Maps.newHashMap();
+			String payApplyId = IdUtil.getPaymentApplyId();
+			String custId = "";
+			String posCustId = "";
+			String posCustName = "";
+
+			String contNo = (String) reqMap.get(CONT_NO);
+
+			Map<String, Object> contMap = loanPosContractManagementService
+					.selectOneMapById(contNo);
+			if (!contMap.isEmpty()) {
+				custId = (String) contMap.get(CUST_ID);
+				posCustId = (String) contMap.get(POS_CUST_ID);
+				posCustName = (String) contMap.get(POS_CUST_NAME);
+			}
+			reqMap.put(CUST_ID, custId);
+			reqMap.put(POS_CUST_ID, posCustId);
+			reqMap.put(PAY_APPLY_ID, payApplyId);
+			reqMap.put(STATUS,
+					BusinessDictionaryConstants.ISSUE_APPLY_STATUS_INSERT);
+			reqMap.put(MERCHANT_DESP, posCustName);
+			reqMap.put(CREATE_DATE, new Date());
+
+			reqMap.put(PAYAPPLY_AMT, reqMap.get(PAYAPPLY_AMT));
+			reqMap.put(PAYAPPLY_TERM, reqMap.get(PAYAPPLY_TERM));
+			reqMap.put(RETURN_TYPE, reqMap.get(RETURN_TYPE));
+			reqMap.put(EXPECTED_DATE, reqMap.get(EXPECTED_DATE));
+			reqMap.put(EXPECTED_END_DATE, reqMap.get(EXPECTED_END_DATE));
+			reqMap.put(ACC_NO, reqMap.get(ACC_NO));
+			paymentApplyService.insertPaymentApply(reqMap);
+			respMap.put(LIST_ID, payApplyId);
+			return respMap;
+		} catch (Exception e) {
+			logger.error("用款申请异常:[]", e.getMessage());
+			return Maps.newHashMap();
+		}
+	}
+
+	@Override
+	public Map<String, Object> insertPaymentApplyByZzApp(
+			Map<String, Object> reqMap) {
+		try {
+			Map<String, Object> respMap = Maps.newHashMap();
+			String payApplyId = IdUtil.getPaymentApplyId();
+			String custId = "";
+			String posCustId = "";
+			String posCustName = "";
+
+			String contNo = (String) reqMap.get(CONT_NO);
+
+			Map<String, Object> contMap = loanPosContractManagementService
+					.selectOneMapByZzApp(contNo);
+			if (!contMap.isEmpty()) {
+				custId = (String) contMap.get(CUST_ID);
+				posCustId = (String) contMap.get(POS_CUST_ID);
+				posCustName = (String) contMap.get(POS_CUST_NAME);
+			}
+			reqMap.put(CUST_ID, custId);
+			reqMap.put(POS_CUST_ID, posCustId);
+			reqMap.put(PAY_APPLY_ID, payApplyId);
+			reqMap.put(STATUS, "10");
+			reqMap.put(MERCHANT_DESP, posCustName);
+			reqMap.put(CREATE_DATE, new Date());
+
+			reqMap.put(PAYAPPLY_AMT, reqMap.get(PAYAPPLY_AMT));
+			reqMap.put(PAYAPPLY_TERM, reqMap.get(PAYAPPLY_TERM));
+			reqMap.put(RETURN_TYPE, reqMap.get(RETURN_TYPE));
+			reqMap.put(EXPECTED_DATE, reqMap.get(EXPECTED_DATE));
+			reqMap.put(EXPECTED_END_DATE, reqMap.get(EXPECTED_END_DATE));
+			reqMap.put(ACC_NO, reqMap.get(ACC_NO));
+			paymentApplyService.insertPaymentApply(reqMap);
+			respMap.put(LIST_ID, payApplyId);
+			return respMap;
+		} catch (Exception e) {
+			logger.error("用款申请异常:[]", e.getMessage());
+			return Maps.newHashMap();
+		}
+	}
+
+	@Override
+	public TPaymentApply queryPaymentApplyById(String id) {
+
+		return paymentApplyService.queryById(id);
+	}
+	
+	private ImmutableMap<String, String> loanStatusMap = new ImmutableMap.Builder<String, String>().put("01", "02").put("02", "02").put("03", "02").put("91", "01").
+	put("92", "01").put("93", "01").put("94", "02").put("90", "02").build();
+
+	@Override
+	public List<Map<String, Object>> queryPaymentApplyDetailsByZzApp(
+			Map<String, Object> queryMap) {
+
+		List<Map<String, Object>> retList = paymentApplyService
+				.queryPaymentListByZzApp(queryMap);
+		if (retList == null || retList.size() < 1) {
+			return null;
+		}
+
+		for (Map<String, Object> detailMap : retList) {
+			// 补填已还本金
+			BigDecimal payApplyAmtBigDecimal = (BigDecimal) detailMap
+					.get("tcapi");
+			if (payApplyAmtBigDecimal == null) {
+				continue;
+			}
+			
+			if(detailMap.get("payoffflag") != null){
+				detailMap.put("payoffflag", loanStatusMap.get((String)detailMap.get("payoffflag")));
+			}else{
+				detailMap.put("payoffflag", "02");
+			}
+			
+			if (detailMap.get("bal") != null) {
+				detailMap.put("returnedamt", payApplyAmtBigDecimal
+						.subtract((BigDecimal) detailMap.get("bal")));
+			} else {
+				detailMap.put("returnedamt", new BigDecimal(0.0));
+				detailMap.put("bal", new BigDecimal("0"));
+			}
+		}
+
+		return retList;
+	}
+
+	@Override
+	public List<Map<String, Object>> queryPaymentApplyByPayApplyId(
+			Map<String, Object> reqMap) {
+		return paymentApplyService.queryPaymentApplyByPayApplyId(reqMap);
+	}
+
+	/**
+	 * 将代码转换为中文，并赋值到新的列中
+	 * 
+	 * @param vals
+	 *            [srcCol, codeNo, targetCol]
+	 * @param m
+	 * @return
+	 */
+	private boolean convertCode(String[] vals, Map<String, Object> m) {
+		if (vals == null || vals.length != 3 || vals[0] == null
+				|| vals[0].trim().length() == 0 // origCol
+				|| vals[1] == null || vals[1].trim().length() == 0 // codeNo
+				|| vals[2] == null || vals[2].trim().length() == 0) { // appCol
+			return true; // 无值忽略
+		}
+
+		Object itemo = m.get(vals[0]);
+		if (itemo != null) {
+			String itemNo = itemo.toString();
+			if (itemNo != null && itemNo.trim().length() > 0) {
+				String itemName = loanPosBusinessCodeService.getItemNameByNo(
+						vals[1], itemNo);
+				if (itemName != null) { // 代码存在
+					m.put(vals[2], itemName);
+				}
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public List<Map<String, Object>> queryPaymentApplyDetailsBySlApp(
+			Map<String, Object> queryMap) {
+		return paymentApplyService.queryPaymentListBySlApp(queryMap);
+	}
+
+	@Override
+	public int savePaymentSign(Map<String, Object> reqAppr,Map<String, Object> reqAcc) {
+//		if((reqAppr==null || reqAppr.size()==0) 
+//			||(reqAcc==null || reqAcc.size()==0)) {
+//			logger.error("用款批复信息 或 银行账号 为空");
+//			return 0;
+//		}
+		
+		String payAppplyId = (String)reqAppr.get("payApplyId");
+		try{
+//			//更新t_payment_apply
+//            this.updatePaymentApply(reqApply);
+            //更新t_payment_apply_approval
+            paymentApplyApprovalBiz.updatePaymentApplyApproval(reqAppr);
+            
+            //更新t_bankaccno_info
+            if(reqAcc!=null && reqAcc.size()>0){
+            	loanPosCustomerService.updateBankAccno(reqAcc);
+            }
+            
+		}catch(Exception e){
+			e.fillInStackTrace();
+			logger.error("保存用款申请["+payAppplyId+"]审核结果失败",e);
+			return -1;
+		}
+		return 1;
+	}
+}

@@ -1,0 +1,412 @@
+package com.hrbb.loan.pos.biz.bean.pay.impl;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pay.api.PayCollectQueryService;
+import com.hrbb.loan.pay.api.request.SingleCollectRequest;
+import com.hrbb.loan.pay.api.request.SinglePayRequest;
+import com.hrbb.loan.pay.api.response.SingleCollectResponse;
+import com.hrbb.loan.pay.api.response.SinglePayResponse;
+import com.hrbb.loan.pay.constants.AccountType;
+import com.hrbb.loan.pay.constants.CertType;
+import com.hrbb.loan.pay.constants.ProductCode;
+import com.hrbb.loan.pos.biz.backstage.inter.IReceiptManageBiz;
+import com.hrbb.loan.pos.biz.bean.pay.IPayService;
+import com.hrbb.loan.pos.biz.bean.pay.PayServiceFactory;
+import com.hrbb.loan.pos.biz.bean.pay.constant.PayTypeEnum;
+import com.hrbb.loan.pos.dao.entity.TBankAccnoInfo;
+import com.hrbb.loan.pos.dao.entity.TCustomer;
+import com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+import com.hrbb.loan.pos.dao.entity.TTransactionRelative;
+import com.hrbb.loan.pos.dao.entity.TransactionLog;
+import com.hrbb.loan.pos.entity.SpringBeans;
+import com.hrbb.loan.pos.service.ChannelMapperDictionaryService;
+import com.hrbb.loan.pos.service.IGenericConfigService;
+import com.hrbb.loan.pos.service.LoanPosCustomerService;
+import com.hrbb.loan.pos.service.TransactionRelativeService;
+import com.hrbb.loan.pos.util.DateUtil;
+
+/**
+ * 第三方支付通道
+ * 
+ * @author cjq
+ * @version $Id: ThirdPayServiceImpl.java, v 0.1 2015年8月20日 下午4:55:29 cjq Exp $
+ */
+public class ThirdPayServiceImpl implements IPayService {
+
+    Logger                                 logger = LoggerFactory
+                                                      .getLogger(PayServiceFactory.class);
+
+    // 属性
+     
+    private TReceiptInfo                   receipt;
+
+    private TPaybackApplyInfo              paybackApply;
+
+    private String                         payChannel;
+    
+    // service
+    
+    private LoanPosCustomerService         loanPosCustomerService;
+    
+    private IReceiptManageBiz              receiptManageBiz;
+    
+    private IGenericConfigService          genericConfigService;
+
+    private PayCollectQueryService         payCollectQueryHessian;
+
+    private ChannelMapperDictionaryService channelMapperDictionaryService;
+
+    private TransactionRelativeService     transactionRelativeService;
+
+    /**
+     * pay构造器
+     * 
+     * @param receipt
+     * @param payChannel 
+     */
+    public ThirdPayServiceImpl(TReceiptInfo receipt, String payChannel) {
+        this.receipt = receipt;
+        this.payChannel = payChannel;
+    }
+
+    /**
+     * repay构造器
+     * 
+     * @param paybackApply
+     * @param payChannel
+     */
+    public ThirdPayServiceImpl(TPaybackApplyInfo paybackApply, String payChannel) {
+        this.paybackApply = paybackApply;
+        this.payChannel = payChannel;
+    }
+
+    /**
+     * get method
+     * 
+     * @return
+     */
+    public TPaybackApplyInfo getPaybackApply() {
+        return paybackApply;
+    }
+
+    /**
+     * get method
+     * 
+     * @return
+     */
+    public TReceiptInfo getReceipt() {
+        return receipt;
+    }
+
+    /**
+     * get method
+     * 
+     * @return
+     */
+    public String getPayChannel() {
+        return payChannel;
+    }
+    
+    /** 
+     * @see com.hrbb.loan.pos.biz.bean.pay.IPayService#pay()
+     */
+    @Override
+    public boolean pay() throws Exception {
+        if(initService()){
+            return thirdPayment();
+        }
+        return false;
+    }
+
+    /** 
+     * @see com.hrbb.loan.pos.biz.bean.pay.IPayService#repay()
+     */
+    @Override
+    public boolean repay() throws Exception {
+        return false;
+    }
+
+    /** 
+     * @see com.hrbb.loan.pos.biz.bean.pay.IPayService#repayMap()
+     */
+    @Override
+    public Map<String, Object> repayMap() throws Exception {
+        if(initService()){
+            return thirdRepayment();
+        }
+        Map<String,Object> resultMap = Maps.newHashMap();
+        resultMap.put("resultCode", "EXCEPTION");
+        resultMap.put("resultMsg", "系统异常");
+        return resultMap;
+    }
+
+    /**
+     * 代付
+     * 
+     * @return
+     */
+    private boolean thirdPayment() {
+        TransactionLog tl = new TransactionLog(receipt.getReceiptId());
+
+        TCustomer customer = loanPosCustomerService.getCustumerInfoById(receipt.getCustId());
+        Map<String, Object> respMap = Maps.newHashMap();
+        Map<String, Object> payMap = Maps.newHashMap();
+        payMap.put("custName", receipt.getCustName());
+        payMap.put("bankAccno", receipt.getPayAccount());
+        payMap.put("paperId", customer.getPaperId());
+        payMap.put("amount", receipt.getPayApplyAmt());
+        TBankAccnoInfo bankAccnoInfo = loanPosCustomerService.getBanAccnoById(receipt
+            .getPayAccount());
+        payMap.put("bankName", bankAccnoInfo.getBankName());
+        try {
+            respMap = pay(payMap);
+
+            if ("SUCCESS".equals(respMap.get("status"))) {
+                logger.info("代付成功");
+                logger.info("更新借据[facilityId" + receipt.getReceiptId() + "]的放款序号:" + tl.getSeq());
+                Map<String, Object> mapUpt = Maps.newHashMap();
+                mapUpt.put("exeSeq", tl.getSeq());
+                mapUpt.put("receiptId", receipt.getReceiptId());
+                mapUpt.put("lendingChannel", "0");
+                mapUpt.put("loanExecuteStatus", "20");
+                mapUpt.put("lnExctStsUpdtTm", new Date());
+                receiptManageBiz.updateReceiptInfo(mapUpt);
+                return true;
+            } else if ("FAIL".equals(respMap.get("status"))) {
+                logger.info("代付失败");
+                Map<String, Object> mapUpt = Maps.newHashMap();
+                mapUpt.put("exeSeq", tl.getSeq());
+                mapUpt.put("receiptId", receipt.getReceiptId());
+                mapUpt.put("lendingChannel", "0");
+                mapUpt.put("loanExecuteStatus", "19");
+                mapUpt.put("lnExctStsUpdtTm", new Date());
+                receiptManageBiz.updateReceiptInfo(mapUpt);
+                return false;
+            } else if ("PROCESSING".equals(respMap.get("status"))) {
+                logger.info("代付处理中");
+                Map<String, Object> mapUpt = Maps.newHashMap();
+                mapUpt.put("exeSeq", tl.getSeq());
+                mapUpt.put("receiptId", receipt.getReceiptId());
+                mapUpt.put("lendingChannel", "0");
+                mapUpt.put("loanExecuteStatus", "10");
+                mapUpt.put("lnExctStsUpdtTm", new Date());
+                receiptManageBiz.updateReceiptInfo(mapUpt);
+                return true;
+            }else{
+                logger.info("代付失败");
+                Map<String, Object> mapUpt = Maps.newHashMap();
+                mapUpt.put("exeSeq", tl.getSeq());
+                mapUpt.put("receiptId", receipt.getReceiptId());
+                mapUpt.put("lendingChannel", "0");
+                mapUpt.put("loanExecuteStatus", "19");
+                mapUpt.put("lnExctStsUpdtTm", new Date());
+                receiptManageBiz.updateReceiptInfo(mapUpt);
+                return false;
+            }
+        } catch (Exception e) {
+            logger.error("支付异常", e);
+            Map<String, Object> mapUpt = Maps.newHashMap();
+            mapUpt.put("exeSeq", tl.getSeq());
+            mapUpt.put("receiptId", receipt.getReceiptId());
+            mapUpt.put("lendingChannel", "0");
+            mapUpt.put("loanExecuteStatus", "19");
+            mapUpt.put("lnExctStsUpdtTm", new Date());
+            receiptManageBiz.updateReceiptInfo(mapUpt);
+            return false;
+        } finally {
+            /*记录交易日志*/
+            tl.setRspTime();
+            genericConfigService.insertTransactionLog(tl);
+        }
+    }
+
+    /**
+     * 代扣
+     * 
+     * @param paybackApply
+     * @return
+     */
+    private Map<String, Object> thirdRepayment() {
+        logger.info("代扣：还款申请" + paybackApply.getPaybackApplyId()+"开始······");
+        TCustomer customer = loanPosCustomerService.getCustumerInfoById(paybackApply.getCustId());
+        Map<String, Object> resultMap = Maps.newHashMap();
+        Map<String, Object> respMap = Maps.newHashMap();
+        Map<String, Object> collectionMap = Maps.newHashMap();
+        collectionMap.put("custName", customer.getCustName());
+        collectionMap.put("bankAccno", paybackApply.getAccNo());
+        collectionMap.put("paperId", customer.getPaperId());
+        collectionMap.put("amount", paybackApply.getPaybackTotalAmount());
+        TBankAccnoInfo bankAccnoInfo = loanPosCustomerService.getBanAccnoById(paybackApply
+            .getAccNo());
+        collectionMap.put("bankName", bankAccnoInfo.getBankName());
+        try {
+            respMap = collection(collectionMap);
+            if ("SUCCESS".equals(respMap.get("status"))) {
+                logger.info("代扣成功");
+                resultMap.put("resultCode", "SUCCESS");
+                resultMap.put("resultMsg", "代扣成功");
+                return resultMap;
+            } else if ("FAIL".equals(respMap.get("status"))) {
+                logger.info("代扣失败");
+                resultMap.put("resultCode", "FAIL");
+                resultMap.put("resultMsg", "代扣失败");
+                return resultMap;
+            } else if ("PROCESSING".equals(respMap.get("status"))) {
+                logger.info("处理中");
+                resultMap.put("resultCode", "PROCESSING");
+                resultMap.put("resultMsg", "代扣处理中");
+                return resultMap;
+            } else {
+                logger.info("代扣失败");
+                resultMap.put("resultCode", "FAIL");
+                resultMap.put("resultMsg", "代扣失败," + respMap.get("resultMessage"));
+                return resultMap;
+            }
+        } catch (Exception e) {
+            logger.error("代扣异常", e);
+            resultMap.put("resultCode", "EXCEPTION");
+            resultMap.put("resultMsg", "代扣处理异常");
+            return resultMap;
+        }
+    }
+
+    /**
+     * 代付
+     * 
+     * @param payMap
+     * @return
+     * @throws Exception
+     */
+    private Map<String, Object> pay(Map<String, Object> payMap) throws Exception {
+        Map<String, Object> respMap = Maps.newHashMap();
+        //请求
+        SinglePayRequest request = new SinglePayRequest();
+        request.setProductCode(ProductCode.CASH_FLOW.getValue());//产品编号
+        request.setChannelNo(payChannel);//支付渠道
+        request.setAccName((String) payMap.get("custName"));//账户名
+        request.setAccNum((String) payMap.get("bankAccno"));//账号
+        request.setAccType(AccountType.DEBIT.getValue());//银行卡类型
+        request.setCertType(CertType.CIVI_ID_CARD.getValue());//证件类型
+        request.setCertNo((String) payMap.get("paperId"));//证件号
+        request.setTransAmt(((BigDecimal) payMap.get("amount")).toString());
+        request.setTransDate(DateUtil.getNowTime());
+            String bankName = (String) payMap.get("bankName");
+            Map<String, Object> bankReqMap = Maps.newHashMap();
+            bankReqMap.put("type", "BankInfo");
+            bankReqMap.put("channel", "YJF");
+            bankReqMap.put("innerCode", bankName);
+            List<Map<String, Object>> bankRespMap = channelMapperDictionaryService.getCode(bankReqMap);
+            String outerCode = (String) bankRespMap.get(0).get("outerCode");
+        request.setBankCode(outerCode);
+        
+        //执行
+        logger.info("开始代付,请求request=" + request);
+        SinglePayResponse response = payCollectQueryHessian.singlePay(request);
+        logger.info("完成代付,返回response=" + response);
+        
+        //交易记录
+        TTransactionRelative tTransactionRelative = new TTransactionRelative();
+        tTransactionRelative.setBusinessId(receipt.getReceiptId());
+        tTransactionRelative.setRelativeId(response.getOrderNo());
+        tTransactionRelative.setTransactionOpponent(payChannel);
+        tTransactionRelative.setTransactionStatus(response.getStatus());
+        tTransactionRelative.setTransactionType(PayTypeEnum.PAY.getPayTypeCode());
+        tTransactionRelative.setCreateTime(new Date());
+        transactionRelativeService.saveTTransactionRelative(tTransactionRelative);
+        
+        //返回
+        respMap.put("status", response.getStatus());
+        respMap.put("orderNo", response.getOrderNo());
+        return respMap;
+    }
+
+    /**
+     * 代收
+     * 
+     * @param collectionMap
+     * @return
+     * @throws Exception
+     */
+    private Map<String, Object> collection(Map<String, Object> collectionMap) throws Exception {
+        // 请求
+        SingleCollectRequest request = new SingleCollectRequest();
+        request.setProductCode(ProductCode.CASH_FLOW.getValue());//产品编号
+        request.setChannelNo(payChannel);//支付渠道
+        request.setAccName((String) collectionMap.get("custName"));//账户名
+        request.setAccNum((String) collectionMap.get("bankAccno"));//账号
+        request.setAccType(AccountType.DEBIT.getValue());//银行卡类型
+        request.setCertType(CertType.CIVI_ID_CARD.getValue());//证件类型
+        request.setCertNo((String) collectionMap.get("paperId"));//证件号
+        request.setTransAmt(((BigDecimal) collectionMap.get("amount")).toString());
+        request.setTransDate(DateUtil.getNowTime());
+            String bankName = (String) collectionMap.get("bankName");
+            Map<String, Object> bankReqMap = Maps.newHashMap();
+            bankReqMap.put("type", "BankInfo");
+            bankReqMap.put("channel", "YJF");
+            bankReqMap.put("innerCode", bankName);
+            List<Map<String, Object>> bankRespMap = channelMapperDictionaryService.getCode(bankReqMap);
+            String outerCode = (String) bankRespMap.get(0).get("outerCode");
+        request.setBankCode(outerCode);
+        
+        //执行
+        logger.info("开始代收，请求request=" + request);
+        SingleCollectResponse response = payCollectQueryHessian.singleCollect(request);
+        logger.info("完成代收,返回response=" + response);
+        
+        //交易记录
+        TTransactionRelative tTransactionRelative = new TTransactionRelative();
+        tTransactionRelative.setBusinessId(paybackApply.getPaybackApplyId());
+        tTransactionRelative.setRelativeId(response.getOrderNo());
+        tTransactionRelative.setTransactionOpponent(payChannel);
+        tTransactionRelative.setTransactionStatus(response.getStatus());
+        tTransactionRelative.setTransactionType(PayTypeEnum.REPAY.getPayTypeCode());
+        tTransactionRelative.setCreateTime(new Date());
+        transactionRelativeService.saveTTransactionRelative(tTransactionRelative);
+        
+        //返回
+        Map<String, Object> respMap = Maps.newHashMap();
+        respMap.put("status", response.getStatus());
+        respMap.put("orderNo", response.getOrderNo());
+        respMap.put("resultMessage", response.getRespMessage());
+        return respMap;
+    }
+
+    /**
+     * 初始化service
+     * 
+     * @return
+     */
+    private boolean initService() {
+        try {
+            loanPosCustomerService = (LoanPosCustomerService) SpringBeans
+                .getBean("loanPosCustomerService");
+
+            receiptManageBiz = (IReceiptManageBiz) SpringBeans.getBean("receiptManageBiz");
+
+            genericConfigService = (IGenericConfigService) SpringBeans
+                .getBean("genericConfigService");
+
+            payCollectQueryHessian = (PayCollectQueryService) SpringBeans
+                .getBean("payCollectQueryHessian");
+
+            channelMapperDictionaryService = (ChannelMapperDictionaryService) SpringBeans
+                .getBean("channelMapperDictionaryService");
+
+            transactionRelativeService = (TransactionRelativeService) SpringBeans
+                .getBean("transactionRelativeService");
+            return true;
+        } catch (Exception e) {
+            logger.error("初始化失败", e);
+            return false;
+        }
+    }
+}

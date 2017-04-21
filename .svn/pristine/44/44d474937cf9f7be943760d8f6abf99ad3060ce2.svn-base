@@ -1,0 +1,140 @@
+package com.hrbb.loan.pos.dao.entity;
+
+import java.io.Serializable;
+
+public class TCreditReportIdentity implements Serializable{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 7791193832577309028L;
+
+	private String reportNo;
+
+    private String gender;
+
+    private String birthDate;
+
+    private String marital;
+
+    private String mobile;
+
+    private String officeTel;
+
+    private String homeTel;
+
+    private String education;
+
+    private String degree;
+
+    private String postAddr;
+
+    private String regiAddr;
+    
+    private String queryId;
+
+    /**
+	 * Getter method for property <tt>queryId</tt>.
+	 * 
+	 * @return property value of queryId
+	 */
+	public String getQueryId() {
+		return queryId;
+	}
+
+	/**
+	 * Setter method for property <tt>queryId</tt>.
+	 * 
+	 * @param queryId value to be assigned to property queryId
+	 */
+	public void setQueryId(String queryId) {
+		this.queryId = queryId;
+	}
+
+	public String getReportNo() {
+        return reportNo;
+    }
+
+    public void setReportNo(String reportNo) {
+        this.reportNo = reportNo == null ? null : reportNo.trim();
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender == null ? null : gender.trim();
+    }
+
+    public String getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(String birthDate) {
+        this.birthDate = birthDate == null ? null : birthDate.trim();
+    }
+
+    public String getMarital() {
+        return marital;
+    }
+
+    public void setMarital(String marital) {
+        this.marital = marital == null ? null : marital.trim();
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile == null ? null : mobile.trim();
+    }
+
+    public String getOfficeTel() {
+        return officeTel;
+    }
+
+    public void setOfficeTel(String officeTel) {
+        this.officeTel = officeTel == null ? null : officeTel.trim();
+    }
+
+    public String getHomeTel() {
+        return homeTel;
+    }
+
+    public void setHomeTel(String homeTel) {
+        this.homeTel = homeTel == null ? null : homeTel.trim();
+    }
+
+    public String getEducation() {
+        return education;
+    }
+
+    public void setEducation(String education) {
+        this.education = education == null ? null : education.trim();
+    }
+
+    public String getDegree() {
+        return degree;
+    }
+
+    public void setDegree(String degree) {
+        this.degree = degree == null ? null : degree.trim();
+    }
+
+    public String getPostAddr() {
+        return postAddr;
+    }
+
+    public void setPostAddr(String postAddr) {
+        this.postAddr = postAddr == null ? null : postAddr.trim();
+    }
+
+    public String getRegiAddr() {
+        return regiAddr;
+    }
+
+    public void setRegiAddr(String regiAddr) {
+        this.regiAddr = regiAddr == null ? null : regiAddr.trim();
+    }
+}

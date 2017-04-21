@@ -1,0 +1,18 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:fram="http://framework.facade.common.transcore.pinganfu.com/">
+	<soapenv:Header />
+	<soapenv:Body>
+		<fram:execFeeSplit>
+			<arg0>
+				<clientIp>0</clientIp>
+				<clientSource>0</clientSource>
+				<facadeVersion>0</facadeVersion>
+				<amount>400000</amount>
+				<extFeilds>{xxx:ds;yyy:dd}</extFeilds>
+				<toCustomerId>2000010000000004</toCustomerId> <!-- 123类型 -->
+				<transId>${transId}</transId>
+				<type>0</type>
+			</arg0>
+		</fram:execFeeSplit>
+	</soapenv:Body>
+</soapenv:Envelope>

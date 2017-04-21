@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+						http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+						http://www.springframework.org/schema/context 
+						http://www.springframework.org/schema/context/spring-context-3.2.xsd
+						http://www.springframework.org/schema/aop 
+						http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+						http://www.springframework.org/schema/tx 
+						http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+						http://www.springframework.org/schema/cache 
+						http://www.springframework.org/schema/cache/spring-cache-3.2.xsd
+						http://www.springframework.org/schema/mvc 
+						http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
+
+	<!--指定Spring IOC 容器扫描的包 -->
+	<context:component-scan base-package="com.hrbb.loan.web.security.impl,com.hrbb.loan.web.security.service,com.hrbb.loan.web.security.dao,com.hrbb.loan.web.security.interceptor,com.hrbb.loan.spi, com.hrbb.loan.hessian, com.hrbb.loan.channel, com.hrbb.loan.hessian.impl, com.hrbb.loan.thread, com.hrbb.loan.quartz,com.hrbb.loan.work, com.hrbb.loan.timer"/>
+	<import resource="classpath:config/context/applicationContext-quartz.xml"/>
+	<!--系统环境 -->
+	<bean id="systemInfo"
+		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="location"
+			value="classpath:config/properties/systemInfo.properties" />
+	</bean>
+	<bean id="hSmsService" name="hSmsService" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<!-- <property name="serviceUrl" value="http://35.8.5.48:11097/frontier/remoting/sendSM" /> -->
+		<!-- <property name="serviceUrl" value="http://10.1.5.224:11097/frontier/remoting/sendSM" /> -->
+		<property name="serviceUrl" value="http://35.8.5.48:11097/frontier/remoting/sendSM" />
+		<property name="serviceInterface" value="com.hrbb.sh.framework.SendSMMessageService" />
+	</bean>
+	
+	<bean id="connectPolice"
+		class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<property name="serviceUrl"
+			value="http://35.8.5.48:11097/frontier/remoting/connectPolice" />
+		<property name="serviceInterface" value="com.hrbb.sh.framework.ConnectPoliceService" />
+	</bean>
+	
+	<bean id="connectAIC" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<property name="serviceUrl"
+			value="http://35.8.5.48:11097/frontier/remoting/connectAIC" />
+		<property name="serviceInterface" value="com.hrbb.sh.framework.ConnectAICService" />
+	</bean>
+	
+	<bean id="bankCardCheck" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<property name="serviceUrl" value="http://35.8.5.48:11097/frontier/remoting/bankCardCheck"/>
+		<property name="serviceInterface" value="com.hrbb.sh.framework.BankCardCheckService"/>
+	</bean>
+	
+	<bean id="hftpService" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<property name="serviceUrl" value="http://35.8.5.48:11097/frontier/remoting/hftpService" />
+		<!-- <property name="serviceUrl" value="http://10.1.5.224:11097/frontier/remoting/hftpService" /> -->
+		<property name="serviceInterface" value="com.hrbb.sh.framework.ftpproxy.HFTPService" />
+	</bean>
+
+	
+	
+	
+
+
+	
+	<bean id="ftpTransUpload" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<property name="serviceUrl" value="http://35.8.33.21:11096/loan-ftp-web/ftpTransUpload.do" />
+		<property name="serviceInterface" value="com.hrbb.loan.ftp.web.controller.FtpTransUpload" />
+	</bean>
+	
+	<!-- <bean id="madeLoanProcessBizHession" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<property name="serviceUrl" value="http://35.8.33.21:9080/loan-acct-web/remoting/madeLoanProcesshession" />
+		<property name="serviceInterface" value="com.hrbb.loan.acct.facade.MadeLoanProcessBizHession" />
+	</bean>
+ -->
+    <bean id="madeLoanProcessBizHession" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<!-- <property name="serviceUrl" value="http://10.1.5.225:11098/loan-acct-web/remoting/madeLoanProcesshession" /> -->
+		<property name="serviceUrl" value="http://35.8.33.21:9080/loan-acct-web/remoting/madeLoanProcesshession"/>
+		<property name="serviceInterface" value="com.hrbb.loan.acct.facade.MadeLoanProcessBizHession"/>
+	</bean>
+	
+	<bean id="toUM" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<!-- 请求代理Servlet路径 -->		
+		<property name="serviceUrl">
+             <value>http://35.8.5.48:11097/frontier/remoting/toUm</value>
+             <!-- <value>http://127.0.0.1:8080/h-frontier/remoting/toUm</value> -->
+		</property>
+		<!-- 接口定义 -->
+		<property name="serviceInterface">
+			<value>com.hrbb.sh.framework.HService</value>
+		</property>
+	</bean>
+	<bean id="to58" class="org.springframework.remoting.caucho.HessianProxyFactoryBean" scope="prototype">
+		<!-- 请求代理Servlet路径 -->		
+		<property name="serviceUrl">
+             <value>http://35.8.5.48:11097/frontier/remoting/to58</value>
+             <!-- <value>http://127.0.0.1:8080/h-frontier/remoting/toUm</value> -->
+		</property>
+		<!-- 接口定义 -->
+		<property name="serviceInterface">
+			<value>com.hrbb.loan.pos.biz.backstage.inter.impl.HServicetc</value>
+		</property>
+	</bean>
+	<bean id="umpUserService" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<property name="serviceUrl" value="http://10.1.5.225:58080/ump-web/hessian/userFacade" />
+		<property name="serviceInterface" value="com.hrbb.ump.facade.general.user.UserFacade" />
+	</bean>
+	<bean id="umpMessageService" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<property name="serviceUrl" value="http://10.1.5.225:58080/ump-web/hessian/messageFacade" />
+		<property name="serviceInterface" value="com.hrbb.ump.facade.general.message.MessageFacade" />
+	</bean>
+	<bean id="zzAppTranser" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<property name="serviceUrl" value="http://35.8.5.48:11097/frontier/remoting/zzAppTranser"/>
+		<property name="serviceInterface" value="com.hrbb.sh.framework.ZZAppTranserTaskService"/>
+	</bean>
+	
+	<bean id="sendMessageBiz" class="com.hrbb.loan.pos.biz.backstage.inter.impl.SendMessageBizImpl">
+		<property name="hServiceum" ref="toUM"/>
+		<property name="hService58" ref="to58"/>
+	</bean>
+	
+	<!-- <bean id="httpRequestSender" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<property name="serviceUrl" value="http://35.8.5.48:11097/frontier/remoting/httpRequestSender" />
+		<property name="serviceInterface" value="com.hrbb.sh.framework.HttpRequestSender" />
+	</bean> -->
+	
+	<bean id="httpRequestSender" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<property name="serviceUrl" value="http://221.212.155.77:11097/frontier/remoting/httpRequestSender" />
+		<property name="serviceInterface" value="com.hrbb.sh.framework.HttpRequestSender" />
+	</bean>
+</beans>

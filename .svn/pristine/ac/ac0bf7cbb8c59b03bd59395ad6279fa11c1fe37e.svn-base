@@ -1,0 +1,201 @@
+package com.hrbb.loan.pos.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.hrbb.loan.pos.dao.entity.TBdExecutor;
+import com.hrbb.loan.pos.dao.entity.TBdInstitution;
+import com.hrbb.loan.pos.dao.entity.TBdRegion;
+
+/**
+ * 展业管理
+ * 
+ * @author cjq
+ * @version $Id: BDManagementService.java, v 0.1 2015年9月10日 下午2:42:29 cjq Exp $
+ */
+public interface BDManagementService {
+    
+    /**
+     * 展业机构列表
+     * 
+     * @return
+     */
+    List<TBdInstitution> queryTbdInstitutions(Map<String,Object> reqMap);
+
+    /**
+     * 展业机构条数
+     * 
+     * @param reqMap
+     * @return
+     */
+    Long countTbdInstitutions(Map<String, Object> reqMap);
+    
+    
+    /**
+     * 展业机构人员
+     * 
+     * @param reqMap
+     * @return
+     */
+    List<TBdExecutor> queryBDExecutors(Map<String,Object> reqMap);
+    
+    /**
+     * 展业机构人员条数
+     * 
+     * @param reqMap
+     * @return
+     */
+    Long countTbdExecutors(Map<String,Object> reqMap);
+    
+    /**
+     * 通过机构号查询机构
+     * 
+     * @param BelongOrg
+     * @return
+     */
+    TBdInstitution selectByBelongOrg(Integer BelongOrg);
+    
+    /**
+     * 通过机构号名称机构
+     * 
+     * @param BelongOrg
+     * @return
+     */
+    TBdInstitution selectByBelongOrgName(String belongOrgName);
+    
+    /**
+     * 新增展业机构
+     * 
+     * @param reqMap
+     * @return
+     */
+    int saveInstitution(Map<String,Object> reqMap);
+
+    /**
+     * 修改展业机构
+     * 
+     * @param reqMap
+     * @return
+     */
+    int modifyInstitution(Map<String, Object> reqMap);
+
+    /**
+     * 查询所有展业机构
+     * 
+     * @return
+     */
+    List<TBdInstitution> queryTbdInstitutions();
+    
+    /**
+     * 新增展业人员
+     * 
+     * @param reqMap
+     * @return
+     */
+    int saveExecutor(Map<String,Object> reqMap);
+
+    /**
+     * 保存展业人员
+     * 
+     * @param bdExecutor
+     * @return
+     */
+    int importExcelExecutor(TBdExecutor bdExecutor);
+    
+    /**
+     * 修改展业人员
+     * 
+     * @param reqMap
+     * @return
+     */
+    int modifyExector(Map<String,Object> reqMap);
+    
+    /**
+     * 修改对应机构下的人员激活状态
+     * 
+     * @param reqMap
+     * @return
+     */
+    int modifyExecutorByBelongOrgName(String belongOrgName, Integer belongOrg);
+    
+    /**
+     * 逻辑删除展业人员
+     * 
+     * @param menberId
+     * @return
+     */
+    int deleteExector(Integer menberId);
+
+    /**
+     * 激活展业人员
+     * 
+     * @param menberId
+     * @return
+     */
+    int activeExector(Integer menberId);
+    
+    /**
+     * 主键查询展业人员
+     * 
+     * @param menberId
+     * @return
+     */
+    TBdExecutor selectByMenberId(Integer menberId);
+
+    /**
+     * 通过简称查询展业机构
+     * 
+     * @param alias
+     * @return
+     */
+    TBdInstitution selectByAlias(String alias);
+    
+    
+    /**
+     * 查询机构展业区域
+     * 
+     * @param reqMap
+     * @return
+     */
+    List<TBdRegion> queryTBdRegion(Map<String, Object> reqMap);
+    
+    /**
+     * 保存机构展业区域
+     * 
+     * @param tBdRegion
+     * @return
+     */
+    int saveRegion(TBdRegion tBdRegion);
+    
+    /**
+     * 删除展业区域
+     * 
+     * @param reqMap
+     * @return
+     */
+    int delRegion(Map<String, Object> reqMap);
+    
+    /**
+     * 查询展业区域总数
+     * 
+     * @param reqMap
+     * @return
+     */
+    Long countRegion(Map<String, Object> reqMap);
+    
+    /**
+     * 查询展业区域
+     * 
+     * @param reqMap
+     * @return
+     */
+    List<TBdRegion> selectTBRegionsByReqMap(Map<String,Object> reqMap);
+
+    /**
+     * 查询指定展业区域配置信息
+     * 
+     * @param reqMap
+     * @return
+     */
+    List<TBdRegion> queryTBbRegionsByCode(Map<String, Object> reqMap);
+}

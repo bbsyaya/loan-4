@@ -1,0 +1,51 @@
+package com.hrbb.loan.pos.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import com.hrbb.loan.pos.dao.entity.TBusinessDictionary;
+
+public interface TBusinessDictionaryDao {
+	int deleteByPrimaryKey(Integer id);
+
+	int insert(TBusinessDictionary record);
+
+	int insertSelective(TBusinessDictionary record);
+
+	TBusinessDictionary selectByPrimaryKey(Integer id);
+
+	int updateByPrimaryKeySelective(TBusinessDictionary record);
+
+	int updateByPrimaryKey(TBusinessDictionary record);
+
+	public List<Map<String, Object>> getBusinessCode(Map<String, Object> reqMap);
+
+	public TBusinessDictionary selectOne(TBusinessDictionary record);
+
+	/**
+	 * 通过displayNo控制展示顺序
+	 * 
+	 * @param codeNo
+	 * @return
+	 */
+	public List<Map<String, Object>> getItemNamesWithExtOrder(
+			Map<String, Object> reqMap);
+
+	/**
+	 * 根据审批意见外部的编号，取得所有审批意见外部内容
+	 * 
+	 * @param apprInfoExt
+	 * @return
+	 */
+	public String getApprInfoExtMsg(String apprInfoExt);
+	
+	public List<Map<String, Object>> selectRefuseReaonMap(Map<String, Object> reqMap);
+	
+	/**
+	 * 一次查询多个数据项
+	 * @param codeNo
+	 * @param ids
+	 * @return
+	 */
+	public List<TBusinessDictionary> selectByIds(String codeNo, String[] ids);
+}

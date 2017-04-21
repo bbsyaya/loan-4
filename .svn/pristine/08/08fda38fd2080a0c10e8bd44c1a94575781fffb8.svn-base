@@ -1,0 +1,2068 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditApplyMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditApply" >
+    <id column="loanId" property="loanId" jdbcType="VARCHAR" />
+    <result column="custId" property="custId" jdbcType="VARCHAR" />
+    <result column="custName" property="custName" jdbcType="VARCHAR" />
+    <result column="prodId" property="prodId" jdbcType="VARCHAR" />
+    <result column="prodName" property="prodName" jdbcType="VARCHAR" />
+    <result column="currSign" property="currSign" jdbcType="VARCHAR" />
+    <result column="applyAmt" property="applyAmt"/>
+    <result column="termUnit" property="termUnit" jdbcType="VARCHAR" />
+    <result column="applyTerm" property="applyTerm" jdbcType="VARCHAR" />
+    <result column="beginDate" property="beginDate" jdbcType="TIMESTAMP" />
+    <result column="acptDate" property="acptDate" jdbcType="TIMESTAMP" />
+    <result column="assuKind" property="assuKind" jdbcType="VARCHAR" />
+    <result column="returnKind" property="returnKind" jdbcType="VARCHAR" />
+    <result column="returnKind2" property="returnKind2" jdbcType="VARCHAR" />
+    <result column="amt" property="amt"/>
+    <result column="subFlag" property="subFlag" jdbcType="VARCHAR" />
+    <result column="interestKind" property="interestKind" jdbcType="VARCHAR" />
+    <result column="interestCalkind" property="interestCalkind" jdbcType="VARCHAR" />
+    <result column="reckDay" property="reckDay" jdbcType="VARCHAR" />
+    <result column="turnGraceDay" property="turnGraceDay" jdbcType="VARCHAR" />
+    <result column="returnDay" property="returnDay" jdbcType="VARCHAR" />
+    <result column="industryTypeId" property="industryTypeId" jdbcType="VARCHAR" />
+    <result column="industryTypeName" property="industryTypeName" jdbcType="VARCHAR" />
+    <result column="loanUsage" property="loanUsage" jdbcType="VARCHAR" />
+    <result column="loanUsageDesc" property="loanUsageDesc" jdbcType="VARCHAR" />
+    <result column="returnSourceDesc" property="returnSourceDesc" jdbcType="VARCHAR" />
+    <result column="isExceLoanFlag" property="isExceLoanFlag" jdbcType="VARCHAR" />
+    <result column="bankId" property="bankId" jdbcType="VARCHAR" />
+    <result column="operId" property="operId" jdbcType="VARCHAR" />
+    <result column="applyStatus" property="applyStatus" jdbcType="VARCHAR" />
+    <result column="lastOperId" property="lastOperId" jdbcType="VARCHAR" />
+    <result column="lastOperBankId" property="lastOperBankId" jdbcType="VARCHAR" />
+    <result column="lastOperTime" property="lastOperTime" jdbcType="TIMESTAMP" />
+    <result column="coopAgreementNo" property="coopAgreementNo" jdbcType="VARCHAR" />
+    <result column="fundSource" property="fundSource" jdbcType="VARCHAR" />
+    <result column="infoInputPerson" property="infoInputPerson" jdbcType="VARCHAR" />
+    <result column="infoCheckPerson" property="infoCheckPerson" jdbcType="VARCHAR" />
+    <result column="creditRecheckPerson" property="creditRecheckPerson" jdbcType="VARCHAR" />
+    <result column="dueDiligencePerson" property="dueDiligencePerson" jdbcType="VARCHAR" />
+    <result column="custServPerson" property="custServPerson" jdbcType="VARCHAR" />
+    <result column="creditRank" property="creditRank" jdbcType="VARCHAR" />
+    <result column="creditLine" property="creditLine"/>
+    <result column="lowRiskType" property="lowRiskType" jdbcType="VARCHAR" />
+    <result column="posOrg" property="posOrg" jdbcType="VARCHAR" />
+    <result column="deleteFlag" property="deleteFlag"/>
+    <result column="posCustId" property="posCustId"/>
+    <result column="posCustName" property="posCustName"/>
+    <result column="creditInteret" property="creditInteret"/>
+    <result column="region" property="region"/>
+    <result column="tradeArea" property="tradeArea"/>
+    <result column="creditResult" property="creditResult"/>
+    <result column="operName" property="operName"/>
+    <result column="lastStep" property="lastStep"/>
+    <result column="lastStepOperName" property="lastStepOperName"/>
+    <result column="channel" property="channel"/>
+    <result column="relativeId" property="relativeId"/>
+    <result column="mobilePhone" property="mobilePhone"/>
+    <result column="tel" property="tel"/>
+    <result column="mateMobilephone" property="mateMobilephone"/>
+    <result column="relaMobilePhone" property="relaMobilePhone"/>
+    <result column="relaTel" property="relaTel"/>
+    <result column="peopleBankPhone" property="peopleBankPhone"/>
+    <result column="backReason" property="backReason"/>
+    <result column="applyStatusName" property="applyStatusName"/>
+    <result column="channelName" property="channelName"/>
+    <result column="inChannelKind" property="inChannelKind"/>
+    <result column="inChannelKindName" property="inChannelKindName"/>
+    <result column="currSignName" property="currSignName"/>
+    <result column="returnKindName" property="returnKindName"/>
+    <result column="stdshno" property="stdshno"/>
+    <result column="repayMethod" property="repayMethod"/>
+    <result column="recOrg" property="recOrg"/>
+    <result column="recPerson" property="recPerson"/>
+    <result column="imagefilepackagename" property="imageFilePackageName"/>
+    <result column="stdmerno" property="stdmerno"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    loanId, custId, custName, prodId, prodName, currSign, applyAmt, termUnit, applyTerm, 
+    beginDate, acptDate, assuKind, returnKind, returnKind2, amt, subFlag, interestKind, 
+    interestCalkind, reckDay, turnGraceDay, returnDay, industryTypeId, industryTypeName, 
+    loanUsage, loanUsageDesc, returnSourceDesc, isExceLoanFlag, bankId, operId, applyStatus, 
+    lastOperId, lastOperBankId, lastOperTime, coopAgreementNo, fundSource, infoInputPerson, 
+    infoCheckPerson, creditRecheckPerson, dueDiligencePerson, custServPerson, creditRank, 
+    creditLine, lowRiskType, posOrg, deleteFlag, t1.posCustId, t1.posCustName,creditInterest
+	,region
+	,tradeArea
+	,creditResult
+	,operName
+	,lastStep
+	,lastStepOperName
+	,channel
+    ,stdshno, stdmerno
+  </sql>
+  <sql id="Base_Column_List2" >
+    t1.loanId, t1.custId, t2.custName, t1.prodId, t1.prodName, t1.currSign, t1.applyAmt, t1.termUnit, t1.applyTerm, 
+    t1.beginDate, t1.acptDate, t1.assuKind, t1.returnKind, t1.returnKind2, t1.amt, t1.subFlag, t1.interestKind, 
+    t1.interestCalkind, t1.reckDay, t1.turnGraceDay, t1.returnDay, t1.industryTypeId, t1.industryTypeName, 
+    t1.loanUsage, t1.loanUsageDesc, t1.returnSourceDesc, t1.isExceLoanFlag, t1.bankId, t1.operId, t1.applyStatus, 
+    t1.lastOperId, t1.lastOperBankId, t1.lastOperTime, t1.coopAgreementNo, t1.fundSource, t1.infoInputPerson, 
+    t1.infoCheckPerson, t1.creditRecheckPerson, t1.dueDiligencePerson, t1.custServPerson, t1.creditRank, 
+    t1.creditLine, t1.lowRiskType, t1.posOrg, t1.deleteFlag, t1.posCustId, t1.posCustName,t1.creditInterest
+	,t1.region, t1.inChannelKind
+	,t1.tradeArea
+	,t1.creditResult
+	,t1.operName
+	,t1.lastStep
+	,t1.lastStepOperName
+	,t1.channel, t1.bankAccno, t2.mobilePhone, t1.regPersonId, t1.regDate, t1.relativeId , t1.stdshno
+	,t1.imagefilepackagename, t1.repayMethod,t1.bizLoanId,recOrg,recPerson,recContactNo,stdmerno
+    
+  </sql>
+  <sql id="Base_Column_List3" >
+    loanId, custId, custName, prodId, prodName, currSign, applyAmt, termUnit, applyTerm, 
+    beginDate, acptDate, assuKind, returnKind, returnKind2, amt, subFlag, interestKind, 
+    interestCalkind, reckDay, turnGraceDay, returnDay, industryTypeId, industryTypeName, 
+    loanUsage, loanUsageDesc, returnSourceDesc, isExceLoanFlag, bankId, operId, applyStatus, 
+    lastOperId, lastOperBankId, lastOperTime, coopAgreementNo, fundSource, infoInputPerson, 
+    infoCheckPerson, creditRecheckPerson, dueDiligencePerson, custServPerson, creditRank, 
+    creditLine, lowRiskType, posOrg, deleteFlag, creditInterest
+	,region
+	,tradeArea
+	,creditResult
+	,operName
+	,lastStep
+	,lastStepOperName
+	,channel
+    ,inChannelKind,posCustId,posCustName,bankAccno,stdshno,repayMethod,recOrg,recPerson,imagefilepackagename,stdmerno
+  </sql>
+  <select id="queryCreditApplyInfo" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List3" />
+    from t_credit_apply_info
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </select>
+  <select id="getCustIdbyStdshno" resultType="java.lang.String" parameterType="java.lang.String" >
+    select custId
+    from t_credit_apply_info
+    where stdshno = #{stdshno,jdbcType=VARCHAR}
+  </select>
+  <select id="getLoanIdbyStdshno" resultType="java.lang.String" parameterType="java.lang.String" >
+    select loanId
+    from t_credit_apply_info
+    where stdshno = #{stdshno,jdbcType=VARCHAR}
+  </select>
+  <select id="getLoanIdbyPosCustId" resultType="java.lang.String" parameterType="java.lang.String" >
+    select custId
+    from t_credit_apply_info
+    where posCustId = #{posCustId,jdbcType=VARCHAR}
+  </select>
+  <select id="getCustIdbyPosCustId" resultType="java.lang.String" parameterType="java.lang.String" >
+    select custId
+    from t_credit_apply_info
+    where posCustId = #{posCustId,jdbcType=VARCHAR}
+  </select>
+  <select id="getStdshnobyLoanId" resultType="java.lang.String" parameterType="java.lang.String" >
+    select stdshno
+    from t_credit_apply_info
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectSelective" resultMap="BaseResultMap" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_apply_info t1
+    where 1=1
+    <if test="loanId != null">
+    	AND loanId = #{loanId}
+    </if>
+    <if test="deleteFlag != null">
+    	AND deleteFlag = #{deleteFlag}
+    </if>
+    <if test="startPage != null">
+    	LIMIT #{startPage}, #{limit}
+    </if>
+  </select>
+  <select id="countSelective" resultType="Long" parameterType="Map">
+  	SELECT COUNT(*) FROM t_credit_apply_info t1, t_customer_info t2
+  	WHERE 1=1 AND t1.custId = t2.custId
+  	<if test="loanId != null">
+    	AND t1.loanId = #{loanId}
+    </if>
+    <if test="loanIdLike != null">
+    	AND t1.loanId like #{loanIdLike}
+    </if>
+    <if test="posCustNameLike != null">
+    	AND t1.posCustName like #{posCustNameLike}
+    </if>
+    <if test="custIdLike != null">
+    	AND t2.custId like #{custIdLike}
+    </if>
+    <if test="custNameLike != null">
+    	AND t2.custName like #{custNameLike} 
+    </if>
+    <if test="paperIdLike != null">
+    	AND t2.paperId like #{paperIdLike}
+    </if>
+    <if test="recOrgLike != null">
+    	AND t1.recOrg like #{recOrgLike}
+    </if>
+    <if test="recPersonLike != null">
+    	AND t1.recPerson like #{recPersonLike}
+    </if>
+    <if test="deleteFlag != null">
+    	AND deleteFlag = #{deleteFlag}
+    </if>
+    <if test="applyStatus != null">
+    	AND applyStatus = #{applyStatus}
+    </if>
+    <if test="isApplyStatus != null">
+    	AND applyStatus in ('20','21','31','32','33','34','41')
+    </if>
+    <if test="stdshno != null">
+    	AND t1.stdshno = #{stdshno}
+    </if>
+    <if test="channel != null">
+    	AND t1.channel = #{channel}
+    </if>
+  </select>
+  <select id="selectSelectiveMap" resultType="Map" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List2" />
+    from t_credit_apply_info t1, t_customer_info t2
+    where 1=1 AND t1.custId = t2.custId
+    <if test="loanId != null">
+    	AND t1.loanId = #{loanId}
+    </if>
+    <if test="loanIdLike != null">
+    	AND t1.loanId like #{loanIdLike}
+    </if>
+    <if test="bizLoanIdLike != null">
+    	AND t1.bizLoanId like #{bizLoanIdLike}
+    </if>
+    <if test="posCustNameLike != null">
+    	AND t1.posCustName like #{posCustNameLike}
+    </if>
+    <if test="custIdLike != null">
+    	AND t2.custId like #{custIdLike}
+    </if>
+    <if test="custNameLike != null">
+    	AND t2.custName like #{custNameLike} 
+    </if>
+    <if test="paperIdLike != null">
+    	AND t2.paperId like #{paperIdLike}
+    </if>
+    <if test="recOrgLike != null">
+    	AND t1.recOrg like #{recOrgLike}
+    </if>
+    <if test="recPersonLike != null">
+    	AND t1.recPerson like #{recPersonLike}
+    </if>
+    <if test="deleteFlag != null">
+    	AND deleteFlag = #{deleteFlag}
+    </if>
+    <if test="applyStatus != null">
+    	AND applyStatus = #{applyStatus}
+    </if>
+    <if test="isApplyStatus != null">
+    	AND applyStatus in ('20','21','31','32','33','34','41')
+    </if>
+    <if test="stdshno != null">
+    	AND stdshno = #{stdshno}
+    </if>
+    <if test="channel != null">
+    	AND t1.channel = #{channel}
+    </if>
+    <if test="equalOperId != null">
+    	AND t1.operId = #{equalOperId}
+    </if>
+    ORDER BY beginDate DESC
+    <if test="startPage != null">
+    	LIMIT #{startPage}, #{limit}
+    </if>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_credit_apply_info
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </delete>
+  
+  <delete id="deleteBatch" parameterType="List">
+  	DELETE FROM t_credit_apply_info 
+  	WHERE loanId in
+  	<foreach item="loanId" collection="loanIds" open="(" separator="," close=")">
+  		#{loanId}
+  	</foreach>
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApply" >
+    insert into t_credit_apply_info (loanId, custId, custName, 
+      prodId, prodName, currSign, 
+      applyAmt, termUnit, applyTerm, 
+      beginDate, acptDate, assuKind, 
+      returnKind, returnKind2, amt, 
+      subFlag, interestKind, interestCalkind, 
+      reckDay, turnGraceDay, returnDay, 
+      industryTypeId, industryTypeName, loanUsage, 
+      loanUsageDesc, returnSourceDesc, isExceLoanFlag, 
+      bankId, operId, applyStatus, 
+      lastOperId, lastOperBankId, lastOperTime, 
+      coopAgreementNo, fundSource, infoInputPerson, 
+      infoCheckPerson, creditRecheckPerson, dueDiligencePerson, 
+      custServPerson, creditRank, creditLine, 
+      lowRiskType, posOrg, deleteFlag, stdshno)
+    values (#{loanId,jdbcType=VARCHAR}, #{custId,jdbcType=VARCHAR}, #{custName,jdbcType=VARCHAR}, 
+      #{prodId,jdbcType=VARCHAR}, #{prodName,jdbcType=VARCHAR}, #{currSign,jdbcType=VARCHAR}, 
+      #{applyAmt,jdbcType=DECIMAL}, #{termUnit,jdbcType=VARCHAR}, #{applyTerm,jdbcType=VARCHAR}, 
+      #{beginDate,jdbcType=TIMESTAMP}, #{acptDate,jdbcType=TIMESTAMP}, #{assuKind,jdbcType=VARCHAR}, 
+      #{returnKind,jdbcType=VARCHAR}, #{returnKind2,jdbcType=VARCHAR}, #{amt,jdbcType=DECIMAL}, 
+      #{subFlag,jdbcType=VARCHAR}, #{interestKind,jdbcType=VARCHAR}, #{interestCalkind,jdbcType=VARCHAR}, 
+      #{reckDay,jdbcType=VARCHAR}, #{turnGraceDay,jdbcType=VARCHAR}, #{returnDay,jdbcType=VARCHAR}, 
+      #{industryTypeId,jdbcType=VARCHAR}, #{industryTypeName,jdbcType=VARCHAR}, #{loanUsage,jdbcType=VARCHAR}, 
+      #{loanUsageDesc,jdbcType=VARCHAR}, #{returnSourceDesc,jdbcType=VARCHAR}, #{isExceLoanFlag,jdbcType=VARCHAR}, 
+      #{bankId,jdbcType=VARCHAR}, #{operId,jdbcType=VARCHAR}, #{applyStatus,jdbcType=VARCHAR}, 
+      #{lastOperId,jdbcType=VARCHAR}, #{lastOperBankId,jdbcType=VARCHAR}, #{lastOperTime,jdbcType=TIMESTAMP}, 
+      #{coopAgreementNo,jdbcType=VARCHAR}, #{fundSource,jdbcType=VARCHAR}, #{infoInputPerson,jdbcType=VARCHAR}, 
+      #{infoCheckPerson,jdbcType=VARCHAR}, #{creditRecheckPerson,jdbcType=VARCHAR}, #{dueDiligencePerson,jdbcType=VARCHAR}, 
+      #{custServPerson,jdbcType=VARCHAR}, #{creditRank,jdbcType=VARCHAR}, #{creditLine,jdbcType=DECIMAL}, 
+      #{lowRiskType,jdbcType=VARCHAR}, #{posOrg,jdbcType=VARCHAR}, #{deleteFlag}, #{stdshno,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApply" >
+    insert into t_credit_apply_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="loanId != null" >
+        loanId,
+      </if>
+      <if test="deleteFlag != null">
+      	deleteFlag,
+      </if>
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="custName != null" >
+        custName,
+      </if>
+      <if test="prodId != null" >
+        prodId,
+      </if>
+      <if test="prodName != null" >
+        prodName,
+      </if>
+      <if test="currSign != null" >
+        currSign,
+      </if>
+      <if test="applyAmt != null" >
+        applyAmt,
+      </if>
+      <if test="termUnit != null" >
+        termUnit,
+      </if>
+      <if test="applyTerm != null" >
+        applyTerm,
+      </if>
+      <if test="beginDate != null" >
+        beginDate,
+      </if>
+      <if test="acptDate != null" >
+        acptDate,
+      </if>
+      <if test="assuKind != null" >
+        assuKind,
+      </if>
+      <if test="returnKind != null" >
+        returnKind,
+      </if>
+      <if test="returnKind2 != null" >
+        returnKind2,
+      </if>
+      <if test="amt != null" >
+        amt,
+      </if>
+      <if test="subFlag != null" >
+        subFlag,
+      </if>
+      <if test="interestKind != null" >
+        interestKind,
+      </if>
+      <if test="interestCalkind != null" >
+        interestCalkind,
+      </if>
+      <if test="reckDay != null" >
+        reckDay,
+      </if>
+      <if test="turnGraceDay != null" >
+        turnGraceDay,
+      </if>
+      <if test="returnDay != null" >
+        returnDay,
+      </if>
+      <if test="industryTypeId != null" >
+        industryTypeId,
+      </if>
+      <if test="industryTypeName != null" >
+        industryTypeName,
+      </if>
+      <if test="loanUsage != null" >
+        loanUsage,
+      </if>
+      <if test="loanUsageDesc != null" >
+        loanUsageDesc,
+      </if>
+      <if test="returnSourceDesc != null" >
+        returnSourceDesc,
+      </if>
+      <if test="isExceLoanFlag != null" >
+        isExceLoanFlag,
+      </if>
+      <if test="bankId != null" >
+        bankId,
+      </if>
+      <if test="operId != null" >
+        operId,
+      </if>
+      <if test="applyStatus != null" >
+        applyStatus,
+      </if>
+      <if test="lastOperId != null" >
+        lastOperId,
+      </if>
+      <if test="lastOperBankId != null" >
+        lastOperBankId,
+      </if>
+      <if test="lastOperTime != null" >
+        lastOperTime,
+      </if>
+      <if test="coopAgreementNo != null" >
+        coopAgreementNo,
+      </if>
+      <if test="fundSource != null" >
+        fundSource,
+      </if>
+      <if test="infoInputPerson != null" >
+        infoInputPerson,
+      </if>
+      <if test="infoCheckPerson != null" >
+        infoCheckPerson,
+      </if>
+      <if test="creditRecheckPerson != null" >
+        creditRecheckPerson,
+      </if>
+      <if test="dueDiligencePerson != null" >
+        dueDiligencePerson,
+      </if>
+      <if test="custServPerson != null" >
+        custServPerson,
+      </if>
+      <if test="creditRank != null" >
+        creditRank,
+      </if>
+      <if test="creditLine != null" >
+        creditLine,
+      </if>
+      <if test="lowRiskType != null" >
+        lowRiskType,
+      </if>
+      <if test="posOrg != null" >
+        posOrg,
+      </if>
+      <if test="stdshno != null" >
+        stdshno,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="loanId != null" >
+        #{loanId,jdbcType=VARCHAR},
+      </if>
+      <if test="deleteFlag != null">
+      	#{deleteFlag}
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="custName != null" >
+        #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="prodId != null" >
+        #{prodId,jdbcType=VARCHAR},
+      </if>
+      <if test="prodName != null" >
+        #{prodName,jdbcType=VARCHAR},
+      </if>
+      <if test="currSign != null" >
+        #{currSign,jdbcType=VARCHAR},
+      </if>
+      <if test="applyAmt != null" >
+        #{applyAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="termUnit != null" >
+        #{termUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="applyTerm != null" >
+        #{applyTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null" >
+        #{beginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="acptDate != null" >
+        #{acptDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="assuKind != null" >
+        #{assuKind,jdbcType=VARCHAR},
+      </if>
+      <if test="returnKind != null" >
+        #{returnKind,jdbcType=VARCHAR},
+      </if>
+      <if test="returnKind2 != null" >
+        #{returnKind2,jdbcType=VARCHAR},
+      </if>
+      <if test="amt != null" >
+        #{amt,jdbcType=DECIMAL},
+      </if>
+      <if test="subFlag != null" >
+        #{subFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="interestKind != null" >
+        #{interestKind,jdbcType=VARCHAR},
+      </if>
+      <if test="interestCalkind != null" >
+        #{interestCalkind,jdbcType=VARCHAR},
+      </if>
+      <if test="reckDay != null" >
+        #{reckDay,jdbcType=VARCHAR},
+      </if>
+      <if test="turnGraceDay != null" >
+        #{turnGraceDay,jdbcType=VARCHAR},
+      </if>
+      <if test="returnDay != null" >
+        #{returnDay,jdbcType=VARCHAR},
+      </if>
+      <if test="industryTypeId != null" >
+        #{industryTypeId,jdbcType=VARCHAR},
+      </if>
+      <if test="industryTypeName != null" >
+        #{industryTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="loanUsage != null" >
+        #{loanUsage,jdbcType=VARCHAR},
+      </if>
+      <if test="loanUsageDesc != null" >
+        #{loanUsageDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="returnSourceDesc != null" >
+        #{returnSourceDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="isExceLoanFlag != null" >
+        #{isExceLoanFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="bankId != null" >
+        #{bankId,jdbcType=VARCHAR},
+      </if>
+      <if test="operId != null" >
+        #{operId,jdbcType=VARCHAR},
+      </if>
+      <if test="applyStatus != null" >
+        #{applyStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="lastOperId != null" >
+        #{lastOperId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastOperBankId != null" >
+        #{lastOperBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastOperTime != null" >
+        #{lastOperTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="coopAgreementNo != null" >
+        #{coopAgreementNo,jdbcType=VARCHAR},
+      </if>
+      <if test="fundSource != null" >
+        #{fundSource,jdbcType=VARCHAR},
+      </if>
+      <if test="infoInputPerson != null" >
+        #{infoInputPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="infoCheckPerson != null" >
+        #{infoCheckPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="creditRecheckPerson != null" >
+        #{creditRecheckPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="dueDiligencePerson != null" >
+        #{dueDiligencePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="custServPerson != null" >
+        #{custServPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="creditRank != null" >
+        #{creditRank,jdbcType=VARCHAR},
+      </if>
+      <if test="creditLine != null" >
+        #{creditLine,jdbcType=DECIMAL},
+      </if>
+      <if test="lowRiskType != null" >
+        #{lowRiskType,jdbcType=VARCHAR},
+      </if>
+      <if test="posOrg != null" >
+        #{posOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="stdshno != null" >
+        #{stdshno,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="Map" >
+    insert into t_credit_apply_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="loanId != null" >
+        loanId,
+      </if>
+      <if test="deleteFlag != null">
+      	deleteFlag,
+      </if>
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="custName != null" >
+        custName,
+      </if>
+      <if test="prodId != null" >
+        prodId,
+      </if>
+      <if test="prodName != null" >
+        prodName,
+      </if>
+      <if test="currSign != null" >
+        currSign,
+      </if>
+      <if test="applyAmt != null" >
+        applyAmt,
+      </if>
+      <if test="termUnit != null" >
+        termUnit,
+      </if>
+      <if test="applyTerm != null" >
+        applyTerm,
+      </if>
+      <if test="beginDate != null" >
+        beginDate,
+      </if>
+      <if test="acptDate != null" >
+        acptDate,
+      </if>
+      <if test="assuKind != null" >
+        assuKind,
+      </if>
+      <if test="returnKind != null" >
+        returnKind,
+      </if>
+      <if test="returnKind2 != null" >
+        returnKind2,
+      </if>
+      <if test="amt != null" >
+        amt,
+      </if>
+      <if test="subFlag != null" >
+        subFlag,
+      </if>
+      <if test="interestKind != null" >
+        interestKind,
+      </if>
+      <if test="interestCalkind != null" >
+        interestCalkind,
+      </if>
+      <if test="reckDay != null" >
+        reckDay,
+      </if>
+      <if test="turnGraceDay != null" >
+        turnGraceDay,
+      </if>
+      <if test="returnDay != null" >
+        returnDay,
+      </if>
+      <if test="industryTypeId != null" >
+        industryTypeId,
+      </if>
+      <if test="industryTypeName != null" >
+        industryTypeName,
+      </if>
+      <if test="loanUsage != null" >
+        loanUsage,
+      </if>
+      <if test="loanUsageDesc != null" >
+        loanUsageDesc,
+      </if>
+      <if test="returnSourceDesc != null" >
+        returnSourceDesc,
+      </if>
+      <if test="isExceLoanFlag != null" >
+        isExceLoanFlag,
+      </if>
+      <if test="bankId != null" >
+        bankId,
+      </if>
+      <if test="operId != null" >
+        operId,
+      </if>
+      <if test="applyStatus != null" >
+        applyStatus,
+      </if>
+      <if test="lastOperId != null" >
+        lastOperId,
+      </if>
+      <if test="lastOperBankId != null" >
+        lastOperBankId,
+      </if>
+      <if test="lastOperTime != null" >
+        lastOperTime,
+      </if>
+      <if test="coopAgreementNo != null" >
+        coopAgreementNo,
+      </if>
+      <if test="fundSource != null" >
+        fundSource,
+      </if>
+      <if test="infoInputPerson != null" >
+        infoInputPerson,
+      </if>
+      <if test="infoCheckPerson != null" >
+        infoCheckPerson,
+      </if>
+      <if test="creditRecheckPerson != null" >
+        creditRecheckPerson,
+      </if>
+      <if test="dueDiligencePerson != null" >
+        dueDiligencePerson,
+      </if>
+      <if test="custServPerson != null" >
+        custServPerson,
+      </if>
+      <if test="creditRank != null" >
+        creditRank,
+      </if>
+      <if test="creditLine != null" >
+        creditLine,
+      </if>
+      <if test="lowRiskType != null" >
+        lowRiskType,
+      </if>
+      <if test="posOrg != null" >
+        posOrg,
+      </if>
+      <if test="posCustId != null">
+      	posCustId,
+      </if>
+      <if test="posCustName != null">
+      	posCustName,
+      </if>
+      <if test="creditInterest != null">
+      	creditInterest,
+      </if>
+      <if test="region != null">
+      	region,
+      </if>
+      <if test="tradeArea != null">
+      	tradeArea,
+      </if>
+      <if test="creditResult != null">
+      	creditResult,
+      </if>
+      <if test="operName != null">
+      	operName,
+      </if>
+      <if test="lastStep != null">
+      	lastStep,
+      </if>
+      <if test="lastStepOperName != null">
+      	lastStepOperName,
+      </if>
+      <if test="channel != null">
+      	channel,
+      </if>
+      <if test="bankAccno != null">
+      	bankAccno,
+      </if>
+      <if test="regPersonId != null">
+      	regPersonId,
+      </if>
+      <if test="regDate != null">
+      	regDate,
+      </if>
+      <if test="relativeId != null">
+      	relativeId,
+      </if>
+      <if test="inChannelKind != null">
+      	inChannelKind,
+      </if>
+      <if test="stdshno != null">
+      	stdshno,
+      </if>
+      <if test="occurType != null">
+      	occurType,
+      </if>
+      <if test="imagefilepackagename != null">
+      	imagefilepackagename,
+      </if>
+      <if test="repayMethod != null">
+      	repayMethod,
+      </if>
+      <if test="bizLoanId != null">
+      	bizLoanId,
+      </if>
+      <if test="recOrg != null">
+      	recOrg,
+      </if>
+      <if test="recPerson != null">
+       recPerson,
+      </if>
+      <if test="recContactNo != null">
+       recContactNo,
+      </if>
+      <if test="stdmerno != null">
+      	stdmerno,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="loanId != null" >
+        #{loanId,jdbcType=VARCHAR},
+      </if>
+      <if test="deleteFlag != null">
+      	#{deleteFlag}
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="custName != null" >
+        #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="prodId != null" >
+        #{prodId,jdbcType=VARCHAR},
+      </if>
+      <if test="prodName != null" >
+        #{prodName,jdbcType=VARCHAR},
+      </if>
+      <if test="currSign != null" >
+        #{currSign,jdbcType=VARCHAR},
+      </if>
+      <if test="applyAmt != null" >
+        #{applyAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="termUnit != null" >
+        #{termUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="applyTerm != null" >
+        #{applyTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null" >
+        #{beginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="acptDate != null" >
+        #{acptDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="assuKind != null" >
+        #{assuKind,jdbcType=VARCHAR},
+      </if>
+      <if test="returnKind != null" >
+        #{returnKind,jdbcType=VARCHAR},
+      </if>
+      <if test="returnKind2 != null" >
+        #{returnKind2,jdbcType=VARCHAR},
+      </if>
+      <if test="amt != null" >
+        #{amt,jdbcType=DECIMAL},
+      </if>
+      <if test="subFlag != null" >
+        #{subFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="interestKind != null" >
+        #{interestKind,jdbcType=VARCHAR},
+      </if>
+      <if test="interestCalkind != null" >
+        #{interestCalkind,jdbcType=VARCHAR},
+      </if>
+      <if test="reckDay != null" >
+        #{reckDay,jdbcType=VARCHAR},
+      </if>
+      <if test="turnGraceDay != null" >
+        #{turnGraceDay,jdbcType=VARCHAR},
+      </if>
+      <if test="returnDay != null" >
+        #{returnDay,jdbcType=VARCHAR},
+      </if>
+      <if test="industryTypeId != null" >
+        #{industryTypeId,jdbcType=VARCHAR},
+      </if>
+      <if test="industryTypeName != null" >
+        #{industryTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="loanUsage != null" >
+        #{loanUsage,jdbcType=VARCHAR},
+      </if>
+      <if test="loanUsageDesc != null" >
+        #{loanUsageDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="returnSourceDesc != null" >
+        #{returnSourceDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="isExceLoanFlag != null" >
+        #{isExceLoanFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="bankId != null" >
+        #{bankId,jdbcType=VARCHAR},
+      </if>
+      <if test="operId != null" >
+        #{operId,jdbcType=VARCHAR},
+      </if>
+      <if test="applyStatus != null" >
+        #{applyStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="lastOperId != null" >
+        #{lastOperId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastOperBankId != null" >
+        #{lastOperBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastOperTime != null" >
+        #{lastOperTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="coopAgreementNo != null" >
+        #{coopAgreementNo,jdbcType=VARCHAR},
+      </if>
+      <if test="fundSource != null" >
+        #{fundSource,jdbcType=VARCHAR},
+      </if>
+      <if test="infoInputPerson != null" >
+        #{infoInputPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="infoCheckPerson != null" >
+        #{infoCheckPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="creditRecheckPerson != null" >
+        #{creditRecheckPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="dueDiligencePerson != null" >
+        #{dueDiligencePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="custServPerson != null" >
+        #{custServPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="creditRank != null" >
+        #{creditRank,jdbcType=VARCHAR},
+      </if>
+      <if test="creditLine != null" >
+        #{creditLine,jdbcType=DECIMAL},
+      </if>
+      <if test="lowRiskType != null" >
+        #{lowRiskType,jdbcType=VARCHAR},
+      </if>
+      <if test="posOrg != null" >
+        #{posOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustId != null">
+      	#{posCustId},
+      </if>
+      <if test="posCustName != null">
+      	#{posCustName},
+      </if>
+      <if test="creditInterest != null">
+      	#{creditInterest},
+      </if>
+      <if test="region != null">
+      	#{region},
+      </if>
+      <if test="tradeArea != null">
+      	#{tradeArea},
+      </if>
+      <if test="creditResult != null">
+      	#{creditResult},
+      </if>
+      <if test="operName != null">
+      	#{operName},
+      </if>
+      <if test="lastStep != null">
+      	#{lastStep},
+      </if>
+      <if test="lastStepOperName != null">
+      	#{lastStepOperName},
+      </if>
+      <if test="channel != null">
+      	#{channel},
+      </if>
+      <if test="bankAccno != null">
+      	#{bankAccno},
+      </if>
+      <if test="regPersonId != null">
+      	#{regPersonId},
+      </if>
+      <if test="regDate != null">
+      	#{regDate},
+      </if>
+      <if test="relativeId != null">
+      	#{relativeId},
+      </if>
+      <if test="inChannelKind != null">
+      	#{inChannelKind},
+      </if>
+      <if test="stdshno != null">
+      	#{stdshno},
+      </if>
+      <if test="occurType != null">
+      	#{occurType},
+      </if>
+      <if test="imagefilepackagename != null">
+      	#{imagefilepackagename},
+      </if>
+      <if test="repayMethod != null">
+      	#{repayMethod},
+      </if>
+      <if test="bizLoanId != null">
+      	#{bizLoanId},
+      </if>
+      <if test="recOrg != null">
+      	#{recOrg},
+      </if>
+      <if test="recPerson != null">
+        #{recPerson},
+      </if>
+      <if test="recContactNo != null">
+        #{recContactNo},
+      </if>
+      <if test="stdmerno != null">
+      	#{stdmerno},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateBatch" parameterType="java.util.List">
+  	<foreach collection="list" item="item" index="index" open="" close="" separator=";">
+                update t_credit_apply_info 
+                <set>
+                  deleteFlag=${item.deleteFlag}
+                </set>
+                where loanId = ${item.loanId}
+         </foreach>
+  </update>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApply" >
+    update t_credit_apply_info
+    <set >
+      <if test="custId != null" >
+        custId = #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="custName != null" >
+        custName = #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="deleteFlag != null">
+      	deleteFlag = #{deleteFlag},
+      </if>
+      <if test="prodId != null" >
+        prodId = #{prodId,jdbcType=VARCHAR},
+      </if>
+      <if test="prodName != null" >
+        prodName = #{prodName,jdbcType=VARCHAR},
+      </if>
+      <if test="currSign != null" >
+        currSign = #{currSign,jdbcType=VARCHAR},
+      </if>
+      <if test="applyAmt != null" >
+        applyAmt = #{applyAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="termUnit != null" >
+        termUnit = #{termUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="applyTerm != null" >
+        applyTerm = #{applyTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null" >
+        beginDate = #{beginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="acptDate != null" >
+        acptDate = #{acptDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="assuKind != null" >
+        assuKind = #{assuKind,jdbcType=VARCHAR},
+      </if>
+      <if test="returnKind != null" >
+        returnKind = #{returnKind,jdbcType=VARCHAR},
+      </if>
+      <if test="returnKind2 != null" >
+        returnKind2 = #{returnKind2,jdbcType=VARCHAR},
+      </if>
+      <if test="amt != null" >
+        amt = #{amt,jdbcType=DECIMAL},
+      </if>
+      <if test="subFlag != null" >
+        subFlag = #{subFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="interestKind != null" >
+        interestKind = #{interestKind,jdbcType=VARCHAR},
+      </if>
+      <if test="interestCalkind != null" >
+        interestCalkind = #{interestCalkind,jdbcType=VARCHAR},
+      </if>
+      <if test="reckDay != null" >
+        reckDay = #{reckDay,jdbcType=VARCHAR},
+      </if>
+      <if test="turnGraceDay != null" >
+        turnGraceDay = #{turnGraceDay,jdbcType=VARCHAR},
+      </if>
+      <if test="returnDay != null" >
+        returnDay = #{returnDay,jdbcType=VARCHAR},
+      </if>
+      <if test="industryTypeId != null" >
+        industryTypeId = #{industryTypeId,jdbcType=VARCHAR},
+      </if>
+      <if test="industryTypeName != null" >
+        industryTypeName = #{industryTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="loanUsage != null" >
+        loanUsage = #{loanUsage,jdbcType=VARCHAR},
+      </if>
+      <if test="loanUsageDesc != null" >
+        loanUsageDesc = #{loanUsageDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="returnSourceDesc != null" >
+        returnSourceDesc = #{returnSourceDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="isExceLoanFlag != null" >
+        isExceLoanFlag = #{isExceLoanFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="bankId != null" >
+        bankId = #{bankId,jdbcType=VARCHAR},
+      </if>
+      <if test="operId != null" >
+        operId = #{operId,jdbcType=VARCHAR},
+      </if>
+      <if test="applyStatus != null" >
+        applyStatus = #{applyStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="lastOperId != null" >
+        lastOperId = #{lastOperId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastOperBankId != null" >
+        lastOperBankId = #{lastOperBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastOperTime != null" >
+        lastOperTime = #{lastOperTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="coopAgreementNo != null" >
+        coopAgreementNo = #{coopAgreementNo,jdbcType=VARCHAR},
+      </if>
+      <if test="fundSource != null" >
+        fundSource = #{fundSource,jdbcType=VARCHAR},
+      </if>
+      <if test="infoInputPerson != null" >
+        infoInputPerson = #{infoInputPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="infoCheckPerson != null" >
+        infoCheckPerson = #{infoCheckPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="creditRecheckPerson != null" >
+        creditRecheckPerson = #{creditRecheckPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="dueDiligencePerson != null" >
+        dueDiligencePerson = #{dueDiligencePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="custServPerson != null" >
+        custServPerson = #{custServPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="creditRank != null" >
+        creditRank = #{creditRank,jdbcType=VARCHAR},
+      </if>
+      <if test="creditLine != null" >
+        creditLine = #{creditLine,jdbcType=DECIMAL},
+      </if>
+      <if test="lowRiskType != null" >
+        lowRiskType = #{lowRiskType,jdbcType=VARCHAR},
+      </if>
+      <if test="posOrg != null" >
+        posOrg = #{posOrg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </update>
+  
+  <update id="updateByPrimaryKeySelectiveMap" parameterType="map" >
+    update t_credit_apply_info
+    <set >
+      <if test="custId != null" >
+        custId = #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="custName != null" >
+        custName = #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="prodId != null" >
+        prodId = #{prodId,jdbcType=VARCHAR},
+      </if>
+      <if test="prodName != null" >
+        prodName = #{prodName,jdbcType=VARCHAR},
+      </if>
+      <if test="currSign != null" >
+        currSign = #{currSign,jdbcType=VARCHAR},
+      </if>
+      <if test="applyAmt != null" >
+        applyAmt = #{applyAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="termUnit != null" >
+        termUnit = #{termUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="applyTerm != null" >
+        applyTerm = #{applyTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null" >
+        beginDate = #{beginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="acptDate != null" >
+        acptDate = #{acptDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="assuKind != null" >
+        assuKind = #{assuKind,jdbcType=VARCHAR},
+      </if>
+      <if test="returnKind != null" >
+        returnKind = #{returnKind,jdbcType=VARCHAR},
+      </if>
+      <if test="returnKind2 != null" >
+        returnKind2 = #{returnKind2,jdbcType=VARCHAR},
+      </if>
+      <if test="amt != null" >
+        amt = #{amt,jdbcType=DECIMAL},
+      </if>
+      <if test="subFlag != null" >
+        subFlag = #{subFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="interestKind != null" >
+        interestKind = #{interestKind,jdbcType=VARCHAR},
+      </if>
+      <if test="interestCalkind != null" >
+        interestCalkind = #{interestCalkind,jdbcType=VARCHAR},
+      </if>
+      <if test="reckDay != null" >
+        reckDay = #{reckDay,jdbcType=VARCHAR},
+      </if>
+      <if test="turnGraceDay != null" >
+        turnGraceDay = #{turnGraceDay,jdbcType=VARCHAR},
+      </if>
+      <if test="returnDay != null" >
+        returnDay = #{returnDay,jdbcType=VARCHAR},
+      </if>
+      <if test="industryTypeId != null" >
+        industryTypeId = #{industryTypeId,jdbcType=VARCHAR},
+      </if>
+      <if test="industryTypeName != null" >
+        industryTypeName = #{industryTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="loanUsage != null" >
+        loanUsage = #{loanUsage,jdbcType=VARCHAR},
+      </if>
+      <if test="loanUsageDesc != null" >
+        loanUsageDesc = #{loanUsageDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="returnSourceDesc != null" >
+        returnSourceDesc = #{returnSourceDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="isExceLoanFlag != null" >
+        isExceLoanFlag = #{isExceLoanFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="bankId != null" >
+        bankId = #{bankId,jdbcType=VARCHAR},
+      </if>
+      <if test="operId != null" >
+        operId = #{operId,jdbcType=VARCHAR},
+      </if>
+      <if test="applyStatus != null" >
+        applyStatus = #{applyStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="lastOperId != null" >
+        lastOperId = #{lastOperId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastOperBankId != null" >
+        lastOperBankId = #{lastOperBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastOperTime != null" >
+        lastOperTime = #{lastOperTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="coopAgreementNo != null" >
+        coopAgreementNo = #{coopAgreementNo,jdbcType=VARCHAR},
+      </if>
+      <if test="fundSource != null" >
+        fundSource = #{fundSource,jdbcType=VARCHAR},
+      </if>
+      <if test="infoInputPerson != null" >
+        infoInputPerson = #{infoInputPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="infoCheckPerson != null" >
+        infoCheckPerson = #{infoCheckPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="creditRecheckPerson != null" >
+        creditRecheckPerson = #{creditRecheckPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="dueDiligencePerson != null" >
+        dueDiligencePerson = #{dueDiligencePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="custServPerson != null" >
+        custServPerson = #{custServPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="creditRank != null" >
+        creditRank = #{creditRank,jdbcType=VARCHAR},
+      </if>
+      <if test="creditLine != null" >
+        creditLine = #{creditLine,jdbcType=DECIMAL},
+      </if>
+      <if test="lowRiskType != null" >
+        lowRiskType = #{lowRiskType,jdbcType=VARCHAR},
+      </if>
+      <if test="posOrg != null" >
+        posOrg = #{posOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="deleteFlag != null">
+      	deleteFlag = #{deleteFlag},
+      </if>
+      <if test="posCustId != null">
+      	posCustId = #{posCustId},
+      </if>
+      <if test="posCustName != null">
+      	posCustName = #{posCustName},
+      </if>
+      <if test="creditInterest != null">
+      	creditInterest = #{creditInterest},
+      </if>
+      <if test="region != null">
+      	region = #{region},
+      </if>
+      <if test="tradeArea != null">
+      	tradeArea = #{tradeArea},
+      </if>
+      <if test="creditResult != null">
+      	creditResult = #{creditResult},
+      </if>
+      <if test="operName != null">
+      	operName = #{operName},
+      </if>
+      <if test="lastStep != null">
+      	lastStep = #{lastStep},
+      </if>
+      <if test="lastStepOperName != null">
+      	lastStepOperName = #{lastStepOperName},
+      </if>
+      <if test="channel != null">
+      	channel = #{channel},
+      </if>
+      <if test="bankAccno != null">
+      	bankAccno = #{bankAccno},
+      </if>
+      <if test="inChannelKind != null">
+      	inChannelKind = #{inChannelKind},
+      </if>
+      <if test="repayMethod != null">
+      	repayMethod = #{repayMethod},
+      </if>
+      <if test="recOrg != null">
+      	recOrg = #{recOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="recPerson != null">
+        recPerson = #{recPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="recContactNo != null">
+        recContactNo = #{recContactNo,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </update>
+  
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApply" >
+    update t_credit_apply_info
+    set custId = #{custId,jdbcType=VARCHAR},
+      custName = #{custName,jdbcType=VARCHAR},
+      prodId = #{prodId,jdbcType=VARCHAR},
+      prodName = #{prodName,jdbcType=VARCHAR},
+      currSign = #{currSign,jdbcType=VARCHAR},
+      applyAmt = #{applyAmt,jdbcType=DECIMAL},
+      termUnit = #{termUnit,jdbcType=VARCHAR},
+      applyTerm = #{applyTerm,jdbcType=VARCHAR},
+      beginDate = #{beginDate,jdbcType=TIMESTAMP},
+      acptDate = #{acptDate,jdbcType=TIMESTAMP},
+      assuKind = #{assuKind,jdbcType=VARCHAR},
+      returnKind = #{returnKind,jdbcType=VARCHAR},
+      returnKind2 = #{returnKind2,jdbcType=VARCHAR},
+      amt = #{amt,jdbcType=DECIMAL},
+      subFlag = #{subFlag,jdbcType=VARCHAR},
+      interestKind = #{interestKind,jdbcType=VARCHAR},
+      interestCalkind = #{interestCalkind,jdbcType=VARCHAR},
+      reckDay = #{reckDay,jdbcType=VARCHAR},
+      turnGraceDay = #{turnGraceDay,jdbcType=VARCHAR},
+      returnDay = #{returnDay,jdbcType=VARCHAR},
+      industryTypeId = #{industryTypeId,jdbcType=VARCHAR},
+      industryTypeName = #{industryTypeName,jdbcType=VARCHAR},
+      loanUsage = #{loanUsage,jdbcType=VARCHAR},
+      loanUsageDesc = #{loanUsageDesc,jdbcType=VARCHAR},
+      returnSourceDesc = #{returnSourceDesc,jdbcType=VARCHAR},
+      isExceLoanFlag = #{isExceLoanFlag,jdbcType=VARCHAR},
+      bankId = #{bankId,jdbcType=VARCHAR},
+      operId = #{operId,jdbcType=VARCHAR},
+      applyStatus = #{applyStatus,jdbcType=VARCHAR},
+      lastOperId = #{lastOperId,jdbcType=VARCHAR},
+      lastOperBankId = #{lastOperBankId,jdbcType=VARCHAR},
+      lastOperTime = #{lastOperTime,jdbcType=TIMESTAMP},
+      coopAgreementNo = #{coopAgreementNo,jdbcType=VARCHAR},
+      fundSource = #{fundSource,jdbcType=VARCHAR},
+      infoInputPerson = #{infoInputPerson,jdbcType=VARCHAR},
+      infoCheckPerson = #{infoCheckPerson,jdbcType=VARCHAR},
+      creditRecheckPerson = #{creditRecheckPerson,jdbcType=VARCHAR},
+      dueDiligencePerson = #{dueDiligencePerson,jdbcType=VARCHAR},
+      custServPerson = #{custServPerson,jdbcType=VARCHAR},
+      creditRank = #{creditRank,jdbcType=VARCHAR},
+      creditLine = #{creditLine,jdbcType=DECIMAL},
+      lowRiskType = #{lowRiskType,jdbcType=VARCHAR},
+      posOrg = #{posOrg,jdbcType=VARCHAR},
+      stdshno = #{stdshno,jdbcType=VARCHAR}
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </update>
+   <update id="updateApplyStatusForDownloadImages" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApply">
+    update t_credit_apply_info
+    <set>
+        applyStatus = #{applyStatus,jdbcType=VARCHAR}
+    </set>
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectSelectiveForReview" resultMap="BaseResultMap" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApply" >
+    select 
+    t1.loanId, t1.applyAmt, t1.beginDate, t1.channel, t1.custName, t1.posCustName, t1.tradeArea, t1.applyStatus, t1.operName, 
+    t1.applyTerm,t1.bizLoanId, 
+    t2.mobilePhone, t2.tel, t2.mateMobilephone, t2.paperId,
+    t3.relaMobilePhone, t3.relaTel,
+    t1.inChannelKind,
+	t1.currSign,
+	t1.returnKind,
+	t1.termUnit,
+	t1.prodId,
+	t1.region
+    from t_credit_apply_info t1, t_customer_info t2,t_relative_info t3
+    where t1.custId = t2.custId
+    and t1.relativeId = t3.relativeId
+    and t1.applyStatus != '93' 
+    and t1.deleteFlag = '0' 
+    <choose>
+        <when test="opflag == 0">
+            and ( 1 != 1
+            <if test="privilege0 != null">
+	    		or (t1.applyStatus = '10' and t1.infoInputPerson is null)
+		    </if>
+            <if test="privilege1 != null">
+	    		or (t1.applyStatus in ('20','21') and t1.infoCheckPerson is null)
+		    </if>
+            <if test="privilege21 != null">
+	    		or (t1.applyStatus in ('31','32') and t1.creditRecheckPerson is null)
+		    </if>
+            <if test="privilege22 != null">
+	    		or (t1.applyStatus in ('31','32','33') and t1.creditRecheckPerson is null)
+		    </if>
+            <if test="privilege23 != null">
+	    		or (t1.applyStatus = '34' and t1.creditRecheckPerson is null)
+		    </if>
+            <if test="privilege3 != null">
+	    		or (t1.applyStatus = '41' and t1.dueDiligencePerson is null)
+		    </if>
+		    )
+        </when>
+        <when test="opflag == 1">
+            and ( 1 != 1
+            <if test="privilege0 != null">
+	    		or (t1.applyStatus = '10' and t1.infoInputPerson = #{operName})
+		    </if>
+            <if test="privilege1 != null">
+	    		or (t1.applyStatus in ('20','21') and t1.infoCheckPerson = #{operName})
+		    </if>
+            <if test="privilege21 != null">
+	    		or (t1.applyStatus in ('31','32') and t1.creditRecheckPerson = #{operName})
+		    </if>
+            <if test="privilege22 != null">
+	    		or (t1.applyStatus in ('31','32','33') and t1.creditRecheckPerson = #{operName})
+		    </if>
+            <if test="privilege23 != null">
+	    		or (t1.applyStatus = '34' and t1.creditRecheckPerson = #{operName})
+		    </if>
+            <if test="privilege3 != null">
+	    		or (t1.applyStatus = '41' and t1.dueDiligencePerson = #{operName})
+		    </if>
+		    )
+        </when>
+        <otherwise>
+			and t1.loanId in ( select distinct loanId from t_credit_apply_aprv_info where apprvId = #{operName} and appEndTime is not NULL)
+            and t1.loanId not in ( select distinct loanId from t_credit_apply_aprv_info where apprvId = #{operName} and appEndTime is NULL)
+        </otherwise>
+    </choose>
+    <if test="bizLoanId != null">
+    	AND t1.bizLoanId = #{bizLoanId}
+    </if>
+    <if test="loanId != null">
+    	AND t1.loanId = #{loanId}
+    </if>
+    <if test="posCustName != null">
+    	AND t1.posCustName like #{posCustName}
+    </if>
+    <if test="custId != null">
+    	AND t1.custId = #{custId}
+    </if>
+    <if test="custName != null">
+    	AND t1.custName like #{custName}
+    </if>
+    order by t1.beginDate desc
+    <if test="startPage != null">
+    	LIMIT #{startPage}, #{limit}
+    </if>
+  </select>
+  <select id="selectSelectiveForReviewCount" resultType="Long" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApply" >
+    select count(t1.loanId)
+    from t_credit_apply_info t1 
+    where t1.applyStatus != '93' and t1.deleteFlag = '0' 
+    <choose>
+        <when test="opflag == 0">
+            and ( 1 != 1
+            <if test="privilege0 != null">
+	    		or (t1.applyStatus = '10' and t1.infoInputPerson is null)
+		    </if>
+            <if test="privilege1 != null">
+	    		or (t1.applyStatus in ('20','21') and t1.infoCheckPerson is null)
+		    </if>
+            <if test="privilege21 != null">
+	    		or (t1.applyStatus in ('31','32') and t1.creditRecheckPerson is null)
+		    </if>
+            <if test="privilege22 != null">
+	    		or (t1.applyStatus in ('31','32','33') and t1.creditRecheckPerson is null)
+		    </if>
+            <if test="privilege23 != null">
+	    		or (t1.applyStatus = '34' and t1.creditRecheckPerson is null)
+		    </if>
+            <if test="privilege3 != null">
+	    		or (t1.applyStatus = '41' and t1.dueDiligencePerson is null)
+		    </if>
+		    )
+        </when>
+        <when test="opflag == 1">
+            and ( 1 != 1
+            <if test="privilege0 != null">
+	    		or (t1.applyStatus = '10' and t1.infoInputPerson = #{operName})
+		    </if>
+            <if test="privilege1 != null">
+	    		or (t1.applyStatus in ('20','21') and t1.infoCheckPerson = #{operName})
+		    </if>
+            <if test="privilege21 != null">
+	    		or (t1.applyStatus in ('31','32') and t1.creditRecheckPerson = #{operName})
+		    </if>
+            <if test="privilege22 != null">
+	    		or (t1.applyStatus in ('31','32','33') and t1.creditRecheckPerson = #{operName})
+		    </if>
+            <if test="privilege23 != null">
+	    		or (t1.applyStatus = '34' and t1.creditRecheckPerson = #{operName})
+		    </if>
+            <if test="privilege3 != null">
+	    		or (t1.applyStatus = '41' and t1.dueDiligencePerson = #{operName})
+		    </if>
+		    )
+        </when>
+        <otherwise>
+			and t1.loanId in ( select distinct loanId from t_credit_apply_aprv_info where apprvId = #{operName} and appEndTime is not NULL)
+            and t1.loanId not in ( select distinct loanId from t_credit_apply_aprv_info where apprvId = #{operName} and appEndTime is NULL)
+        </otherwise>
+    </choose>
+    <if test="bizLoanId != null">
+    	AND t1.bizLoanId = #{bizLoanId}
+    </if>
+    <if test="loanId != null">
+    	AND t1.loanId = #{loanId}
+    </if>
+    <if test="posCustName != null">
+    	AND t1.posCustName like #{posCustName}
+    </if>
+    <if test="custId != null">
+    	AND t1.custId = #{custId}
+    </if>
+    <if test="custName != null">
+    	AND t1.custName like #{custName}
+    </if>
+  </select>
+  <update id="updateForClaim" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApply" >
+    update t_credit_apply_info set
+    <if test="privilege0 != null">
+   		infoInputPerson = #{operName},
+    </if>
+    <if test="privilege1 != null">
+   		infoCheckPerson = #{operName},
+    </if>
+    <if test="privilege2 != null">
+   		creditRecheckPerson = #{operName},
+    </if>
+    <if test="privilege3 != null">
+   		dueDiligencePerson = #{operName},
+    </if>
+    lastOperId = #{lastOperId,jdbcType=VARCHAR},
+    lastOperTime = #{lastOperTime,jdbcType=TIMESTAMP}
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateForNotClaim" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApply" >
+    update t_credit_apply_info set
+    <if test="privilege0 != null">
+   		infoInputPerson = null,
+    </if>
+    <if test="privilege1 != null">
+   		infoCheckPerson = null,
+    </if>
+    <if test="privilege2 != null">
+   		creditRecheckPerson = null,
+    </if>
+    <if test="privilege3 != null">
+   		dueDiligencePerson = null,
+    </if>
+    backReason = #{backReason,jdbcType=VARCHAR},
+    lastOperId = #{lastOperId,jdbcType=VARCHAR},
+    lastOperTime = #{lastOperTime,jdbcType=TIMESTAMP}
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateForReview" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApply" >
+    update t_credit_apply_info
+    <set>
+      <if test="prodId != null" >
+        prodId = #{prodId,jdbcType=VARCHAR},
+      </if>
+      <if test="prodName != null" >
+	    prodName = #{prodName,jdbcType=VARCHAR},
+      </if>
+      <if test="applyStatus == 33" >
+        creditRecheckPerson = null,
+      </if>
+      <if test="applyStatus == 34" >
+        creditRecheckPerson = null,
+      </if>
+        applyStatus = #{applyStatus,jdbcType=VARCHAR},
+        lastOperId = #{lastOperId,jdbcType=VARCHAR},
+        lastOperTime = #{lastOperTime,jdbcType=TIMESTAMP}
+    </set>
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateForReviewBackTo" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApply">
+    update t_credit_apply_info
+    <set>
+        applyStatus = #{applyStatus,jdbcType=VARCHAR},
+        lastOperId = #{lastOperId,jdbcType=VARCHAR},
+        lastOperTime = #{lastOperTime,jdbcType=TIMESTAMP},
+      <if test="infoCheckPerson == null" >
+        creditRecheckPerson = #{creditRecheckPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="infoCheckPerson != null" >
+        infoCheckPerson = #{infoCheckPerson,jdbcType=VARCHAR},
+        creditRecheckPerson = null,
+      </if>
+        dueDiligencePerson = null
+    </set>
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateForReviewAddInfo" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApply">
+    update t_credit_apply_info
+    <set>
+      <!-- <if test="applyStatus == 21" >
+        infoCheckPerson = null,
+      </if>
+      <if test="applyStatus == 32" >
+        creditRecheckPerson = null,
+      </if> -->
+        applyStatus = #{applyStatus,jdbcType=VARCHAR},
+        lastOperId = #{lastOperId,jdbcType=VARCHAR},
+        lastOperTime = #{lastOperTime,jdbcType=TIMESTAMP}
+    </set>
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectForRiskDetection" resultType="Map" parameterType="java.lang.String">
+    select ca.channel,
+           ci.custName,ci.mobilePhone,ci.tel,ci.paperKind, ci.paperId,ci.mateMobilephone,ci.residentDetail,ci.matePaperKind,ci.matePaperId,
+           pi.legalPersonName,pi.posCustBusiScope,pi.posCustAddress,pi.posCustName,pi.industryTypeId,pi.industryTypeId2, pi.regiCode,pi.legalPersonName,pi.registDate,
+           substr(pi.operAddrCode,1,2) operAddrCode,ca.applyStatus,ca.prodId,ci.busiYear,ci.familyCustName
+    from      t_credit_apply_info ca 
+    left join t_poscust_info      pi on pi.posCustId = ca.posCustId
+    left join t_customer_info     ci on ci.custId = ca.custId
+    where ca.deleteFlag = '0' and ca.loanId = #{loanId}
+  </select>
+  <select id="selectHistory" resultMap="BaseResultMap" parameterType="Map">
+    select ca.loanId,ca.beginDate,bdas.itemName applyStatusName
+    from      t_credit_apply_info ca 
+    left join t_poscust_info      pi on pi.posCustId = ca.posCustId
+    left join t_customer_info     ci on ci.custId = ca.custId
+    left join t_business_dictionary bdas on bdas.codeNo='ApplyStatus' and bdas.itemNo = ca.applyStatus
+    where ca.deleteFlag = '0' 
+     and ca.applyStatus != '00'
+     and ca.loanId != #{loanId}
+    <if test="paperId != null">
+    	and ci.paperId = #{paperId}
+    </if>
+    <if test="matePaperId != null">
+    	and ci.matePaperId = #{matePaperId}
+    </if>
+    <if test="regiCode != null">
+    	and pi.regiCode = #{regiCode}
+    </if>
+    <if test="mobilePhone != null">
+    	and ci.mobilePhone = #{mobilePhone}
+    </if>
+    <if test="tel != null">
+    	and ci.tel = #{tel}
+    </if>
+    order by ca.beginDate desc
+  </select>
+  <select id="selectCheckClaimed" resultType="Long" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApply">
+    select count(loanId) from t_credit_apply_info 
+    where deleteFlag = '0' and 
+    loanId = #{loanId,jdbcType=VARCHAR}
+    <if test="privilege0 != null">
+   		and infoInputPerson is not null
+    </if>
+    <if test="privilege1 != null">
+   		and infoCheckPerson is not null
+    </if>
+    <if test="privilege2 != null">
+   		and creditRecheckPerson is not null
+    </if>
+    <if test="privilege3 != null">
+   		and dueDiligencePerson is not null
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List3" />
+    from t_credit_apply_info
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectZzApp" resultType="Map" parameterType="Map">
+    select ca.loanId as loanid, ci.custId as custid, ci.custName as custname, date_format(ca.beginDate,'%Y%m%d%H%m%s') as begindate, ca.applyAmt as apptcapi,
+    ca.returnKind as retukind,ca.repayMethod as retukind2, ca.bankAccno as bankaccno, ca.applyStatus as apprstate, tci.endDate as appenddate, ca.posOrg as posorg,
+    ca.posCustName as poscustname, pi.regiCode as regicode, pi.posCustBusiScope as dealscope, pi.operAddrCode as operaddrRegion, pi.posCustAddress as operaddrdetail,
+    pi.industryTypeId as industrytypeid, ci.paperKind as paperkind, ci.paperId as paperid, ci.sexSign as sexsign,
+    ci.busiYear as busiyear, ci.marrSign as marrsign, ci.educSign as educsign, ci.childNum as childnum, ci.localHouseNum as localhousenum,
+    ci.otherHouseNum as otherhousenum, ci.mobilePhone as mobilephone, ci.tel as tel, ci.residentCity as residentRegion,
+    ci.residentDetail as residentdetail, ci.contactAddrFlag as contactaddrflag, ci.weixinNo as weixinno, ci.qqNo as qqno,
+    ci.email as email, ca.imagefilepackagename as imagefilepackagename, bi.bankName as bankname, bi.bankBranName as bankbranname, bi.bankSubbName as banksubname, 
+    pi.isPosInstall as haspos, date_format(ca.lastOperTime,'%Y%m%d%H%m%s') as lastopertime,
+    ci.familyCustName as familycustname, ci.matePaperKind as matepaperkind, ci.matePaperId as matepaperid, ci.mateMobilephone as matemobilephone,
+    tri.relaCustName as relacustname, tri.relaKind as relakind, tri.relaMobilePhone as relamobilephone, tri.relaTel as relatel
+    from      t_credit_apply_info ca 
+    left join t_customer_info     ci on ci.custId = ca.custId
+    left join t_poscust_info      pi on pi.posCustId = ca.posCustId
+    left join t_bankaccno_info    bi on bi.bankAccno = ca.bankAccno
+    left join t_contract_info     tci on tci.loanId = ca.loanId
+    left join t_relative_info	  tri on tri.relativeId = ca.relativeId
+    where ca.deleteFlag = '0' and ca.channel ='ZZ' and (ca.inChannelKind = '01' or ca.inChannelKind = '05') and ca.prodId = '1001020306'
+    <if test="paperId != null">
+    	and ci.paperId = #{paperId}
+    </if>
+    <if test="paperKind != null">
+    	and ci.paperKind = #{paperKind}
+    </if>
+    <if test="custId != null">
+    	and ca.custId = #{custId}
+    </if>
+    <if test="loanId != null">
+    	and ca.loanId = #{loanId}
+    </if>
+    <if test="beginDate != null">
+    	and ca.beginDate >= #{beginDate,jdbcType=TIMESTAMP}
+    </if>
+    <if test="endDate != null">
+    	<![CDATA[ and ca.beginDate <= #{endDate,jdbcType=TIMESTAMP} ]]>
+    </if>
+    order by ca.beginDate desc
+  </select>
+   <select id="selectSaleApp" resultType="Map" parameterType="Map">
+   SELECT
+  	ci.custId AS custid,
+	ci.custName AS custname,
+	ci.paperKind AS paperkind,
+	ci.paperId AS paperid,
+	ca.loanId AS loanid,
+	ca.applyTerm AS loanperiod,
+	tri.normalBalance AS creditbalance,
+  	tri.endDate AS loanslastdate,
+	ca.beginDate AS applydate,
+  	tri.payApplyAmt AS tcapi,
+  	tri.innerOwnedInterest AS overinte,
+  	ca.returnKind AS retukind,
+	ca.repayMethod AS retukind2,
+  	tri.clearStatus AS payoffflag,
+  	ca.applyStatus as apprstate,
+  	tri.overdueBalance > 0 as acflag,
+  	tci.agreementStatus as agreestatus
+   FROM
+	t_credit_apply_info ca
+	LEFT JOIN t_customer_info ci ON ci.custId = ca.custId
+	LEFT JOIN t_contract_info tci ON tci.loanId = ca.loanId
+	LEFT JOIN t_loan_user tlu ON tlu.loanId = ca.loanId
+	LEFT JOIN t_receipt_info tri ON tri.payApplyId = tlu.payapplyid
+	WHERE
+	ca.deleteFlag = '0'
+	AND ca.channel = 'ZZ'
+	AND ca.inChannelKind = '01'
+    <if test="paperid != null">
+    	and ci.paperId = #{paperid}
+    </if>
+    <if test="paperkind != null">
+    	and ci.paperKind = #{paperkind}
+    </if>
+    <if test="custid != null">
+    	and ca.custId = #{custid}
+    </if>
+    <if test="loanid != null">
+    	and ca.loanId = #{loanid}
+    </if>
+    <if test="contno != null">
+    	and tci.contNo = #{contno}
+    </if>
+    <if test="begindate != null">
+    	and ca.beginDate >= #{begindate,jdbcType=TIMESTAMP}
+    </if>
+    <if test="enddate != null">
+    	<![CDATA[ and ca.enddate <= #{enddate,jdbcType=TIMESTAMP} ]]>
+    </if>
+    order by ca.beginDate desc
+  </select>
+  <update id="updateApplyStatus" parameterType="Map" >
+    update t_credit_apply_info
+    <set >
+      <if test="custName != null" >
+        custName = #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="prodId != null" >
+        prodId = #{prodId,jdbcType=VARCHAR},
+      </if>
+      <if test="prodName != null" >
+        prodName = #{prodName,jdbcType=VARCHAR},
+      </if>
+      <if test="currSign != null" >
+        currSign = #{currSign,jdbcType=VARCHAR},
+      </if>
+      <if test="applyAmt != null" >
+        applyAmt = #{applyAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="termUnit != null" >
+        termUnit = #{termUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="applyTerm != null" >
+        applyTerm = #{applyTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null" >
+        beginDate = #{beginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="acptDate != null" >
+        acptDate = #{acptDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="assuKind != null" >
+        assuKind = #{assuKind,jdbcType=VARCHAR},
+      </if>
+      <if test="returnKind != null" >
+        returnKind = #{returnKind,jdbcType=VARCHAR},
+      </if>
+      <if test="returnKind2 != null" >
+        returnKind2 = #{returnKind2,jdbcType=VARCHAR},
+      </if>
+      <if test="amt != null" >
+        amt = #{amt,jdbcType=DECIMAL},
+      </if>
+      <if test="subFlag != null" >
+        subFlag = #{subFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="interestKind != null" >
+        interestKind = #{interestKind,jdbcType=VARCHAR},
+      </if>
+      <if test="interestCalkind != null" >
+        interestCalkind = #{interestCalkind,jdbcType=VARCHAR},
+      </if>
+      <if test="reckDay != null" >
+        reckDay = #{reckDay,jdbcType=VARCHAR},
+      </if>
+      <if test="turnGraceDay != null" >
+        turnGraceDay = #{turnGraceDay,jdbcType=VARCHAR},
+      </if>
+      <if test="returnDay != null" >
+        returnDay = #{returnDay,jdbcType=VARCHAR},
+      </if>
+      <if test="industryTypeId != null" >
+        industryTypeId = #{industryTypeId,jdbcType=VARCHAR},
+      </if>
+      <if test="industryTypeName != null" >
+        industryTypeName = #{industryTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="loanUsage != null" >
+        loanUsage = #{loanUsage,jdbcType=VARCHAR},
+      </if>
+      <if test="loanUsageDesc != null" >
+        loanUsageDesc = #{loanUsageDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="returnSourceDesc != null" >
+        returnSourceDesc = #{returnSourceDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="isExceLoanFlag != null" >
+        isExceLoanFlag = #{isExceLoanFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="bankId != null" >
+        bankId = #{bankId,jdbcType=VARCHAR},
+      </if>
+      <if test="operId != null" >
+        operId = #{operId,jdbcType=VARCHAR},
+      </if>
+      <if test="applyStatus != null" >
+        applyStatus = #{applyStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="lastOperId != null" >
+        lastOperId = #{lastOperId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastOperBankId != null" >
+        lastOperBankId = #{lastOperBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastOperTime != null" >
+        lastOperTime = #{lastOperTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="coopAgreementNo != null" >
+        coopAgreementNo = #{coopAgreementNo,jdbcType=VARCHAR},
+      </if>
+      <if test="fundSource != null" >
+        fundSource = #{fundSource,jdbcType=VARCHAR},
+      </if>
+      <if test="infoInputPerson != null" >
+        infoInputPerson = #{infoInputPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="infoCheckPerson != null" >
+        infoCheckPerson = #{infoCheckPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="creditRecheckPerson != null" >
+        creditRecheckPerson = #{creditRecheckPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="dueDiligencePerson != null" >
+        dueDiligencePerson = #{dueDiligencePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="custServPerson != null" >
+        custServPerson = #{custServPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="creditRank != null" >
+        creditRank = #{creditRank,jdbcType=VARCHAR},
+      </if>
+      <if test="creditLine != null" >
+        creditLine = #{creditLine,jdbcType=DECIMAL},
+      </if>
+      <if test="lowRiskType != null" >
+        lowRiskType = #{lowRiskType,jdbcType=VARCHAR},
+      </if>
+      <if test="posOrg != null" >
+        posOrg = #{posOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="deleteFlag != null">
+      	deleteFlag = #{deleteFlag},
+      </if>
+      <if test="posCustId != null">
+      	posCustId = #{posCustId},
+      </if>
+      <if test="posCustName != null">
+      	posCustName = #{posCustName},
+      </if>
+      <if test="creditInterest != null">
+      	creditInterest = #{creditInterest},
+      </if>
+      <if test="region != null">
+      	region = #{region},
+      </if>
+      <if test="tradeArea != null">
+      	tradeArea = #{tradeArea},
+      </if>
+      <if test="creditResult != null">
+      	creditResult = #{creditResult},
+      </if>
+      <if test="operName != null">
+      	operName = #{operName},
+      </if>
+      <if test="lastStep != null">
+      	lastStep = #{lastStep},
+      </if>
+      <if test="lastStepOperName != null">
+      	lastStepOperName = #{lastStepOperName},
+      </if>
+      <if test="channel != null">
+      	channel = #{channel},
+      </if>
+      <if test="bankAccno != null">
+      	bankAccno = #{bankAccno},
+      </if>
+      <if test="inChannelKind != null">
+      	inChannelKind = #{inChannelKind},
+      </if>
+      <if test="repayMethod != null">
+      	repayMethod = #{repayMethod},
+      </if>
+      <if test="recOrg != null">
+      	recOrg = #{recOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="recPerson != null">
+        recPerson = #{recPerson,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where 1=1
+    <if test="loanId != null">
+    	and loanId = #{loanId}
+    </if>
+    <if test="custId != null">
+    	and custId = #{custId}
+    </if>
+    <if test="applyStatusEnd != null">
+    	<![CDATA[ and applyStatus <= #{applyStatusEnd} ]]>
+    </if>
+  </update>
+  
+   <select id="selectBizData" resultType="Map" parameterType="Map" >
+     select ca.loanId,ca.beginDate,ca.custId,ca.custName,ca.prodId,ca.prodName,ca.channel,ca.applyAmt,ca.applyTerm,ca.bankAccno,ca.loanUsage,ca.recOrg,ca.recPerson,ca.backReason,ca.applyStatus,
+    		cai.apprInfo,cai.apprInfoExt,
+     		pi.posCustName,pi.regiCode,pi.regCapital,pi.posCustBusiScope,pi.posCustAddress,pi.operAddrCode,
+     		ci.paperId,ci.sexSign,ci.educSign,ci.busiYear,ci.marrSign,ci.childNum,ci.weixinNo,ci.qqNo,ci.email,ci.localHouseNum,ci.otherHouseNum,
+     		ci.mobilePhone,ci.tel,ci.residentDetail,ci.contactAddrFlag,ci.familyCustName,ci.matePaperId,ci.mateMobilephone,ci.birtDate
+     		
+    from  t_credit_apply_info ca left join t_credit_apply_aprv_info cai on ca.loanId = cai.loanId,t_customer_info ci,t_poscust_info pi     
+    where ci.custId = ca.custId and pi.posCustId = ca.posCustId and cai.appBeginTime is not null and cai.appEndTime is null  
+    <if test="beginDate != null">
+    	<![CDATA[ and ca.beginDate <= #{endDate,jdbcType=TIMESTAMP} ]]>
+    </if>
+    <if test="endDate != null">
+    	<![CDATA[ and ca.beginDate >= #{beginDate,jdbcType=TIMESTAMP} ]]>
+    </if>
+    <if test="prodId != null">
+    	and ca.prodId = #{prodId,jdbcType=VARCHAR}
+    </if>
+    <if test="channel != null">
+    	and ca.channel = #{channel,jdbcType=VARCHAR}
+    </if>
+    <if test="applyStatus != null">
+    	and ca.applyStatus = #{applyStatus,jdbcType=VARCHAR}
+    </if>
+    <if test="apprState != null">
+    	and cai.apprState = #{apprState,jdbcType=VARCHAR}
+    </if>
+  
+  </select>
+  
+  <select id="selectLastTh"  resultType="Map">
+      select * from t_credit_apply_info where 
+
+    	custId = #{custId}
+
+        order by beginDate desc limit 1,1;
+  </select>
+  <update id="updateForReconsider" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApply" >
+    update t_credit_apply_info set
+    <if test="privilege1 != null">
+   		infoCheckPerson = null,
+    </if>
+    <if test="privilege2 != null">
+   		creditRecheckPerson = null,
+    </if>
+    <if test="privilege3 != null">
+   		dueDiligencePerson = null,
+    </if>
+    applyStatus = #{applyStatus,jdbcType=VARCHAR},
+    lastOperId = #{lastOperId,jdbcType=VARCHAR},
+    lastOperTime = #{lastOperTime,jdbcType=TIMESTAMP}
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectContinueLending" resultType="Long" parameterType="java.lang.String">
+    select count(ci.contNo) cnt
+    from   t_credit_apply_info ca,
+           t_contract_info ci
+    where ca.deleteFlag = '0'
+     and ca.loanId = ci.loanId
+     and ci.agreementStatus in ('04','09')
+     and ca.loanId = #{loanId}
+  </select>
+</mapper>

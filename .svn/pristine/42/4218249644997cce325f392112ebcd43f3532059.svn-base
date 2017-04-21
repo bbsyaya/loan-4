@@ -1,0 +1,188 @@
+package com.hrbb.loan.pos.dao.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+import org.springframework.stereotype.Repository;
+
+import com.hrbb.loan.pos.dao.TCreditApplyDao;
+import com.hrbb.loan.pos.dao.entity.TCreditApply;
+
+/**
+ *<h1>业务申请确认dao实现</h1>
+ *@author Johnson Song
+ *@version Id: TCreditApplyDaoImpl.java, v 1.0 2015-2-15 上午11:03:53 Johnson Song Exp
+ */
+@Repository("tCreditApplyDao")
+public class TCreditApplyDaoImpl extends SqlSessionDaoSupport implements TCreditApplyDao {
+	
+	/**
+	 * <h2>根据id删除记录</h2>
+	 * @param String
+	 * @return int
+	 */
+	@Override
+	public int deleteByPrimaryKey(String loanId) {
+		return getSqlSession().delete("TCreditApplyMapper.deleteByPrimaryKey", loanId);
+	}
+	
+	/**
+	 * <h2>插入记录</h2>
+	 * @param TCreditApply
+	 * @return int
+	 */
+	@Override
+	public int insert(TCreditApply record) {
+		return getSqlSession().insert("TCreditApplyMapper.insert", record);
+	}
+
+	/**
+	 * <h2>选择性插入</h2>
+	 * @param TCreditApply
+	 * @return int
+	 */
+	@Override
+	public int insertSelective(TCreditApply record) {
+		return getSqlSession().insert("TCreditApplyMapper.insertSelective", record);
+	}
+
+	@Override
+	public TCreditApply selectByPrimaryKey(String loanId) {
+		return getSqlSession().selectOne("TCreditApplyMapper.selectByPrimaryKey", loanId);
+	}
+
+	@Override
+	public int updateByPrimaryKeySelective(TCreditApply record) {
+		return getSqlSession().update("TCreditApplyMapper.updateByPrimaryKeySelective", record);
+	}
+
+	@Override
+	public int updateByPrimaryKey(TCreditApply record) {
+		return getSqlSession().update("TCreditApplyMapper.updateByPrimaryKey", record);
+	}
+
+	@Override
+	public List<TCreditApply> selectSelective(Map<String, Object> map) {
+		return getSqlSession().selectList("TCreditApplyMapper.selectSelective", map);
+	}
+
+	@Override
+	public List<Map<String, Object>> selectSelectiveMap(Map<String, Object> map) {
+		return getSqlSession().selectList("TCreditApplyMapper.selectSelectiveMap", map);
+	}
+
+	@Override
+	public Long countCreitApply(Map<String, Object> map) {
+		return getSqlSession().selectOne("TCreditApplyMapper.countSelective", map);
+	}
+	
+	/**
+	 * 批量删除
+	 */
+	@Override
+	public int deleteBatch(List<String> loanIds) {
+		return getSqlSession().delete("TCreditApplyMapper.deleteBatch", loanIds);
+	}
+
+	@Override
+	public int updateByPrimaryKeySelectiveMap(Map<String, Object> map) {
+		return getSqlSession().update("TCreditApplyMapper.updateByPrimaryKeySelectiveMap", map);
+	}
+
+	@Override
+	public int insertSelectiveMap(Map<String, Object> map) {
+		return getSqlSession().insert("TCreditApplyMapper.insertSelectiveMap", map);
+	}
+	
+	public TCreditApply queryCreditApplyInfo(String loanId){
+		return getSqlSession().selectOne("TCreditApplyMapper.queryCreditApplyInfo", loanId);
+		
+	}
+
+	@Override
+	public String getCustIdbyStdshno(String stdshno) {
+		return getSqlSession().selectOne("TCreditApplyMapper.getCustIdbyStdshno", stdshno);
+	}
+
+	@Override
+	public String getLoanIdbyStdshno(String stdshno) {
+		return getSqlSession().selectOne("TCreditApplyMapper.getLoanIdbyStdshno", stdshno);
+	}
+
+	@Override
+	public String getLoanIdbyPosCustId(String posCustId) {
+		return getSqlSession().selectOne("TCreditApplyMapper.getLoanIdbyPosCustId", posCustId);
+	}
+
+	@Override
+	public String getCustIdbyPosCustId(String posCustId) {
+		return getSqlSession().selectOne("TCreditApplyMapper.getCustIdbyPosCustId", posCustId);
+	}
+
+	@Override
+	public String getStdshnobyLoanId(String loanId) {
+		return getSqlSession().selectOne("TCreditApplyMapper.getStdshnobyLoanId", loanId);
+	}
+
+    @Override
+    public List<Map<String, Object>> selectDetailsByZzApp(Map<String, Object> queryMap) {
+        return getSqlSession().selectList("TCreditApplyMapper.selectZzApp", queryMap);
+    }
+
+	@Override
+	public int updateApplyStatusForDownloadImages(TCreditApply record) {
+		// TODO Auto-generated method stub
+		return getSqlSession().update("TCreditApplyMapper.updateApplyStatusForDownloadImages", record);
+	}
+
+    @Override
+    public int updateApplyStatus(Map<String, Object> map) {
+        return getSqlSession().update("TCreditApplyMapper.updateApplyStatus", map);
+    }
+    
+    @Override
+    public List<Map<String, Object>> getBizData(Map<String, Object> reqMap){
+        return getSqlSession().selectList("TCreditApplyMapper.selectBizData", reqMap);
+    }
+
+    @Override
+    public Map<String, Object> selectLastTh(String custId) {
+        return getSqlSession().selectOne("TCreditApplyMapper.selectLastTh",custId);
+    }
+    /**
+     * 消费贷贷款申请信息查询
+     * @see com.hrbb.loan.pos.dao.TCreditApplyDao#selectDetailsBySaleApp(java.util.Map)
+     */
+    @Override
+    public List<Map<String, Object>> selectDetailsBySaleApp(Map<String, Object> map) {
+        return getSqlSession().selectList("TCreditApplyMapper.selectSaleApp", map);
+    }
+
+    /** 
+     * @see com.hrbb.loan.pos.dao.TCreditApplyDao#selectNameAndBankAccNoByLoanId(java.lang.String)
+     */
+    @Override
+    public Map<String, Object> selectNameAndBankAccNoByLoanId(String loanId) {
+        return getSqlSession().selectOne("TCreditApplyMapper.selectNameAndBankAccNoByLoanId", loanId);
+    }
+
+    /**
+     * 
+     * @param loanId
+     * @return
+     */
+    @Override
+    public String selectInChannelKindByLoanId(String loanId){
+        return getSqlSession().selectOne("TCreditApplyMapper.selectInChannelKindByLoanId",loanId);
+    }
+
+    /** 
+     * @see com.hrbb.loan.pos.dao.TCreditApplyDao#selectLoanTypeByLoanId(java.lang.String)
+     */
+    @Override
+    public String selectLoanTypeByLoanId(String loanId) {
+        return getSqlSession().selectOne("TCreditApplyMapper.selectLoanTypeByLoanId",loanId);
+    }
+    
+}

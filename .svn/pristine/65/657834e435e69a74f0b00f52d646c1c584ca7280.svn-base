@@ -1,0 +1,431 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.service.impl;
+
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.base.Objects;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.dao.TBankAccnoInfoDao;
+import com.hrbb.loan.pos.dao.TBankPropertiesDao;
+import com.hrbb.loan.pos.dao.TCustomerBaseDao;
+import com.hrbb.loan.pos.dao.TCustomerDao;
+import com.hrbb.loan.pos.dao.TPosCustInfoDao;
+import com.hrbb.loan.pos.dao.TRelativeInfoDao;
+import com.hrbb.loan.pos.dao.entity.TBankAccnoInfo;
+import com.hrbb.loan.pos.dao.entity.TBankProperties;
+import com.hrbb.loan.pos.dao.entity.TCustomer;
+import com.hrbb.loan.pos.dao.entity.TCustomerBase;
+import com.hrbb.loan.pos.dao.entity.TPosCustInfo;
+import com.hrbb.loan.pos.dao.entity.TRelativeInfo;
+import com.hrbb.loan.pos.service.LoanPosCustomerService;
+import com.hrbb.loan.pos.service.bean.CustomerInfoVo;
+import com.hrbb.loan.pos.service.converts.CustomerConverter;
+import com.hrbb.loan.pos.util.ListUtil;
+import com.hrbb.loan.pos.util.StringUtil;
+
+
+/**
+ *  查询客户信息
+ * @author XLY
+ * @version $Id: LoanPosCustomerServiceImpl.java, v 0.1 2015-2-13 上午10:23:05 XLY Exp $
+ */
+@Service("loanPosCustomerService")
+public class LoanPosCustomerServiceImpl implements LoanPosCustomerService{
+	
+	public static final String CUST_ID = "custId";
+	
+	public static final String CUST_NAME = "custName";
+	
+	public static final String PAPER_ID = "paperId";
+	
+	private static final String RELA_NAME = "relaCustName";
+
+	private static final String RELA_ID = "relativeId";
+
+	@Autowired
+	private TCustomerBaseDao tCustomerBaseDao;
+	
+	@Autowired
+	private TCustomerDao tCustomerDao;
+	
+	@Autowired
+	private TRelativeInfoDao tRelativeInfoDao;
+	
+	@Autowired
+	private TPosCustInfoDao tPosCustInfoDao;
+
+    @Autowired
+	private TBankAccnoInfoDao tBankAccnoInfoDao;
+    
+    @Autowired
+    private TBankPropertiesDao tBankPropertiesDao;
+    
+    
+	
+	   /**
+     * <h2>根据id获取记录</h2>
+     * @param String
+     * @return TCustomer
+     */
+    @Override
+    public TCustomer getCustumerInfoById(String custId) {
+        return tCustomerDao.selectByPrimaryKey(custId);
+    }
+    
+    @Override
+    public int updateTCustomer(TCustomer tCustomer){
+        int i = tCustomerDao.updateByPrimaryKeySelective(tCustomer);
+        return i;
+    }
+	/**
+	 * <h2>根据条件获取记录</h2>
+	 * @param Map
+	 * @return List
+	 */
+	@Override
+	public List<TCustomer> getCustomerInfoSelective(Map<String, Object> map) {
+		return tCustomerDao.selectSelective(map);
+	}
+	
+    public TCustomer queryCustomerInfoByCustId(TCustomer tCustomer){
+        return tCustomerDao.selectByPrimaryKey(tCustomer.getCustId());
+    }
+    
+	
+	/**
+	 * <h2>添加记录</h2>
+	 * @param TCustomer
+	 * @return int
+	 */
+	@Override
+	public int insertTCustermerInfo(TCustomer tCustomer) {
+		return tCustomerDao.insertSelective(tCustomer);
+	}
+	
+	/**
+	 * <h2>添加记录</h2>
+	 * @param TCustomerBase
+	 * @return int
+	 */
+	@Override
+	public int insertTCustomerBaseInfo(TCustomerBase tCustomerBase) {
+		return tCustomerBaseDao.insertSelective(tCustomerBase);
+	}
+	
+	/**
+	 * <h2>修改记录</h2>
+	 * @param TCustomer
+	 * @return int
+	 */
+	@Override
+	public int updateTCustomerInfo(TCustomer tCustomer) {
+		return tCustomerDao.updateByPrimaryKeySelective(tCustomer);
+	}
+	
+
+	/**
+	 * <h2>删除记录</h2>
+	 * @param TCustomer
+	 * @return int
+	 */
+	@Override
+	public int deleteTCustomerInfo(String custId) {
+		return tCustomerDao.deleteByPrimaryKey(custId);
+	}
+
+	/**
+	 * <h2></h2>
+	 * @param TCustomerBase
+	 * @return int
+	 */
+	@Override
+	public int deleteTCustomerBaseInfo(String custId) {
+		return tCustomerBaseDao.deleteByPrimaryKey(custId);
+	}
+
+	@Override
+	public int insertCustomerInfoMap(Map<String, Object> reqMap) {
+		return tCustomerDao.insertSelectiveMap(reqMap);
+	}
+
+	@Override
+	public int updateCustomerInfoMap(Map<String, Object> reqMap) {
+		return tCustomerDao.updateByPrimaryKeySelectiveMap(reqMap);
+	}
+
+	@Override
+	public List<Map<String, Object>> selectCustomerInfoSelectiveMap(
+			Map<String, Object> map) {
+		return tCustomerDao.selectSelectiveMap(map);
+	}
+    public TCustomer addTCustomer(TCustomer tCustomer){
+        String custId = System.currentTimeMillis()+"";
+        tCustomer.setCustId(custId);
+        int i = tCustomerDao.insert(tCustomer);
+        return tCustomer;
+    }
+    public CustomerInfoVo addCustomerInfoVo(CustomerInfoVo customerInfoVo){
+        CustomerInfoVo result = new CustomerInfoVo();
+        String custId = System.currentTimeMillis()+"";
+        customerInfoVo.setCustId(custId);
+        TCustomer tCustomer = CustomerConverter.CustomerInfoVo2TCustomer(customerInfoVo);
+        int i = tCustomerDao.insert(tCustomer);
+        TRelativeInfo tRelativeInfo = CustomerConverter.CustomerInfoVo2TRelativeInfo(customerInfoVo);
+        tRelativeInfo.setCustId(tCustomer.getCustId());
+        return result;
+    }
+
+    
+    public int updateTCustomer(CustomerInfoVo customerInfoVo){
+        TCustomer tCustomer = CustomerConverter.CustomerInfoVo2TCustomer(customerInfoVo);
+        int i = tCustomerDao.updateByPrimaryKeySelective(tCustomer);
+        return i;
+    }
+
+    public CustomerInfoVo queryCustomerInfoByCustId(CustomerInfoVo customerInfoVo){
+        TCustomer tCustomer = CustomerConverter.CustomerInfoVo2TCustomer(customerInfoVo);
+        TCustomer resultTCustomer = tCustomerDao.selectByPrimaryKey(tCustomer.getCustId());
+        return CustomerConverter.TCustomer2CustomerInfoVo(resultTCustomer);
+    }
+    
+    public TCustomerBase queryCustomerBaseInfoByCustId(TCustomerBase tCustomerBase){
+        return tCustomerBaseDao.selectByPrimaryKey(tCustomerBase.getCustId());
+    }   
+    
+    public int updateTCustomerBase(TCustomerBase tCustomerbase){
+        int i = tCustomerBaseDao.updateByPrimaryKeySelective(tCustomerbase);
+        return i;
+    }
+    
+    /**
+     * <h2>根据id获取记录</h2>
+     * @param String
+     * @return TCustomer
+     */
+    @Override
+    public CustomerInfoVo getCustumerInfoByIdNew(String custId) {
+        CustomerInfoVo customerInfoVo= CustomerConverter.TCustomer2CustomerInfoVo(tCustomerDao.selectByPrimaryKey(custId));
+        return customerInfoVo;
+    }
+    /**
+     * <h2>修改记录</h2>
+     * @param TCustomerBase
+     * @return int
+     */
+    @Override
+    public int updateTCustomerBaseInfo(TCustomerBase tCustomerBase) {
+        return tCustomerBaseDao.updateByPrimaryKeySelective(tCustomerBase);
+    }
+    
+    public TCustomerBase addTCustomerBase(TCustomerBase tCustomerBase){
+        String acustId = System.currentTimeMillis()+"";
+        tCustomerBase.setAcustId("a"+acustId);
+        tCustomerBase.setCustId(acustId);
+        int i = tCustomerBaseDao.insert(tCustomerBase);
+        return tCustomerBase;
+    }
+    
+    
+    /**
+     * <h2>根据条件获取记录</h2>
+     * @param Map
+     * @return List
+     */
+    @Override
+    public List<TCustomerBase> getCustomerBaseSelective(Map<String, Object> map) {
+        return tCustomerBaseDao.selectSelective(map);
+    }
+    /**
+     * <h2>根据id获取记录</h2>
+     * @param String
+     * @return TCustomerBase
+     */
+    @Override
+    public TCustomerBase getCustomerBaseInfoById(String custId) {
+        return tCustomerBaseDao.selectByPrimaryKey(custId);
+    }
+
+	@Override
+	public List<Map<String, Object>> getRelativeInfo(Map<String, Object> reqMap) {
+		return tRelativeInfoDao.selectMap(reqMap);
+	}
+
+	@Override
+	public int updateRelativeInfo(Map<String, Object> reqMap) {
+		return tRelativeInfoDao.updateMap(reqMap);
+	}
+
+	@Override
+	public int insertRelativeInfo(Map<String, Object> reqMap) {
+		return tRelativeInfoDao.insertMap(reqMap);
+	}
+
+	@Override
+	public TRelativeInfo selectByPrimaryKey(String relativeId) {
+		return tRelativeInfoDao.selectByPrimaryKey(relativeId);
+	}
+	
+	@Override
+	public Map<String, Object> selectOneCustomer(String custId) {
+		Map<String, Object> map = Maps.newHashMap();
+		map.put(CUST_ID, Objects.firstNonNull(custId, ""));
+		List<Map<String, Object>> list = selectCustomerInfoSelectiveMap(map);
+		if(ListUtil.isNotEmpty(list)){
+			return list.get(0);
+		}else{
+			return Maps.newHashMap();
+		}
+	}
+
+    /**
+     * 插商户信息
+     */
+    public int insertPosCustInfo(Map<String, Object> reqMap){
+        return tPosCustInfoDao.insertSelectiveMap(reqMap);
+    }
+    
+    /**
+     * 插商户信息
+     */
+    public int insertSelective(TPosCustInfo record){
+        return tPosCustInfoDao.insertSelective(record);
+    }
+    /**
+     * 查询商户信息
+     */
+    public List<Map<String, Object>> getPosCustInfo(Map<String, Object> reqMap){
+        return tPosCustInfoDao.selectMap(reqMap);
+    }
+    
+    /**
+     * 更新商户信息
+     */
+    public int updatePosCustInfo(Map<String, Object> reqMap){
+        return tPosCustInfoDao.updateMap(reqMap);
+    }
+    
+    /**
+     * 更新银行账户信息
+     */
+    public int updateBankAccno(Map<String, Object> reqMap){
+        return tBankAccnoInfoDao.updateByPrimaryKeySelectiveMap(reqMap);
+    }
+    /**
+     * 插银行账户信息
+     */
+    public int insertBankAccno(Map<String, Object> reqMap){
+        return tBankAccnoInfoDao.insertSelectiveMap(reqMap);
+    }
+
+	@Override
+	public Map<String, Object> selectOneCustomerByNameAndPaper(String custName,
+			String paperId) {
+		Map<String, Object> map = Maps.newHashMap();
+		map.put(CUST_NAME, Objects.firstNonNull(custName, ""));
+		map.put(PAPER_ID, Objects.firstNonNull(paperId, ""));
+		List<Map<String, Object>> list = selectCustomerInfoSelectiveMap(map);
+		if(ListUtil.isNotEmpty(list)){
+			return list.get(0);
+		}else{
+			return Maps.newHashMap();
+		}
+	}
+
+	@Override
+	public Map<String, Object> getOneRelativeInfo(Map<String, Object> reqMap) {
+		return null;
+	}
+
+
+
+    /**
+     * 查询商户信息
+     */
+    public List<Map<String, Object>> getBankAccno(Map<String, Object> reqMap){
+        return tBankAccnoInfoDao.selectMap(reqMap);
+    }
+    
+    public long selectAccountCount(Map<String, Object> reqMap){
+        return tBankAccnoInfoDao.selectAccountCount(reqMap);
+    }
+
+	@Override
+	public Map<String, Object> getOneRelativeInfo(String relaName, String custId) {
+		Map<String, Object> reqMap = Maps.newHashMap();
+		reqMap.put(RELA_NAME, Objects.firstNonNull(relaName, ""));
+		reqMap.put(CUST_ID, Objects.firstNonNull(custId, ""));
+		List<Map<String, Object>> resList = getRelativeInfo(reqMap);
+		if(ListUtil.isNotEmpty(resList)){
+			return resList.get(0);
+		}else{
+			return Maps.newHashMap();
+		}
+	}
+
+	@Override
+	public Map<String, Object> getOneRelativeInfoById(String relativeId) {
+		if(!StringUtil.isEmpty(relativeId)){
+			Map<String, Object> reqMap = Maps.newHashMap();
+			reqMap.put(RELA_ID, Objects.firstNonNull(relativeId, ""));
+			List<Map<String, Object>> resList = getRelativeInfo(reqMap);
+			if(ListUtil.isNotEmpty(resList)){
+				return resList.get(0);
+			}else{
+				return Maps.newHashMap();
+			}
+		}else{
+			return Maps.newHashMap();
+		}
+		
+	}
+
+	@Override
+	public List<TCustomer> selectOneCustomerByPaper(String paperId) {
+		List<TCustomer> cusList = null;
+		if (!StringUtil.isEmpty(paperId)) {
+			Map<String, Object> map = Maps.newHashMap();
+			map.put(PAPER_ID, Objects.firstNonNull(paperId, ""));
+			cusList = getCustomerInfoSelective(map);
+		} else {
+			return null;
+		}
+		return cusList;
+	}
+
+	@Override
+	public TBankProperties queryBankPropertiesByBankName(String bankName) {
+		TBankProperties bankProperties=null;
+		if(!StringUtil.isEmpty(bankName)){
+			bankProperties = tBankPropertiesDao.selectByBankName(bankName);
+		}else{
+			return null;
+		}
+		return bankProperties;
+	}
+
+	@Override
+	public TBankProperties queryBankLimitById(String bankId) {
+		TBankProperties bankProperties=null;
+		if(!StringUtil.isEmpty(bankId)){
+			bankProperties = tBankPropertiesDao.selectByBankId(bankId);
+		}else{
+			return null;
+		}
+		return bankProperties;
+	}
+
+    @Override
+    public TBankAccnoInfo getBanAccnoById(String bankAccno) {
+        return tBankAccnoInfoDao.selectByPrimaryKey(bankAccno);
+    }
+
+}

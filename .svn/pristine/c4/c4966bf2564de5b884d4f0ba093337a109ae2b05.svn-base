@@ -1,0 +1,85 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+<base href="<%=basePath%>">
+<title>银商同步文件下载</title>
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/js/themes/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/js/themes/icon.css" />
+    <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src='<%=request.getContextPath()%>/js/locale/easyui-lang-zh_CN.js'></script>	
+	<script type="text/javascript">
+        $(function(){
+        	initSynFileList();
+        });
+        
+        function initSynFileList(){
+			var queryUrl = '<%=request.getContextPath()%>/synFileUM/initSynFileList.do';
+			$('#synFileT').datagrid({url:queryUrl,
+        		onClickCell: function (rowIndex, field, value) { 
+                    $(this).datagrid('unselectAll');
+                }
+			});
+        }
+        
+		function uploadSynFile() {
+        	if (!checkSelected()){
+        		return;
+        	}
+			var reqUrl = '<%=request.getContextPath()%>/synFileUM/uploadSynFile.do';
+		    var row = $('#synFileT').datagrid('getSelected');
+		    $.messager.progress({
+	 	        text: '上传中，请等待......',
+	 	    }); 
+			$.post(reqUrl, 
+				{fileName: row.fileName}, 
+				function(data){
+					$.messager.progress('close');
+					alert(data);
+				}
+			);
+		}
+		
+        //检查是否只选择了记录
+        function checkSelected(){
+        	var rows = $('#synFileT').datagrid('getSelections');
+        	var length = rows.length;
+			if (length == 0){
+			    alert("请选择一条记录！");
+			    return false;
+			}else if(length > 1){ 
+			    alert("请只选择一条记录！");
+			    return false;
+			}else{
+			    return true;
+			}
+        }
+        
+    	function rowformater(value, row, index) {
+			var values= value.split('|');
+			var fileName = values[0];
+			var fileURL = values[1];
+            return "<a href='"+fileURL+"'>"+fileName+"</a>";
+        }
+	</script>
+</head>
+<body>
+	<a href="javascript:void(0)" onclick="uploadSynFile()" class="easyui-linkbutton" iconCls="icon-reload" plain="true">发送银商</a>
+	<table id="synFileT" style="height:500px; width: 700px" toolbar="#tb" rownumbers="true">
+		<thead>
+			<tr>
+				<th field="id" checkbox="true"></th>
+				<th field="fileName" hidden=true>文件名</th>
+				<th field="fileURL" width="250px" formatter="rowformater">文件名</th>
+			</tr>
+		</thead>
+	</table>	
+</body>
+</html>

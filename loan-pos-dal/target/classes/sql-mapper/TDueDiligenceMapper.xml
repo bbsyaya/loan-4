@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TDueDiligenceMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TDueDiligence" >
+    <id column="loanid" property="loanid" jdbcType="VARCHAR" />
+    <result column="workcorp" property="workcorp" jdbcType="VARCHAR" />
+    <result column="applydate" property="applydate" jdbcType="VARCHAR" />
+    <result column="surveydate" property="surveydate" jdbcType="VARCHAR" />
+    <result column="investigatorname" property="investigatorname" jdbcType="VARCHAR" />
+    <result column="investigatorid" property="investigatorid" jdbcType="VARCHAR" />
+    <result column="enterprisename" property="enterprisename" jdbcType="VARCHAR" />
+    <result column="applicantname" property="applicantname" jdbcType="VARCHAR" />
+    <result column="applicantid" property="applicantid" jdbcType="VARCHAR" />
+    <result column="annualturnover" property="annualturnover" jdbcType="VARCHAR" />
+    <result column="seasonal" property="seasonal" jdbcType="CHAR" />
+    <result column="peakseason" property="peakseason" jdbcType="VARCHAR" />
+    <result column="offseason" property="offseason" jdbcType="VARCHAR" />
+    <result column="checklicense" property="checklicense" jdbcType="CHAR" />
+    <result column="checkpos" property="checkpos" jdbcType="CHAR" />
+    <result column="checkid" property="checkid" jdbcType="CHAR" />
+    <result column="checkpremises" property="checkpremises" jdbcType="CHAR" />
+    <result column="checkhouse" property="checkhouse" jdbcType="CHAR" />
+    <result column="checkphotoatdoor" property="checkphotoatdoor" jdbcType="CHAR" />
+    <result column="checkagreement" property="checkagreement" jdbcType="CHAR" />
+    <result column="checkphotoinpremises" property="checkphotoinpremises" jdbcType="CHAR" />
+    <result column="checkform" property="checkform" jdbcType="CHAR" />
+    <result column="checkphotosign" property="checkphotosign" jdbcType="CHAR" />
+    <result column="note" property="note" jdbcType="VARCHAR" />
+    <result column="opinion" property="opinion" jdbcType="VARCHAR" />
+    <result column="checkreliable" property="checkreliable" jdbcType="CHAR" />
+    <result column="preappmaxcred" property="preappmaxcred" jdbcType="VARCHAR" />
+    <result column="preapptterm" property="preapptterm" jdbcType="VARCHAR" />
+    <result column="interate" property="interate" jdbcType="VARCHAR" />
+    <result column="checkaccept" property="checkaccept" jdbcType="CHAR" />
+    <result column="refusereason" property="refusereason" jdbcType="VARCHAR" />
+    <result column="duedilitaskno" property="duedilitaskno" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    loanid, workcorp, applydate, surveydate, investigatorname, investigatorid, enterprisename, 
+    applicantname, applicantid, annualturnover, seasonal, peakseason, offseason, checklicense, 
+    checkpos, checkid, checkpremises, checkhouse, checkphotoatdoor, checkagreement, checkphotoinpremises, 
+    checkform, checkphotosign, note, opinion, checkreliable, preappmaxcred, preapptterm, 
+    interate, checkaccept, refusereason, duedilitaskno
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_due_diligence
+    where loanid = #{loanid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_due_diligence
+    where loanid = #{loanid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TDueDiligence" >
+    insert into t_due_diligence (loanid, workcorp, applydate, 
+      surveydate, investigatorname, investigatorid, 
+      enterprisename, applicantname, applicantid, 
+      annualturnover, seasonal, peakseason, 
+      offseason, checklicense, checkpos, 
+      checkid, checkpremises, checkhouse, 
+      checkphotoatdoor, checkagreement, checkphotoinpremises, 
+      checkform, checkphotosign, note, 
+      opinion, checkreliable, preappmaxcred, 
+      preapptterm, interate, checkaccept, 
+      refusereason, duedilitaskno)
+    values (#{loanid,jdbcType=VARCHAR}, #{workcorp,jdbcType=VARCHAR}, #{applydate,jdbcType=VARCHAR}, 
+      #{surveydate,jdbcType=VARCHAR}, #{investigatorname,jdbcType=VARCHAR}, #{investigatorid,jdbcType=VARCHAR}, 
+      #{enterprisename,jdbcType=VARCHAR}, #{applicantname,jdbcType=VARCHAR}, #{applicantid,jdbcType=VARCHAR}, 
+      #{annualturnover,jdbcType=VARCHAR}, #{seasonal,jdbcType=CHAR}, #{peakseason,jdbcType=VARCHAR}, 
+      #{offseason,jdbcType=VARCHAR}, #{checklicense,jdbcType=CHAR}, #{checkpos,jdbcType=CHAR}, 
+      #{checkid,jdbcType=CHAR}, #{checkpremises,jdbcType=CHAR}, #{checkhouse,jdbcType=CHAR}, 
+      #{checkphotoatdoor,jdbcType=CHAR}, #{checkagreement,jdbcType=CHAR}, #{checkphotoinpremises,jdbcType=CHAR}, 
+      #{checkform,jdbcType=CHAR}, #{checkphotosign,jdbcType=CHAR}, #{note,jdbcType=VARCHAR}, 
+      #{opinion,jdbcType=VARCHAR}, #{checkreliable,jdbcType=CHAR}, #{preappmaxcred,jdbcType=VARCHAR}, 
+      #{preapptterm,jdbcType=VARCHAR}, #{interate,jdbcType=VARCHAR}, #{checkaccept,jdbcType=CHAR}, 
+      #{refusereason,jdbcType=VARCHAR}, #{duedilitaskno,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TDueDiligence" >
+    insert into t_due_diligence
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="loanid != null" >
+        loanid,
+      </if>
+      <if test="workcorp != null" >
+        workcorp,
+      </if>
+      <if test="applydate != null" >
+        applydate,
+      </if>
+      <if test="surveydate != null" >
+        surveydate,
+      </if>
+      <if test="investigatorname != null" >
+        investigatorname,
+      </if>
+      <if test="investigatorid != null" >
+        investigatorid,
+      </if>
+      <if test="enterprisename != null" >
+        enterprisename,
+      </if>
+      <if test="applicantname != null" >
+        applicantname,
+      </if>
+      <if test="applicantid != null" >
+        applicantid,
+      </if>
+      <if test="annualturnover != null" >
+        annualturnover,
+      </if>
+      <if test="seasonal != null" >
+        seasonal,
+      </if>
+      <if test="peakseason != null" >
+        peakseason,
+      </if>
+      <if test="offseason != null" >
+        offseason,
+      </if>
+      <if test="checklicense != null" >
+        checklicense,
+      </if>
+      <if test="checkpos != null" >
+        checkpos,
+      </if>
+      <if test="checkid != null" >
+        checkid,
+      </if>
+      <if test="checkpremises != null" >
+        checkpremises,
+      </if>
+      <if test="checkhouse != null" >
+        checkhouse,
+      </if>
+      <if test="checkphotoatdoor != null" >
+        checkphotoatdoor,
+      </if>
+      <if test="checkagreement != null" >
+        checkagreement,
+      </if>
+      <if test="checkphotoinpremises != null" >
+        checkphotoinpremises,
+      </if>
+      <if test="checkform != null" >
+        checkform,
+      </if>
+      <if test="checkphotosign != null" >
+        checkphotosign,
+      </if>
+      <if test="note != null" >
+        note,
+      </if>
+      <if test="opinion != null" >
+        opinion,
+      </if>
+      <if test="checkreliable != null" >
+        checkreliable,
+      </if>
+      <if test="preappmaxcred != null" >
+        preappmaxcred,
+      </if>
+      <if test="preapptterm != null" >
+        preapptterm,
+      </if>
+      <if test="interate != null" >
+        interate,
+      </if>
+      <if test="checkaccept != null" >
+        checkaccept,
+      </if>
+      <if test="refusereason != null" >
+        refusereason,
+      </if>
+      <if test="duedilitaskno != null" >
+        duedilitaskno,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="loanid != null" >
+        #{loanid,jdbcType=VARCHAR},
+      </if>
+      <if test="workcorp != null" >
+        #{workcorp,jdbcType=VARCHAR},
+      </if>
+      <if test="applydate != null" >
+        #{applydate,jdbcType=VARCHAR},
+      </if>
+      <if test="surveydate != null" >
+        #{surveydate,jdbcType=VARCHAR},
+      </if>
+      <if test="investigatorname != null" >
+        #{investigatorname,jdbcType=VARCHAR},
+      </if>
+      <if test="investigatorid != null" >
+        #{investigatorid,jdbcType=VARCHAR},
+      </if>
+      <if test="enterprisename != null" >
+        #{enterprisename,jdbcType=VARCHAR},
+      </if>
+      <if test="applicantname != null" >
+        #{applicantname,jdbcType=VARCHAR},
+      </if>
+      <if test="applicantid != null" >
+        #{applicantid,jdbcType=VARCHAR},
+      </if>
+      <if test="annualturnover != null" >
+        #{annualturnover,jdbcType=VARCHAR},
+      </if>
+      <if test="seasonal != null" >
+        #{seasonal,jdbcType=CHAR},
+      </if>
+      <if test="peakseason != null" >
+        #{peakseason,jdbcType=VARCHAR},
+      </if>
+      <if test="offseason != null" >
+        #{offseason,jdbcType=VARCHAR},
+      </if>
+      <if test="checklicense != null" >
+        #{checklicense,jdbcType=CHAR},
+      </if>
+      <if test="checkpos != null" >
+        #{checkpos,jdbcType=CHAR},
+      </if>
+      <if test="checkid != null" >
+        #{checkid,jdbcType=CHAR},
+      </if>
+      <if test="checkpremises != null" >
+        #{checkpremises,jdbcType=CHAR},
+      </if>
+      <if test="checkhouse != null" >
+        #{checkhouse,jdbcType=CHAR},
+      </if>
+      <if test="checkphotoatdoor != null" >
+        #{checkphotoatdoor,jdbcType=CHAR},
+      </if>
+      <if test="checkagreement != null" >
+        #{checkagreement,jdbcType=CHAR},
+      </if>
+      <if test="checkphotoinpremises != null" >
+        #{checkphotoinpremises,jdbcType=CHAR},
+      </if>
+      <if test="checkform != null" >
+        #{checkform,jdbcType=CHAR},
+      </if>
+      <if test="checkphotosign != null" >
+        #{checkphotosign,jdbcType=CHAR},
+      </if>
+      <if test="note != null" >
+        #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="opinion != null" >
+        #{opinion,jdbcType=VARCHAR},
+      </if>
+      <if test="checkreliable != null" >
+        #{checkreliable,jdbcType=CHAR},
+      </if>
+      <if test="preappmaxcred != null" >
+        #{preappmaxcred,jdbcType=VARCHAR},
+      </if>
+      <if test="preapptterm != null" >
+        #{preapptterm,jdbcType=VARCHAR},
+      </if>
+      <if test="interate != null" >
+        #{interate,jdbcType=VARCHAR},
+      </if>
+      <if test="checkaccept != null" >
+        #{checkaccept,jdbcType=CHAR},
+      </if>
+      <if test="refusereason != null" >
+        #{refusereason,jdbcType=VARCHAR},
+      </if>
+      <if test="duedilitaskno != null" >
+        #{duedilitaskno,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TDueDiligence" >
+    update t_due_diligence
+    <set >
+      <if test="workcorp != null" >
+        workcorp = #{workcorp,jdbcType=VARCHAR},
+      </if>
+      <if test="applydate != null" >
+        applydate = #{applydate,jdbcType=VARCHAR},
+      </if>
+      <if test="surveydate != null" >
+        surveydate = #{surveydate,jdbcType=VARCHAR},
+      </if>
+      <if test="investigatorname != null" >
+        investigatorname = #{investigatorname,jdbcType=VARCHAR},
+      </if>
+      <if test="investigatorid != null" >
+        investigatorid = #{investigatorid,jdbcType=VARCHAR},
+      </if>
+      <if test="enterprisename != null" >
+        enterprisename = #{enterprisename,jdbcType=VARCHAR},
+      </if>
+      <if test="applicantname != null" >
+        applicantname = #{applicantname,jdbcType=VARCHAR},
+      </if>
+      <if test="applicantid != null" >
+        applicantid = #{applicantid,jdbcType=VARCHAR},
+      </if>
+      <if test="annualturnover != null" >
+        annualturnover = #{annualturnover,jdbcType=VARCHAR},
+      </if>
+      <if test="seasonal != null" >
+        seasonal = #{seasonal,jdbcType=CHAR},
+      </if>
+      <if test="peakseason != null" >
+        peakseason = #{peakseason,jdbcType=VARCHAR},
+      </if>
+      <if test="offseason != null" >
+        offseason = #{offseason,jdbcType=VARCHAR},
+      </if>
+      <if test="checklicense != null" >
+        checklicense = #{checklicense,jdbcType=CHAR},
+      </if>
+      <if test="checkpos != null" >
+        checkpos = #{checkpos,jdbcType=CHAR},
+      </if>
+      <if test="checkid != null" >
+        checkid = #{checkid,jdbcType=CHAR},
+      </if>
+      <if test="checkpremises != null" >
+        checkpremises = #{checkpremises,jdbcType=CHAR},
+      </if>
+      <if test="checkhouse != null" >
+        checkhouse = #{checkhouse,jdbcType=CHAR},
+      </if>
+      <if test="checkphotoatdoor != null" >
+        checkphotoatdoor = #{checkphotoatdoor,jdbcType=CHAR},
+      </if>
+      <if test="checkagreement != null" >
+        checkagreement = #{checkagreement,jdbcType=CHAR},
+      </if>
+      <if test="checkphotoinpremises != null" >
+        checkphotoinpremises = #{checkphotoinpremises,jdbcType=CHAR},
+      </if>
+      <if test="checkform != null" >
+        checkform = #{checkform,jdbcType=CHAR},
+      </if>
+      <if test="checkphotosign != null" >
+        checkphotosign = #{checkphotosign,jdbcType=CHAR},
+      </if>
+      <if test="note != null" >
+        note = #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="opinion != null" >
+        opinion = #{opinion,jdbcType=VARCHAR},
+      </if>
+      <if test="checkreliable != null" >
+        checkreliable = #{checkreliable,jdbcType=CHAR},
+      </if>
+      <if test="preappmaxcred != null" >
+        preappmaxcred = #{preappmaxcred,jdbcType=VARCHAR},
+      </if>
+      <if test="preapptterm != null" >
+        preapptterm = #{preapptterm,jdbcType=VARCHAR},
+      </if>
+      <if test="interate != null" >
+        interate = #{interate,jdbcType=VARCHAR},
+      </if>
+      <if test="checkaccept != null" >
+        checkaccept = #{checkaccept,jdbcType=CHAR},
+      </if>
+      <if test="refusereason != null" >
+        refusereason = #{refusereason,jdbcType=VARCHAR},
+      </if>
+      <if test="duedilitaskno != null" >
+        duedilitaskno = #{duedilitaskno,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where loanid = #{loanid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TDueDiligence" >
+    update t_due_diligence
+    set workcorp = #{workcorp,jdbcType=VARCHAR},
+      applydate = #{applydate,jdbcType=VARCHAR},
+      surveydate = #{surveydate,jdbcType=VARCHAR},
+      investigatorname = #{investigatorname,jdbcType=VARCHAR},
+      investigatorid = #{investigatorid,jdbcType=VARCHAR},
+      enterprisename = #{enterprisename,jdbcType=VARCHAR},
+      applicantname = #{applicantname,jdbcType=VARCHAR},
+      applicantid = #{applicantid,jdbcType=VARCHAR},
+      annualturnover = #{annualturnover,jdbcType=VARCHAR},
+      seasonal = #{seasonal,jdbcType=CHAR},
+      peakseason = #{peakseason,jdbcType=VARCHAR},
+      offseason = #{offseason,jdbcType=VARCHAR},
+      checklicense = #{checklicense,jdbcType=CHAR},
+      checkpos = #{checkpos,jdbcType=CHAR},
+      checkid = #{checkid,jdbcType=CHAR},
+      checkpremises = #{checkpremises,jdbcType=CHAR},
+      checkhouse = #{checkhouse,jdbcType=CHAR},
+      checkphotoatdoor = #{checkphotoatdoor,jdbcType=CHAR},
+      checkagreement = #{checkagreement,jdbcType=CHAR},
+      checkphotoinpremises = #{checkphotoinpremises,jdbcType=CHAR},
+      checkform = #{checkform,jdbcType=CHAR},
+      checkphotosign = #{checkphotosign,jdbcType=CHAR},
+      note = #{note,jdbcType=VARCHAR},
+      opinion = #{opinion,jdbcType=VARCHAR},
+      checkreliable = #{checkreliable,jdbcType=CHAR},
+      preappmaxcred = #{preappmaxcred,jdbcType=VARCHAR},
+      preapptterm = #{preapptterm,jdbcType=VARCHAR},
+      interate = #{interate,jdbcType=VARCHAR},
+      checkaccept = #{checkaccept,jdbcType=CHAR},
+      refusereason = #{refusereason,jdbcType=VARCHAR},
+      duedilitaskno = #{duedilitaskno,jdbcType=VARCHAR}
+    where loanid = #{loanid,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,37 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.spi.RNT;
+
+import org.springframework.stereotype.Service;
+
+import com.hrbb.loan.spi.POSHService;
+import com.hrbb.loan.spi.TC.TCRepaymentApplyServiceImpl;
+
+/**
+ * T56还款申请
+ * 
+ * @author marco
+ * @version $Id: TC2RepaymentApplyServiceImpl.java, v 0.1 2015-8-20 上午11:39:50
+ *          marco Exp $
+ */
+@Service("rnRepaymentApply")
+public class RNRepaymentApplyServiceImpl extends TCRepaymentApplyServiceImpl {
+	@Override
+	public String getChannel() {
+		return POSHService.近件渠道_融360;
+	}
+
+	/**
+	 * 前置加解密标签
+	 * 
+	 * @return
+	 */
+	@Override
+	public String getEncryptedRender() {
+		return "RNT";
+	}
+
+}

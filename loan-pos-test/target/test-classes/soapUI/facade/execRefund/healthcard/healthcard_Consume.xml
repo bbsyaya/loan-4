@@ -1,0 +1,36 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:fram="http://framework.facade.common.transcore.pinganfu.com/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <fram:checkInAndPayWithPayType>
+         <arg0>
+            <busiChannel>P</busiChannel>
+            <ccy>CNY</ccy>
+            <customerId>9999999999999999</customerId>
+            <customerType>00</customerType>
+            <dcFlag>D</dcFlag>
+            <extFeilds>{HealthCardSortList:[{"SortCode":"D01","SortAmount":"100.01"}]}</extFeilds>
+            <inBankCardInfo>
+            </inBankCardInfo>
+            <merchantNum>1212121212</merchantNum>
+            <orderNo>${orderNo}</orderNo>
+            <outBankCardInfo>
+            </outBankCardInfo>
+            <paymentMode>2048</paymentMode>
+            <productCode>300010020000</productCode>
+            <registerFlag>0</registerFlag>
+            <subLedgerDetails>
+            </subLedgerDetails>
+            <toCustomerId>2000010000001305</toCustomerId>
+            <tranDetails>
+               <currencyCode>CNY</currencyCode>
+               <payAcctId>12121212121</payAcctId>
+               <payAmt>100000000</payAmt>
+               <payType>11</payType>
+            </tranDetails>
+            <transAmt>100000000</transAmt>
+            <transFactAmt>100000000</transFactAmt>
+            <transType>62</transType>
+         </arg0>
+      </fram:checkInAndPayWithPayType>
+   </soapenv:Body>
+</soapenv:Envelope>

@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFtpManageMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TFtpManage" >
+    <id column="instno" property="instno" jdbcType="VARCHAR" />
+    <result column="instname" property="instname" jdbcType="VARCHAR" />
+    <result column="ftptype" property="ftptype" jdbcType="CHAR" />
+    <result column="ftpaddress" property="ftpaddress" jdbcType="VARCHAR" />
+    <result column="ftpport" property="ftpport" jdbcType="INTEGER" />
+    <result column="ftpuser" property="ftpuser" jdbcType="VARCHAR" />
+    <result column="ftppwd" property="ftppwd" jdbcType="VARCHAR" />
+    <result column="ftpmode" property="ftpmode" jdbcType="CHAR" />
+    <result column="remotepath" property="remotepath" jdbcType="VARCHAR" />
+    <result column="remotesubpath" property="remotesubpath" jdbcType="VARCHAR" />
+    <result column="remotefilename" property="remotefilename" jdbcType="VARCHAR" />
+    <result column="localpath" property="localpath" jdbcType="VARCHAR" />
+    <result column="localsubpath" property="localsubpath" jdbcType="VARCHAR" />
+    <result column="localfilename" property="localfilename" jdbcType="VARCHAR" />
+    <result column="initiative" property="initiative" jdbcType="INTEGER" />
+    <result column="stat" property="stat" jdbcType="INTEGER" />
+    <result column="instdesc" property="instdesc" jdbcType="VARCHAR" />
+    <result column="resv1" property="resv1" jdbcType="VARCHAR" />
+    <result column="resv2" property="resv2" jdbcType="VARCHAR" />
+    <result column="resv3" property="resv3" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    instno, instname, ftptype, ftpaddress, ftpport, ftpuser, ftppwd, ftpmode, remotepath, 
+    remotesubpath, remotefilename, localpath, localsubpath, localfilename, initiative, 
+    stat, instdesc, resv1, resv2, resv3
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_ftp_manage
+    where instno = #{instno,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_ftp_manage
+    where instno = #{instno,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TFtpManage" >
+    insert into t_ftp_manage (instno, instname, ftptype, 
+      ftpaddress, ftpport, ftpuser, 
+      ftppwd, ftpmode, remotepath, 
+      remotesubpath, remotefilename, localpath, 
+      localsubpath, localfilename, initiative, 
+      stat, instdesc, resv1, 
+      resv2, resv3)
+    values (#{instno,jdbcType=VARCHAR}, #{instname,jdbcType=VARCHAR}, #{ftptype,jdbcType=CHAR}, 
+      #{ftpaddress,jdbcType=VARCHAR}, #{ftpport,jdbcType=INTEGER}, #{ftpuser,jdbcType=VARCHAR}, 
+      #{ftppwd,jdbcType=VARCHAR}, #{ftpmode,jdbcType=CHAR}, #{remotepath,jdbcType=VARCHAR}, 
+      #{remotesubpath,jdbcType=VARCHAR}, #{remotefilename,jdbcType=VARCHAR}, #{localpath,jdbcType=VARCHAR}, 
+      #{localsubpath,jdbcType=VARCHAR}, #{localfilename,jdbcType=VARCHAR}, #{initiative,jdbcType=INTEGER}, 
+      #{stat,jdbcType=INTEGER}, #{instdesc,jdbcType=VARCHAR}, #{resv1,jdbcType=VARCHAR}, 
+      #{resv2,jdbcType=VARCHAR}, #{resv3,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TFtpManage" >
+    insert into t_ftp_manage
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="instno != null" >
+        instno,
+      </if>
+      <if test="instname != null" >
+        instname,
+      </if>
+      <if test="ftptype != null" >
+        ftptype,
+      </if>
+      <if test="ftpaddress != null" >
+        ftpaddress,
+      </if>
+      <if test="ftpport != null" >
+        ftpport,
+      </if>
+      <if test="ftpuser != null" >
+        ftpuser,
+      </if>
+      <if test="ftppwd != null" >
+        ftppwd,
+      </if>
+      <if test="ftpmode != null" >
+        ftpmode,
+      </if>
+      <if test="remotepath != null" >
+        remotepath,
+      </if>
+      <if test="remotesubpath != null" >
+        remotesubpath,
+      </if>
+      <if test="remotefilename != null" >
+        remotefilename,
+      </if>
+      <if test="localpath != null" >
+        localpath,
+      </if>
+      <if test="localsubpath != null" >
+        localsubpath,
+      </if>
+      <if test="localfilename != null" >
+        localfilename,
+      </if>
+      <if test="initiative != null" >
+        initiative,
+      </if>
+      <if test="stat != null" >
+        stat,
+      </if>
+      <if test="instdesc != null" >
+        instdesc,
+      </if>
+      <if test="resv1 != null" >
+        resv1,
+      </if>
+      <if test="resv2 != null" >
+        resv2,
+      </if>
+      <if test="resv3 != null" >
+        resv3,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="instno != null" >
+        #{instno,jdbcType=VARCHAR},
+      </if>
+      <if test="instname != null" >
+        #{instname,jdbcType=VARCHAR},
+      </if>
+      <if test="ftptype != null" >
+        #{ftptype,jdbcType=CHAR},
+      </if>
+      <if test="ftpaddress != null" >
+        #{ftpaddress,jdbcType=VARCHAR},
+      </if>
+      <if test="ftpport != null" >
+        #{ftpport,jdbcType=INTEGER},
+      </if>
+      <if test="ftpuser != null" >
+        #{ftpuser,jdbcType=VARCHAR},
+      </if>
+      <if test="ftppwd != null" >
+        #{ftppwd,jdbcType=VARCHAR},
+      </if>
+      <if test="ftpmode != null" >
+        #{ftpmode,jdbcType=CHAR},
+      </if>
+      <if test="remotepath != null" >
+        #{remotepath,jdbcType=VARCHAR},
+      </if>
+      <if test="remotesubpath != null" >
+        #{remotesubpath,jdbcType=VARCHAR},
+      </if>
+      <if test="remotefilename != null" >
+        #{remotefilename,jdbcType=VARCHAR},
+      </if>
+      <if test="localpath != null" >
+        #{localpath,jdbcType=VARCHAR},
+      </if>
+      <if test="localsubpath != null" >
+        #{localsubpath,jdbcType=VARCHAR},
+      </if>
+      <if test="localfilename != null" >
+        #{localfilename,jdbcType=VARCHAR},
+      </if>
+      <if test="initiative != null" >
+        #{initiative,jdbcType=INTEGER},
+      </if>
+      <if test="stat != null" >
+        #{stat,jdbcType=INTEGER},
+      </if>
+      <if test="instdesc != null" >
+        #{instdesc,jdbcType=VARCHAR},
+      </if>
+      <if test="resv1 != null" >
+        #{resv1,jdbcType=VARCHAR},
+      </if>
+      <if test="resv2 != null" >
+        #{resv2,jdbcType=VARCHAR},
+      </if>
+      <if test="resv3 != null" >
+        #{resv3,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TFtpManage" >
+    update t_ftp_manage
+    <set >
+      <if test="instname != null" >
+        instname = #{instname,jdbcType=VARCHAR},
+      </if>
+      <if test="ftptype != null" >
+        ftptype = #{ftptype,jdbcType=CHAR},
+      </if>
+      <if test="ftpaddress != null" >
+        ftpaddress = #{ftpaddress,jdbcType=VARCHAR},
+      </if>
+      <if test="ftpport != null" >
+        ftpport = #{ftpport,jdbcType=INTEGER},
+      </if>
+      <if test="ftpuser != null" >
+        ftpuser = #{ftpuser,jdbcType=VARCHAR},
+      </if>
+      <if test="ftppwd != null" >
+        ftppwd = #{ftppwd,jdbcType=VARCHAR},
+      </if>
+      <if test="ftpmode != null" >
+        ftpmode = #{ftpmode,jdbcType=CHAR},
+      </if>
+      <if test="remotepath != null" >
+        remotepath = #{remotepath,jdbcType=VARCHAR},
+      </if>
+      <if test="remotesubpath != null" >
+        remotesubpath = #{remotesubpath,jdbcType=VARCHAR},
+      </if>
+      <if test="remotefilename != null" >
+        remotefilename = #{remotefilename,jdbcType=VARCHAR},
+      </if>
+      <if test="localpath != null" >
+        localpath = #{localpath,jdbcType=VARCHAR},
+      </if>
+      <if test="localsubpath != null" >
+        localsubpath = #{localsubpath,jdbcType=VARCHAR},
+      </if>
+      <if test="localfilename != null" >
+        localfilename = #{localfilename,jdbcType=VARCHAR},
+      </if>
+      <if test="initiative != null" >
+        initiative = #{initiative,jdbcType=INTEGER},
+      </if>
+      <if test="stat != null" >
+        stat = #{stat,jdbcType=INTEGER},
+      </if>
+      <if test="instdesc != null" >
+        instdesc = #{instdesc,jdbcType=VARCHAR},
+      </if>
+      <if test="resv1 != null" >
+        resv1 = #{resv1,jdbcType=VARCHAR},
+      </if>
+      <if test="resv2 != null" >
+        resv2 = #{resv2,jdbcType=VARCHAR},
+      </if>
+      <if test="resv3 != null" >
+        resv3 = #{resv3,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where instno = #{instno,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TFtpManage" >
+    update t_ftp_manage
+    set instname = #{instname,jdbcType=VARCHAR},
+      ftptype = #{ftptype,jdbcType=CHAR},
+      ftpaddress = #{ftpaddress,jdbcType=VARCHAR},
+      ftpport = #{ftpport,jdbcType=INTEGER},
+      ftpuser = #{ftpuser,jdbcType=VARCHAR},
+      ftppwd = #{ftppwd,jdbcType=VARCHAR},
+      ftpmode = #{ftpmode,jdbcType=CHAR},
+      remotepath = #{remotepath,jdbcType=VARCHAR},
+      remotesubpath = #{remotesubpath,jdbcType=VARCHAR},
+      remotefilename = #{remotefilename,jdbcType=VARCHAR},
+      localpath = #{localpath,jdbcType=VARCHAR},
+      localsubpath = #{localsubpath,jdbcType=VARCHAR},
+      localfilename = #{localfilename,jdbcType=VARCHAR},
+      initiative = #{initiative,jdbcType=INTEGER},
+      stat = #{stat,jdbcType=INTEGER},
+      instdesc = #{instdesc,jdbcType=VARCHAR},
+      resv1 = #{resv1,jdbcType=VARCHAR},
+      resv2 = #{resv2,jdbcType=VARCHAR},
+      resv3 = #{resv3,jdbcType=VARCHAR}
+    where instno = #{instno,jdbcType=VARCHAR}
+  </update>
+</mapper>

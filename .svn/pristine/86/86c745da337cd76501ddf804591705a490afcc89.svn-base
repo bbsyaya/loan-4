@@ -1,0 +1,18 @@
+package com.hrbb.loan.pos.dao.impl;
+
+import java.util.Map;
+
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+import org.springframework.stereotype.Repository;
+
+import com.hrbb.loan.pos.dao.TCreditApplyUpdateSyncDao;
+@Repository("tCreditApplyUpdateSyncDao")
+public class TCreditApplyUpdateSyncDaoImpl extends SqlSessionDaoSupport implements TCreditApplyUpdateSyncDao {
+
+	@Override
+	public Map<String, Object> getCreditApplyUpdateSyncInfo(String loanId) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectOne("TCreditApplyMapper.getCreditApplyUpdateSyncInfo",loanId);
+	}
+
+}

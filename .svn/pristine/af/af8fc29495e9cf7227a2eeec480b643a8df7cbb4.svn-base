@@ -1,0 +1,979 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TReceiptInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TReceiptInfo" >
+    <id column="receiptId" property="receiptId" jdbcType="VARCHAR" />
+    <result column="payApplyId" property="payApplyId" jdbcType="VARCHAR" />
+    <result column="contNo" property="contNo" jdbcType="VARCHAR" />
+    <result column="custId" property="custId" jdbcType="VARCHAR" />
+    <result column="posCustId" property="posCustId" jdbcType="VARCHAR" />
+    <result column="custName" property="custName" jdbcType="VARCHAR" />
+    <result column="custId" property="custId" jdbcType="VARCHAR" />
+    <result column="posCustId" property="posCustId" jdbcType="VARCHAR" />
+    <result column="posCustName" property="posCustName" jdbcType="VARCHAR" />
+    <result column="payApplyAmt" property="payApplyAmt" jdbcType="DECIMAL" />
+    <result column="payApplyTerm" property="payApplyTerm" jdbcType="VARCHAR" />
+    <result column="beginDate" property="beginDate" jdbcType="DATE" />
+    <result column="endDate" property="endDate" jdbcType="DATE" />
+    <result column="finishDate" property="finishDate" jdbcType="DATE" />
+    <result column="loanInterest" property="loanInterest" jdbcType="DECIMAL" />
+    <result column="paybackWay" property="paybackWay" jdbcType="VARCHAR" />
+    <result column="loanPaybackWay" property="loanPaybackWay" jdbcType="VARCHAR" />
+    <result column="loanUsage" property="loanUsage" jdbcType="VARCHAR" />
+    <result column="payAccount" property="payAccount" jdbcType="VARCHAR" />
+    <result column="accountOpenBank" property="accountOpenBank" jdbcType="VARCHAR" />
+    <result column="accountBranckBank" property="accountBranckBank" jdbcType="VARCHAR" />
+    <result column="accountSubBranchBank" property="accountSubBranchBank" jdbcType="VARCHAR" />
+    <result column="payChannel" property="payChannel" jdbcType="VARCHAR" />
+    <result column="loanTotalBalance" property="loanTotalBalance" jdbcType="DECIMAL" />
+    <result column="normalBalance" property="normalBalance" jdbcType="DECIMAL" />
+    <result column="overdueBalance" property="overdueBalance" jdbcType="DECIMAL" />
+    <result column="innerOwnedInterest" property="innerOwnedInterest" jdbcType="DECIMAL" />
+    <result column="outterOwnedInterest" property="outterOwnedInterest" jdbcType="DECIMAL" />
+    <result column="checkOrganization" property="checkOrganization" jdbcType="VARCHAR" />
+    <result column="loanExecuteStatus" property="loanExecuteStatus" jdbcType="VARCHAR" />
+    <result column="lnExctStsUpdtTm" property="lnExctStsUpdtTm" jdbcType="TIMESTAMP" />
+    <result column="clearStatus" property="clearStatus" jdbcType="VARCHAR" />
+    <result column="loanAcNo" property="loanAcNo" jdbcType="VARCHAR" />
+    <result column="cdtbranchid" property="cdtbranchid" jdbcType="VARCHAR"/>
+    <result column="fineRate" property="fineRate" jdbcType="DECIMAL" />
+    <result column="graceDays" property="graceDays" jdbcType="INTEGER" />
+    <result column="scheduleTimes" property="scheduleTimes" jdbcType="INTEGER" />
+    <result column="loanStatus" property="loanStatus" jdbcType="VARCHAR"/>
+    <result column="actualIssueDate" property="actualIssueDate" jdbcType="DATE" />
+    <result column="actualMaturity" property="actualMaturity" jdbcType="DATE" />
+    <result column="exeSeq" property="exeSeq" jdbcType="VARCHAR"/>
+    <result column="issueTime" property="issueTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    receiptId, payApplyId, contNo, custId,custName, posCustId,posCustName, payApplyAmt, payApplyTerm, 
+    beginDate, endDate, finishDate, loanInterest, paybackWay, loanPaybackWay, loanUsage, payAccount, accountOpenBank, 
+    accountBranckBank, accountSubBranchBank, payChannel, loanTotalBalance, normalBalance, 
+    overdueBalance, innerOwnedInterest, outterOwnedInterest, checkOrganization, loanExecuteStatus, lnExctStsUpdtTm,
+    clearStatus,loanAcNo,cdtbranchid, listId,fineRate,graceDays,scheduleTimes,loanStatus,actualIssueDate,actualMaturity,exeSeq,issueTime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select <include refid="Base_Column_List" />
+    from t_receipt_info
+    where receiptId = #{receiptId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByPayApplyId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_receipt_info
+    where payApplyId = #{payApplyId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByExeSeq" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_receipt_info
+    where exeSeq = #{exeSeq,jdbcType=VARCHAR}
+  </select>
+  <select id="getAllReceipts" resultMap="BaseResultMap" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_receipt_info
+    where loanTotalBalance+innerOwnedInterest+outterOwnedInterest>0
+    <if test="custNameLike != null">
+    	AND custName like #{custNameLike}
+    </if>
+    <if test="merchantNameLike != null">
+    	AND posCustName like #{merchantNameLike}
+    </if>
+    <if test="startPage != null">
+    	LIMIT #{startPage}, #{limit}
+    </if>
+  </select>
+  <select id="countCustRelatedReceiptNumber" resultType="java.lang.Long" parameterType="Map" >
+    select count(*)
+    from t_receipt_info
+    where loanTotalBalance+innerOwnedInterest+outterOwnedInterest>0
+    and custId = #{custId,jdbcType=VARCHAR}
+    <if test="custNameLike != null">
+    	AND custName like #{custNameLike}
+    </if>
+    <if test="merchantNameLike != null">
+    	AND posCustName like #{merchantNameLike}
+    </if>
+    <if test="startPage != null">
+    	LIMIT #{startPage}, #{limit}
+    </if>
+  </select>
+  <select id="getAllUnClearedReceipts" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_receipt_info
+    where loanTotalBalance+innerOwnedInterest+outterOwnedInterest>0
+  </select>
+  <select id="getReceiptList" resultMap="BaseResultMap" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_receipt_info
+    where 1=1
+    <if test="custId != null" >
+        AND custId = #{custId,jdbcType=DECIMAL}
+    </if>
+    <if test="custNameLike != null">
+    	AND custName like #{custNameLike}
+    </if>
+    <if test="contNo != null">
+    	AND contNo = #{contNo}
+    </if>
+    <if test="loanExecuteStatus != null">
+    	AND loanExecuteStatus = #{loanExecuteStatus}
+    </if>
+    <if test="merchantNameLike != null">
+    	AND posCustName like #{merchantNameLike}
+    </if>
+    <if test="startPage != null">
+    	LIMIT #{startPage}, #{limit}
+    </if>
+  </select>
+  <select id="getReceiptList10" resultMap="BaseResultMap" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_receipt_info
+    where 1=1  
+    AND loanExecuteStatus = '10'
+    AND payChannel in ('0','1','2')
+  </select>
+  <select id="getContNoByReceiptId" resultType="java.lang.String" parameterType="java.lang.String" >
+    select contNo
+    from t_receipt_info
+    where receiptId = #{receiptId,jdbcType=VARCHAR}
+  </select>
+  <select id="getBeginDateByPayApplyId" resultType="java.lang.String" parameterType="java.lang.String" >
+    select beginDate
+    from t_receipt_info
+    where payApplyId = #{listid,jdbcType=VARCHAR}
+  </select>
+  <select id="getReceiptIdByPayApplyId" resultType="java.lang.String" parameterType="java.lang.String" >
+   select receiptId
+   from t_receipt_info
+   where payApplyId = #{listid,jdbcType=VARCHAR}
+ </select>
+  <select id="getLoanTotalBalanceByReceiptId" resultType="java.lang.Double" parameterType="java.lang.String" >
+   select loanTotalBalance
+   from t_receipt_info
+   where payApplyId = #{listid,jdbcType=VARCHAR}
+  </select>
+  <select id="selectSelectiveMap" resultMap="BaseResultMap" parameterType="Map" >
+   select 
+   <include refid="Base_Column_List" />
+   from t_receipt_info
+   where 1=1
+   <if test="bizStatus == '01'">
+   	AND loanStatus in ('90','91','92','93','94')
+   </if>
+   <if test="bizStatus == '02'">
+   	AND loanStatus in ('01','02','03')
+   </if>
+   <!-- 
+   <if test="deleteFlag != null">
+   	AND deleteFlag = #{deleteFlag}
+   </if>
+    -->
+	<if test="ReceiptIdLike != null">
+		AND receiptId like #{ReceiptIdLike}
+	</if>
+    <if test="custNameLike != null">
+   	AND custName like #{custNameLike}
+   </if>
+   <if test="merchantNameLike != null">
+   	AND posCustName like #{merchantNameLike}
+   </if>
+  <!--  <if test="custIdNoLike != null">
+   	AND custId like #{custIdNoLike}
+    </if> -->
+    <!-- 按actualMaturity升序方便看到期贷款 -->
+   	order by actualMaturity asc
+   <if test="startPage != null">
+   	LIMIT #{startPage}, #{limit}
+   </if>
+   </select>
+   <!-- 总数 -->
+   <select id="countSelectiveMap" resultType="Long" parameterType="Map" >
+   select count(*)
+   from t_receipt_info
+   where 1=1
+   <if test="bizStatus == '01'">
+   	AND loanStatus in ('90','91','92','93','94')
+   </if>
+   <if test="bizStatus == '02'">
+   	AND loanStatus in ('01','02','03')
+   </if>
+   <!-- 
+   <if test="deleteFlag != null">
+   	AND deleteFlag = #{deleteFlag}
+   </if>
+    -->
+ <if test="ReceiptIdLike != null">
+    AND receiptId like #{ReceiptIdLike}
+ </if>
+    <if test="custNameLike != null">
+   	AND custName like #{custNameLike}
+   </if>
+   <if test="merchantNameLike != null">
+   	AND posCustName like #{merchantNameLike}
+   </if>
+  <!--  <if test="custIdNoLike != null">
+   	AND custId like #{custIdNoLike}
+    </if> -->
+   </select>
+  <select id="getReceiptTotalAmountByContNo" resultType="java.lang.String" parameterType="java.lang.String" >
+   select sum(loanTotalBalance) 
+   from t_receipt_info 
+   where contNo = #{contNo,jdbcType=VARCHAR}
+ </select>
+  <select id="getReceiptMapByReceiptId" resultType="Map" parameterType="java.lang.String" >
+   select t1.*,t2.channel from t_receipt_info t1, t_contract_info t2 where t1.contNo=t2.contNo and  receiptId = #{receiptId,jdbcType=VARCHAR}
+ </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+   delete from t_receipt_info
+   where receiptId = #{receiptId,jdbcType=VARCHAR}
+ </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TReceiptInfo" >
+   insert into t_receipt_info (receiptId, payApplyId, contNo, custId, posCustId, 
+     custName, posCustName, payApplyAmt, 
+     payApplyTerm, beginDate, endDate, finishDate,
+     loanInterest, paybackWay, loanPaybackWay loanUsage, 
+     payAccount, accountOpenBank, accountBranckBank, 
+     accountSubBranchBank, payChannel, loanTotalBalance, 
+     normalBalance, overdueBalance, innerOwnedInterest, 
+     outterOwnedInterest, checkOrganization, 
+     loanExecuteStatus, lnExctStsUpdtTm, clearStatus)
+   values (#{receiptId,jdbcType=VARCHAR}, #{payApplyId,jdbcType=VARCHAR}, #{contNo,jdbcType=VARCHAR}, #{custId,jdbcType=VARCHAR}, #{posCustId,jdbcType=VARCHAR},
+     #{custName,jdbcType=VARCHAR}, #{posCustName,jdbcType=VARCHAR}, #{payApplyAmt,jdbcType=DECIMAL}, 
+     #{payApplyTerm,jdbcType=VARCHAR}, #{beginDate,jdbcType=DATE}, #{endDate,jdbcType=DATE}, #{finishDate,jdbcType=DATE}, 
+     #{loanInterest,jdbcType=DECIMAL}, #{paybackWay,jdbcType=VARCHAR}, #{loanUsage,jdbcType=VARCHAR}, 
+     #{payAccount,jdbcType=VARCHAR}, #{accountOpenBank,jdbcType=VARCHAR}, #{accountBranckBank,jdbcType=VARCHAR}, 
+     #{accountSubBranchBank,jdbcType=VARCHAR}, #{payChannel,jdbcType=VARCHAR}, #{loanTotalBalance,jdbcType=DECIMAL}, 
+     #{normalBalance,jdbcType=DECIMAL}, #{overdueBalance,jdbcType=DECIMAL}, #{innerOwnedInterest,jdbcType=DECIMAL}, 
+     #{outterOwnedInterest,jdbcType=DECIMAL}, #{checkOrganization,jdbcType=VARCHAR}, 
+     #{loanExecuteStatus,jdbcType=VARCHAR}, #{lnExctStsUpdtTm,jdbcType=TIMESTAMP}, #{clearStatus,jdbcType=VARCHAR})
+ </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TReceiptInfo" >
+   insert into t_receipt_info
+   <trim prefix="(" suffix=")" suffixOverrides="," >
+     <if test="receiptId != null" >
+       receiptId,
+     </if>
+     <if test="payApplyId != null" >
+       payApplyId,
+     </if>
+     <if test="contNo != null" >
+       contNo,
+     </if>
+     <if test="custId != null">
+       custId,  
+     </if>
+     <if test="posCustId != null">
+       posCustId, 
+     </if>
+     <if test="custName != null" >
+       custName,
+     </if>
+     <if test="posCustName != null" >
+       posCustName,
+     </if>
+     <if test="payApplyAmt != null" >
+       payApplyAmt,
+     </if>
+     <if test="payApplyTerm != null" >
+       payApplyTerm,
+     </if>
+     <if test="beginDate != null" >
+       beginDate,
+     </if>
+     <if test="endDate != null" >
+       endDate,
+     </if>
+     <if test="finishDate != null" >
+       finishDate,
+     </if>
+     <if test="loanInterest != null" >
+       loanInterest,
+     </if>
+     <if test="paybackWay != null" >
+       paybackWay,
+     </if>
+     <if test="loanPaybackWay != null" >
+       loanPaybackWay,
+     </if>
+     <if test="loanUsage != null" >
+       loanUsage,
+     </if>
+     <if test="payAccount != null" >
+       payAccount,
+     </if>
+     <if test="accountOpenBank != null" >
+       accountOpenBank,
+     </if>
+     <if test="accountBranckBank != null" >
+       accountBranckBank,
+     </if>
+     <if test="accountSubBranchBank != null" >
+       accountSubBranchBank,
+     </if>
+     <if test="payChannel != null" >
+       payChannel,
+     </if>
+     <if test="loanTotalBalance != null" >
+       loanTotalBalance,
+     </if>
+     <if test="normalBalance != null" >
+       normalBalance,
+     </if>
+     <if test="overdueBalance != null" >
+       overdueBalance,
+     </if>
+     <if test="innerOwnedInterest != null" >
+       innerOwnedInterest,
+     </if>
+     <if test="outterOwnedInterest != null" >
+       outterOwnedInterest,
+     </if>
+     <if test="checkOrganization != null" >
+       checkOrganization,
+     </if>
+     <if test="loanExecuteStatus != null" >
+       loanExecuteStatus,
+     </if>
+     <if test="lnExctStsUpdtTm != null" >
+       lnExctStsUpdtTm,
+     </if>
+     <if test="clearStatus != null" >
+       clearStatus,
+     </if>
+     <if test="cdtbranchid != null">
+       cdtbranchid,
+     </if>
+     <if test="fineRate != null">
+       fineRate,          
+     </if>
+     <if test="graceDays != null">
+       graceDays,          
+     </if>
+     <if test="scheduleTimes != null" >
+       scheduleTimes,
+     </if>
+   </trim>
+   <trim prefix="values (" suffix=")" suffixOverrides="," >
+     <if test="receiptId != null" >
+       #{receiptId,jdbcType=VARCHAR},
+     </if>
+     <if test="payApplyId != null" >
+       #{payApplyId,jdbcType=VARCHAR},
+     </if>
+     <if test="contNo != null" >
+       #{contNo,jdbcType=VARCHAR},
+     </if>
+      <if test="custId != null">
+       #{custId,jdbcType=VARCHAR},  
+     </if>
+     <if test="posCustId != null">
+       #{posCustId,jdbcType=VARCHAR}, 
+     </if>
+     <if test="custName != null" >
+       #{custName,jdbcType=VARCHAR},
+     </if>
+     <if test="posCustName != null" >
+       #{posCustName,jdbcType=VARCHAR},
+     </if>
+     <if test="payApplyAmt != null" >
+       #{payApplyAmt,jdbcType=DECIMAL},
+     </if>
+     <if test="payApplyTerm != null" >
+       #{payApplyTerm,jdbcType=VARCHAR},
+     </if>
+     <if test="beginDate != null" >
+       #{beginDate,jdbcType=DATE},
+     </if>
+     <if test="endDate != null" >
+       #{endDate,jdbcType=DATE},
+     </if>
+     <if test="finishDate != null" >
+       #{finishDate,jdbcType=DATE},
+     </if>
+     <if test="loanInterest != null" >
+       #{loanInterest,jdbcType=DECIMAL},
+     </if>
+     <if test="paybackWay != null" >
+       #{paybackWay,jdbcType=VARCHAR},
+     </if>
+     <if test="loanPaybackWay != null" >
+       #{loanPaybackWay,jdbcType=VARCHAR},
+     </if>
+     <if test="loanUsage != null" >
+       #{loanUsage,jdbcType=VARCHAR},
+     </if>
+     <if test="payAccount != null" >
+       #{payAccount,jdbcType=VARCHAR},
+     </if>
+     <if test="accountOpenBank != null" >
+       #{accountOpenBank,jdbcType=VARCHAR},
+     </if>
+     <if test="accountBranckBank != null" >
+       #{accountBranckBank,jdbcType=VARCHAR},
+     </if>
+     <if test="accountSubBranchBank != null" >
+       #{accountSubBranchBank,jdbcType=VARCHAR},
+     </if>
+     <if test="payChannel != null" >
+       #{payChannel,jdbcType=VARCHAR},
+     </if>
+     <if test="loanTotalBalance != null" >
+       #{loanTotalBalance,jdbcType=DECIMAL},
+     </if>
+     <if test="normalBalance != null" >
+       #{normalBalance,jdbcType=DECIMAL},
+     </if>
+     <if test="overdueBalance != null" >
+       #{overdueBalance,jdbcType=DECIMAL},
+     </if>
+     <if test="innerOwnedInterest != null" >
+       #{innerOwnedInterest,jdbcType=DECIMAL},
+     </if>
+     <if test="outterOwnedInterest != null" >
+       #{outterOwnedInterest,jdbcType=DECIMAL},
+     </if>
+     <if test="checkOrganization != null" >
+       #{checkOrganization,jdbcType=VARCHAR},
+     </if>
+     <if test="loanExecuteStatus != null" >
+       #{loanExecuteStatus,jdbcType=VARCHAR},
+     </if>
+     <if test="lnExctStsUpdtTm != null" >
+       #{lnExctStsUpdtTm,jdbcType=TIMESTAMP},
+     </if>
+     <if test="clearStatus != null" >
+       #{clearStatus,jdbcType=VARCHAR},
+     </if>
+     <if test="cdtbranchid != null">
+       #{cdtbranchid,jdbcType=VARCHAR},
+     </if>
+     <if test="fineRate != null">
+       #{fineRate,jdbcType=DECIMAL},          
+     </if>
+     <if test="graceDays != null">
+       #{graceDays,jdbcType=INTEGER},
+     </if>
+     <if test="scheduleTimes != null" >
+       #{scheduleTimes,jdbcType=INTEGER},
+     </if>
+   </trim>
+ </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TReceiptInfo" >
+   update t_receipt_info
+   <set >
+     <if test="custName != null" >
+       custName = #{custName,jdbcType=VARCHAR},
+     </if>
+     <if test="posCustName != null" >
+       posCustName = #{posCustName,jdbcType=VARCHAR},
+     </if>
+     <if test="payApplyAmt != null" >
+       payApplyAmt = #{payApplyAmt,jdbcType=DECIMAL},
+     </if>
+     <if test="payApplyTerm != null" >
+       payApplyTerm = #{payApplyTerm,jdbcType=VARCHAR},
+     </if>
+     <if test="beginDate != null" >
+       beginDate = #{beginDate,jdbcType=DATE},
+     </if>
+     <if test="endDate != null" >
+       endDate = #{endDate,jdbcType=DATE},
+     </if>
+     <if test="finishDate != null" >
+       finishDate = #{finishDate,jdbcType=DATE},
+     </if>
+     <if test="loanInterest != null" >
+       loanInterest = #{loanInterest,jdbcType=DECIMAL},
+     </if>
+     <if test="paybackWay != null" >
+       paybackWay = #{paybackWay,jdbcType=VARCHAR},
+     </if>
+     <if test="loanPaybackWay != null" >
+       loanPaybackWay = #{loanPaybackWay,jdbcType=VARCHAR},
+     </if>
+     <if test="loanUsage != null" >
+       loanUsage = #{loanUsage,jdbcType=VARCHAR},
+     </if>
+     <if test="payAccount != null" >
+       payAccount = #{payAccount,jdbcType=VARCHAR},
+     </if>
+     <if test="accountOpenBank != null" >
+       accountOpenBank = #{accountOpenBank,jdbcType=VARCHAR},
+     </if>
+     <if test="accountBranckBank != null" >
+       accountBranckBank = #{accountBranckBank,jdbcType=VARCHAR},
+     </if>
+     <if test="accountSubBranchBank != null" >
+       accountSubBranchBank = #{accountSubBranchBank,jdbcType=VARCHAR},
+     </if>
+     <if test="payChannel != null" >
+       payChannel = #{payChannel,jdbcType=VARCHAR},
+     </if>
+     <if test="loanTotalBalance != null" >
+       loanTotalBalance = #{loanTotalBalance,jdbcType=DECIMAL},
+     </if>
+     <if test="normalBalance != null" >
+       normalBalance = #{normalBalance,jdbcType=DECIMAL},
+     </if>
+     <if test="overdueBalance != null" >
+       overdueBalance = #{overdueBalance,jdbcType=DECIMAL},
+     </if>
+     <if test="innerOwnedInterest != null" >
+       innerOwnedInterest = #{innerOwnedInterest,jdbcType=DECIMAL},
+     </if>
+     <if test="outterOwnedInterest != null" >
+       outterOwnedInterest = #{outterOwnedInterest,jdbcType=DECIMAL},
+     </if>
+     <if test="checkOrganization != null" >
+       checkOrganization = #{checkOrganization,jdbcType=VARCHAR},
+     </if>
+     <if test="loanExecuteStatus != null" >
+       loanExecuteStatus = #{loanExecuteStatus,jdbcType=VARCHAR},
+     </if>
+     <if test="lnExctStsUpdtTm != null" >
+       lnExctStsUpdtTm = #{lnExctStsUpdtTm,jdbcType=TIMESTAMP},
+     </if>
+     <if test="clearStatus != null" >
+       clearStatus = #{clearStatus,jdbcType=VARCHAR},
+     </if>
+     <if test="cdtbranchid != null">
+	cdtbranchid = #{cdtbranchid,jdbcType=VARCHAR},	          
+     </if>
+     <if test="fineRate != null">
+       fineRate = #{fineRate,jdbcType=DECIMAL},          
+     </if>
+     <if test="graceDays != null">
+       graceDays = #{graceDays,jdbcType=INTEGER},
+     </if>
+     <if test="scheduleTimes != null" >
+       scheduleTimes = #{scheduleTimes,jdbcType=INTEGER},
+     </if>
+     <if test="loanStatus != null" >
+       loanStatus = #{loanStatus,jdbcType=VARCHAR},
+     </if>
+     <if test="actualIssueDate != null" >
+       actualIssueDate = #{actualIssueDate,jdbcType=DATE},
+     </if>
+     <if test="actualMaturity != null" >
+       actualMaturity = #{actualMaturity,jdbcType=DATE},
+     </if>
+     <if test="exeSeq != null" >
+       exeSeq = #{exeSeq,jdbcType=VARCHAR},
+     </if>
+     <if test="issueTime != null" >
+       issueTime = #{issueTime,jdbcType=TIMESTAMP},
+     </if>
+   </set>
+   where receiptId = #{receiptId,jdbcType=VARCHAR}
+ </update>
+  <update id="updateReceiptSelective" parameterType="map">
+   update t_receipt_info
+   <set>
+     <if test="custName != null" >
+       custName = #{custName,jdbcType=VARCHAR},
+     </if>
+     <if test="posCustName != null" >
+       posCustName = #{posCustName,jdbcType=VARCHAR},
+     </if>
+     <if test="payApplyAmt != null" >
+       payApplyAmt = #{payApplyAmt,jdbcType=DECIMAL},
+     </if>
+     <if test="payApplyTerm != null" >
+       payApplyTerm = #{payApplyTerm,jdbcType=VARCHAR},
+     </if>
+     <if test="beginDate != null" >
+       beginDate = #{beginDate,jdbcType=DATE},
+     </if>
+     <if test="endDate != null" >
+       endDate = #{endDate,jdbcType=DATE},
+     </if>
+     <if test="finishDate != null" >
+       finishDate = #{finishDate,jdbcType=DATE},
+     </if>
+     <if test="loanInterest != null" >
+       loanInterest = #{loanInterest,jdbcType=DECIMAL},
+     </if>
+     <if test="paybackWay != null" >
+       paybackWay = #{paybackWay,jdbcType=VARCHAR},
+     </if>
+     <if test="loanPaybackWay != null" >
+       loanPaybackWay = #{loanPaybackWay,jdbcType=VARCHAR},
+     </if>
+     <if test="loanUsage != null" >
+       loanUsage = #{loanUsage,jdbcType=VARCHAR},
+     </if>
+     <if test="payAccount != null" >
+       payAccount = #{payAccount,jdbcType=VARCHAR},
+     </if>
+     <if test="accountOpenBank != null" >
+       accountOpenBank = #{accountOpenBank,jdbcType=VARCHAR},
+     </if>
+     <if test="accountBranckBank != null" >
+       accountBranckBank = #{accountBranckBank,jdbcType=VARCHAR},
+     </if>
+     <if test="accountSubBranchBank != null" >
+       accountSubBranchBank = #{accountSubBranchBank,jdbcType=VARCHAR},
+     </if>
+     <if test="payChannel != null" >
+       payChannel = #{payChannel,jdbcType=VARCHAR},
+     </if>
+     <if test="loanTotalBalance != null" >
+       loanTotalBalance = #{loanTotalBalance,jdbcType=DECIMAL},
+     </if>
+     <if test="normalBalance != null" >
+       normalBalance = #{normalBalance,jdbcType=DECIMAL},
+     </if>
+     <if test="overdueBalance != null" >
+       overdueBalance = #{overdueBalance,jdbcType=DECIMAL},
+     </if>
+     <if test="innerOwnedInterest != null" >
+       innerOwnedInterest = #{innerOwnedInterest,jdbcType=DECIMAL},
+     </if>
+     <if test="outterOwnedInterest != null" >
+       outterOwnedInterest = #{outterOwnedInterest,jdbcType=DECIMAL},
+     </if>
+     <if test="checkOrganization != null" >
+       checkOrganization = #{checkOrganization,jdbcType=VARCHAR},
+     </if>
+     <if test="loanExecuteStatus != null" >
+       loanExecuteStatus = #{loanExecuteStatus,jdbcType=VARCHAR},
+     </if>
+     <if test="lnExctStsUpdtTm != null" >
+       lnExctStsUpdtTm = #{lnExctStsUpdtTm,jdbcType=TIMESTAMP},
+     </if>
+     <if test="clearStatus != null" >
+       clearStatus = #{clearStatus,jdbcType=VARCHAR},
+     </if>
+     <if test="loanAcNo != null">
+       loanAcNo = #{loanAcNo,jdbcType=VARCHAR},
+     </if>
+      <if test="listId != null">
+       listId = #{listId,jdbcType=VARCHAR},
+     </if>
+     <if test="cdtbranchid != null">
+       cdtbranchid = #{cdtbranchid,jdbcType=VARCHAR},
+     </if>
+     <if test="fineRate != null">
+       fineRate = #{fineRate,jdbcType=DECIMAL},          
+     </if>
+     <if test="graceDays != null">
+       graceDays = #{graceDays,jdbcType=INTEGER},
+     </if>
+     <if test="scheduleTimes != null" >
+       scheduleTimes = #{scheduleTimes,jdbcType=INTEGER},
+     </if>
+     <if test="loanStatus != null" >
+       loanStatus = #{loanStatus,jdbcType=VARCHAR},
+     </if>
+     <if test="actualIssueDate != null" >
+       actualIssueDate = #{actualIssueDate,jdbcType=DATE},
+     </if>
+     <if test="actualMaturity != null" >
+       actualMaturity = #{actualMaturity,jdbcType=DATE},
+     </if>
+     <if test="exeSeq != null" >
+       exeSeq = #{exeSeq,jdbcType=VARCHAR},
+     </if>
+     <if test="issueTime != null" >
+       issueTime = #{issueTime,jdbcType=TIMESTAMP},
+     </if>
+   </set>
+   where receiptId = #{receiptId,jdbcType=VARCHAR}
+ </update>
+ <update id="updateReceipt" parameterType="map">
+   update t_receipt_info
+   <set>
+     <if test="custName != null" >
+       custName = #{custName,jdbcType=VARCHAR},
+     </if>
+     <if test="posCustName != null" >
+       posCustName = #{posCustName,jdbcType=VARCHAR},
+     </if>
+     <if test="payApplyAmt != null" >
+       payApplyAmt = #{payApplyAmt,jdbcType=DECIMAL},
+     </if>
+     <if test="payApplyTerm != null" >
+       payApplyTerm = #{payApplyTerm,jdbcType=VARCHAR},
+     </if>
+     <if test="beginDate != null" >
+       beginDate = #{beginDate,jdbcType=DATE},
+     </if>
+     <if test="endDate != null" >
+       endDate = #{endDate,jdbcType=DATE},
+     </if>
+     <if test="finishDate != null" >
+       finishDate = #{finishDate,jdbcType=DATE},
+     </if>
+     <if test="loanInterest != null" >
+       loanInterest = #{loanInterest,jdbcType=DECIMAL},
+     </if>
+     <if test="paybackWay != null" >
+       paybackWay = #{paybackWay,jdbcType=VARCHAR},
+     </if>
+     <if test="loanPaybackWay != null" >
+       loanPaybackWay = #{loanPaybackWay,jdbcType=VARCHAR},
+     </if>
+     <if test="loanUsage != null" >
+       loanUsage = #{loanUsage,jdbcType=VARCHAR},
+     </if>
+     <if test="payAccount != null" >
+       payAccount = #{payAccount,jdbcType=VARCHAR},
+     </if>
+     <if test="accountOpenBank != null" >
+       accountOpenBank = #{accountOpenBank,jdbcType=VARCHAR},
+     </if>
+     <if test="accountBranckBank != null" >
+       accountBranckBank = #{accountBranckBank,jdbcType=VARCHAR},
+     </if>
+     <if test="accountSubBranchBank != null" >
+       accountSubBranchBank = #{accountSubBranchBank,jdbcType=VARCHAR},
+     </if>
+     <if test="payChannel != null" >
+       payChannel = #{payChannel,jdbcType=VARCHAR},
+     </if>
+     <if test="loanTotalBalance != null" >
+       loanTotalBalance = #{loanTotalBalance,jdbcType=DECIMAL},
+     </if>
+     <if test="normalBalance != null" >
+       normalBalance = #{normalBalance,jdbcType=DECIMAL},
+     </if>
+     <if test="overdueBalance != null" >
+       overdueBalance = #{overdueBalance,jdbcType=DECIMAL},
+     </if>
+     <if test="innerOwnedInterest != null" >
+       innerOwnedInterest = #{innerOwnedInterest,jdbcType=DECIMAL},
+     </if>
+     <if test="outterOwnedInterest != null" >
+       outterOwnedInterest = #{outterOwnedInterest,jdbcType=DECIMAL},
+     </if>
+     <if test="checkOrganization != null" >
+       checkOrganization = #{checkOrganization,jdbcType=VARCHAR},
+     </if>
+     <if test="loanExecuteStatus != null" >
+       loanExecuteStatus = #{loanExecuteStatus,jdbcType=VARCHAR},
+     </if>
+     <if test="lnExctStsUpdtTm != null" >
+       lnExctStsUpdtTm = #{lnExctStsUpdtTm,jdbcType=TIMESTAMP},
+     </if>
+     <if test="clearStatus != null" >
+       clearStatus = #{clearStatus,jdbcType=VARCHAR},
+     </if>
+     <if test="loanAcNo != null">
+       loanAcNo = #{loanAcNo,jdbcType=VARCHAR},
+     </if>
+      <if test="listId != null">
+       listId = #{listId,jdbcType=VARCHAR},
+     </if>
+     <if test="cdtbranchid != null">
+       cdtbranchid = #{cdtbranchid,jdbcType=VARCHAR},
+     </if>
+     <if test="fineRate != null">
+       fineRate = #{fineRate,jdbcType=DECIMAL},          
+     </if>
+     <if test="graceDays != null">
+       graceDays = #{graceDays,jdbcType=INTEGER},
+     </if>
+     <if test="scheduleTimes != null" >
+       scheduleTimes = #{scheduleTimes,jdbcType=INTEGER},
+     </if>
+     <if test="loanStatus != null" >
+       loanStatus = #{loanStatus,jdbcType=VARCHAR},
+     </if>
+     <if test="actualIssueDate != null" >
+       actualIssueDate = #{actualIssueDate,jdbcType=DATE},
+     </if>
+     <if test="actualMaturity != null" >
+       actualMaturity = #{actualMaturity,jdbcType=DATE},
+     </if>
+     <if test="exeSeq != null" >
+       exeSeq = #{exeSeq,jdbcType=VARCHAR},
+     </if>
+     <if test="issueTime != null" >
+       issueTime = #{issueTime,jdbcType=TIMESTAMP},
+     </if>
+   </set>
+   where receiptId = #{receiptId,jdbcType=VARCHAR}
+ </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TReceiptInfo" >
+   update t_receipt_info
+   set payApplyId = #{payApplyId,jdbcType=VARCHAR},
+     contNo = #{contNo,jdbcType=VARCHAR},
+     custId = #{custId,jdbcType=VARCHAR},
+     posCustId = #{posCustId,jdbcType=VARCHAR},
+     custName = #{custName,jdbcType=VARCHAR},
+     posCustName = #{posCustName,jdbcType=VARCHAR},
+     payApplyAmt = #{payApplyAmt,jdbcType=DECIMAL},
+     payApplyTerm = #{payApplyTerm,jdbcType=VARCHAR},
+     beginDate = #{beginDate,jdbcType=DATE},
+     endDate = #{endDate,jdbcType=DATE},
+     finishDate = #{finishDate,jdbcType=DATE},
+     loanInterest = #{loanInterest,jdbcType=DECIMAL},
+     paybackWay = #{paybackWay,jdbcType=VARCHAR},
+     loanPaybackWay = #{loanPaybackWay,jdbcType=VARCHAR},
+     loanUsage = #{loanUsage,jdbcType=VARCHAR},
+     payAccount = #{payAccount,jdbcType=VARCHAR},
+     accountOpenBank = #{accountOpenBank,jdbcType=VARCHAR},
+     accountBranckBank = #{accountBranckBank,jdbcType=VARCHAR},
+     accountSubBranchBank = #{accountSubBranchBank,jdbcType=VARCHAR},
+     payChannel = #{payChannel,jdbcType=VARCHAR},
+     loanTotalBalance = #{loanTotalBalance,jdbcType=DECIMAL},
+     normalBalance = #{normalBalance,jdbcType=DECIMAL},
+     overdueBalance = #{overdueBalance,jdbcType=DECIMAL},
+     innerOwnedInterest = #{innerOwnedInterest,jdbcType=DECIMAL},
+     outterOwnedInterest = #{outterOwnedInterest,jdbcType=DECIMAL},
+     checkOrganization = #{checkOrganization,jdbcType=VARCHAR},
+     loanExecuteStatus = #{loanExecuteStatus,jdbcType=VARCHAR},
+     lnExctStsUpdtTm = #{lnExctStsUpdtTm,jdbcType=TIMESTAMP},
+     clearStatus = #{clearStatus,jdbcType=VARCHAR},
+     cdtbranchid = #{cdtbranchid,jdbcType=VARCHAR},
+     fineRate = #{fineRate,jdbcType=DECIMAL},
+     graceDays = #{graceDays,jdbcType=INTEGER},
+     scheduleTimes = #{scheduleTimes,jdbcType=INTEGER},
+     loanStatus = #{loanStatus,jdbcType=VARCHAR},
+     actualIssueDate = #{actualIssueDate,jdbcType=DATE},
+     actualMaturity = #{actualMaturity,jdbcType=DATE},
+     issueTime = #{issueTime,jdbcType=TIMESTAMP}
+   where receiptId = #{receiptId,jdbcType=VARCHAR}
+ </update>
+  <select id="selectRecordInfoHB16" resultMap="BaseResultMap" parameterType="java.lang.String">
+   select 
+       r.payApplyId,r.contNo,r.receiptId,r.payApplyAmt,r.beginDate,r.endDate,r.finishDate,
+       r.loanInterest,r.loanPaybackWay,r.loanTotalBalance,r.overdueBalance,r.innerOwnedInterest,r.outterOwnedInterest,
+       r.clearStatus,r.overdueBalance,ca.stdshno,cp.channelPosCustId,r.paybackWay
+   from t_receipt_info r
+   left join t_contract_info c on c.contNo = r.contNo
+   left join t_credit_apply_info ca on ca.loanId = c.loanId
+   left join t_channel_poscust_info cp on cp.posCustId = ca.posCustId and cp.channel = ca.channel
+   where c.channel = #{channel,jdbcType=VARCHAR} and (r.loanStatus in ('01','02','03') or r.finishDate = CURDATE())
+   order by r.payApplyId,r.contNo,r.receiptId
+ </select>
+  <select id="selectRecordInfoHB18" resultMap="BaseResultMap" parameterType="java.lang.String">
+   select 
+       r.payApplyId,r.receiptId,r.payApplyAmt,r.beginDate,r.endDate,ca.stdshno,cp.channelPosCustId
+   from t_receipt_info r
+   left join t_contract_info c on c.contNo = r.contNo
+   left join t_credit_apply_info ca on ca.loanId = c.loanId
+   left join t_channel_poscust_info cp on cp.posCustId = ca.posCustId and cp.channel = ca.channel
+   where c.channel = #{channel,jdbcType=VARCHAR} and r.loanExecuteStatus ='20' and date_format(r.beginDate,'%Y-%m-%d') = CURDATE()
+   order by r.payApplyId,r.receiptId
+ </select>
+  <select id="selectRecordInfoHB19" resultMap="BaseResultMap" parameterType="java.lang.String">
+ select c.posCustId,c.custName,r.payAccount,cst.paperId,r.payApplyAmt,ca.stdshno,r.contNo,cp.channelPosCustId,
+        pb.actualCapital*(CURDATE() - r.beginDate)*0.015 amt
+   from t_payback_running_record_info pb
+   left join t_receipt_info r on r.receiptId = pb.receiptId
+   left join t_contract_info c on c.contNo = r.contNo
+   left join t_credit_apply_info ca on ca.loanId = c.loanId
+left join t_customer_info cst on cst.custId = c.custId
+   left join t_channel_poscust_info cp on cp.posCustId = ca.posCustId and cp.channel = ca.channel
+   where c.channel = #{channel,jdbcType=VARCHAR} and pb.actualPaybackDate = CURDATE()
+   order by stdshno
+ </select>
+  <select id="selectReceiptByTimer" resultType="Map" parameterType="Map">
+   select tri.receiptId as receiptid, tri.payApplyId as payapplyid, tri.contNo as contno, tri.custName as custname, tri.payApplyAmt as payapplyamt, tri.payApplyTerm as payapplyterm,
+   tri.beginDate as begindate, tri.endDate as enddate, tri.loanInterest as loaninterest, tri.payAccount as payaccount, tri.loanTotalBalance as loantotalbalance, tri.normalBalance as normalbalance,
+   tri.overdueBalance as overduebalance, tri.innerOwnedInterest as innerownedinterest, tri.outterOwnedInterest as outterownedinterest, tri.loanExecuteStatus as loanexecutestatus, tri.clearStatus as clearstatus,
+   tlu.loanId as loanid, tlu.userId as userid
+   from      t_receipt_info tri 
+   left join t_loan_user	tlu  on tlu.payapplyid = tri.payApplyId
+   left join t_credit_apply_info tcai  on tlu.loanId = tcai.loanId
+   where tcai.deleteFlag = '0' and tcai.channel ='SL' and tcai.inChannelKind = '01' and tri.endDate is not null
+   <if test="endDate != null">
+   	and date_format(tri.endDate,'%Y%m%d') = #{endDate}
+   </if>
+   <if test="beginDate != null">
+   	and date_format(tri.beginDate,'%Y%m%d') = #{beginDate}
+   </if>
+   <if test="payApplyId != null">
+   	and tri.payApplyId = #{payApplyId}
+   </if>
+   <if test="longTermFlag != null">
+   	and date_add(tri.beginDate, interval 1 year) > tri.endDate
+   </if>
+   <if test="OverdueFlag != null">
+   	and (tri.overdueBalance > 0 and (date_format(now(),'%Y%m%d') = date_format(date_add(tri.endDate, interval 1 day), '%Y%m%d') or (datediff(now(),tri.endDate) > 0 and datediff(now(),tri.endDate) / 7 = 0)))
+   </if>
+   order by tri.beginDate desc
+ </select>
+  <select id="selectSumForUM" resultType="Map" parameterType="Map">
+	select h.region,bd.itemName,
+		CAST(w.amt AS CHAR) as amountWeek,
+		CAST(m.amt AS CHAR) as amountMonth,
+		CAST(y.amt AS CHAR) as amountYear,
+		CAST(h.amt AS CHAR) as amountHist,
+		CAST(h.loan AS CHAR) as loan
+	from
+		(
+			select LEFT(region,2) as region,IFNULL(sum(loanTotalBalance),0.00) as loan,IFNULL(sum(payApplyAmt),0.00) as amt 
+			FROM t_credit_apply_info cai,t_contract_info ci,t_receipt_info ri 
+			WHERE ci.loanId = cai.loanId and ri.contNo = ci.contNo and cai.deleteFlag = '0' AND cai.channel = #{channel} 
+			AND cai.custId <![CDATA[<> 'C2015060409333962361']]> 
+			AND ri.actualIssueDate <![CDATA[< str_to_date(#{excuteDay},'%Y-%m-%d')]]>
+			group by LEFT(region,2)
+		) h
+	left join 
+		(
+			select LEFT(region,2) as region,IFNULL(sum(loanTotalBalance),0.00) as loan,IFNULL(sum(payApplyAmt),0.00) as amt 
+			FROM t_credit_apply_info cai,t_contract_info ci,t_receipt_info ri 
+			WHERE ci.loanId = cai.loanId and ri.contNo = ci.contNo and cai.deleteFlag = '0' AND cai.channel = #{channel}
+			AND cai.custId <![CDATA[<> 'C2015060409333962361']]> 
+			AND ri.actualIssueDate >= DATE_ADD(str_to_date(#{excuteDay},'%Y-%m-%d'),interval -dayofyear(str_to_date(#{excuteDay},'%Y-%m-%d'))+1 day) 
+			AND ri.actualIssueDate <![CDATA[< str_to_date(#{excuteDay},'%Y-%m-%d')]]>
+			group by LEFT(region,2)
+		) y on h.region = y.region
+	left join 
+		(
+			select LEFT(region,2) as region,IFNULL(sum(loanTotalBalance),0.00) as loan,IFNULL(sum(payApplyAmt),0.00) as amt 
+			FROM t_credit_apply_info cai,t_contract_info ci,t_receipt_info ri 
+			WHERE ci.loanId = cai.loanId and ri.contNo = ci.contNo and cai.deleteFlag = '0' AND cai.channel = #{channel}
+			AND cai.custId <![CDATA[<> 'C2015060409333962361']]> 
+			AND ri.actualIssueDate >= DATE_ADD(str_to_date(#{excuteDay},'%Y-%m-%d'),interval -day(str_to_date(#{excuteDay},'%Y-%m-%d'))+1 day)
+			AND ri.actualIssueDate <![CDATA[< str_to_date(#{excuteDay},'%Y-%m-%d')]]>
+			group by LEFT(region,2)
+		) m on h.region = m.region
+	left join 
+		(
+			select LEFT(region,2) as region,IFNULL(sum(loanTotalBalance),0.00) as loan,IFNULL(sum(payApplyAmt),0.00) as amt 
+			FROM t_credit_apply_info cai,t_contract_info ci,t_receipt_info ri 
+			WHERE ci.loanId = cai.loanId and ri.contNo = ci.contNo and cai.deleteFlag = '0' AND cai.channel = #{channel}
+			AND cai.custId <![CDATA[<> 'C2015060409333962361']]> 
+			AND ri.actualIssueDate >= DATE_SUB(str_to_date(#{excuteDay},'%Y-%m-%d'), INTERVAL 7 DAY)
+			AND ri.actualIssueDate <![CDATA[< str_to_date(#{excuteDay},'%Y-%m-%d')]]>
+			group by LEFT(region,2)
+		) w on h.region = w.region
+	left join t_business_dictionary bd on bd.itemNo=CONCAT(h.region,'0000') and bd.codeNo='AdminDivision'
+	order by h.region
+  </select>
+  <select id="selectSummaryForCont" resultType="Map" parameterType="Map">
+	SELECT
+		ci.contno,
+		IFNULL(sum(payApplyAmt), 0.00) AS payApplyAmtSum,
+		count(payApplyAmt) AS cnt
+	FROM
+		t_contract_info ci,
+		t_receipt_info ri
+	WHERE  ri.contNo = ci.contNo
+	AND ri.actualIssueDate IS NOT NULL
+	GROUP BY ci.contNo
+	ORDER BY ci.contNo
+  </select>
+  <select id="selectTotalBalanceSum" resultMap="BaseResultMap" parameterType="Map">
+	select IFNULL(sum(loanTotalBalance),0.00) as loanTotalBalance
+	from t_contract_info c,t_receipt_info r
+	where c.contNo=r.contNo 
+		and c.channel=#{channel}
+		and r.loanExecuteStatus='20'
+  </select>
+  <select id="selectPayApplyAmtSum" resultMap="BaseResultMap" parameterType="Map">
+	select IFNULL(sum(payApplyAmt),0.00) as payApplyAmt
+	from t_contract_info c,t_receipt_info r
+	where c.contNo=r.contNo
+		and c.channel=#{channel}
+		and (r.loanExecuteStatus is null or r.loanExecuteStatus != '20')
+  </select>
+</mapper>

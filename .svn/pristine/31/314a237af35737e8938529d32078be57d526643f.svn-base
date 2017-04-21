@@ -1,0 +1,307 @@
+package com.hrbb.loan.spi.TC;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.dao.entity.TApproveResult;
+import com.hrbb.loan.pos.dao.entity.TContractManagement;
+import com.hrbb.loan.pos.dao.entity.TCreditApply;
+import com.hrbb.loan.pos.service.LoanPosBusinessCodeService;
+import com.hrbb.loan.pos.service.LoanPosContractManagementService;
+import com.hrbb.loan.pos.service.LoanPosCreditApplyService;
+import com.hrbb.loan.pos.util.IdUtil;
+import com.hrbb.loan.spiconstants.HServiceReturnCode;
+import com.hrbb.sh.framework.HRequest;
+import com.hrbb.sh.framework.HResponse;
+import com.hrbb.sh.framework.HService;
+import com.hrbb.sh.framework.HServiceException;
+@Service("tcElectricContractGenerate")
+public class TCElectricContractGenerateHserviceImpl implements HService {
+	Logger logger = LoggerFactory.getLogger(TCElectricContractGenerateHserviceImpl.class);
+	@Autowired
+	private LoanPosContractManagementService loanPosContractManagementService;
+	@Autowired
+	private LoanPosCreditApplyService loanPosCreditApplyService;
+	@Autowired
+	private LoanPosBusinessCodeService loanPosBusinessCodeService;
+	@Override
+	public HResponse serve(HRequest request) throws HServiceException {
+		logger.debug("executing UMElectricContractGenerateHserviceImpl...");
+		HResponse response = new HResponse();
+		Map<String, Object> propMap = request.getProperties();
+		Object lnId = propMap.get("loanid");
+		Object ssno = propMap.get("stdshno");
+		Object smno = propMap.get("stdmerno");
+		SimpleDateFormat sft = new SimpleDateFormat("yyyy-MM-dd");
+	
+        try{
+        	
+    		if(lnId!=null){
+    			String loanId = lnId.toString();
+    			logger.info("申请编号为"+loanId);
+    			TContractManagement t = loanPosContractManagementService.getContractInfoByLoanId(loanId);
+    			
+    			TApproveResult result = loanPosContractManagementService.getApproveResultInfoByLoanId(loanId);
+    			if(t!=null){
+    				String agreementStatus = t.getAgreementStatus();
+    				if(agreementStatus!=null && agreementStatus.equals("05")){		//05未签约状态允许发起二次签约动作
+    					
+        				logger.info("申请["+t.getLoanId()+"]再次发起签约动作！");
+        					Map<String,Object> approveResultMap = getApproveResultMap(result,t,ssno,smno);
+        					String contNo = t.getContNo();
+        					approveResultMap.put("contno",contNo);
+        					
+                            //更新合同表中的begindate enddate signdate等字段
+        				    
+        				    
+        				    Map<String, Object> contractMap = Maps.newHashMap();
+    			            Calendar a =Calendar.getInstance();
+    			            Date b =a.getTime();
+    			            String unit = result.getApproveTermUnit();
+    			            String apprTerm = result.getApproveTerm();
+    			            int approveTerm = Integer.parseInt(apprTerm);
+    			            if(unit.equals("Y"))
+    			       	   	 a.add(Calendar.YEAR, approveTerm);
+    			       	    else if(unit.equals("M"))
+    			       	   	 a.add(Calendar.MONTH, approveTerm);
+    			       	    else
+    			       	     a.add(Calendar.DAY_OF_MONTH, approveTerm);
+    			            a.add(Calendar.DATE, -1);
+    			            Date c =a.getTime();
+    			            contractMap.put("contNo",contNo);
+    			            contractMap.put("beginDate",sft.format(b));
+    			            contractMap.put("endDate",sft.format(c));
+    			            contractMap.put("signDate", new Date());
+    			            int cn = loanPosContractManagementService.updateContractInfo(contractMap);
+    			            
+        		            response.setRespCode(HServiceReturnCode.SUCCESS.getReturnCode());
+        		            response.setRespMessage(HServiceReturnCode.SUCCESS.getReturnMessage());
+        		            response.setRespTime(new Date());
+        		            response.setProperties(approveResultMap);
+        				    return response;
+    					
+    				}else{
+    					//return error message
+    					 logger.error("该笔申请已经生成过电子协议");
+    					  response.setRespCode(HServiceReturnCode.POS_CONTRACT_AGAIN_INFO.getReturnCode());
+    		  			response.setRespMessage(HServiceReturnCode.POS_CONTRACT_AGAIN_INFO
+    		  					.getReturnMessage());
+    		  			response.setRespTime(new Date());
+    		  			return getBlankHResponse(response);
+    				}
+    		
+    				
+    				  
+    			}else{               
+    				                        logger.info("生成新的电子协议");
+    										if(result==null){
+    											  logger.error("合同信息为空");
+    								    			response.setRespCode(HServiceReturnCode.POS_CONTRACT_ERROR.getReturnCode());
+    								    			response.setRespMessage(HServiceReturnCode.POS_CONTRACT_ERROR
+    								    					.getReturnMessage());
+    								    			response.setRespTime(new Date());
+    								    			return getBlankHResponse(response);
+    										}else {
+		    										    //批复为已失效批复
+													    if(result.getApproveStatus().equals("09")){
+													    	logger.error("电子协议生成失败,该笔批复已经失效");
+															response.setRespCode(HServiceReturnCode.POS_CONTRACT_ERROR2.getReturnCode());
+												  			response.setRespMessage(HServiceReturnCode.POS_CONTRACT_ERROR2.getReturnMessage());
+												  			response.setRespTime(new Date());
+												  			return getBlankHResponse(response);
+													    }else if(result.getApproveStatus().equals("03")){
+													    	logger.error("电子协议生成失败,该笔批复已被拒绝");
+															response.setRespCode(HServiceReturnCode.POS_CONTRACT_ERROR3.getReturnCode());
+												  			response.setRespMessage(HServiceReturnCode.POS_CONTRACT_ERROR3.getReturnMessage());
+												  			response.setRespTime(new Date());
+												  			return getBlankHResponse(response);
+													    }else{                                       //该笔批复不是失效状态
+													    	 //更改批复表中批复状态为已签约
+														    Map<String, Object> updateMap = Maps.newHashMap();
+														    String approveId = result.getApproveId();
+															updateMap.put("approveId", approveId);
+															updateMap.put("approveStatus", "02");
+															logger.info("更新批复状态信息为"+updateMap);
+															int abc = loanPosContractManagementService.updateContractManagementInfo(updateMap);
+														    logger.info("批复状态更新成功");
+														    
+														
+	    												    
+	    												    Map<String,Object> approveResultMap = getApproveResultMap(result,t,ssno,smno);
+	    													//往协议表t_contract_info中插入一条记录
+	    												    String contNo = IdUtil.getId("cn");
+	    												    approveResultMap.put("contno",contNo);
+	    										            Map<String, Object> reqMap = Maps.newHashMap();
+	    										            String prodId = result.getProductId();
+	    										            String h = loanPosBusinessCodeService.getItemNameByNo("ProductNo",prodId);
+	    										            Calendar a =Calendar.getInstance();
+	    										            Date b =a.getTime();
+	    										            String unit = result.getApproveTermUnit();
+	    										            String apprTerm = result.getApproveTerm();
+	    										            int approveTerm = Integer.parseInt(apprTerm);
+	    										            if(unit.equals("Y"))
+	    										       	   	 a.add(Calendar.YEAR, approveTerm);
+	    										       	    else if(unit.equals("M"))
+	    										       	   	 a.add(Calendar.MONTH, approveTerm);
+	    										       	    else
+	    										       	     a.add(Calendar.DAY_OF_MONTH, approveTerm);
+	    										            a.add(Calendar.DATE, -1);
+	    										            Date c =a.getTime();
+	    										            
+	    										            reqMap.put("loanId",result.getLoanId());
+	    										            reqMap.put("contNo",contNo);
+	    										            reqMap.put("termUnit",result.getApproveTermUnit());
+	    										            reqMap.put("contTerm",result.getApproveTerm());
+	    										            reqMap.put("applyTerm",result.getApplyTerm());
+	    										            reqMap.put("approveId",result.getApproveId());
+	    										            reqMap.put("custId",result.getCustId());
+	    										            reqMap.put("custName",result.getCustName());
+	    										            reqMap.put("beginDate",sft.format(b));
+	    										            reqMap.put("endDate",sft.format(c));
+	    										            reqMap.put("signDate", new Date());
+	    										            reqMap.put("operId", "system");
+	    										            reqMap.put("prodId",result.getProductId());
+	    										            reqMap.put("prodName",h);
+	    										            reqMap.put("posCustId",result.getPosCustId());
+	    										            reqMap.put("approveMoneyKind",result.getApproveMoneyKind());
+	    										            reqMap.put("approveInterest",result.getApproveInterest());
+	    										            reqMap.put("expiryDate",result.getExpiryDate());
+	    										            reqMap.put("stdshno",result.getStdshno());
+	    										            reqMap.put("loanPaybackWay",result.getLoanPaybackWay());
+	    										            reqMap.put("posCustName",result.getPosCustName());
+	    										            reqMap.put("channel",result.getBusinessSource());
+	    										            reqMap.put("apprTotalAmt",result.getApproveAmount());
+	    										            reqMap.put("contTotalAmt",result.getApproveAmount());
+	    										            reqMap.put("creditLine",result.getApproveAmount());
+	    										            reqMap.put("creditInterest",result.getApproveInterest());
+	    										            reqMap.put("paybackMethod",result.getPaybackMethod());
+	    										            reqMap.put("accountOpenBank",result.getAccountOpenBank());
+	    										            reqMap.put("accountBranchBank",result.getAccountBranchBank());
+	    										            TCreditApply apply = loanPosCreditApplyService.queryCreditApply(loanId);
+	    										            if(apply != null){
+	    										            	reqMap.put("inChannelKind", apply.getInChannelKind());
+	    										            }else{
+	    										            	logger.error(loanId + "不存在该笔申请");
+	    										            }
+	    										            reqMap.put("accountSubBranchBank",result.getAccountSubBranchBank());
+	    										            reqMap.put("acceptAccount",result.getAcceptAccount());
+	    										            reqMap.put("repayMethod",result.getLoanPaybackWay());
+	    										            reqMap.put("agreementStatus", "05");
+	    										            logger.info("合同信息元素为"+reqMap);
+	    										            int n = loanPosContractManagementService.insertContractManagementMap(reqMap);
+	    										            logger.info("插入合同信息成功"+reqMap);
+	    										            response.setRespCode(HServiceReturnCode.SUCCESS.getReturnCode());
+	    										            response.setRespMessage(HServiceReturnCode.SUCCESS.getReturnMessage());
+	    										            response.setRespTime(new Date());
+	    										            response.setProperties(approveResultMap);
+	    												    return response;
+													    	
+													    }
+													   
+    											 
+    										
+    										
+    									               }
+    			
+    			               }
+    		   
+    		}else{
+    		    	        logger.error("合同信息为空");
+    		    			response.setRespCode(HServiceReturnCode.POS_CONTRACT_ERROR.getReturnCode());
+    		    			response.setRespMessage(HServiceReturnCode.POS_CONTRACT_ERROR
+    		    					.getReturnMessage());
+    		    			response.setRespTime(new Date());
+    		    			return getBlankHResponse(response);
+    		    }
+    		
+    		
+        	
+        	
+        	
+        }catch(Exception e){
+			  logger.error("电子协议生成失败",e);
+			  response.setRespCode(HServiceReturnCode.POS_CONTRACT_ERROR.getReturnCode());
+  			response.setRespMessage(HServiceReturnCode.POS_CONTRACT_ERROR
+  					.getReturnMessage());
+  			response.setRespTime(new Date());
+  			return getBlankHResponse(response);
+		  }
+	
+		
+
+		
+	}
+
+	Map<String,Object> getApproveResultMap(TApproveResult result,TContractManagement t,Object ssno,Object smno){
+		SimpleDateFormat sft = new SimpleDateFormat("yyyyMMdd");
+	    Calendar a =Calendar.getInstance();
+	    Date b =a.getTime();
+	    HashMap<String,Object> map = new HashMap<String, Object>(32);
+	    map.put("loanid",result.getLoanId());
+	    map.put("custid",result.getCustId());
+	    map.put("custname",result.getCustName());
+	    map.put("begindate",sft.format(b));
+        String unit = result.getApproveTermUnit();
+        String apprTerm = result.getApproveTerm();
+        int approveTerm = Integer.parseInt(apprTerm);
+        if(unit.equals("Y"))
+   	   	 a.add(Calendar.YEAR, approveTerm);
+   	    else if(unit.equals("M"))
+   	   	 a.add(Calendar.MONTH, approveTerm);
+   	    else
+   	     a.add(Calendar.DAY_OF_MONTH, approveTerm);
+        a.add(Calendar.DATE, -1);
+        Date c =a.getTime();
+        map.put("enddate",sft.format(c));
+        map.put("apptcapi",result.getApproveAmount().toString());
+        map.put("interate",String.valueOf(result.getApproveInterest().divide(new BigDecimal("100"), 4, BigDecimal.ROUND_HALF_UP)));
+        if(result.getPaybackMethod().equals("90")){
+        	 map.put("retukind","01");
+        }else{
+        	 map.put("retukind","90");
+        }
+    	String x = result.getAccountOpenBank();
+		String y = loanPosBusinessCodeService.getItemNameByNo("BankNo",x);
+        map.put("loanbankname",y);
+        map.put("loanbankBranch",result.getAccountBranchBank());
+        map.put("loanbankSub",result.getAccountSubBranchBank());
+        map.put("loanbankacno",result.getAcceptAccount());
+        map.put("repaymethod",result.getLoanPaybackWay());
+        map.put("stdshno",ssno.toString());
+        
+        
+        
+       
+		return map;
+		
+	}
+	
+	private HResponse getBlankHResponse(HResponse response){
+		Map<String, Object> respMap = Maps.newHashMap();
+		respMap.put("loanid", "");
+		respMap.put("contno", "");
+		respMap.put("custid", "");
+		respMap.put("custname", "");
+		respMap.put("begindate", "");
+		respMap.put("enddate", "");
+		respMap.put("apptcapi", "");
+		respMap.put("interate", "");
+		respMap.put("retukind", "");
+		respMap.put("loanbankname", "");
+		respMap.put("loanbankBranch","");
+		respMap.put("loanbankSub","");
+		respMap.put("loanbankacno", "");
+		respMap.put("repaymethod", "");
+		respMap.put("stdshno", "");
+		response.setProperties(respMap);
+		return response;
+	}
+}

@@ -1,0 +1,41 @@
+package com.hrbb.loan.pos.dao.impl;
+
+import org.springframework.stereotype.Repository;
+
+import com.hrbb.loan.pos.dao.TTransactionRelativeDao;
+import com.hrbb.loan.pos.dao.entity.TTransactionRelative;
+
+@Repository("tTransactionRelativeDao")
+public class TTransactionRelativeDaoImpl implements TTransactionRelativeDao {
+
+    @Override
+    public int deleteByPrimaryKey(Integer id) {
+        return 0;
+    }
+
+    @Override
+    public int insert(TTransactionRelative record) {
+        return 0;
+    }
+
+    @Override
+    public int insertSelective(TTransactionRelative record) {
+        return 0;
+    }
+
+    @Override
+    public TTransactionRelative selectByPrimaryKey(Integer id) {
+        return null;
+    }
+
+    @Override
+    public int updateByPrimaryKeySelective(TTransactionRelative record) {
+        return 0;
+    }
+
+    @Override
+    public int updateByPrimaryKey(TTransactionRelative record) {
+        return 0;
+    }
+
+}

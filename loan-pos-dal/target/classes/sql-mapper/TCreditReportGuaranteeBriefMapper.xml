@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditReportGuaranteeBriefMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditReportGuaranteeBrief" >
+    <id column="reportNo" property="reportNo" jdbcType="VARCHAR" />
+    <result column="count" property="count" jdbcType="INTEGER" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="balance" property="balance" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    reportNo, count, amount, balance
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_report_guarantee_brief
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_credit_report_guarantee_brief
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportGuaranteeBrief" >
+    insert into t_credit_report_guarantee_brief (reportNo, count, amount, 
+      balance)
+    values (#{reportNo,jdbcType=VARCHAR}, #{count,jdbcType=INTEGER}, #{amount,jdbcType=DECIMAL}, 
+      #{balance,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportGuaranteeBrief" >
+    insert into t_credit_report_guarantee_brief
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="count != null" >
+        count,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="balance != null" >
+        balance,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="count != null" >
+        #{count,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="balance != null" >
+        #{balance,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="map" >
+    insert into t_credit_report_guarantee_brief
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="count != null" >
+        count,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="balance != null" >
+        balance,
+      </if>
+       <if test="queryId != null">
+      	queryId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="count != null" >
+        #{count,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="balance != null" >
+        #{balance,jdbcType=DECIMAL},
+      </if>
+       <if test="queryId != null">
+      	#{queryId}
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportGuaranteeBrief" >
+    update t_credit_report_guarantee_brief
+    <set >
+      <if test="count != null" >
+        count = #{count,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="balance != null" >
+        balance = #{balance,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportGuaranteeBrief" >
+    update t_credit_report_guarantee_brief
+    set count = #{count,jdbcType=INTEGER},
+      amount = #{amount,jdbcType=DECIMAL},
+      balance = #{balance,jdbcType=DECIMAL}
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

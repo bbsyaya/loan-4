@@ -1,0 +1,119 @@
+package com.hrbb.loan.web.security.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.hrbb.loan.pos.util.constants.ReviewNoteConstants;
+import com.hrbb.loan.web.security.dao.BaseDao;
+import com.hrbb.loan.web.security.dao.UserDao;
+import com.hrbb.loan.web.security.dao.impl.BaseServiceImpl;
+import com.hrbb.loan.web.security.entity.User;
+import com.hrbb.loan.web.security.service.UserService;
+
+@Service("userService")
+public class UserServiceImpl extends BaseServiceImpl<User,Integer> implements UserService
+{
+	@Autowired
+	private UserDao userDao;
+
+	@Override
+	protected BaseDao<User,Integer> getBaseDao() {
+		return userDao;
+	}
+	@Override
+	public User findByName(String username) {
+		// TODO Auto-generated method stub
+		return userDao.selectByName(username);
+	}
+    /** 
+     * @see com.hrbb.loan.web.security.service.UserService#lockById(java.lang.Integer)
+     */
+    @Override
+    public int lockById(Integer id) {
+        return userDao.lockById(id);
+    }
+    /** 
+     * @see com.hrbb.loan.web.security.service.UserService#unlockById(java.lang.Integer)
+     */
+    @Override
+    public int unlockById(Integer id) {
+        return userDao.unlockById(id);
+    }
+    /** 
+     * @see com.hrbb.loan.web.security.service.UserService#lockByIdInBatch(java.util.List)
+     */
+    @Override
+    public int lockByIdInBatch(List<Integer> idList) {
+        return userDao.lockByIdInBatch(idList);
+    }
+    /** 
+     * @see com.hrbb.loan.web.security.service.UserService#unlockByIdInBatch(java.util.List)
+     */
+    @Override
+    public int unlockByIdInBatch(List<Integer> idList) {
+        return userDao.unlockByIdInBatch(idList);
+    }
+    /** 
+     * @see com.hrbb.loan.web.security.service.UserService#insertUserRoles(int, java.util.List)
+     */
+    @Override
+    public int insertUserRoles(int userId, List<Integer> roleList) {
+        int count = 0;
+        if (roleList.size()>0) {
+            for (Integer roleId:roleList){
+                count += userDao.insertUserRole(userId, roleId);
+            }
+        }
+        return count;
+    }
+    /** 
+     * @see com.hrbb.loan.web.security.service.UserService#deleteUserRoles(int)
+     */
+    @Override
+    public int deleteUserRoles(int userId) {
+        return userDao.deleteUserRole(userId, 0);
+    }
+    /** 
+     * @see com.hrbb.loan.web.security.service.UserService#deleteUserRolesInBatch(java.util.List)
+     */
+    @Override
+    public int deleteUserRolesInBatch(List<Integer> idList) {
+        int count = 0;
+        if (idList.size()>0) {
+            for (Integer userId:idList){
+                count += deleteUserRoles(userId);
+            }
+        }
+        return count;   
+    }
+    /** 
+     * @see com.hrbb.loan.web.security.service.UserService#findByCellphone(java.lang.String)
+     */
+    @Override
+    public User findByCellphone(String cellphone) {
+        return userDao.selectByCellphone(cellphone);
+    }
+    
+    /**
+     * 
+     * @see com.hrbb.loan.web.security.service.UserService#selectUsersByApplyStatus(java.lang.String)
+     */
+    @Override
+    public List<Map<String, Object>> selectUsersByApplyStatus(String applyStatus) {
+        String privilegeName = "";
+        if(ReviewNoteConstants.APPLYSTATUS_CODE_31.equals(applyStatus)){
+            privilegeName = ReviewNoteConstants.PRIVILEGE_ROLE_APPR_LV1;
+        }else if(ReviewNoteConstants.APPLYSTATUS_CODE_33.equals(applyStatus)){
+            privilegeName = ReviewNoteConstants.PRIVILEGE_ROLE_APPR_LV2;
+        }else if(ReviewNoteConstants.APPLYSTATUS_CODE_34.equals(applyStatus)){
+            privilegeName = ReviewNoteConstants.PRIVILEGE_ROLE_APPR_LV3;
+        }else if(ReviewNoteConstants.APPLYSTATUS_CODE_35.equals(applyStatus)){
+            privilegeName = ReviewNoteConstants.PRIVILEGE_ROLE_APPR_LV4;
+        }
+        return userDao.selectUsersByPrivilegeName(privilegeName);
+    }
+
+}

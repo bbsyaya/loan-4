@@ -1,0 +1,71 @@
+package com.hrbb.loan;
+
+import org.apache.ibatis.logging.LogFactory;
+import org.apache.log4j.Logger;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.util.Assert;
+
+import com.hrbb.sh.framework.FrontierProvider;
+import com.hrbb.sh.framework.HRequest;
+import com.hrbb.sh.framework.HResponse;
+import com.hrbb.sh.framework.HService;
+import com.hrbb.sh.framework.HServiceException;
+
+public class FrontierProviderImpl implements FrontierProvider,
+		ApplicationContextAware {
+	private Logger logger = Logger.getLogger(FrontierProvider.class);
+
+	private ApplicationContext appContext;
+
+	@Override
+	public HResponse provide(HRequest hRequest, String serviceName)
+			throws HServiceException {
+		String transType = hRequest.getBizType();
+
+		if (logger.isDebugEnabled()) {
+			logger.debug(String.format(
+					"remote call received, type:%s; serviceName:%s", transType,
+					serviceName));
+		}
+
+		Assert.notNull(appContext, "doesn't allow empty appContext");
+
+		if (!appContext.containsBean(serviceName)) {
+			logger.info("上下文不包括此服务名");
+			HResponse response = new HResponse();
+			response.setRespCode("-1");
+			response.setRespMessage(String.format("service can't be found by serviceName:%s", serviceName));
+			logger.error(response.getRespMessage());
+			return response;
+			/*throw new HServiceException(String.format(
+					"fatal, service can't be found by serviceName:%s",
+					serviceName));*/
+		}
+
+		Object beanObj = appContext.getBean(serviceName);
+		if (!(beanObj instanceof HService)) {
+			throw new HServiceException(String.format(
+					"fatel, service type %s not supported; serviceName:%s",
+					beanObj.getClass().getCanonicalName(), serviceName));
+		}
+
+		HService service = (HService) beanObj;
+
+		try {
+			return service.serve(hRequest);
+		} catch (Exception ex) {
+			throw new HServiceException(String.format(
+					"service %s is failed to serve", serviceName), ex);
+		}
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext appContext)
+			throws BeansException {
+		this.appContext = appContext;
+
+		LogFactory.useLog4JLogging();
+	}
+}

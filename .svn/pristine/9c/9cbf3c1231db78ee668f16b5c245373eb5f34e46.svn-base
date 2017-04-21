@@ -1,0 +1,26 @@
+package com.hrbb.loan.pos.dao.impl;
+
+import java.util.List;
+
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+import org.springframework.stereotype.Repository;
+
+import com.hrbb.loan.pos.dao.TUpsBillcardstatSerialDao;
+import com.hrbb.loan.pos.dao.entity.TUpsBillcardstatSerial;
+
+@Repository("upsBillcardstatSerialDaoImpl")
+public class TUpsBillcardstatSerialDaoImpl extends SqlSessionDaoSupport implements TUpsBillcardstatSerialDao {
+
+    @Override
+    public int insert(TUpsBillcardstatSerial upsbillcardstatSercial) {
+        
+        return getSqlSession().insert("TUpsBillcardstatSerialMapper.insertSelective", upsbillcardstatSercial);
+    }
+    
+    
+    @Override
+    public int insertBatch(List<TUpsBillcardstatSerial> upsBillcardstatSercials) {
+        
+        return getSqlSession().insert("TUpsBillcardstatSerialMapper.insertBatch", upsBillcardstatSercials);
+    }
+}

@@ -1,0 +1,43 @@
+package com.hrbb.loan.pos.biz.backstage.inter.impl.withholder;
+
+import java.util.Calendar;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosContractManagementBiz;
+import com.hrbb.loan.pos.dao.entity.TContractManagement;
+import com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo;
+
+@Service("withholderSelf")
+public class WithholderSelf implements IWithholderService{
+	
+
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	@Autowired
+	private LoanPosContractManagementBiz loanPosContractManagementBiz;
+	
+
+
+	@Override
+	public void withholder(TPaybackApplyInfo apply) {
+		
+		TContractManagement contract = loanPosContractManagementBiz.getContractByContNo(apply.getContNo());
+		//代扣
+		
+		//如果失败
+		
+		//如果是资金池模式要扣保证金
+		
+		//判断时间如果不超过下午3点就发邮件和短信
+		Calendar cal = Calendar.getInstance();
+		if(cal.get(Calendar.HOUR_OF_DAY) < 15){
+			logger.info("开始发送短信和邮件");
+		}
+		
+	}
+
+}

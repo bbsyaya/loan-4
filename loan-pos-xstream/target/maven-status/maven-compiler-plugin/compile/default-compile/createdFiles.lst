@@ -1,0 +1,6 @@
+com\hrbb\loan\pos\xstream\UM\bean\Body.class
+com\hrbb\loan\pos\xstream\UM\bean\Transaction.class
+com\hrbb\loan\pos\xstream\UM\bean\Field.class
+com\hrbb\loan\pos\xstream\UM\bean\Row.class
+com\hrbb\loan\pos\xstream\UM\bean\Header.class
+com\hrbb\loan\pos\xstream\UM\bean\Record.class

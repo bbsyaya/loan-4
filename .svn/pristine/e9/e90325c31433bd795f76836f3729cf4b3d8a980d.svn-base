@@ -1,0 +1,48 @@
+#System build configuration
+isDev=false
+
+#Application name and node info
+app.name=transcore
+app.node=2
+#webAppPort=8080
+#isRegister=true
+#isConnectConfigCenter=true
+#isLoadLocalConfig=false
+
+#Configuration Center
+configCenter.address=http://192.168.24.39:30800/configcenter/services/configCenterFacadeQueryRemote
+configCenter.project.name=transcore
+configCenter.project.env=test
+
+t_configcenter=t_configcenter
+t_configcenter_maintain=t_configcenter_maintain
+
+#maintainConfig Center
+maintainConfigCenter.project.name=OPS
+maintainConfigCenter.project.env=test
+maintainConfigCenter.address=http://192.168.24.39:30800/maintenance/services/maintenanceFacadeQueryRemote
+
+#Remote Session
+session.domain=.pinganfu.com
+session.id=PAFSessionID
+
+#JNDI
+jndi.name=transcoreDS
+
+#LOG
+LOG_HOME=/wls/applogs/rtlog/
+
+#WebService url key
+
+#activemq username & password
+activemq.username=admin
+activemq.password=admin
+brokerURL=192.168.0.116
+
+#transcore queue config
+q_transcore_transactionStatusNotifyQueue=q_transcore_transactionStatusNotifyQueue
+q_transcore_withdrawConfirmNotifyQueue=q_transcore_withdrawConfirmNotifyQueue
+q_transcore_tranferUnfzNotifyQueue=q_transcore_tranferUnfzNotifyQueue
+q_transcore_order_expire=q_transcore_order_expire
+q_transcore_unreg_transferback=q_transcore_unreg_transferback
+q_transcore_unreg_doreg=q_transcore_unreg_doreg

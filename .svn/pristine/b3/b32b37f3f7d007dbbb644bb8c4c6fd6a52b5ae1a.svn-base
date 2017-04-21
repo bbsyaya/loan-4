@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditReportCreditInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditReportCreditInfo" >
+    <id column="reportNo" property="reportNo" jdbcType="VARCHAR" />
+    <result column="houseLoans" property="houseLoans" jdbcType="INTEGER" />
+    <result column="otherLoans" property="otherLoans" jdbcType="INTEGER" />
+    <result column="firstIssueMonth" property="firstIssueMonth" jdbcType="VARCHAR" />
+    <result column="creditCards" property="creditCards" jdbcType="INTEGER" />
+    <result column="firstIssueMonth2" property="firstIssueMonth2" jdbcType="VARCHAR" />
+    <result column="semiCreidtCards" property="semiCreidtCards" jdbcType="INTEGER" />
+    <result column="firstIssueMonth3" property="firstIssueMonth3" jdbcType="VARCHAR" />
+    <result column="announceCount" property="announceCount" jdbcType="INTEGER" />
+    <result column="dissentCount" property="dissentCount" jdbcType="INTEGER" />
+    <result column="score" property="score" jdbcType="VARCHAR" />
+    <result column="month" property="month" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    reportNo, houseLoans, otherLoans, firstIssueMonth, creditCards, firstIssueMonth2, 
+    semiCreidtCards, firstIssueMonth3, announceCount, dissentCount, score, month
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_report_creditinfo
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_credit_report_creditinfo
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportCreditInfo" >
+    insert into t_credit_report_creditinfo (reportNo, houseLoans, otherLoans, 
+      firstIssueMonth, creditCards, firstIssueMonth2, 
+      semiCreidtCards, firstIssueMonth3, announceCount, 
+      dissentCount, score, month
+      )
+    values (#{reportNo,jdbcType=VARCHAR}, #{houseLoans,jdbcType=INTEGER}, #{otherLoans,jdbcType=INTEGER}, 
+      #{firstIssueMonth,jdbcType=VARCHAR}, #{creditCards,jdbcType=INTEGER}, #{firstIssueMonth2,jdbcType=VARCHAR}, 
+      #{semiCreidtCards,jdbcType=INTEGER}, #{firstIssueMonth3,jdbcType=VARCHAR}, #{announceCount,jdbcType=INTEGER}, 
+      #{dissentCount,jdbcType=INTEGER}, #{score,jdbcType=VARCHAR}, #{month,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportCreditInfo" >
+    insert into t_credit_report_creditinfo
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="houseLoans != null" >
+        houseLoans,
+      </if>
+      <if test="otherLoans != null" >
+        otherLoans,
+      </if>
+      <if test="firstIssueMonth != null" >
+        firstIssueMonth,
+      </if>
+      <if test="creditCards != null" >
+        creditCards,
+      </if>
+      <if test="firstIssueMonth2 != null" >
+        firstIssueMonth2,
+      </if>
+      <if test="semiCreidtCards != null" >
+        semiCreidtCards,
+      </if>
+      <if test="firstIssueMonth3 != null" >
+        firstIssueMonth3,
+      </if>
+      <if test="announceCount != null" >
+        announceCount,
+      </if>
+      <if test="dissentCount != null" >
+        dissentCount,
+      </if>
+      <if test="score != null" >
+        score,
+      </if>
+      <if test="month != null" >
+        month,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="houseLoans != null" >
+        #{houseLoans,jdbcType=INTEGER},
+      </if>
+      <if test="otherLoans != null" >
+        #{otherLoans,jdbcType=INTEGER},
+      </if>
+      <if test="firstIssueMonth != null" >
+        #{firstIssueMonth,jdbcType=VARCHAR},
+      </if>
+      <if test="creditCards != null" >
+        #{creditCards,jdbcType=INTEGER},
+      </if>
+      <if test="firstIssueMonth2 != null" >
+        #{firstIssueMonth2,jdbcType=VARCHAR},
+      </if>
+      <if test="semiCreidtCards != null" >
+        #{semiCreidtCards,jdbcType=INTEGER},
+      </if>
+      <if test="firstIssueMonth3 != null" >
+        #{firstIssueMonth3,jdbcType=VARCHAR},
+      </if>
+      <if test="announceCount != null" >
+        #{announceCount,jdbcType=INTEGER},
+      </if>
+      <if test="dissentCount != null" >
+        #{dissentCount,jdbcType=INTEGER},
+      </if>
+      <if test="score != null" >
+        #{score,jdbcType=VARCHAR},
+      </if>
+      <if test="month != null" >
+        #{month,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="Map" >
+    insert into t_credit_report_creditinfo
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="houseLoans != null" >
+        houseLoans,
+      </if>
+      <if test="otherLoans != null" >
+        otherLoans,
+      </if>
+      <if test="firstIssueMonth != null" >
+        firstIssueMonth,
+      </if>
+      <if test="creditCards != null" >
+        creditCards,
+      </if>
+      <if test="firstIssueMonth2 != null" >
+        firstIssueMonth2,
+      </if>
+      <if test="semiCreidtCards != null" >
+        semiCreidtCards,
+      </if>
+      <if test="firstIssueMonth3 != null" >
+        firstIssueMonth3,
+      </if>
+      <if test="announceCount != null" >
+        announceCount,
+      </if>
+      <if test="dissentCount != null" >
+        dissentCount,
+      </if>
+      <if test="score != null" >
+        score,
+      </if>
+      <if test="month != null" >
+        month,
+      </if>
+       <if test="queryId != null">
+      	queryId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="houseLoans != null" >
+        #{houseLoans,jdbcType=INTEGER},
+      </if>
+      <if test="otherLoans != null" >
+        #{otherLoans,jdbcType=INTEGER},
+      </if>
+      <if test="firstIssueMonth != null" >
+        #{firstIssueMonth,jdbcType=VARCHAR},
+      </if>
+      <if test="creditCards != null" >
+        #{creditCards,jdbcType=INTEGER},
+      </if>
+      <if test="firstIssueMonth2 != null" >
+        #{firstIssueMonth2,jdbcType=VARCHAR},
+      </if>
+      <if test="semiCreidtCards != null" >
+        #{semiCreidtCards,jdbcType=INTEGER},
+      </if>
+      <if test="firstIssueMonth3 != null" >
+        #{firstIssueMonth3,jdbcType=VARCHAR},
+      </if>
+      <if test="announceCount != null" >
+        #{announceCount,jdbcType=INTEGER},
+      </if>
+      <if test="dissentCount != null" >
+        #{dissentCount,jdbcType=INTEGER},
+      </if>
+      <if test="score != null" >
+        #{score,jdbcType=VARCHAR},
+      </if>
+      <if test="month != null" >
+        #{month,jdbcType=VARCHAR},
+      </if>
+       <if test="queryId != null">
+      	#{queryId}
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportCreditInfo" >
+    update t_credit_report_creditinfo
+    <set >
+      <if test="houseLoans != null" >
+        houseLoans = #{houseLoans,jdbcType=INTEGER},
+      </if>
+      <if test="otherLoans != null" >
+        otherLoans = #{otherLoans,jdbcType=INTEGER},
+      </if>
+      <if test="firstIssueMonth != null" >
+        firstIssueMonth = #{firstIssueMonth,jdbcType=VARCHAR},
+      </if>
+      <if test="creditCards != null" >
+        creditCards = #{creditCards,jdbcType=INTEGER},
+      </if>
+      <if test="firstIssueMonth2 != null" >
+        firstIssueMonth2 = #{firstIssueMonth2,jdbcType=VARCHAR},
+      </if>
+      <if test="semiCreidtCards != null" >
+        semiCreidtCards = #{semiCreidtCards,jdbcType=INTEGER},
+      </if>
+      <if test="firstIssueMonth3 != null" >
+        firstIssueMonth3 = #{firstIssueMonth3,jdbcType=VARCHAR},
+      </if>
+      <if test="announceCount != null" >
+        announceCount = #{announceCount,jdbcType=INTEGER},
+      </if>
+      <if test="dissentCount != null" >
+        dissentCount = #{dissentCount,jdbcType=INTEGER},
+      </if>
+      <if test="score != null" >
+        score = #{score,jdbcType=VARCHAR},
+      </if>
+      <if test="month != null" >
+        month = #{month,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportCreditInfo" >
+    update t_credit_report_creditinfo
+    set houseLoans = #{houseLoans,jdbcType=INTEGER},
+      otherLoans = #{otherLoans,jdbcType=INTEGER},
+      firstIssueMonth = #{firstIssueMonth,jdbcType=VARCHAR},
+      creditCards = #{creditCards,jdbcType=INTEGER},
+      firstIssueMonth2 = #{firstIssueMonth2,jdbcType=VARCHAR},
+      semiCreidtCards = #{semiCreidtCards,jdbcType=INTEGER},
+      firstIssueMonth3 = #{firstIssueMonth3,jdbcType=VARCHAR},
+      announceCount = #{announceCount,jdbcType=INTEGER},
+      dissentCount = #{dissentCount,jdbcType=INTEGER},
+      score = #{score,jdbcType=VARCHAR},
+      month = #{month,jdbcType=VARCHAR}
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByQueryId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_report_creditinfo
+    where queryId = #{queryId,jdbcType=VARCHAR}
+  </select>
+</mapper>

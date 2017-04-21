@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hrbb.loan.web.security.entity.Privilege">
+                  
+    <resultMap type="com.hrbb.loan.web.security.entity.Privilege" id="privilegeResult">	
+        <result column="privilegeId" property="privilegeId"/>
+		<result column="privilegeName" property="privilegeName"/>
+		<result column="displayName" property="displayName"/>
+		<result column="remark" property="remark"/>
+	</resultMap>
+	<sql id="Base_Column_List">
+		privilegeId, privilegeName, displayName, remark
+	</sql>	
+	<sql id="Base_Where_Clause">
+		<where>
+			<trim prefixOverrides="and">
+				<if test="privilegeId != null"> and privilegeId = #{privilegeId}</if>
+				<if test="privilegeName != null">and privilegeName = #{privilegeName}</if>
+				<if test="remark != null">and remark = #{remark}</if>
+				<if test="displayName != null">and displayName = #{displayName}</if>
+				<!-- 模糊查询 -->
+				<if test="privilegeNameLike != null">and privilegeName like CONCAT("%",#{privilegeNameLike},"%")</if>
+			</trim>
+		</where>
+		<if test="sorting != null">order by ${sorting}</if>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</sql>
+
+	<select id="selectById" resultMap="privilegeResult">
+		select *
+		from t_privilege
+		where privilegeId = #{privilegeId}
+	</select>
+	
+	<select id="selectByUserId" resultMap="privilegeResult">
+		select * from t_privilege where privilegeId in (select privilegeId from t_role_privilege where roleId in (select roleId from t_user_role where userId = #{userId}));
+	</select> 
+
+	<select id="selectByRoleId" resultMap="privilegeResult">
+		select * from t_privilege where privilegeId in (select privilegeId from t_role_privilege where roleId = #{userId});
+	</select> 
+	<select id="selectByName" resultMap="privilegeResult" parameterType="java.lang.String">
+		select 
+		<include refid="Base_Column_List" />
+		from t_privilege
+		where privilegeName = #{privilegeName}
+	</select>	
+	
+	<select id="select" resultMap="privilegeResult">
+		select 
+		<include refid="Base_Column_List" />
+		from t_privilege
+		<include refid="Base_Where_Clause" />		
+	</select>
+	<select id="selectCount" resultType="java.lang.Long" parameterType="java.util.Map">
+		select count(privilegeId)
+		from t_privilege
+		<include refid="Base_Where_Clause" />
+	</select>
+	<insert id="insert">
+		insert into t_privilege(privilegeId, privilegeName, displayName,remark) 
+		 values(nextVal('t_privilege.privilegeId'),#{privilegeName},#{displayName},#{remark})
+	</insert>
+	<update id="updateById" parameterType="com.hrbb.loan.web.security.entity.Privilege">
+		update t_privilege
+		<set> 
+		   <if test="remark!=null">remark = #{remark},</if>
+		   <if test="privilegeName!=null">privilegeName = #{privilegeName},</if>
+		   <if test="displayName!=null">displayName = #{displayName},</if>
+		</set>
+		where privilegeId = #{privilegeId}
+	</update>		
+		<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from t_privilege
+		where privilegeId = #{privilegeId}
+	</delete>
+	<select id="selectUsageCount" resultType="java.lang.Integer"  parameterType="java.lang.Integer">
+		select count(*)  
+		from t_role_privilege
+		where privilegeId = #{privilegeId}		
+	</select>
+</mapper>

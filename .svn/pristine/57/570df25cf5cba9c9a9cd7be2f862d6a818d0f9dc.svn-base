@@ -1,0 +1,131 @@
+/**
+ * 
+ */
+package com.hrbb.loan.pos.dao.entity;
+
+import java.io.UnsupportedEncodingException;
+import java.util.Date;
+
+import com.hrbb.loan.pos.util.IdUtil;
+
+/**
+ * <p>Title: TransactionLog.java </p>
+ * <p>Description:  </p>
+ * <p>Copyright: Copyright (C) 2015 Hrbb Ltd. Co.</p> 
+ *     
+ * @author linzhaolin@hrbb.com.cn
+ * @version 
+ * @date 2015年7月9日
+ *
+ * logs: 1. 
+ */
+public class TransactionLog {
+	
+	public static final String 核心交易状态_成功 = "SUCCESS";
+	public static final String 核心交易状态_失败 = "FAILED";
+	
+	private final static int REQUEST_LEN = 1000; 
+	/**/
+	private String seq;
+	/**/
+	private Date transTime;
+	/**/
+	private String bizId;
+	/**/
+	private String status = TransactionLog.核心交易状态_成功;
+	/**/
+	private String request;
+	/**/
+	private String response;
+	/**/
+	private Date reqTime;
+	/**/
+	private Date rspTime;
+	
+//	public TransactionLog(){}
+	
+	public TransactionLog(String bizId){
+		this.seq = IdUtil.getId("OTS");
+		this.bizId = bizId;
+		this.transTime = new Date();
+		this.reqTime = new Date();
+	}
+	
+	public String getSeq() {
+		return seq;
+	}
+//	public void setSeq(String seq) {
+//		this.seq = seq;
+//	}
+	public Date getTransTime() {
+		return transTime;
+	}
+//	public void setTransTime(Date transTime) {
+//		this.transTime = transTime;
+//	}
+	public String getBizId() {
+		return bizId;
+	}
+//	public void setBizId(String bizId) {
+//		this.bizId = bizId;
+//	}
+
+	public String getRequest() {
+		return request;
+	}
+	
+	public void setTransObject(Object req, Object rsp) {
+		/*request*/
+		String reqStr = req.toString();
+		if(reqStr.getBytes().length>REQUEST_LEN){
+			byte[] newOne = new byte[REQUEST_LEN];
+			String newStr = "";
+			try {
+				System.arraycopy(reqStr.getBytes(), 0, newOne, 0, REQUEST_LEN);		//超出1000时截断
+				newStr = new String(newOne, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+				newStr = new String(newOne);
+			}
+			this.request = newStr;
+		}else{
+			this.request = reqStr;
+		}
+		/*response*/
+		this.response=rsp.toString();
+	}
+	
+	public String getResponse() {
+		return response;
+	}
+//	public void setResponse(String response) {
+//		this.response = response;
+//	}
+
+	public Date getReqTime() {
+		return reqTime;
+	}
+//
+//	public void setReqTime(Date reqTime) {
+//		this.reqTime = reqTime;
+//	}
+
+	public Date getRspTime() {
+		return rspTime;
+	}
+
+	public void setRspTime() {
+		this.rspTime = new Date();
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	
+	
+	
+}

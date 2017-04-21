@@ -1,0 +1,33 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<!-- 展业机构信息 -->
+<div title="机构信息" style="padding:20px; margin:auto;width: 90%">
+   	<table style = "width:100%">
+   		<tr>
+	   		<td style="width:15%;word-break;" class="tdtitle">地区code:</td>
+	   		<td style="width:35%;word-break;"><input type="text" class="region_code" name="orgName" value="${tRiskZoneConfig.region_code}" size="30"></td>
+	   		<td class="tdtitle">营业执照编号:</td>
+	   		<td><input type="text" class="risk_type" name="licenseNo" value="${tRiskZoneConfig.risk_type}" size="30"></td>
+   		</tr>
+   		<tr>
+	   		<td class="tdtitle">机构简称:</td>
+	   		<td><input type="text" class="risk_type_code" name="alias" value="${tRiskZoneConfig.risk_type_code}" size="30"></td>
+	   		<td class="tdtitle">法人代表:</td>
+	   		<td><input type="text" class="deleted_flag" name="nameLR" value="${tRiskZoneConfig.deleted_flag}" size="30"></td>
+   		</tr>
+   		<tr>
+	   		<td class="tdtitle">法人联系电话:</td>
+	   		<td><input type="text" class="valid_date" name="phoneNoLR"  value="${tRiskZoneConfig.valid_date}"/></td>
+	   		<td class="tdtitle">法人代表身份证号码:</td>
+	   		<td><input type="text" class="invalid_date" name="certNoLR" value="${tRiskZoneConfig.invalid_date}" size="30"></td>
+   		</tr>
+   	</table>
+   	<br/><br/>
+   	<div style="text-align: center">
+   		<input type="hidden" id="orgId" value="${institution.orgId}"/>
+	   	<a href="javascript:void(0)" id="save" width="100px" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveRiskzoneConfig(${oprFlag})">保存</a>&nbsp;&nbsp;
+	   	<a href="javascript:void(0)" id="cancel" width="100px" class="easyui-linkbutton" iconCls="icon-no" onclick="cancelRiskzoneConfig(${oprFlag})">返回</a>
+   	</div>
+</div>

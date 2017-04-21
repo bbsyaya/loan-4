@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TActivityInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TActivityInfo" >
+    <result column="actId" property="actId" jdbcType="VARCHAR" />
+    <result column="actName" property="actName" jdbcType="VARCHAR" />
+    <result column="actContentSql" property="actContentSql" jdbcType="VARCHAR" />
+    <result column="actParam" property="actParam"/>
+    <result column="activityType" property="activityType"/>
+    <result column="actFlag" property="actFlag"/>
+    <result column="actionName" property="actionName"/>
+  </resultMap>
+  
+  <select id="selectSelective" resultMap="BaseResultMap" parameterType="Map" >
+    select 
+    actId,
+    actName,
+    actContentSql,
+    actParam,
+    IF(actFlag='1', '失效', '有效') as actFlag,
+    activityType,
+    actionName
+    from t_activity_info
+   where 1=1
+   <if test="actId != null">
+   	AND actId = #{actId}
+   </if>
+   <if test="actFlag != null">
+   	AND actFlag = #{actFlag}
+   </if>
+   <if test="activityNameLike != null">
+   	AND actName like #{activityNameLike}
+   </if>
+   <if test="activitType != null">
+   	AND activityType = #{activityType}
+   </if>
+   order by actFlag
+   <if test="limit != null">
+   	limit #{startPage}, #{limit}
+   </if>
+  </select>
+  
+  <select id="countSelective" resultType="String" parameterType="Map">
+  	select count(*)
+  	from t_activity_info
+   where 1=1
+   <if test="actId != null">
+   	AND actId = #{actId}
+   </if>
+   <if test="actFlag != null">
+   	AND actFlag = #{actFlag}
+   </if>
+   <if test="activityNameLike != null">
+   	AND actName like #{activityNameLike}
+   </if>
+   <if test="activitType != null">
+   	AND activityType = #{activityType}
+   </if>
+   order by actFlag
+  </select>
+  
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TActivityInfo" >
+    insert into t_activity_info (actId, actName, actAccessSql, 
+      actContentSql)
+    values (#{actId,jdbcType=VARCHAR}, #{actName,jdbcType=VARCHAR}, #{actAccessSql,jdbcType=VARCHAR}, 
+      #{actContentSql,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TActivityInfo" >
+    insert into t_activity_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="actId != null" >
+        actId,
+      </if>
+      <if test="actName != null" >
+        actName,
+      </if>
+      <if test="actContentSql != null" >
+        actContentSql,
+      </if>
+      <if test="actParam != null">
+      	actParam,
+      </if>
+      <if test="actFlag != null">
+      	actFlag,
+      </if>
+      <if test="activityType != null">
+      	activityType,
+      </if>
+      <if test="actionName != null">
+      	actionName,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="actId != null" >
+        #{actId,jdbcType=VARCHAR},
+      </if>
+      <if test="actName != null" >
+        #{actName,jdbcType=VARCHAR},
+      </if>
+      <if test="actContentSql != null" >
+        #{actContentSql,jdbcType=VARCHAR},
+      </if>
+      <if test="actParam != null">
+      	#{actParam},
+      </if>
+      <if test="actFlag != null">
+      	#{actFlag},
+      </if>
+      <if test="activityType != null">
+      	#{activityType},
+      </if>
+      <if test="actionName != null">
+      	#{actionName},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateSelective" parameterType="com.hrbb.loan.pos.dao.entity.TActivityInfo">
+  	update t_activity_info 
+  	 <set >
+      <if test="actName != null" >
+        actName = #{actName},
+      </if>
+      <if test="actContentSql != null" >
+        actContentSql = #{actContentSql},
+      </if>
+      <if test="actParam != null">
+      	actParam = #{actParam},
+      </if>
+      <if test="actFlag != null">
+      	actFlag = #{actFlag},
+      </if>
+      <if test="activityType != null">
+      	activityType = #{activityType},
+      </if>
+      <if test="actionName != null">
+      	actionName = #{actionName}
+      </if>
+    </set>
+    where actId = #{actId}
+  </update>
+</mapper>

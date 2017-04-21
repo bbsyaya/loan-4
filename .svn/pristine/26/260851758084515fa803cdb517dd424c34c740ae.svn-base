@@ -1,0 +1,13 @@
+#mq.broker.url=failover:(tcp://35.8.33.23:61616,tcp://35.8.33.25:61616,tcp://35.8.33.22:61616)
+#mq.username=hrbb
+#mq.password=hrbb
+#mq.queue.pos.pay=mq.queue.pos.pay
+#mq.queue.pos.collect=mq.queue.pos.collect
+
+mq.broker.url=tcp://10.1.5.227:61616
+mq.username=
+mq.password=
+mq.queue.pos.pay=mq.queue.pos.pay
+mq.queue.pos.collect=mq.queue.pos.collect
+mq.queue.pos.smsMessage=mq.queue.pos.smsMessage
+

@@ -1,0 +1,249 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.tools.main.synFile;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.ResourceBundle;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.hrbb.loan.pos.tools.main.util.SynFileUploadUtil;
+import com.hrbb.loan.pos.tools.main.util.SynFileUtil;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.FileUtil;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.loan.pos.util.constants.ReviewNoteConstants;
+
+/**
+ * 
+ * @author marco
+ * @version $Id: SynFileUpload.java, v 0.1 2015-4-28 下午2:52:13 marco Exp $
+ */
+public class SynFileUpload {
+
+	private final static Logger LOG = LoggerFactory
+			.getLogger(SynFileUpload.class);
+
+	public static ResourceBundle toolsInfo = ResourceBundle
+			.getBundle("toolsInfo");
+
+	/**
+	 * 创建文件，并上传
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		LOG.info("SynFileUpload begin");
+		// 文件路径
+		String synchrofilepath = toolsInfo
+				.getString(SynFileConstants.KEY_SYNCHROFILEPATH);
+		LOG.debug("synchrofilepath=" + synchrofilepath);
+
+		// 渠道
+		Properties p = getPropertiesFile(synchrofilepath);
+
+		String channels = p.getProperty(SynFileConstants.KEY_CHANNELS);
+		LOG.error("channels=" + channels);
+		if (StringUtil.isEmpty(channels)) {
+			LOG.error("没有渠道信息");
+			return;
+		}
+		// 渠道对应的ftpId
+		String channelFtpIds = p
+				.getProperty(SynFileConstants.KEY_CHANNELFTPIDS);
+		LOG.error("channelFtpIds=" + channelFtpIds);
+		if (StringUtil.isEmpty(channelFtpIds)) {
+			LOG.error("没有渠道ftp信息");
+			return;
+		}
+
+		String[] channel = channels.split(SynFileConstants.STRING_COMMA);
+		String[] channelFtpId = channelFtpIds
+				.split(SynFileConstants.STRING_COMMA);
+
+		// 今天日期
+		String today = DateUtil.getTodayDatePattern1();
+
+		for (int i = 0; i < channel.length; i++) {
+			LOG.debug("渠道channel=" + channel[i] + ";channelFtpId="
+					+ channelFtpId[i]);
+			try {
+				makeAndUpload(synchrofilepath, today, channel[i],
+						channelFtpId[i]);
+			} catch (Exception e) {
+				LOG.error("渠道" + channel[i] + "处理失败！", e);
+			}
+		}
+		LOG.info("SynFileUpload end");
+	}
+
+	/**
+	 * 读取渠道属性文件
+	 * 
+	 * @param synchrofilepath
+	 * @return
+	 */
+	private static Properties getPropertiesFile(String synchrofilepath) {
+		Properties props = new Properties();
+		String pathAll = synchrofilepath + SynFileConstants.SYNFILEINFONAME;
+		LOG.info("渠道属性文件pathAll=" + pathAll);
+		// 判断文件是否存在
+		if (FileUtil.checkFileExist(pathAll)) {
+			FileInputStream fis = null;
+			try {
+				fis = new FileInputStream(pathAll);
+				props.load(fis);
+				LOG.error("渠道读取成功。");
+			} catch (IOException e) {
+				LOG.error("渠道读取失败！", e);
+			} finally {
+				if (fis != null) {
+					try {
+						fis.close();
+					} catch (IOException e) {
+						LOG.info("渠道文件关闭失败！", e);
+					}
+				}
+			}
+		} else {
+			LOG.error("渠道属性文件不存在！");
+		}
+		return props;
+	}
+
+	/**
+	 * 创建文件，并上传
+	 * 
+	 * @param path
+	 * @param channel
+	 * @param channelFtpIds
+	 */
+	private static void makeAndUpload(String synchrofilepath, String today,
+			String channel, String channelFtpIds) {
+		// 全路径
+		String path = synchrofilepath + channel + FileUtil.SYNFILE_PATH_PREFIX;
+
+		// 创建文件
+		SynFileMake.makeSynFile(path, today, channel);
+
+		switch (channel) {
+		case SynFileConstants.CHANNEL_CODE_UM:
+			upload1_3(path, today, channel, channelFtpIds, null);
+			upload4(path, today, channel, channelFtpIds, null);
+			break;
+		case SynFileConstants.CHANNEL_CODE_58:
+		case SynFileConstants.CHANNEL_CODE_SM:
+			upload1_3(path, today, channel, channelFtpIds,
+					ReviewNoteConstants.LOANTYPE_01);
+			upload1_3(path, today, channel, channelFtpIds,
+					ReviewNoteConstants.LOANTYPE_02);
+			break;
+		default:
+			upload1_3(path, today, channel, channelFtpIds, null);
+			break;
+		}
+	}
+
+	/**
+	 * 上传文件1-3
+	 * 
+	 * @param path
+	 * @param today
+	 * @param channel
+	 * @param channelFtpIds
+	 * @param loanType
+	 */
+	private static void upload1_3(String path, String today, String channel,
+			String channelFtpIds, String loanType) {
+
+		// 文件名
+		String fileName = SynFileUtil.getSynFileName(channel, 1, today,
+				loanType);
+		// 取得路径
+		String pathAll = path + fileName.toString();
+		// 取得路径
+		LOG.debug("文件路径和名称pathAll=" + pathAll);
+		// 判断文件是否存在
+		if (FileUtil.checkFileExist(pathAll)) {
+			LOG.debug("文件存在，准备上传。");
+			try {
+				SynFileUploadUtil.uploadFile(pathAll, channelFtpIds);
+			} catch (Exception e) {
+				LOG.error("上传失败！", e);
+			}
+		} else {
+			LOG.debug("文件不存在！");
+		}
+
+		// 文件名
+		fileName = SynFileUtil.getSynFileName(channel, 2, today, loanType);
+		// 取得路径
+		pathAll = path + fileName.toString();
+		// 取得路径
+		LOG.debug("文件路径和名称pathAll=" + pathAll);
+		// 判断文件是否存在
+		if (FileUtil.checkFileExist(pathAll)) {
+			LOG.debug("文件存在，准备上传。");
+			try {
+				SynFileUploadUtil.uploadFile(pathAll, channelFtpIds);
+			} catch (Exception e) {
+				LOG.error("上传失败！", e);
+			}
+		} else {
+			LOG.debug("文件不存在！");
+		}
+
+		// 文件名
+		fileName = SynFileUtil.getSynFileName(channel, 3, today, loanType);
+		// 取得路径
+		pathAll = path + fileName.toString();
+		// 取得路径
+		LOG.debug("文件路径和名称pathAll=" + pathAll);
+		// 判断文件是否存在
+		if (FileUtil.checkFileExist(pathAll)) {
+			LOG.debug("文件存在，准备上传。");
+			try {
+				SynFileUploadUtil.uploadFile(pathAll, channelFtpIds);
+			} catch (Exception e) {
+				LOG.error("上传失败！", e);
+			}
+		} else {
+			LOG.debug("文件不存在！");
+		}
+	}
+
+	/**
+	 * 上传文件4
+	 * 
+	 * @param path
+	 * @param today
+	 * @param channel
+	 * @param channelFtpIds
+	 * @param loanType
+	 */
+	private static void upload4(String path, String today, String channel,
+			String channelFtpIds, String loanType) {
+		// 文件名
+		String fileName = SynFileUtil.getSynFileName(channel, 4, today, null);
+		// 取得路径
+		String pathAll = path + fileName.toString();
+		// 取得路径
+		LOG.debug("文件路径和名称pathAll=" + pathAll);
+		// 判断文件是否存在
+		if (FileUtil.checkFileExist(pathAll)) {
+			LOG.debug("文件存在，准备上传。");
+			try {
+				SynFileUploadUtil.uploadFile(pathAll, channelFtpIds);
+			} catch (Exception e) {
+				LOG.error("上传失败！", e);
+			}
+		} else {
+			LOG.debug("文件不存在！");
+		}
+	}
+}

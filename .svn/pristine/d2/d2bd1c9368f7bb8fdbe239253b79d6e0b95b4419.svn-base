@@ -1,0 +1,380 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.service.bean;
+
+import java.math.BigDecimal;
+
+/**
+ * 处理完成的pos流水信息
+ * @author XLY
+ * @version $Id: PosSerialHandledInfoBean.java, v 0.1 2015-3-12 上午10:48:37 XLY Exp $
+ */
+public class PosSerialHandledInfoBean {
+
+    /**
+     * 6个月内交易流水金额汇总
+     */
+    private BigDecimal tradeAmt6;
+    /**
+     * 6个月内交易流水次数汇总
+     */
+    private BigDecimal tradeNum6;
+    
+    /**
+     * 6个月交易流水月份数
+     */
+    private BigDecimal totalNumPosMth6;
+    /**
+     * 交易重复使用率  1-银行卡数/交易笔数
+     */
+    private BigDecimal repeativeCardPct;
+    /**
+     * 信用卡重复使用率    贷记卡数/交易笔数
+     */
+    private BigDecimal mthlyCreditCardPct;
+    /**
+     * 商户总POS使用月份数 COUNT(交易流水月份)
+     */
+    private BigDecimal totalNumPosMth;
+    /**
+     * 平均月交易金额 SUM（月交易金额汇总）/COUNT(交易流水月份)
+     */
+    private BigDecimal avgMthAmt;
+    /**
+     * 月平均交易次数 SUM（月交易次数汇总）/COUNT(交易流水月份)
+     */
+    private BigDecimal avgMthTrxn;
+    /**
+     * 交易波动率   STD （月交易金额汇总）/SUM（月交易金额汇总）*COUNT(交易流水月份)
+     */
+    private BigDecimal stDev;
+    /**
+     * 最近交易月份数 COUNT(交易流水月份)
+     */
+    private BigDecimal recentNumPosMth;
+    /**
+     * 最近的POS年月    MAX(交易流水月份)
+     */
+    private Integer latestYrmth ;
+    /**
+     * 正常经营时间交易比率  SUM（交易时间在7:00~24:00的交易金额）/SUM（交易金额）
+     */
+    private BigDecimal bizHrSalesRatio;
+    /**
+     * 平均交易金额  AVERAGE（交易金额）
+     */
+    private BigDecimal meanAmt;
+    
+    /**
+     * pos渠道
+     */
+    private String posChannel;
+    
+    /**
+     * 最大交易金额
+     */
+    private BigDecimal tradeAmtsumMax;
+    
+    /**
+     * 最小交易金额
+     */
+    private BigDecimal tradeAmtsumMin;
+    
+    /**
+     * 最近4个月交易月份数
+     */
+    private BigDecimal countMonth4;
+    
+    /**
+     * 4个月内交易流水金额汇总
+     */
+    private BigDecimal tradeNum4;
+    
+    /**
+     * 4个月内交易流水金额汇总
+     */
+    private BigDecimal tradeAmt4;
+    
+    /**
+	 * Getter method for property <tt>totalNumPosMth6</tt>.
+	 * 
+	 * @return property value of totalNumPosMth6
+	 */
+	public BigDecimal getTotalNumPosMth6() {
+		return totalNumPosMth6;
+	}
+	/**
+	 * Setter method for property <tt>totalNumPosMth6</tt>.
+	 * 
+	 * @param totalNumPosMth6 value to be assigned to property totalNumPosMth6
+	 */
+	public void setTotalNumPosMth6(BigDecimal totalNumPosMth6) {
+		this.totalNumPosMth6 = totalNumPosMth6;
+	}
+	/**
+	 * Getter method for property <tt>tradeAmt4</tt>.
+	 * 
+	 * @return property value of tradeAmt4
+	 */
+	public BigDecimal getTradeAmt4() {
+		return tradeAmt4;
+	}
+	/**
+	 * Setter method for property <tt>tradeAmt4</tt>.
+	 * 
+	 * @param tradeAmt4 value to be assigned to property tradeAmt4
+	 */
+	public void setTradeAmt4(BigDecimal tradeAmt4) {
+		this.tradeAmt4 = tradeAmt4;
+	}
+	/**
+	 * Getter method for property <tt>tradeAmt6</tt>.
+	 * 
+	 * @return property value of tradeAmt6
+	 */
+	public BigDecimal getTradeAmt6() {
+		return tradeAmt6;
+	}
+	/**
+	 * Setter method for property <tt>tradeAmt6</tt>.
+	 * 
+	 * @param tradeAmt6 value to be assigned to property tradeAmt6
+	 */
+	public void setTradeAmt6(BigDecimal tradeAmt6) {
+		this.tradeAmt6 = tradeAmt6;
+	}
+	/**
+	 * Getter method for property <tt>tradeNum6</tt>.
+	 * 
+	 * @return property value of tradeNum6
+	 */
+	public BigDecimal getTradeNum6() {
+		return tradeNum6;
+	}
+	/**
+	 * Setter method for property <tt>tradeNum6</tt>.
+	 * 
+	 * @param tradeNum6 value to be assigned to property tradeNum6
+	 */
+	public void setTradeNum6(BigDecimal tradeNum6) {
+		this.tradeNum6 = tradeNum6;
+	}
+	public BigDecimal getCountMonth4() {
+		return countMonth4;
+	}
+	public void setCountMonth4(BigDecimal countMonth4) {
+		this.countMonth4 = countMonth4;
+	}
+	public BigDecimal getTradeNum4() {
+		return tradeNum4;
+	}
+	public void setTradeNum4(BigDecimal tradeNum4) {
+		this.tradeNum4 = tradeNum4;
+	}
+	public BigDecimal getTradeAmtsumMax() {
+		return tradeAmtsumMax;
+	}
+	public void setTradeAmtsumMax(BigDecimal tradeAmtsumMax) {
+		this.tradeAmtsumMax = tradeAmtsumMax;
+	}
+	public BigDecimal getTradeAmtsumMin() {
+		return tradeAmtsumMin;
+	}
+	public void setTradeAmtsumMin(BigDecimal tradeAmtsumMin) {
+		this.tradeAmtsumMin = tradeAmtsumMin;
+	}
+	/**
+     * Getter method for property <tt>repeativeCardPct</tt>.
+     * 
+     * @return property value of repeativeCardPct
+     */
+    public BigDecimal getRepeativeCardPct() {
+        return repeativeCardPct;
+    }
+    /**
+     * Setter method for property <tt>repeativeCardPct</tt>.
+     * 
+     * @param repeativeCardPct value to be assigned to property repeativeCardPct
+     */
+    public void setRepeativeCardPct(BigDecimal repeativeCardPct) {
+        this.repeativeCardPct = repeativeCardPct;
+    }
+    /**
+     * Getter method for property <tt>mthlyCreditCardPct</tt>.
+     * 
+     * @return property value of mthlyCreditCardPct
+     */
+    public BigDecimal getMthlyCreditCardPct() {
+        return mthlyCreditCardPct;
+    }
+    /**
+     * Setter method for property <tt>mthlyCreditCardPct</tt>.
+     * 
+     * @param mthlyCreditCardPct value to be assigned to property mthlyCreditCardPct
+     */
+    public void setMthlyCreditCardPct(BigDecimal mthlyCreditCardPct) {
+        this.mthlyCreditCardPct = mthlyCreditCardPct;
+    }
+    /**
+     * Getter method for property <tt>totalNumPosMth</tt>.
+     * 
+     * @return property value of totalNumPosMth
+     */
+    public BigDecimal getTotalNumPosMth() {
+        return totalNumPosMth;
+    }
+    /**
+     * Setter method for property <tt>totalNumPosMth</tt>.
+     * 
+     * @param totalNumPosMth value to be assigned to property totalNumPosMth
+     */
+    public void setTotalNumPosMth(BigDecimal totalNumPosMth) {
+        this.totalNumPosMth = totalNumPosMth;
+    }
+    /**
+     * Getter method for property <tt>avgMthAmt</tt>.
+     * 
+     * @return property value of avgMthAmt
+     */
+    public BigDecimal getAvgMthAmt() {
+        return avgMthAmt;
+    }
+    /**
+     * Setter method for property <tt>avgMthAmt</tt>.
+     * 
+     * @param avgMthAmt value to be assigned to property avgMthAmt
+     */
+    public void setAvgMthAmt(BigDecimal avgMthAmt) {
+        this.avgMthAmt = avgMthAmt;
+    }
+    /**
+     * Getter method for property <tt>avgMthTrxn</tt>.
+     * 
+     * @return property value of avgMthTrxn
+     */
+    public BigDecimal getAvgMthTrxn() {
+        return avgMthTrxn;
+    }
+    /**
+     * Setter method for property <tt>avgMthTrxn</tt>.
+     * 
+     * @param avgMthTrxn value to be assigned to property avgMthTrxn
+     */
+    public void setAvgMthTrxn(BigDecimal avgMthTrxn) {
+        this.avgMthTrxn = avgMthTrxn;
+    }
+    /**
+     * Getter method for property <tt>stDev</tt>.
+     * 
+     * @return property value of stDev
+     */
+    public BigDecimal getStDev() {
+        return stDev;
+    }
+    /**
+     * Setter method for property <tt>stDev</tt>.
+     * 
+     * @param stDev value to be assigned to property stDev
+     */
+    public void setStDev(BigDecimal stDev) {
+        this.stDev = stDev;
+    }
+    /**
+     * Getter method for property <tt>recentNumPosMth</tt>.
+     * 
+     * @return property value of recentNumPosMth
+     */
+    public BigDecimal getRecentNumPosMth() {
+        return recentNumPosMth;
+    }
+    /**
+     * Setter method for property <tt>recentNumPosMth</tt>.
+     * 
+     * @param recentNumPosMth value to be assigned to property recentNumPosMth
+     */
+    public void setRecentNumPosMth(BigDecimal recentNumPosMth) {
+        this.recentNumPosMth = recentNumPosMth;
+    }
+    /**
+     * Getter method for property <tt>latestYrmth</tt>.
+     * 
+     * @return property value of latestYrmth
+     */
+    public Integer getLatestYrmth() {
+        return latestYrmth;
+    }
+    /**
+     * Setter method for property <tt>latestYrmth</tt>.
+     * 
+     * @param latestYrmth value to be assigned to property latestYrmth
+     */
+    public void setLatestYrmth(Integer latestYrmth) {
+        this.latestYrmth = latestYrmth;
+    }
+    /**
+     * Getter method for property <tt>bizHrSalesRatio</tt>.
+     * 
+     * @return property value of bizHrSalesRatio
+     */
+    public BigDecimal getBizHrSalesRatio() {
+        return bizHrSalesRatio;
+    }
+    /**
+     * Setter method for property <tt>bizHrSalesRatio</tt>.
+     * 
+     * @param bizHrSalesRatio value to be assigned to property bizHrSalesRatio
+     */
+    public void setBizHrSalesRatio(BigDecimal bizHrSalesRatio) {
+        this.bizHrSalesRatio = bizHrSalesRatio;
+    }
+    /**
+     * Getter method for property <tt>meanAmt</tt>.
+     * 
+     * @return property value of meanAmt
+     */
+    public BigDecimal getMeanAmt() {
+        return meanAmt;
+    }
+    /**
+     * Setter method for property <tt>meanAmt</tt>.
+     * 
+     * @param meanAmt value to be assigned to property meanAmt
+     */
+    public void setMeanAmt(BigDecimal meanAmt) {
+        this.meanAmt = meanAmt;
+    }
+    
+    /**
+     * POSCHANNEL
+     * Getter method for property <tt>posChannel</tt>.
+     * 
+     * @return property value of posChannel
+     */
+    public String getPosChannel() {
+        return posChannel;
+    }
+    /**
+     * Setter method for property <tt>posChannel</tt>.
+     * 
+     * @param posChannel value to be assigned to property posChannel
+     */
+    public void setPosChannel(String posChannel) {
+        this.posChannel = posChannel;
+    }
+    /** 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "PosSerialHandledInfoBean [repeativeCardPct=" + repeativeCardPct
+               + ", mthlyCreditCardPct=" + mthlyCreditCardPct + ", totalNumPosMth="
+               + totalNumPosMth + ", avgMthAmt=" + avgMthAmt + ", avgMthTrxn=" + avgMthTrxn
+               + ", stDev=" + stDev + ", recentNumPosMth=" + recentNumPosMth + ", latestYrmth="
+               + latestYrmth + ", bizHrSalesRatio=" + bizHrSalesRatio + ", meanAmt=" + meanAmt
+               + ", tradeAmtsumMax=" + tradeAmtsumMax + ", tradeAmtsumMin=" + tradeAmtsumMin + "]";
+    }
+    
+}

@@ -1,0 +1,46 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>还款申请通知</title>
+</head>
+
+<body>
+<p>Dear ${userName}:</p>
+<p> 下表为今天09:00~17：00的审批结果，请查收！ </p>
+<table border="1" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+  <td width="5%">申请日期</td>
+      <td width="10%">渠道</td>
+      <td width="10%">地区</td>
+      <td width="10%">商户名称</td>
+      <td width="10%">申请人姓名</td>
+      <td width="10%">申请人手机</td>
+      <td width="10%">身份证号</td>
+      <td width="5%">授信结果</td>
+      <td width="5%">审批时间</td>
+      <td width="5%">还款方式</td>
+      <td width="5%">额度（万）</td>
+      <td width="5%">利率</td>
+      <td width="10%">拒绝原因</td>
+  </tr>
+  <#list records as record>
+  <tr>
+    <td>${record.applyDtae?string("yyyy-MM-dd"}</td>
+    <td>${record.channelName}</td>
+    <td>${record.region}</td>
+    <td>${record.posCustName}</td>
+    <td>${record.custName}</td>
+    <td>${record.mobilePhone}</td>
+    <td>${record.paperId}</td>
+    <td>${record.apprResult}</td>
+    <td>${record.apprEndTime}</td>
+    <td>${record.repayMethod}</td>
+    <td>${record.apprAmt}</td>
+    <td>${record.apprRate}</td>
+    <td>${record.refuseReason}</td>
+  </tr>
+  </#list>
+</table>
+<p>&nbsp;</p>
+</body>
+</html>

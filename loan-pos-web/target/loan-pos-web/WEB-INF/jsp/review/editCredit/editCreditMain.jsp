@@ -1,0 +1,213 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+		<div id="edit" region="center" class="easyui-tabs" border="false"
+			style="padding: 10px; background: #fff; border: 1px solid #ccc;">
+                <jsp:include page="editCreditInfo.jsp"></jsp:include>
+            </div>
+            <br/><br/>
+            <div region="south" border="false" style="text-align: center;">
+            	<a id="btnEi" onclick="modifyCreditApply()" class="easyui-linkbutton" icon="icon-ok">修改</a>
+				<a id="btnCancel" onclick="closeModifyApply()" class="easyui-linkbutton" icon="icon-cancel">取消</a>
+            </div>
+<script type="text/javascript">
+//根据婚姻状况切换必输区域：20已婚配偶必输
+function switchRequired(newVal,type){
+	var obj;
+	if(type=="New"){
+		obj = {"matePaperId":"#insertMatePaperId",
+				"familyCustName":"#insertFamilyCustName",
+				"mateMobilePhone":"#insertMateMobilePhone",
+				"relaCustName":"#insertRelaCustName",
+				"relaMobilePhone":"#insertRelaMobilePhone"};
+	}else if(type=="Edit"){
+		obj = {"matePaperId":"#editMatePaperId",
+				"familyCustName":"#editFamilyCustName",
+				"mateMobilePhone":"#editMateMobilePhone",
+				"relaCustName":"#editRelaCustName",
+				"relaMobilePhone":"#editRelaMobilePhone"};
+	}
+	
+	if(typeof(newVal)!="undefined" && newVal=="20"){
+		//----已婚时配偶必输	
+		$(obj.matePaperId).validatebox('reduce');
+		$(obj.familyCustName).validatebox('reduce');
+		$(obj.mateMobilePhone).validatebox('reduce');
+		
+		$(obj.relaCustName).validatebox('remove');
+		$(obj.relaMobilePhone).validatebox('remove');
+	}else{
+		//----非已婚家属笔数
+		$(obj.matePaperId).validatebox('remove');
+		$(obj.familyCustName).validatebox('remove');
+		$(obj.mateMobilePhone).validatebox('remove');
+		
+		$(obj.relaCustName).validatebox('reduce');
+		$(obj.relaMobilePhone).validatebox('reduce');
+	}
+}
+
+/*修改申请记录*/
+function modifyCreditApply(){
+	var flag = validateForm("editform");
+	if (!flag){
+		$.messager.alert("操作提示","还有未填写的必输项.","error");
+		return;
+	}
+	
+	var reqUrl = "<%=request.getContextPath()%>/creditApply/updateApplyWithSync.do";
+	var loanId = "${loanId}";
+	var returnKind = getComboValue('#editReturnKind');
+	var bankAccno = $('#editBankAccno').val();
+	var bankName = getComboValue('#editBankName');
+	var bankBranName = $('#editBankBranName').val();
+	var	bankSubName = $('#editBankSubName').val();
+	var recOrg = $('#editRecOrg').val();
+	var recPerson = $('#editRecPerson').val();
+	var recContactNo = $('#editRecContactNo').val();
+	var remark = $('#editRemark').val();
+    if (getTotalBytes(remark) > 1000){
+		alert('备注不能超过1000个字符！');
+		return;
+	}
+	var posCustName = $('#editPosCustName').val();
+	var posCustBusiScope = $('#editPosCustBusiScope').val();		
+	//var busiDivision = getComboValue('#editBusiDivision');
+	//var posCustProv = getComboValue('#editPosCustProSelect');
+	//var posCustCity = getComboValue('#editPosCustCitySelect');
+	var posCustAddress = $('#editPosCustAddress').val();
+	var custName =$('#editCustName').val();
+	var busiYear =$('#editBusiYear').val();
+	var educSign = getComboValue('#editEducSign');
+	var childNum =$('#editChildNum').val();
+	var localHouseNum =$('#editLocalHouseNum').val();
+	var otherHouseNum =$('#editOtherHouseNum').val();
+	var mobilePhone =$('#editMobilePhone').val();
+	var tel =$('#editTel').val();
+	//var residentProv = getComboValue('#editResidentProv');
+	//var residentCity = getComboValue('#editResidentCity');
+	//var residentDivision = getComboValue('#editResidentDivision');
+	var residentDetail =$('#editResidentDetail').val();
+	var weixinNo =$('#editWeixinNo').val();
+	var qqNo =$('#editQQNo').val();
+	var email =$('#editEmail').val();
+	var familyCustName =$('#editFamilyCustName').val();
+	var matePaperKind =$('#editMatePaperKind').val();
+	var matePaperId =$('#editMatePaperId').val();
+	var mateBirtDate =$('#editMateBirtDate').val();
+	var mateSexSign = getComboValue('#editMateSexSign');
+	var mateMobilePhone =$('#editMateMobilePhone').val();
+	var relaCustName =$('#editRelaCustName').val();
+	var relaKind =$('#editRelaKind').val();
+	var relaKind = getComboValue('#editRelaKind');
+	var relaMobilePhone =$('#editRelaMobilePhone').val();
+	var relaTel =$('#editRelaTel').val();
+	var relativeId = $('#editRelativeId').val();
+	var posCustId = $('#editPosCustId').val();
+	var custId = $('#editCustId').val();
+	var contactAddrFlag = getRadioValue('editAddrFlag');
+	var posRegiCode = getTextValue("#editRegiCode");
+	var posIndustryTypeId2 = getComboValue("#editIndustryTypeId2");
+	//alert(posIndustryTypeId2);
+	//alert("all in");
+	var cols = {
+			//applyAmt: applyAmt,
+			custName: custName,
+			returnKind: returnKind,
+			bankAccno: bankAccno,
+			bankName: bankName,
+			bankBranName: bankBranName,
+			bankSubbName: bankSubName,
+			recOrg: recOrg,
+			recPerson: recPerson,
+			recContactNo: recContactNo,
+			remark: remark,
+			posCustName:posCustName,
+			posCustBusiScope: posCustBusiScope,
+			//busiDivision: busiDivision,
+			//posCustProv : posCustProv,		//add by zllin
+			//posCustCity : posCustCity,
+			posCustAddress: posCustAddress,
+			//custName: custName,
+			//paperId: paperId,
+			//birtDate: birtDate,
+			//sexSign: sexSign,
+			busiYear: busiYear,
+			//marrSign: marrSign,
+			educSign: educSign,
+			childNum: childNum,
+			localHouseNum: localHouseNum,
+			otherHouseNum: otherHouseNum,
+			mobilePhone: mobilePhone,
+			tel: tel,
+			//residentProv: residentProv,
+			//residentCity: residentCity,
+			residentDetail: residentDetail,
+			weixinNo: weixinNo,
+			qqNo: qqNo,
+			email: email,
+			familyCustName: familyCustName,
+			matePaperKind: matePaperKind,
+			matePaperId: matePaperId,
+			mateBirtDate: mateBirtDate,
+			mateSexSign: mateSexSign,
+			mateMobilephone: mateMobilePhone,
+			relaCustName: relaCustName,
+			relaKind: relaKind,
+			relaMobilePhone: relaMobilePhone,
+			relaTel: relaTel,
+			loanId: loanId,
+			//residentDivision : residentDivision,
+			relativeId: relativeId,
+			posCustId: posCustId,
+			custId: custId,
+			contactAddrFlag: contactAddrFlag,
+			regiCode: posRegiCode,					//add by Lin,Zhaolin
+			industryTypeId2 : posIndustryTypeId2		//add by Lin,Zhaolin
+			};
+	$.post(reqUrl, cols, function(data){
+		alert(data);
+		if(flag == '1' && '业务申请更新成功' == data){
+			$('#modifyApplyWindow').window("close");
+			updateParentTab();
+			//pushMessage();		//申请更新同步
+		}else{
+			return;
+		}
+	}, 'text');
+}
+
+function pushMessage(){
+	
+}
+
+function loadRecInfo(contact, type){
+	var contactNo = $(contact).val();
+	
+	if(typeof(contactNo)!="undefined" && contactNo.length > 0){
+		var reqUrl="<%=request.getContextPath()%>/genericConfig/getRecInfo.do";
+		$.post(reqUrl, 
+			{contactNo: contactNo}, 
+			function(data){
+				var recPerson = data.recPerson;
+				var recOrg = data.recOrg;
+				var recManager = data.recManager;
+//				alert(recPerson+" / "+recOrg+" / "+recManager);
+				if(typeof(recPerson)!="undefined" && recPerson.length > 0
+						&& typeof(recOrg)!="undefined" && recOrg.length > 0){
+					setInputValue("#"+type+"RecPerson", recPerson);
+					setInputValue("#"+type+"RecOrg", recOrg);
+					setInputValue("#"+type+"RecManager", recManager);
+				}else{
+					setInputValue("#"+type+"RecPerson", "");		//查不到清空
+					setInputValue("#"+type+"RecOrg", "");
+					setInputValue("#"+type+"RecManager", "");
+				}
+		
+		}, 'json');
+	}else{
+		setInputValue("#"+type+"RecPerson", "");		//号码为空时清空
+		setInputValue("#"+type+"RecOrg", "");
+	}
+}
+
+</script>

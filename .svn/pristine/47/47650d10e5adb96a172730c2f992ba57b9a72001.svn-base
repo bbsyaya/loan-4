@@ -1,0 +1,125 @@
+package com.hrbb.loan.pos.biz.backstage.inter.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.beanutils.converters.StringArrayConverter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.biz.backstage.inter.ActivityBiz;
+import com.hrbb.loan.pos.dao.entity.TActivityContentInfo;
+import com.hrbb.loan.pos.dao.entity.TActivityDimInfo;
+import com.hrbb.loan.pos.dao.entity.TActivityInfo;
+import com.hrbb.loan.pos.service.ActivityService;
+import com.hrbb.loan.pos.service.CommonService;
+
+@Component("activityBiz")
+public class ActivityBizImpl implements ActivityBiz {
+	
+	private final String ACT_FLAG = "actFlag";
+	private final String ID = "id";
+	
+	@Autowired
+	private ActivityService activityService;
+	
+	@Autowired
+	private CommonService commonService;
+
+	@Override
+	public TActivityDimInfo getActivityDimById(String id) {
+		Map<String, Object> reqMap = Maps.newHashMap();
+		reqMap.put(ACT_FLAG, "0");
+		reqMap.put(ID, id);
+		List<TActivityDimInfo> dimInfoList = activityService.selectActivityDim(reqMap);
+		if(!dimInfoList.isEmpty()){
+			return dimInfoList.get(0);
+		}else{
+			return null;
+		}
+		
+	}
+
+	@Override
+	public TActivityContentInfo getActivityContentInfoById(String id) {
+		Map<String, Object> reqMap = Maps.newHashMap();
+		reqMap.put(ACT_FLAG, "0");
+		reqMap.put(ID, id);
+		List<TActivityContentInfo> contentList = activityService.selectActivityContent(reqMap);
+		if(!contentList.isEmpty()){
+			return contentList.get(0);
+		}else{
+			return null;
+		}
+	}
+
+	@Override
+	public List<TActivityInfo> getActivityList(Map<String, Object> reqMap) {
+		return activityService.selectActivityInfo(reqMap);
+	}
+
+	@Override
+	public void addActivityDim(TActivityDimInfo tActivityDimInfo) {
+		activityService.addActivityDim(tActivityDimInfo);
+	}
+
+	@Override
+	public void addActivityContent(TActivityContentInfo tActivityContentInfo) {
+		activityService.addActivityContent(tActivityContentInfo);
+	}
+
+	@Override
+	public void addActivity(TActivityInfo tActivityInfo) {
+		activityService.addActivityInfo(tActivityInfo);
+	}
+
+	@Override
+	public void updateActvityDim(TActivityDimInfo record) {
+		activityService.updateActivityDim(record);
+	}
+
+	@Override
+	public void updateActivityContent(TActivityContentInfo record) {
+		activityService.updateActivityContent(record);
+	}
+
+	@Override
+	public void updateActivityInfo(TActivityInfo record) {
+		activityService.updateActivityInfo(record);
+	}
+
+	@Override
+	public List<TActivityContentInfo> geTActivityContentInfos(
+			Map<String, Object> reqMap) {
+		return activityService.selectActivityContent(reqMap);
+	}
+
+	@Override
+	public List<TActivityDimInfo> getTActivityDimInfos(
+			Map<String, Object> reqMap) {
+		return activityService.selectActivityDim(reqMap);
+	}
+
+	@Override
+	public String countActivity(Map<String, Object> reqMap) {
+		return activityService.countActivity(reqMap);
+	}
+
+	@Override
+	public String countActivityDim(Map<String, Object> reqMap) {
+		return activityService.countActivityDim(reqMap);
+	}
+
+	@Override
+	public String countActivityContent(Map<String, Object> reqMap) {
+		return activityService.countActivityContent(reqMap);
+	}
+
+	@Override
+	public List<Map<String, Object>> executeCommonQuery(
+			Map<String, Object> reqMap) {
+		return commonService.executeCommonQuery(reqMap);
+	}
+
+}

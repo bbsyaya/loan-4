@@ -1,0 +1,58 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:fram="http://framework.facade.common.transcore.pinganfu.com/">
+	<soapenv:Header />
+	<soapenv:Body>
+		<fram:execPayEngine>
+			<arg0>
+				<tranOrderId>00030003201409300000000002661662</tranOrderId>
+				<businessDomain>bankCardFastPay</businessDomain>
+				<tranType>12</tranType>
+				<inRequestNo>W2014093000000001528701</inRequestNo>
+				<requestSource>006</requestSource>
+				
+				 <payEngineItemDtoList>
+				<accountTransCode>0125</accountTransCode>
+				<operationType>recharge</operationType>
+				<fromEntity>DEFAULT</fromEntity>
+				<fromEntityId>0101010000000000003135</fromEntityId>
+				<toEntity>ACCOUNT</toEntity>
+				<toEntityId>0101010000000000002001</toEntityId>
+				<calcBase>CASH</calcBase>
+				<calcBaseType>CNY</calcBaseType>
+				<amount>1000000</amount>
+               <accountInfoDto>
+			   <productCode>100020030000</productCode>
+			   <companyCode>109000</companyCode>
+			   </accountInfoDto>
+			   </payEngineItemDtoList>
+		 	   
+		 	   <payEngineItemDtoList>
+				<accountTransCode>0301</accountTransCode>
+				<operationType>fundIntoTransfer</operationType>
+				<fromEntity>ACCOUNT</fromEntity>
+				<fromEntityId>0101010000000000002001</fromEntityId>
+				<toEntity>ACCOUNT</toEntity>
+				<toEntityId>0101010000000000002001</toEntityId>
+				<calcBase>CASH</calcBase>
+				<calcBaseType>CNY</calcBaseType>
+				<amount>1000000</amount>
+               <accountInfoDto>
+			   <productCode>100020030000</productCode>
+			   <smartpayOrEka>1</smartpayOrEka>
+			   <companyCode>109000</companyCode>
+			   </accountInfoDto>
+			   </payEngineItemDtoList> 
+			   
+			   <payEngineItemDtoList>
+				<accountTransCode>0301</accountTransCode>
+				<operationType>fundInto</operationType>
+				<fromEntity>DAHUAFUND</fromEntity>
+				<toEntity>DAHUAFUND</toEntity>
+				<calcBase>CASH</calcBase>
+				<calcBaseType>CNY</calcBaseType>
+				<amount>1000000</amount>
+			   </payEngineItemDtoList>
+			</arg0>
+		</fram:execPayEngine>
+	</soapenv:Body>
+</soapenv:Envelope>

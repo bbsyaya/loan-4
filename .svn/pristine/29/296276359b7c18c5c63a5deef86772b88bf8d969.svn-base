@@ -1,0 +1,34 @@
+package com.hrbb.loan.pos.dao.entity;
+
+public class TActivityCommonInfo {
+
+private Integer id;
+	
+	private String commonSql;
+	
+	private String activityType;
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getCommonSql() {
+		return commonSql;
+	}
+
+	public void setCommonSql(String commonSql) {
+		this.commonSql = commonSql;
+	}
+
+	public String getActivityType() {
+		return activityType;
+	}
+
+	public void setActivityType(String activityType) {
+		this.activityType = activityType;
+	}
+}

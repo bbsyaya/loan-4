@@ -1,0 +1,1314 @@
+package com.hrbb.loan.pos.dao.entity;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
+import com.hrbb.loan.pos.dao.entity.common.TPage;
+
+public class TCreditApply extends TPage implements Serializable{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 7494505754544600836L;
+
+	private String loanId;
+
+    private String custId;
+    
+    private String custName;
+
+    private String prodId;
+
+    private String prodName;
+
+    private String currSign;
+
+    private BigDecimal applyAmt;
+
+    private String termUnit;
+
+    private String applyTerm;
+
+    private Date beginDate;
+
+    private Date acptDate;
+
+    private String assuKind;
+
+    private String returnKind;
+
+    private String returnKind2;
+
+    private BigDecimal amt;
+
+    private String subFlag;
+
+    private String interestKind;
+
+    private String interestCalkind;
+
+    private String reckDay;
+
+    private String turnGraceDay;
+
+    private String returnDay;
+
+    private String industryTypeId;
+
+    private String industryTypeName;
+
+    private String loanUsage;
+
+    private String loanUsageDesc;
+
+    private String returnSourceDesc;
+
+    private String isExceLoanFlag;
+
+    private String bankId;
+
+    private String operId;
+
+    private String applyStatus;
+
+    private String lastOperId;
+
+    private String lastOperBankId;
+
+    private Date lastOperTime;
+
+    private String coopAgreementNo;
+
+    private String fundSource;
+
+    private String infoInputPerson;
+
+    private String infoCheckPerson;
+
+    private String creditRecheckPerson;
+
+    private String dueDiligencePerson;
+
+    private String custServPerson;
+
+    private String creditRank;
+
+    private String creditLine;
+
+    private String lowRiskType;
+
+    private String posOrg;
+    
+    private String deleteFlag;
+    
+    private String posCustId;
+    
+    private String posCustName;
+    
+    private String creditInterest;
+    
+    private String region;
+    
+    private String tradeArea;
+    
+    private String creditResult;
+    
+    private String operName;
+    
+    private String lastStep;
+    
+    private String lastStepOperName;
+    
+    private String channel;
+    
+    private String repayMethod;
+    
+    private String recOrg;
+    
+    private String recPerson;
+    
+    //guoyu add
+    private String inChannelKind;
+    private String relativeId;
+    private String mobilePhone;
+    private String tel;
+    private String mateMobilephone;
+    private String relaMobilePhone;
+    private String relaTel;
+    private String peopleBankPhone;
+    private String beginDateStr;
+    private String backReason;
+    private List<String> applyStatuses;
+    private String applyStatusName;
+    private String privilege0;//当前登录用户权限-资料录入
+    private String privilege1;//当前登录用户权限-资料审核
+    private String privilege2;//当前登录用户权限-风险复审
+    private String privilege21;//当前登录用户权限-风险复审1
+    private String privilege22;//当前登录用户权限-风险复审2
+    private String privilege23;//当前登录用户权限-风险复审3
+    private String privilege3;//当前登录用户权限-尽调
+    private String opflag;//操作分类
+    private String bankAccno;//银行卡号
+    private String channelName;
+    private String inChannelKindName;
+    private String currSignName;
+    private String returnKindName;
+    private String stdshno;
+    private List<String> loanIdClaimed;//被认领的申请编号
+    private String paperId;//证件号码
+    private String bizLoanId;//人工生成业务编号
+    //影像资料
+    private String imageFilePackageName;
+    
+    private String stdmerno;
+    
+    private String channelCode;
+    private String occurType;
+    private String occurTypeName;
+    private String beginDateFrom;
+    private String beginDateTo;
+    private String remark;
+	private Date regDate;
+	
+    /**
+	 * Getter method for property <tt>regDate</tt>.
+	 * 
+	 * @return property value of regDate
+	 */
+	public Date getRegDate() {
+		return regDate;
+	}
+
+	/**
+	 * Setter method for property <tt>regDate</tt>.
+	 * 
+	 * @param regDate value to be assigned to property regDate
+	 */
+	public void setRegDate(Date regDate) {
+		this.regDate = regDate;
+	}
+
+	/**
+	 * Getter method for property <tt>remark</tt>.
+	 * 
+	 * @return property value of remark
+	 */
+	public String getRemark() {
+		return remark;
+	}
+
+	/**
+	 * Setter method for property <tt>remark</tt>.
+	 * 
+	 * @param remark value to be assigned to property remark
+	 */
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public String getOccurTypeName() {
+		return occurTypeName;
+	}
+
+	public void setOccurTypeName(String occurTypeName) {
+		this.occurTypeName = occurTypeName;
+	}
+
+	/**
+	 * Getter method for property <tt>beginDateFrom</tt>.
+	 * 
+	 * @return property value of beginDateFrom
+	 */
+	public String getBeginDateFrom() {
+		return beginDateFrom;
+	}
+
+	/**
+	 * Setter method for property <tt>beginDateFrom</tt>.
+	 * 
+	 * @param beginDateFrom value to be assigned to property beginDateFrom
+	 */
+	public void setBeginDateFrom(String beginDateFrom) {
+		this.beginDateFrom = beginDateFrom;
+	}
+
+	/**
+	 * Getter method for property <tt>beginDateTo</tt>.
+	 * 
+	 * @return property value of beginDateTo
+	 */
+	public String getBeginDateTo() {
+		return beginDateTo;
+	}
+
+	/**
+	 * Setter method for property <tt>beginDateTo</tt>.
+	 * 
+	 * @param beginDateTo value to be assigned to property beginDateTo
+	 */
+	public void setBeginDateTo(String beginDateTo) {
+		this.beginDateTo = beginDateTo;
+	}
+
+	/**
+	 * Getter method for property <tt>occurType</tt>.
+	 * 
+	 * @return property value of occurType
+	 */
+	public String getOccurType() {
+		return occurType;
+	}
+
+	/**
+	 * Setter method for property <tt>occurType</tt>.
+	 * 
+	 * @param occurType value to be assigned to property occurType
+	 */
+	public void setOccurType(String occurType) {
+		this.occurType = occurType;
+	}
+
+	/**
+	 * Getter method for property <tt>channelCode</tt>.
+	 * 
+	 * @return property value of channelCode
+	 */
+	public String getChannelCode() {
+		return channelCode;
+	}
+
+	/**
+	 * Setter method for property <tt>channelCode</tt>.
+	 * 
+	 * @param channelCode value to be assigned to property channelCode
+	 */
+	public void setChannelCode(String channelCode) {
+		this.channelCode = channelCode;
+	}
+
+	public String getStdmerno() {
+		return stdmerno;
+	}
+
+	public void setStdmerno(String stdmerno) {
+		this.stdmerno = stdmerno;
+	}
+
+	public String getImageFilePackageName() {
+		return imageFilePackageName;
+	}
+
+	public void setImageFilePackageName(String imageFilePackageName) {
+		this.imageFilePackageName = imageFilePackageName;
+	}
+
+	/**
+	 * Getter method for property <tt>privilege2</tt>.
+	 * 
+	 * @return property value of privilege2
+	 */
+	public String getPrivilege2() {
+		return privilege2;
+	}
+
+	/**
+	 * Setter method for property <tt>privilege2</tt>.
+	 * 
+	 * @param privilege2 value to be assigned to property privilege2
+	 */
+	public void setPrivilege2(String privilege2) {
+		this.privilege2 = privilege2;
+	}
+
+	/**
+	 * Getter method for property <tt>privilege21</tt>.
+	 * 
+	 * @return property value of privilege21
+	 */
+	public String getPrivilege21() {
+		return privilege21;
+	}
+
+	/**
+	 * Setter method for property <tt>privilege21</tt>.
+	 * 
+	 * @param privilege21 value to be assigned to property privilege21
+	 */
+	public void setPrivilege21(String privilege21) {
+		this.privilege21 = privilege21;
+	}
+
+	/**
+	 * Getter method for property <tt>privilege22</tt>.
+	 * 
+	 * @return property value of privilege22
+	 */
+	public String getPrivilege22() {
+		return privilege22;
+	}
+
+	/**
+	 * Setter method for property <tt>privilege22</tt>.
+	 * 
+	 * @param privilege22 value to be assigned to property privilege22
+	 */
+	public void setPrivilege22(String privilege22) {
+		this.privilege22 = privilege22;
+	}
+
+	/**
+	 * Getter method for property <tt>privilege23</tt>.
+	 * 
+	 * @return property value of privilege23
+	 */
+	public String getPrivilege23() {
+		return privilege23;
+	}
+
+	/**
+	 * Setter method for property <tt>privilege23</tt>.
+	 * 
+	 * @param privilege23 value to be assigned to property privilege23
+	 */
+	public void setPrivilege23(String privilege23) {
+		this.privilege23 = privilege23;
+	}
+
+	/**
+	 * Getter method for property <tt>bizLoanId</tt>.
+	 * 
+	 * @return property value of bizLoanId
+	 */
+	public String getBizLoanId() {
+		return bizLoanId;
+	}
+
+	/**
+	 * Setter method for property <tt>bizLoanId</tt>.
+	 * 
+	 * @param bizLoanId value to be assigned to property bizLoanId
+	 */
+	public void setBizLoanId(String bizLoanId) {
+		this.bizLoanId = bizLoanId;
+	}
+
+	/**
+	 * Getter method for property <tt>paperId</tt>.
+	 * 
+	 * @return property value of paperId
+	 */
+	public String getPaperId() {
+		return paperId;
+	}
+
+	/**
+	 * Setter method for property <tt>paperId</tt>.
+	 * 
+	 * @param paperId value to be assigned to property paperId
+	 */
+	public void setPaperId(String paperId) {
+		this.paperId = paperId;
+	}
+
+	/**
+	 * Getter method for property <tt>loanIdClaimed</tt>.
+	 * 
+	 * @return property value of loanIdClaimed
+	 */
+	public List<String> getLoanIdClaimed() {
+		return loanIdClaimed;
+	}
+
+	/**
+	 * Setter method for property <tt>loanIdClaimed</tt>.
+	 * 
+	 * @param loanIdClaimed value to be assigned to property loanIdClaimed
+	 */
+	public void setLoanIdClaimed(List<String> loanIdClaimed) {
+		this.loanIdClaimed = loanIdClaimed;
+	}
+
+	/**
+	 * Getter method for property <tt>privilege0</tt>.
+	 * 
+	 * @return property value of privilege0
+	 */
+	public String getPrivilege0() {
+		return privilege0;
+	}
+
+	/**
+	 * Setter method for property <tt>privilege0</tt>.
+	 * 
+	 * @param privilege0 value to be assigned to property privilege0
+	 */
+	public void setPrivilege0(String privilege0) {
+		this.privilege0 = privilege0;
+	}
+
+	/**
+	 * Getter method for property <tt>privilege1</tt>.
+	 * 
+	 * @return property value of privilege1
+	 */
+	public String getPrivilege1() {
+		return privilege1;
+	}
+
+	/**
+	 * Setter method for property <tt>privilege1</tt>.
+	 * 
+	 * @param privilege1 value to be assigned to property privilege1
+	 */
+	public void setPrivilege1(String privilege1) {
+		this.privilege1 = privilege1;
+	}
+
+	/**
+	 * Getter method for property <tt>privilege3</tt>.
+	 * 
+	 * @return property value of privilege3
+	 */
+	public String getPrivilege3() {
+		return privilege3;
+	}
+
+	/**
+	 * Setter method for property <tt>privilege3</tt>.
+	 * 
+	 * @param privilege3 value to be assigned to property privilege3
+	 */
+	public void setPrivilege3(String privilege3) {
+		this.privilege3 = privilege3;
+	}
+
+	/**
+	 * Getter method for property <tt>stdshno</tt>.
+	 * 
+	 * @return property value of stdshno
+	 */
+	public String getStdshno() {
+		return stdshno;
+	}
+
+	/**
+	 * Setter method for property <tt>stdshno</tt>.
+	 * 
+	 * @param stdshno value to be assigned to property stdshno
+	 */
+	public void setStdshno(String stdshno) {
+		this.stdshno = stdshno;
+	}
+
+	/**
+	 * Getter method for property <tt>inChannelKind</tt>.
+	 * 
+	 * @return property value of inChannelKind
+	 */
+	public String getInChannelKind() {
+		return inChannelKind;
+	}
+
+	/**
+	 * Setter method for property <tt>inChannelKind</tt>.
+	 * 
+	 * @param inChannelKind value to be assigned to property inChannelKind
+	 */
+	public void setInChannelKind(String inChannelKind) {
+		this.inChannelKind = inChannelKind;
+	}
+
+	/**
+	 * Getter method for property <tt>channelName</tt>.
+	 * 
+	 * @return property value of channelName
+	 */
+	public String getChannelName() {
+		return channelName;
+	}
+
+	/**
+	 * Setter method for property <tt>channelName</tt>.
+	 * 
+	 * @param channelName value to be assigned to property channelName
+	 */
+	public void setChannelName(String channelName) {
+		this.channelName = channelName;
+	}
+
+	/**
+	 * Getter method for property <tt>inChannelKindName</tt>.
+	 * 
+	 * @return property value of inChannelKindName
+	 */
+	public String getInChannelKindName() {
+		return inChannelKindName;
+	}
+
+	/**
+	 * Setter method for property <tt>inChannelKindName</tt>.
+	 * 
+	 * @param inChannelKindName value to be assigned to property inChannelKindName
+	 */
+	public void setInChannelKindName(String inChannelKindName) {
+		this.inChannelKindName = inChannelKindName;
+	}
+
+	/**
+	 * Getter method for property <tt>currSignName</tt>.
+	 * 
+	 * @return property value of currSignName
+	 */
+	public String getCurrSignName() {
+		return currSignName;
+	}
+
+	/**
+	 * Setter method for property <tt>currSignName</tt>.
+	 * 
+	 * @param currSignName value to be assigned to property currSignName
+	 */
+	public void setCurrSignName(String currSignName) {
+		this.currSignName = currSignName;
+	}
+
+	/**
+	 * Getter method for property <tt>returnKindName</tt>.
+	 * 
+	 * @return property value of returnKindName
+	 */
+	public String getReturnKindName() {
+		return returnKindName;
+	}
+
+	/**
+	 * Setter method for property <tt>returnKindName</tt>.
+	 * 
+	 * @param returnKindName value to be assigned to property returnKindName
+	 */
+	public void setReturnKindName(String returnKindName) {
+		this.returnKindName = returnKindName;
+	}
+
+	/**
+	 * Getter method for property <tt>bankAccno</tt>.
+	 * 
+	 * @return property value of bankAccno
+	 */
+	public String getBankAccno() {
+		return bankAccno;
+	}
+
+	/**
+	 * Setter method for property <tt>bankAccno</tt>.
+	 * 
+	 * @param bankAccno value to be assigned to property bankAccno
+	 */
+	public void setBankAccno(String bankAccno) {
+		this.bankAccno = bankAccno;
+	}
+
+	/**
+	 * Getter method for property <tt>opflag</tt>.
+	 * 
+	 * @return property value of opflag
+	 */
+	public String getOpflag() {
+		return opflag;
+	}
+
+	/**
+	 * Setter method for property <tt>opflag</tt>.
+	 * 
+	 * @param opflag value to be assigned to property opflag
+	 */
+	public void setOpflag(String opflag) {
+		this.opflag = opflag;
+	}
+
+	/**
+	 * Getter method for property <tt>applyStatusName</tt>.
+	 * 
+	 * @return property value of applyStatusName
+	 */
+	public String getApplyStatusName() {
+		return applyStatusName;
+	}
+
+	/**
+	 * Setter method for property <tt>applyStatusName</tt>.
+	 * 
+	 * @param applyStatusName value to be assigned to property applyStatusName
+	 */
+	public void setApplyStatusName(String applyStatusName) {
+		this.applyStatusName = applyStatusName;
+	}
+
+	/**
+	 * Getter method for property <tt>applyStatuses</tt>.
+	 * 
+	 * @return property value of applyStatuses
+	 */
+	public List<String> getApplyStatuses() {
+		return applyStatuses;
+	}
+
+	/**
+	 * Setter method for property <tt>applyStatuses</tt>.
+	 * 
+	 * @param applyStatuses value to be assigned to property applyStatuses
+	 */
+	public void setApplyStatuses(List<String> applyStatuses) {
+		this.applyStatuses = applyStatuses;
+	}
+
+	/**
+	 * Getter method for property <tt>backReason</tt>.
+	 * 
+	 * @return property value of backReason
+	 */
+	public String getBackReason() {
+		return backReason;
+	}
+
+	/**
+	 * Setter method for property <tt>backReason</tt>.
+	 * 
+	 * @param backReason value to be assigned to property backReason
+	 */
+	public void setBackReason(String backReason) {
+		this.backReason = backReason;
+	}
+
+	/**
+	 * Getter method for property <tt>beginDateStr</tt>.
+	 * 
+	 * @return property value of beginDateStr
+	 */
+	public String getBeginDateStr() {
+		return beginDateStr;
+	}
+
+	/**
+	 * Setter method for property <tt>beginDateStr</tt>.
+	 * 
+	 * @param beginDateStr value to be assigned to property beginDateStr
+	 */
+	public void setBeginDateStr(String beginDateStr) {
+		this.beginDateStr = beginDateStr;
+	}
+
+	/**
+	 * Getter method for property <tt>peopleBankPhone</tt>.
+	 * 
+	 * @return property value of peopleBankPhone
+	 */
+	public String getPeopleBankPhone() {
+		return peopleBankPhone;
+	}
+
+	/**
+	 * Setter method for property <tt>peopleBankPhone</tt>.
+	 * 
+	 * @param peopleBankPhone value to be assigned to property peopleBankPhone
+	 */
+	public void setPeopleBankPhone(String peopleBankPhone) {
+		this.peopleBankPhone = peopleBankPhone;
+	}
+
+	/**
+	 * Getter method for property <tt>mobilePhone</tt>.
+	 * 
+	 * @return property value of mobilePhone
+	 */
+	public String getMobilePhone() {
+		return mobilePhone;
+	}
+
+	/**
+	 * Setter method for property <tt>mobilePhone</tt>.
+	 * 
+	 * @param mobilePhone value to be assigned to property mobilePhone
+	 */
+	public void setMobilePhone(String mobilePhone) {
+		this.mobilePhone = mobilePhone;
+	}
+
+	/**
+	 * Getter method for property <tt>tel</tt>.
+	 * 
+	 * @return property value of tel
+	 */
+	public String getTel() {
+		return tel;
+	}
+
+	/**
+	 * Setter method for property <tt>tel</tt>.
+	 * 
+	 * @param tel value to be assigned to property tel
+	 */
+	public void setTel(String tel) {
+		this.tel = tel;
+	}
+
+	/**
+	 * Getter method for property <tt>mateMobilephone</tt>.
+	 * 
+	 * @return property value of mateMobilephone
+	 */
+	public String getMateMobilephone() {
+		return mateMobilephone;
+	}
+
+	/**
+	 * Setter method for property <tt>mateMobilephone</tt>.
+	 * 
+	 * @param mateMobilephone value to be assigned to property mateMobilephone
+	 */
+	public void setMateMobilephone(String mateMobilephone) {
+		this.mateMobilephone = mateMobilephone;
+	}
+
+	/**
+	 * Getter method for property <tt>relaMobilePhone</tt>.
+	 * 
+	 * @return property value of relaMobilePhone
+	 */
+	public String getRelaMobilePhone() {
+		return relaMobilePhone;
+	}
+
+	/**
+	 * Setter method for property <tt>relaMobilePhone</tt>.
+	 * 
+	 * @param relaMobilePhone value to be assigned to property relaMobilePhone
+	 */
+	public void setRelaMobilePhone(String relaMobilePhone) {
+		this.relaMobilePhone = relaMobilePhone;
+	}
+
+	/**
+	 * Getter method for property <tt>relaTel</tt>.
+	 * 
+	 * @return property value of relaTel
+	 */
+	public String getRelaTel() {
+		return relaTel;
+	}
+
+	/**
+	 * Setter method for property <tt>relaTel</tt>.
+	 * 
+	 * @param relaTel value to be assigned to property relaTel
+	 */
+	public void setRelaTel(String relaTel) {
+		this.relaTel = relaTel;
+	}
+
+	/**
+	 * Getter method for property <tt>relativeId</tt>.
+	 * 
+	 * @return property value of relativeId
+	 */
+	public String getRelativeId() {
+		return relativeId;
+	}
+
+	/**
+	 * Setter method for property <tt>relativeId</tt>.
+	 * 
+	 * @param relativeId value to be assigned to property relativeId
+	 */
+	public void setRelativeId(String relativeId) {
+		this.relativeId = relativeId;
+	}
+
+	/**
+	 * Getter method for property <tt>creditInterest</tt>.
+	 * 
+	 * @return property value of creditInterest
+	 */
+	public String getCreditInterest() {
+		return creditInterest;
+	}
+
+	/**
+	 * Setter method for property <tt>creditInterest</tt>.
+	 * 
+	 * @param creditInterest value to be assigned to property creditInterest
+	 */
+	public void setCreditInterest(String creditInterest) {
+		this.creditInterest = creditInterest;
+	}
+
+	public String getRegion() {
+		return region;
+	}
+
+	public void setRegion(String region) {
+		this.region = region;
+	}
+
+	public String getTradeArea() {
+		return tradeArea;
+	}
+
+	public void setTradeArea(String tradeArea) {
+		this.tradeArea = tradeArea;
+	}
+
+	public String getCreditResult() {
+		return creditResult;
+	}
+
+	public void setCreditResult(String creditResult) {
+		this.creditResult = creditResult;
+	}
+
+	public String getOperName() {
+		return operName;
+	}
+
+	public void setOperName(String operName) {
+		this.operName = operName;
+	}
+
+	public String getLastStep() {
+		return lastStep;
+	}
+
+	public void setLastStep(String lastStep) {
+		this.lastStep = lastStep;
+	}
+
+	public String getLastStepOperName() {
+		return lastStepOperName;
+	}
+
+	public void setLastStepOperName(String lastStepOperName) {
+		this.lastStepOperName = lastStepOperName;
+	}
+
+	public String getChannel() {
+		return channel;
+	}
+
+	public void setChannel(String channel) {
+		this.channel = channel;
+	}
+
+	public String getPosCustId() {
+		return posCustId;
+	}
+
+	public void setPosCustId(String posCustId) {
+		this.posCustId = posCustId;
+	}
+
+	public String getPosCustName() {
+		return posCustName;
+	}
+
+	public void setPosCustName(String posCustName) {
+		this.posCustName = posCustName;
+	}
+
+	public String getDeleteFlag() {
+		return deleteFlag;
+	}
+
+	public void setDeleteFlag(String deleteFlag) {
+		this.deleteFlag = deleteFlag;
+	}
+	
+    /**
+	 * Getter method for property <tt>loanId</tt>.
+	 * 
+	 * @return property value of loanId
+	 */
+	public String getLoanId() {
+		return loanId;
+	}
+
+	/**
+	 * Setter method for property <tt>loanId</tt>.
+	 * 
+	 * @param loanId value to be assigned to property loanId
+	 */
+	public void setLoanId(String loanId) {
+		this.loanId = loanId;
+	}
+
+	public String getCustId() {
+        return custId;
+    }
+
+    public void setCustId(String custId) {
+        this.custId = custId == null ? null : custId.trim();
+    }
+
+    public String getCustName() {
+        return custName;
+    }
+
+    public void setCustName(String custName) {
+        this.custName = custName == null ? null : custName.trim();
+    }
+
+    public String getProdId() {
+        return prodId;
+    }
+
+    public void setProdId(String prodId) {
+        this.prodId = prodId == null ? null : prodId.trim();
+    }
+
+    public String getProdName() {
+        return prodName;
+    }
+
+    public void setProdName(String prodName) {
+        this.prodName = prodName == null ? null : prodName.trim();
+    }
+
+    public String getCurrSign() {
+        return currSign;
+    }
+
+    public void setCurrSign(String currSign) {
+        this.currSign = currSign == null ? null : currSign.trim();
+    }
+    
+
+    public BigDecimal getApplyAmt() {
+		return applyAmt;
+	}
+
+	public void setApplyAmt(BigDecimal applyAmt) {
+		this.applyAmt = applyAmt;
+	}
+
+	public String getTermUnit() {
+        return termUnit;
+    }
+
+    public void setTermUnit(String termUnit) {
+        this.termUnit = termUnit == null ? null : termUnit.trim();
+    }
+
+    public String getApplyTerm() {
+        return applyTerm;
+    }
+
+    public void setApplyTerm(String applyTerm) {
+        this.applyTerm = applyTerm == null ? null : applyTerm.trim();
+    }
+
+    public Date getBeginDate() {
+        return beginDate;
+    }
+
+    public void setBeginDate(Date beginDate) {
+        this.beginDate = beginDate;
+    }
+
+    public Date getAcptDate() {
+        return acptDate;
+    }
+
+    public void setAcptDate(Date acptDate) {
+        this.acptDate = acptDate;
+    }
+
+    public String getAssuKind() {
+        return assuKind;
+    }
+
+    public void setAssuKind(String assuKind) {
+        this.assuKind = assuKind == null ? null : assuKind.trim();
+    }
+
+    public String getReturnKind() {
+        return returnKind;
+    }
+
+    public void setReturnKind(String returnKind) {
+        this.returnKind = returnKind == null ? null : returnKind.trim();
+    }
+
+    public String getReturnKind2() {
+        return returnKind2;
+    }
+
+    public void setReturnKind2(String returnKind2) {
+        this.returnKind2 = returnKind2 == null ? null : returnKind2.trim();
+    }
+
+    public BigDecimal getAmt() {
+        return amt;
+    }
+
+    public void setAmt(BigDecimal amt) {
+        this.amt = amt;
+    }
+
+    public String getSubFlag() {
+        return subFlag;
+    }
+
+    public void setSubFlag(String subFlag) {
+        this.subFlag = subFlag == null ? null : subFlag.trim();
+    }
+
+    public String getInterestKind() {
+        return interestKind;
+    }
+
+    public void setInterestKind(String interestKind) {
+        this.interestKind = interestKind == null ? null : interestKind.trim();
+    }
+
+    public String getInterestCalkind() {
+        return interestCalkind;
+    }
+
+    public void setInterestCalkind(String interestCalkind) {
+        this.interestCalkind = interestCalkind == null ? null : interestCalkind.trim();
+    }
+
+    public String getReckDay() {
+        return reckDay;
+    }
+
+    public void setReckDay(String reckDay) {
+        this.reckDay = reckDay == null ? null : reckDay.trim();
+    }
+
+    public String getTurnGraceDay() {
+        return turnGraceDay;
+    }
+
+    public void setTurnGraceDay(String turnGraceDay) {
+        this.turnGraceDay = turnGraceDay == null ? null : turnGraceDay.trim();
+    }
+
+    public String getReturnDay() {
+        return returnDay;
+    }
+
+    public void setReturnDay(String returnDay) {
+        this.returnDay = returnDay == null ? null : returnDay.trim();
+    }
+
+    public String getIndustryTypeId() {
+        return industryTypeId;
+    }
+
+    public void setIndustryTypeId(String industryTypeId) {
+        this.industryTypeId = industryTypeId == null ? null : industryTypeId.trim();
+    }
+
+    public String getIndustryTypeName() {
+        return industryTypeName;
+    }
+
+    public void setIndustryTypeName(String industryTypeName) {
+        this.industryTypeName = industryTypeName == null ? null : industryTypeName.trim();
+    }
+
+    public String getLoanUsage() {
+        return loanUsage;
+    }
+
+    public void setLoanUsage(String loanUsage) {
+        this.loanUsage = loanUsage == null ? null : loanUsage.trim();
+    }
+
+    public String getLoanUsageDesc() {
+        return loanUsageDesc;
+    }
+
+    public void setLoanUsageDesc(String loanUsageDesc) {
+        this.loanUsageDesc = loanUsageDesc == null ? null : loanUsageDesc.trim();
+    }
+
+    public String getReturnSourceDesc() {
+        return returnSourceDesc;
+    }
+
+    public void setReturnSourceDesc(String returnSourceDesc) {
+        this.returnSourceDesc = returnSourceDesc == null ? null : returnSourceDesc.trim();
+    }
+
+    public String getIsExceLoanFlag() {
+        return isExceLoanFlag;
+    }
+
+    public void setIsExceLoanFlag(String isExceLoanFlag) {
+        this.isExceLoanFlag = isExceLoanFlag == null ? null : isExceLoanFlag.trim();
+    }
+
+    public String getBankId() {
+        return bankId;
+    }
+
+    public void setBankId(String bankId) {
+        this.bankId = bankId == null ? null : bankId.trim();
+    }
+
+    public String getOperId() {
+        return operId;
+    }
+
+    public void setOperId(String operId) {
+        this.operId = operId == null ? null : operId.trim();
+    }
+
+    public String getApplyStatus() {
+        return applyStatus;
+    }
+
+    public void setApplyStatus(String applyStatus) {
+        this.applyStatus = applyStatus == null ? null : applyStatus.trim();
+    }
+
+    public String getLastOperId() {
+        return lastOperId;
+    }
+
+    public void setLastOperId(String lastOperId) {
+        this.lastOperId = lastOperId == null ? null : lastOperId.trim();
+    }
+
+    public String getLastOperBankId() {
+        return lastOperBankId;
+    }
+
+    public void setLastOperBankId(String lastOperBankId) {
+        this.lastOperBankId = lastOperBankId == null ? null : lastOperBankId.trim();
+    }
+
+    public Date getLastOperTime() {
+        return lastOperTime;
+    }
+
+    public void setLastOperTime(Date lastOperTime) {
+        this.lastOperTime = lastOperTime;
+    }
+
+    public String getCoopAgreementNo() {
+        return coopAgreementNo;
+    }
+
+    public void setCoopAgreementNo(String coopAgreementNo) {
+        this.coopAgreementNo = coopAgreementNo == null ? null : coopAgreementNo.trim();
+    }
+
+    public String getFundSource() {
+        return fundSource;
+    }
+
+    public void setFundSource(String fundSource) {
+        this.fundSource = fundSource == null ? null : fundSource.trim();
+    }
+
+    public String getInfoInputPerson() {
+        return infoInputPerson;
+    }
+
+    public void setInfoInputPerson(String infoInputPerson) {
+        this.infoInputPerson = infoInputPerson == null ? null : infoInputPerson.trim();
+    }
+
+    public String getInfoCheckPerson() {
+        return infoCheckPerson;
+    }
+
+    public void setInfoCheckPerson(String infoCheckPerson) {
+        this.infoCheckPerson = infoCheckPerson == null ? null : infoCheckPerson.trim();
+    }
+
+    public String getCreditRecheckPerson() {
+        return creditRecheckPerson;
+    }
+
+    public void setCreditRecheckPerson(String creditRecheckPerson) {
+        this.creditRecheckPerson = creditRecheckPerson == null ? null : creditRecheckPerson.trim();
+    }
+
+    public String getDueDiligencePerson() {
+        return dueDiligencePerson;
+    }
+
+    public void setDueDiligencePerson(String dueDiligencePerson) {
+        this.dueDiligencePerson = dueDiligencePerson == null ? null : dueDiligencePerson.trim();
+    }
+
+    public String getCustServPerson() {
+        return custServPerson;
+    }
+
+    public void setCustServPerson(String custServPerson) {
+        this.custServPerson = custServPerson == null ? null : custServPerson.trim();
+    }
+
+    public String getCreditRank() {
+        return creditRank;
+    }
+
+    public void setCreditRank(String creditRank) {
+        this.creditRank = creditRank == null ? null : creditRank.trim();
+    }
+
+
+    public String getCreditLine() {
+		return creditLine;
+	}
+
+	public void setCreditLine(String creditLine) {
+		this.creditLine = creditLine;
+	}
+
+	public String getLowRiskType() {
+        return lowRiskType;
+    }
+
+    public void setLowRiskType(String lowRiskType) {
+        this.lowRiskType = lowRiskType == null ? null : lowRiskType.trim();
+    }
+
+    public String getPosOrg() {
+        return posOrg;
+    }
+
+    public void setPosOrg(String posOrg) {
+        this.posOrg = posOrg == null ? null : posOrg.trim();
+    }
+
+	public String getRepayMethod() {
+		return repayMethod;
+	}
+
+	public void setRepayMethod(String repayMethod) {
+		this.repayMethod = repayMethod;
+	}
+
+	public String getRecPerson() {
+		return recPerson;
+	}
+
+	public void setRecPerson(String recPerson) {
+		this.recPerson = recPerson;
+	}
+
+	public String getRecOrg() {
+		return recOrg;
+	}
+
+	public void setRecOrg(String recOrg) {
+		this.recOrg = recOrg;
+	}
+}

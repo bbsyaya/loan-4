@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditReportPenaltyMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditReportPenalty" >
+    <id column="serialNo" property="serialNo" jdbcType="VARCHAR" />
+    <result column="reportNo" property="reportNo" jdbcType="VARCHAR" />
+    <result column="penaltyOrg" property="penaltyOrg" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="beginDate" property="beginDate" jdbcType="VARCHAR" />
+    <result column="endDate" property="endDate" jdbcType="VARCHAR" />
+    <result column="result" property="result" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    serialNo, reportNo, penaltyOrg, content, amount, beginDate, endDate, result
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_report_penalty
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_credit_report_penalty
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportPenalty" >
+    insert into t_credit_report_penalty (serialNo, reportNo, penaltyOrg, 
+      content, amount, beginDate, 
+      endDate, result)
+    values (#{serialNo,jdbcType=VARCHAR}, #{reportNo,jdbcType=VARCHAR}, #{penaltyOrg,jdbcType=VARCHAR}, 
+      #{content,jdbcType=VARCHAR}, #{amount,jdbcType=DECIMAL}, #{beginDate,jdbcType=VARCHAR}, 
+      #{endDate,jdbcType=VARCHAR}, #{result,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportPenalty" >
+    insert into t_credit_report_penalty
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="penaltyOrg != null" >
+        penaltyOrg,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="beginDate != null" >
+        beginDate,
+      </if>
+      <if test="endDate != null" >
+        endDate,
+      </if>
+      <if test="result != null" >
+        result,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="penaltyOrg != null" >
+        #{penaltyOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="beginDate != null" >
+        #{beginDate,jdbcType=VARCHAR},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=VARCHAR},
+      </if>
+      <if test="result != null" >
+        #{result,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="map" >
+    insert into t_credit_report_penalty
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="penaltyOrg != null" >
+        penaltyOrg,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="beginDate != null" >
+        beginDate,
+      </if>
+      <if test="endDate != null" >
+        endDate,
+      </if>
+      <if test="result != null" >
+        result,
+      </if>
+       <if test="queryId != null">
+      	queryId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="penaltyOrg != null" >
+        #{penaltyOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="beginDate != null" >
+        #{beginDate,jdbcType=VARCHAR},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=VARCHAR},
+      </if>
+      <if test="result != null" >
+        #{result,jdbcType=VARCHAR},
+      </if>
+       <if test="queryId != null">
+      	#{queryId},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportPenalty" >
+    update t_credit_report_penalty
+    <set >
+      <if test="reportNo != null" >
+        reportNo = #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="penaltyOrg != null" >
+        penaltyOrg = #{penaltyOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="beginDate != null" >
+        beginDate = #{beginDate,jdbcType=VARCHAR},
+      </if>
+      <if test="endDate != null" >
+        endDate = #{endDate,jdbcType=VARCHAR},
+      </if>
+      <if test="result != null" >
+        result = #{result,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportPenalty" >
+    update t_credit_report_penalty
+    set reportNo = #{reportNo,jdbcType=VARCHAR},
+      penaltyOrg = #{penaltyOrg,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      amount = #{amount,jdbcType=DECIMAL},
+      beginDate = #{beginDate,jdbcType=VARCHAR},
+      endDate = #{endDate,jdbcType=VARCHAR},
+      result = #{result,jdbcType=VARCHAR}
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

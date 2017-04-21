@@ -1,0 +1,97 @@
+package com.hrbb.loan.pos.biz.backstage.inter.impl.withholder;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.base.Objects;
+import com.hrbb.loan.acct.facade2.MadeLoanProcessQueryBankAcctBalFacade;
+import com.hrbb.loan.acct.facade2.bean.QueryBankAcctBalReq;
+import com.hrbb.loan.acct.facade2.bean.QueryBankAcctBalRes;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosContractManagementBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosPaybackBiz;
+import com.hrbb.loan.pos.dao.TCfgChannelAccountDao;
+import com.hrbb.loan.pos.dao.TCfgFundingPoolDao;
+import com.hrbb.loan.pos.dao.entity.TCfgChannelAccount;
+import com.hrbb.loan.pos.dao.entity.TCfgFundingPool;
+import com.hrbb.loan.pos.dao.entity.TContractManagement;
+import com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo;
+import com.hrbb.loan.pos.util.IdUtil;
+
+@Service("withholderFromAcct")
+public class WithholderFromAcct implements IWithholderService{
+	
+	@Autowired
+	private LoanPosContractManagementBiz loanPosContractManagementBiz;
+	
+	@Autowired
+	private TCfgChannelAccountDao tCfgChannelAccountDao;
+	
+	@Autowired
+	private TCfgFundingPoolDao tCfgFundingPoolDao;
+	
+	@Autowired
+	private LoanPosPaybackBiz loanPosPaybackBiz;
+	
+	
+	@Autowired
+	private MadeLoanProcessQueryBankAcctBalFacade  queryBankAcctBal;
+	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	@Override
+	public void withholder(TPaybackApplyInfo apply){
+		if(apply == null){
+			logger.error("还款申请为空,不继续执行");
+			return;
+		}
+		logger.info(apply.getPaybackApplyId() + "开始扣除还款专户还款..");
+		try{
+			//先查询出合同记录
+			TContractManagement contract = loanPosContractManagementBiz.getContractByContNo(apply.getContNo());
+			if(contract == null){
+				logger.error("没有该合同");
+				return;
+			}
+			//查询资金池模式配置表，获取过渡户账户及过渡户户名
+			Map<String, Object> p = new HashMap<>();
+			p.put("channel", contract.getChannel());
+			logger.info(apply.getPaybackApplyId() + " 开始查询资金池模式配置表..");
+			TCfgFundingPool cfp = tCfgFundingPoolDao.selectOneSelective(p);
+			if(cfp == null){
+				logger.error("没有该渠道的资金池配置信息..");
+			}
+			logger.info(apply.getPaybackApplyId() + " 查询资金池配置信息结束..");
+			//调核算记账
+			logger.info(apply.getPaybackApplyId() + " 开始调核算记账还款..");
+			Map<String, Object> resMap = loanPosPaybackBiz.executeRepayment(apply.getPaybackApplyId());
+			logger.info("调核算记账结果为: " + resMap);
+			logger.info(apply.getPaybackApplyId() + " 调核算还款记账结束..");
+			//查还款过渡户，如果是负数，扣保证金
+			logger.info(apply.getPaybackApplyId() + " 开始查询还款过渡户信息");
+			TCfgChannelAccount acct = tCfgChannelAccountDao.getChannelAccount(contract.getChannel());
+			if(acct == null){
+				logger.error(contract + "没有该渠道的还款专户信息");
+			}
+			QueryBankAcctBalReq bReq = new QueryBankAcctBalReq();
+			bReq.setBankAcctNo(acct.getAccountPayBack());
+			bReq.setBankAcctName(cfp.getRepayAccountName());
+			bReq.setSeqNo(IdUtil.getId("Seq"));
+			QueryBankAcctBalRes bRes = queryBankAcctBal.queryBankAcctBal(bReq);
+			logger.info("还款专户余额为: " + bRes.getBankAcctBalance());
+			if(new BigDecimal(Objects.firstNonNull(bRes.getBankAcctBalance(), "0")).compareTo(new BigDecimal("0")) < 0){
+				logger.info("还款专户余额为负数要扣保证金");
+			} 
+			logger.info(apply.getPaybackApplyId() + " 查询还款过渡户信息结束");
+		}catch(Exception e){
+			logger.error(apply.getPaybackApplyId() + "该还款申请扣还款过渡户发生异常", e);
+		}
+		logger.info(apply.getPaybackApplyId() + "扣除还款专户还款结束");
+	}
+
+}

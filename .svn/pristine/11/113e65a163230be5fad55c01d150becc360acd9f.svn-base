@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+	    http://www.springframework.org/schema/beans/spring-beans.xsd
+	    http://www.springframework.org/schema/context
+	    http://www.springframework.org/schema/context/spring-context.xsd
+	    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+        xmlns:util="http://www.springframework.org/schema/util">
+	
+
+    <bean id="jobSendMessage" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="sendMessageTask"/>
+        <property name="targetMethod" value="execute"/>
+        <property name="concurrent" value="false"/>
+    </bean>
+    
+    <bean id="jobExpiredApprove" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="expiredApproveTask"/>
+        <property name="targetMethod" value="execute"/>
+        <property name="concurrent" value="false"/>
+    </bean>
+	
+	<bean id="jobSendSmsMessage" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="sendSmsMessageTask"/>
+        <property name="targetMethod" value="execute"/>
+        <property name="concurrent" value="false"/>
+    </bean>
+
+    <bean id="sendMessageTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobSendMessage"/>
+        <property name="cronExpression">
+            <value>0 0/3 * * * ?</value>
+        </property>
+    </bean>
+    
+    <bean id="expiredApproveTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobExpiredApprove"/>
+        <property name="cronExpression">
+            <value>0 0 22 * * ?</value>
+        </property>
+    </bean>
+    
+    <bean id="sendSmsMsgTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobSendSmsMessage"/>
+        <property name="cronExpression">
+            <value>0 0/30 * * * ?</value>
+        </property>
+    </bean>
+    
+        
+    <bean id="transerTaskJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="cronExpression" value="0 0/30 * * * ?"/>
+		<property name="jobDetail" ref="transerTaskJobDetail"></property>
+	</bean>
+	
+	<bean id="transerTaskJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="transerTask"/>
+        <property name="targetMethod" value="execute"/>
+        <property name="concurrent" value="false"/>
+    </bean> 
+    
+    <bean id="startQuartz" lazy-init="false" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+             <!--    <ref bean="triggerTest" /> -->
+                <ref bean="sendMessageTrigger"/>
+                <ref bean="expiredApproveTrigger"/>
+                <ref bean="sendSmsMsgTrigger"/>
+                <!-- <ref bean="transerTaskJobTrigger"/> -->
+            </list>
+        </property>
+    </bean> 
+
+</beans>

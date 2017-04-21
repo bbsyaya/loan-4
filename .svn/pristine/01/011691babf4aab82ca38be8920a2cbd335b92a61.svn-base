@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCustomerBaseMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCustomerBase" >
+    <id column="custId" property="custId" jdbcType="VARCHAR" />
+    <result column="acustId" property="acustId" jdbcType="VARCHAR" />
+    <result column="custName" property="custName" jdbcType="VARCHAR" />
+    <result column="corpCustFlag" property="corpCustFlag" jdbcType="VARCHAR" />
+    <result column="paperKind" property="paperKind" jdbcType="VARCHAR" />
+    <result column="paperId" property="paperId" jdbcType="VARCHAR" />
+    <result column="bookDate" property="bookDate" jdbcType="TIMESTAMP" />
+    <result column="origOperId" property="origOperId" jdbcType="VARCHAR" />
+    <result column="origBankId" property="origBankId" jdbcType="VARCHAR" />
+    <result column="operId" property="operId" jdbcType="VARCHAR" />
+    <result column="bankId" property="bankId" jdbcType="VARCHAR" />
+    <result column="lastChanPerson" property="lastChanPerson" jdbcType="VARCHAR" />
+    <result column="lastChanBankId" property="lastChanBankId" jdbcType="VARCHAR" />
+    <result column="lastChanDate" property="lastChanDate" jdbcType="TIMESTAMP" />
+    <result column="recoId" property="recoId" jdbcType="VARCHAR" />
+    <result column="custState" property="custState" jdbcType="VARCHAR" />
+    <result column="delFlag" property="delFlag" jdbcType="VARCHAR" />
+    <result column="isLoan" property="isLoan" jdbcType="VARCHAR" />
+    <result column="isPayOffLoan" property="isPayOffLoan" jdbcType="VARCHAR" />
+    <result column="isBadLoan" property="isBadLoan" jdbcType="VARCHAR" />
+    <result column="isOutAssu" property="isOutAssu" jdbcType="VARCHAR" />
+    <result column="isBlack" property="isBlack" jdbcType="VARCHAR" />
+    <result column="blackType" property="blackType" jdbcType="VARCHAR" />
+    <result column="blackBeginDate" property="blackBeginDate" jdbcType="TIMESTAMP" />
+    <result column="blackEndDate" property="blackEndDate" jdbcType="TIMESTAMP" />
+    <result column="blackReason" property="blackReason" jdbcType="VARCHAR" />
+    <result column="isRela" property="isRela" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    custId, acustId, custName, corpCustFlag, paperKind, paperId, bookDate, origOperId, 
+    origBankId, operId, bankId, lastChanPerson, lastChanBankId, lastChanDate, recoId, 
+    custState, delFlag, isLoan, isPayOffLoan, isBadLoan, isOutAssu, isBlack, blackType, 
+    blackBeginDate, blackEndDate, blackReason, isRela
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_customer_base_info
+    where custId = #{custId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectSelective" resultMap="BaseResultMap" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_customer_base_info
+    where 1=1
+    <if test="startPage != null">
+    	LIMIT #{startPage}, #{limit}
+    </if>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_customer_base_info
+    where custId = #{custId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCustomerBase" >
+    insert into t_customer_base_info (custId, acustId, custName, 
+      corpCustFlag, paperKind, paperId, 
+      bookDate, origOperId, origBankId, 
+      operId, bankId, lastChanPerson, 
+      lastChanBankId, lastChanDate, recoId, 
+      custState, delFlag, isLoan, 
+      isPayOffLoan, isBadLoan, isOutAssu, 
+      isBlack, blackType, blackBeginDate, 
+      blackEndDate, blackReason, isRela
+      )
+    values (#{custId,jdbcType=VARCHAR}, #{acustId,jdbcType=VARCHAR}, #{custName,jdbcType=VARCHAR}, 
+      #{corpCustFlag,jdbcType=VARCHAR}, #{paperKind,jdbcType=VARCHAR}, #{paperId,jdbcType=VARCHAR}, 
+      #{bookDate,jdbcType=TIMESTAMP}, #{origOperId,jdbcType=VARCHAR}, #{origBankId,jdbcType=VARCHAR}, 
+      #{operId,jdbcType=VARCHAR}, #{bankId,jdbcType=VARCHAR}, #{lastChanPerson,jdbcType=VARCHAR}, 
+      #{lastChanBankId,jdbcType=VARCHAR}, #{lastChanDate,jdbcType=TIMESTAMP}, #{recoId,jdbcType=VARCHAR}, 
+      #{custState,jdbcType=VARCHAR}, #{delFlag,jdbcType=VARCHAR}, #{isLoan,jdbcType=VARCHAR}, 
+      #{isPayOffLoan,jdbcType=VARCHAR}, #{isBadLoan,jdbcType=VARCHAR}, #{isOutAssu,jdbcType=VARCHAR}, 
+      #{isBlack,jdbcType=VARCHAR}, #{blackType,jdbcType=VARCHAR}, #{blackBeginDate,jdbcType=TIMESTAMP}, 
+      #{blackEndDate,jdbcType=TIMESTAMP}, #{blackReason,jdbcType=VARCHAR}, #{isRela,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCustomerBase" >
+    insert into t_customer_base_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="acustId != null" >
+        acustId,
+      </if>
+      <if test="custName != null" >
+        custName,
+      </if>
+      <if test="corpCustFlag != null" >
+        corpCustFlag,
+      </if>
+      <if test="paperKind != null" >
+        paperKind,
+      </if>
+      <if test="paperId != null" >
+        paperId,
+      </if>
+      <if test="bookDate != null" >
+        bookDate,
+      </if>
+      <if test="origOperId != null" >
+        origOperId,
+      </if>
+      <if test="origBankId != null" >
+        origBankId,
+      </if>
+      <if test="operId != null" >
+        operId,
+      </if>
+      <if test="bankId != null" >
+        bankId,
+      </if>
+      <if test="lastChanPerson != null" >
+        lastChanPerson,
+      </if>
+      <if test="lastChanBankId != null" >
+        lastChanBankId,
+      </if>
+      <if test="lastChanDate != null" >
+        lastChanDate,
+      </if>
+      <if test="recoId != null" >
+        recoId,
+      </if>
+      <if test="custState != null" >
+        custState,
+      </if>
+      <if test="delFlag != null" >
+        delFlag,
+      </if>
+      <if test="isLoan != null" >
+        isLoan,
+      </if>
+      <if test="isPayOffLoan != null" >
+        isPayOffLoan,
+      </if>
+      <if test="isBadLoan != null" >
+        isBadLoan,
+      </if>
+      <if test="isOutAssu != null" >
+        isOutAssu,
+      </if>
+      <if test="isBlack != null" >
+        isBlack,
+      </if>
+      <if test="blackType != null" >
+        blackType,
+      </if>
+      <if test="blackBeginDate != null" >
+        blackBeginDate,
+      </if>
+      <if test="blackEndDate != null" >
+        blackEndDate,
+      </if>
+      <if test="blackReason != null" >
+        blackReason,
+      </if>
+      <if test="isRela != null" >
+        isRela,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="custId != null" >
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="acustId != null" >
+        #{acustId,jdbcType=VARCHAR},
+      </if>
+      <if test="custName != null" >
+        #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="corpCustFlag != null" >
+        #{corpCustFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="paperKind != null" >
+        #{paperKind,jdbcType=VARCHAR},
+      </if>
+      <if test="paperId != null" >
+        #{paperId,jdbcType=VARCHAR},
+      </if>
+      <if test="bookDate != null" >
+        #{bookDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="origOperId != null" >
+        #{origOperId,jdbcType=VARCHAR},
+      </if>
+      <if test="origBankId != null" >
+        #{origBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="operId != null" >
+        #{operId,jdbcType=VARCHAR},
+      </if>
+      <if test="bankId != null" >
+        #{bankId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastChanPerson != null" >
+        #{lastChanPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="lastChanBankId != null" >
+        #{lastChanBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastChanDate != null" >
+        #{lastChanDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="recoId != null" >
+        #{recoId,jdbcType=VARCHAR},
+      </if>
+      <if test="custState != null" >
+        #{custState,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        #{delFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="isLoan != null" >
+        #{isLoan,jdbcType=VARCHAR},
+      </if>
+      <if test="isPayOffLoan != null" >
+        #{isPayOffLoan,jdbcType=VARCHAR},
+      </if>
+      <if test="isBadLoan != null" >
+        #{isBadLoan,jdbcType=VARCHAR},
+      </if>
+      <if test="isOutAssu != null" >
+        #{isOutAssu,jdbcType=VARCHAR},
+      </if>
+      <if test="isBlack != null" >
+        #{isBlack,jdbcType=VARCHAR},
+      </if>
+      <if test="blackType != null" >
+        #{blackType,jdbcType=VARCHAR},
+      </if>
+      <if test="blackBeginDate != null" >
+        #{blackBeginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="blackEndDate != null" >
+        #{blackEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="blackReason != null" >
+        #{blackReason,jdbcType=VARCHAR},
+      </if>
+      <if test="isRela != null" >
+        #{isRela,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCustomerBase" >
+    update t_customer_base_info
+    <set >
+      <if test="acustId != null" >
+        acustId = #{acustId,jdbcType=VARCHAR},
+      </if>
+      <if test="custName != null" >
+        custName = #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="corpCustFlag != null" >
+        corpCustFlag = #{corpCustFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="paperKind != null" >
+        paperKind = #{paperKind,jdbcType=VARCHAR},
+      </if>
+      <if test="paperId != null" >
+        paperId = #{paperId,jdbcType=VARCHAR},
+      </if>
+      <if test="bookDate != null" >
+        bookDate = #{bookDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="origOperId != null" >
+        origOperId = #{origOperId,jdbcType=VARCHAR},
+      </if>
+      <if test="origBankId != null" >
+        origBankId = #{origBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="operId != null" >
+        operId = #{operId,jdbcType=VARCHAR},
+      </if>
+      <if test="bankId != null" >
+        bankId = #{bankId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastChanPerson != null" >
+        lastChanPerson = #{lastChanPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="lastChanBankId != null" >
+        lastChanBankId = #{lastChanBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastChanDate != null" >
+        lastChanDate = #{lastChanDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="recoId != null" >
+        recoId = #{recoId,jdbcType=VARCHAR},
+      </if>
+      <if test="custState != null" >
+        custState = #{custState,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        delFlag = #{delFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="isLoan != null" >
+        isLoan = #{isLoan,jdbcType=VARCHAR},
+      </if>
+      <if test="isPayOffLoan != null" >
+        isPayOffLoan = #{isPayOffLoan,jdbcType=VARCHAR},
+      </if>
+      <if test="isBadLoan != null" >
+        isBadLoan = #{isBadLoan,jdbcType=VARCHAR},
+      </if>
+      <if test="isOutAssu != null" >
+        isOutAssu = #{isOutAssu,jdbcType=VARCHAR},
+      </if>
+      <if test="isBlack != null" >
+        isBlack = #{isBlack,jdbcType=VARCHAR},
+      </if>
+      <if test="blackType != null" >
+        blackType = #{blackType,jdbcType=VARCHAR},
+      </if>
+      <if test="blackBeginDate != null" >
+        blackBeginDate = #{blackBeginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="blackEndDate != null" >
+        blackEndDate = #{blackEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="blackReason != null" >
+        blackReason = #{blackReason,jdbcType=VARCHAR},
+      </if>
+      <if test="isRela != null" >
+        isRela = #{isRela,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where custId = #{custId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCustomerBase" >
+    update t_customer_base_info
+    set acustId = #{acustId,jdbcType=VARCHAR},
+      custName = #{custName,jdbcType=VARCHAR},
+      corpCustFlag = #{corpCustFlag,jdbcType=VARCHAR},
+      paperKind = #{paperKind,jdbcType=VARCHAR},
+      paperId = #{paperId,jdbcType=VARCHAR},
+      bookDate = #{bookDate,jdbcType=TIMESTAMP},
+      origOperId = #{origOperId,jdbcType=VARCHAR},
+      origBankId = #{origBankId,jdbcType=VARCHAR},
+      operId = #{operId,jdbcType=VARCHAR},
+      bankId = #{bankId,jdbcType=VARCHAR},
+      lastChanPerson = #{lastChanPerson,jdbcType=VARCHAR},
+      lastChanBankId = #{lastChanBankId,jdbcType=VARCHAR},
+      lastChanDate = #{lastChanDate,jdbcType=TIMESTAMP},
+      recoId = #{recoId,jdbcType=VARCHAR},
+      custState = #{custState,jdbcType=VARCHAR},
+      delFlag = #{delFlag,jdbcType=VARCHAR},
+      isLoan = #{isLoan,jdbcType=VARCHAR},
+      isPayOffLoan = #{isPayOffLoan,jdbcType=VARCHAR},
+      isBadLoan = #{isBadLoan,jdbcType=VARCHAR},
+      isOutAssu = #{isOutAssu,jdbcType=VARCHAR},
+      isBlack = #{isBlack,jdbcType=VARCHAR},
+      blackType = #{blackType,jdbcType=VARCHAR},
+      blackBeginDate = #{blackBeginDate,jdbcType=TIMESTAMP},
+      blackEndDate = #{blackEndDate,jdbcType=TIMESTAMP},
+      blackReason = #{blackReason,jdbcType=VARCHAR},
+      isRela = #{isRela,jdbcType=VARCHAR}
+    where custId = #{custId,jdbcType=VARCHAR}
+  </update>
+</mapper>

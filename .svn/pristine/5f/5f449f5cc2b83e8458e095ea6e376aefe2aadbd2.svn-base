@@ -1,0 +1,495 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.biz.expressions.mult;
+
+import java.math.BigDecimal;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.hrbb.loan.pos.biz.expressions.bean.ScoreBureauBean;
+import com.hrbb.loan.pos.dao.entity.TCreditReportIndicator;
+import com.hrbb.loan.pos.dao.entity.TRiskCheckCalcIndex;
+import com.hrbb.loan.pos.dao.entity.TRiskCheckModelIndex;
+import com.hrbb.loan.pos.biz.constants.RiskCheckConstants;
+import com.hrbb.loan.pos.util.MathUtils;
+
+/**
+ * 1.2.2.2 信用记录评分测算
+ * 
+ * @author XLY
+ * @version $Id: CreditFormula.java, v 0.1 2015-3-10 上午10:12:47 XLY Exp $
+ */
+public class CreditFormula {
+
+	private final static Logger logger = LoggerFactory
+			.getLogger(CreditFormula.class);
+
+	/**
+	 * 
+	 * 
+	 * @param mb
+	 * @param cr
+	 * @return
+	 */
+	public static ScoreBureauBean computer(TRiskCheckModelIndex mb,
+			TCreditReportIndicator cr, TRiskCheckCalcIndex calcIndexBean) {
+		ScoreBureauBean sbb = new ScoreBureauBean();
+		logger.debug("CalcIndex01=" + calcIndexBean.getCalcIndex01());
+		logger.debug("CalcIndex02=" + calcIndexBean.getCalcIndex02());
+		// 距首次贷款（房贷、车贷除外）的月份数
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex01())) {
+			if (mb.getModelIndex04() == null) {
+				sbb.setSb1(BigDecimal.ZERO);
+			} else {
+				sbb.setSb1(formulaSB1(mb.getModelIndex04()));
+			}
+		} else {
+			sbb.setSb1(BigDecimal.ZERO);
+		}
+		logger.debug("Sb1=" + sbb.getSb1());
+		// 距首张贷记卡发卡的月份数
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex02())) {
+			sbb.setSb2(formulaSB2(mb.getModelIndex05()));
+		} else {
+			sbb.setSb2(BigDecimal.ZERO);
+		}
+		logger.debug("Sb2=" + sbb.getSb2());
+		// 个人住房或商品房贷款笔数
+		sbb.setSb3(formulaSB3(new BigDecimal(cr.getCR027())));
+		logger.debug("Sb3=" + sbb.getSb3());
+		// if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex02())) {
+		// sbb.setSb4(formulaSB4(cr.getCR057()));
+		// } else {
+		sbb.setSb4(BigDecimal.ZERO);
+		logger.debug("Sb4=" + sbb.getSb4());
+		// }
+		// 已结清信用免担保贷款总金额
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex01())) {
+			sbb.setSb5(formulaSB5(cr.getCR062()));
+		} else {
+			sbb.setSb5(BigDecimal.ONE);
+		}
+		logger.debug("Sb5=" + sbb.getSb5());
+		// if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex01())) {
+		// sbb.setSb6(formulaSB6(cr.getCR063()));
+		// } else {
+		sbb.setSb6(BigDecimal.ZERO);
+		logger.debug("Sb6=" + sbb.getSb6());
+		// }
+		// 贷记卡最长逾期月数
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex02())) {
+			sbb.setSb7(formulaSB7(new BigDecimal(cr.getCR043())));
+		} else {
+			sbb.setSb7(BigDecimal.ONE);
+		}
+		logger.debug("Sb7=" + sbb.getSb7());
+		// 贷款最长逾期月数
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex01())) {
+			sbb.setSb8(formulaSB8(new BigDecimal(cr.getCR039())));
+		} else {
+			sbb.setSb8(BigDecimal.ONE);
+		}
+		logger.debug("Sb8=" + sbb.getSb8());
+		// 信用卡最大逾期金额
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex02())) {
+			sbb.setSb9(formulaSB9(cr.getCR042()));
+		} else {
+			sbb.setSb9(BigDecimal.ZERO);
+		}
+		logger.debug("Sb9=" + sbb.getSb9());
+		// 贷款逾期单月最高逾期总额
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex01())) {
+			sbb.setSb10(formulaSB10(cr.getCR038()));
+		} else {
+			sbb.setSb10(BigDecimal.ONE);
+		}
+		logger.debug("Sb10=" + sbb.getSb10());
+		// 最近一次信用卡逾期距今月份数
+		// if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex02())) {
+		// sbb.setSb11(formulaSB11(mb.getModelIndex10() == null ?
+		// BigDecimal.ZERO
+		// : mb.getModelIndex10()));
+		// } else {
+		// sbb.setSb11(BigDecimal.ONE);
+		// }
+		sbb.setSb11(BigDecimal.ZERO);
+		logger.debug("Sb11=" + sbb.getSb11());
+		// 距贷款最近逾期的月份数
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex01())) {
+			sbb.setSb12(formulaSB12(mb.getModelIndex11() == null ? BigDecimal.ZERO
+					: mb.getModelIndex11()));
+		} else {
+			sbb.setSb12(new BigDecimal(2));
+		}
+		logger.debug("Sb12=" + sbb.getSb12());
+		// 信用卡逾期率
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex02())) {
+			sbb.setSb13(formulaSB13(mb.getModelIndex12()));
+		} else {
+			sbb.setSb13(BigDecimal.ONE);
+		}
+		logger.debug("Sb13=" + sbb.getSb13());
+		// 贷款逾期率
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex01())) {
+			sbb.setSb14(formulaSB14(mb.getModelIndex13()));
+		} else {
+			sbb.setSb14(BigDecimal.ONE);
+		}
+		logger.debug("Sb14=" + sbb.getSb14());
+		// 信用卡使用率
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex02())) {
+			sbb.setSb15(formulaSB15(mb.getModelIndex14()));
+		} else {
+			sbb.setSb15(BigDecimal.ZERO);
+		}
+		logger.debug("Sb15=" + sbb.getSb15());
+		// 最近六个月查询次数
+		BigDecimal halfYearCheckNum = new BigDecimal(cr.getCR068());
+		sbb.setSb16(formulaSB16(halfYearCheckNum));
+		logger.debug("Sb16=" + sbb.getSb16());
+		// 近半年征信查询次数占近一年征信查询次数的比率
+		sbb.setSb17(formulaSB17(mb.getModelIndex15(), halfYearCheckNum));
+		logger.debug("Sb17=" + sbb.getSb17());
+		sbb.setScoreBureau(sbb.getSb1().add(sbb.getSb2()).add(sbb.getSb3())
+				.add(sbb.getSb4()).add(sbb.getSb5()).add(sbb.getSb6())
+				.add(sbb.getSb7()).add(sbb.getSb8()).add(sbb.getSb9())
+				.add(sbb.getSb10()).add(sbb.getSb11()).add(sbb.getSb12())
+				.add(sbb.getSb13()).add(sbb.getSb14()).add(sbb.getSb15())
+				.add(sbb.getSb16()).add(sbb.getSb17()));
+		logger.debug("ScoreBureau=" + sbb.getScoreBureau());
+		// 如果没有贷款历史,score_bureau=18
+		if (RiskCheckConstants.N.equals(calcIndexBean.getCalcIndex01())) {
+			sbb.setScoreBureau(new BigDecimal(18));
+		}
+		logger.debug("final ScoreBureau=" + sbb.getScoreBureau());
+		return sbb;
+	}
+
+	/**
+	 * 
+	 * MIN(90, Model_Index-04首笔贷款发放距今月份数)/30
+	 * 
+	 * @param firstCreditMonth
+	 *            Model_Index-04首笔贷款发放距今月份数
+	 * @return
+	 */
+	public static BigDecimal formulaSB1(BigDecimal firstCreditMonth) {
+		if (firstCreditMonth.compareTo(new BigDecimal(72)) >= 0) {
+			return new BigDecimal(2);
+			// 0<firstCreditMonth<72
+		} else {
+			if (firstCreditMonth.compareTo(BigDecimal.ZERO) >= 0) {
+				return BigDecimal.ONE;
+				// <0
+			} else {
+				return BigDecimal.ZERO;
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * MIN(81, Model_Index-05首张信用卡发卡距今月份数)/27
+	 * 
+	 * @param firstCreditCardMonth
+	 *            Model_Index-05首张信用卡发卡距今月份数
+	 * @return
+	 */
+	public static BigDecimal formulaSB2(BigDecimal firstCreditCardMonth) {
+		if (firstCreditCardMonth.compareTo(new BigDecimal(24)) < 0) {
+			return BigDecimal.ZERO;
+			// >=24
+		} else {
+			if (firstCreditCardMonth.compareTo(new BigDecimal(60)) < 0) {
+				return new BigDecimal(2);
+				// >=60
+			} else {
+				return new BigDecimal(3);
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * MIN(2,CR.住房贷款笔数)
+	 * 
+	 * @param houseLoanNum
+	 *            CR.住房贷款笔数
+	 * @return
+	 */
+	public static BigDecimal formulaSB3(BigDecimal houseLoanNum) {
+		if (houseLoanNum.compareTo(BigDecimal.ONE) < 0) {
+			return BigDecimal.ZERO;
+			// >=1
+		} else {
+			return new BigDecimal(2);
+		}
+	}
+
+	/**
+	 * 
+	 * MIN(390000, CR.未销户贷记卡授信总额)/130000
+	 * 
+	 * @param creditExtension
+	 *            CR.未销户贷记卡授信总额
+	 * @return
+	 */
+	// public static BigDecimal formulaSB4(BigDecimal creditExtension) {
+	// return MathUtils.div(MathUtils.getMin(SB4_1, creditExtension), SB4_2);
+	// }
+
+	/**
+	 * MIN(300000, CR.已结清信用无担保贷款总金额)/100000
+	 * 
+	 * @param settledCreditUnsecuredLoans
+	 *            CR.已结清信用无担保贷款总金额
+	 * @return
+	 */
+	public static BigDecimal formulaSB5(BigDecimal settledCreditUnsecuredLoans) {
+		if (settledCreditUnsecuredLoans.compareTo(new BigDecimal(3000000)) >= 0) {
+			return new BigDecimal(4);
+			// <3000000
+		} else {
+			// >=300000
+			if (settledCreditUnsecuredLoans.compareTo(new BigDecimal(300000)) >= 0) {
+				return new BigDecimal(2);
+				// <300000
+			} else {
+				return BigDecimal.ZERO;
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * MIN(300000, CR.历史最高信用无担保贷款金额)/100000
+	 * 
+	 * @param hisCreditUnsecuredLoans
+	 *            CR.历史最高信用无担保贷款金额
+	 * @return
+	 */
+	// public static BigDecimal formulaSB6(BigDecimal hisCreditUnsecuredLoans) {
+	// return MathUtils.div(MathUtils.getMin(SB6_1, hisCreditUnsecuredLoans),
+	// SB6_2);
+	// }
+
+	/**
+	 * 
+	 * (3-MIN(3, CR.贷记卡逾期最长逾期月数))
+	 * 
+	 * @param creditPastDueMonth
+	 * @return
+	 */
+	public static BigDecimal formulaSB7(BigDecimal creditPastDueMonth) {
+		if (creditPastDueMonth.compareTo(BigDecimal.ONE) > 0) {
+			return BigDecimal.ZERO;
+		} else {
+			return new BigDecimal(2);
+		}
+	}
+
+	/**
+	 * 
+	 * (3-MIN(3, CR.未结清贷款机构数))
+	 * 
+	 * @param outStandingLoansOrgNum
+	 * @return
+	 */
+	public static BigDecimal formulaSB8(BigDecimal outStandingLoansOrgNum) {
+		if (outStandingLoansOrgNum.compareTo(BigDecimal.ONE) > 0) {
+			return BigDecimal.ZERO;
+		} else {
+			return new BigDecimal(2);
+		}
+	}
+
+	/**
+	 * 
+	 * (3-MIN(2400, CR.贷记卡逾期单月最高逾期总额)/800)
+	 * 
+	 * @param creditCardOverdueAmtOnMonth
+	 * @return
+	 */
+	public static BigDecimal formulaSB9(BigDecimal creditCardOverdueAmtOnMonth) {
+
+		if (creditCardOverdueAmtOnMonth.compareTo(new BigDecimal(1000)) >= 0) {
+			return BigDecimal.ZERO;
+			// <1000
+		} else {
+			return new BigDecimal(2);
+		}
+	}
+
+	/**
+	 * 
+	 * (3-MIN(15000, CR.贷款逾期单月最高逾期总额)/5000)
+	 * 
+	 * @param creditOverdueAmtOnMonth
+	 * @return
+	 */
+	public static BigDecimal formulaSB10(BigDecimal creditOverdueAmtOnMonth) {
+		if (creditOverdueAmtOnMonth.compareTo(new BigDecimal(10000)) > 0) {
+			return BigDecimal.ZERO;
+			// <=10000
+		} else {
+			// >0
+			if (creditOverdueAmtOnMonth.compareTo(BigDecimal.ZERO) > 0) {
+				return new BigDecimal(1);
+				// =0
+			} else {
+				return new BigDecimal(3);
+			}
+		}
+	}
+
+	/**
+	 * MIN(18, Model_Index-10信用卡最近逾期距今月份数)/6
+	 * 
+	 * @param modelIndex10
+	 * @return
+	 */
+	public static BigDecimal formulaSB11(BigDecimal modelIndex10) {
+		if (modelIndex10.compareTo(new BigDecimal(24)) >= 0) {
+			return new BigDecimal(3);
+		} else {
+			return MathUtils.div(modelIndex10, new BigDecimal(8));
+		}
+	}
+
+	/**
+	 * 
+	 * MIN(12, Model_Index-11贷款最近逾期距今月份数)/4
+	 * 
+	 * @param modeIndex11
+	 * @return
+	 */
+	public static BigDecimal formulaSB12(BigDecimal modelIndex11) {
+		// -1没有逾期
+		if (modelIndex11.compareTo(BigDecimal.ZERO) < 0) {
+			return new BigDecimal(3);
+			// >-1
+		} else {
+			// <=3
+			if (modelIndex11.compareTo(new BigDecimal(3)) <= 0) {
+				return BigDecimal.ZERO;
+				// >3
+			} else {
+				return new BigDecimal(3);
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * (3-MIN(0.21, Model_Index-12贷记卡数逾期率)/0.07)
+	 * 
+	 * @param modeIndex12
+	 * @return
+	 */
+	public static BigDecimal formulaSB13(BigDecimal modeIndex12) {
+		// >0.3
+		if (modeIndex12.compareTo(new BigDecimal(0.3)) > 0) {
+			return BigDecimal.ZERO;
+			// <=0.3
+		} else {
+			// >=0.2
+			if (modeIndex12.compareTo(new BigDecimal(0.2)) >= 0) {
+				return BigDecimal.ONE;
+				// <0.2
+			} else {
+				return new BigDecimal(2);
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * (3-MIN(0.15, Model_Index-13贷款数逾期率)/0.05)
+	 * 
+	 * @param modeIndex12
+	 * @return
+	 */
+	public static BigDecimal formulaSB14(BigDecimal modeIndex13) {
+		if (modeIndex13.compareTo(new BigDecimal(0.1)) >= 0) {
+			return BigDecimal.ZERO;
+		} else {
+			return new BigDecimal(2);
+		}
+	}
+
+	/**
+	 * 
+	 * (5-MIN(0.9, Model_Index-14贷记卡使用率)/0.18)
+	 * 
+	 * @param modeIndex12
+	 * @return
+	 */
+	public static BigDecimal formulaSB15(BigDecimal modeIndex14) {
+		// >0.5
+		if (modeIndex14.compareTo(new BigDecimal(0.5)) > 0) {
+			return BigDecimal.ZERO;
+			// <=0.5
+		} else {
+			return new BigDecimal(3);
+		}
+	}
+
+	/**
+	 * 
+	 * 3-MIN(9,CR.近6个月查询次数)/3
+	 * 
+	 * @param halfYearCheckNum
+	 * @return
+	 */
+	public static BigDecimal formulaSB16(BigDecimal halfYearCheckNum) {
+		if (halfYearCheckNum.compareTo(new BigDecimal(15)) >= 0) {
+			return BigDecimal.ZERO;
+			// <15
+		} else {
+			if (halfYearCheckNum.compareTo(new BigDecimal(6)) >= 0) {
+				return new BigDecimal(3);
+				// <6
+			} else {
+				if (halfYearCheckNum.compareTo(BigDecimal.ONE) >= 0) {
+					return new BigDecimal(5);
+					// =0
+				} else {
+					return new BigDecimal(2);
+				}
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * 3-MIN(0.75, Model_Index-15近6个月查询占比)/0.25
+	 * 
+	 * @param modelIndex15
+	 * @return
+	 */
+	public static BigDecimal formulaSB17(BigDecimal modelIndex15,
+			BigDecimal halfYearCheckNum) {
+		// <=3
+		if (halfYearCheckNum.compareTo(new BigDecimal(3)) <= 0) {
+			return BigDecimal.ONE;
+			// >3
+		} else {
+			// <=0.25
+			if (modelIndex15.compareTo(new BigDecimal(0.25)) <= 0) {
+				return new BigDecimal(2);
+				// >0.25
+			} else {
+				if (halfYearCheckNum.compareTo(new BigDecimal(0.5)) <= 0) {
+					return BigDecimal.ONE;
+					// >0.5
+				} else {
+					return BigDecimal.ZERO;
+				}
+			}
+		}
+	}
+}

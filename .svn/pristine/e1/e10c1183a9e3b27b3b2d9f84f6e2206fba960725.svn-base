@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hrbb.loan.pos.dao.TDrivinglicenseInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TDrivinglicenseInfo" >
+    <id column="cphm" property="cphm" jdbcType="VARCHAR" />
+    <result column="cllx" property="cllx" jdbcType="CHAR" />
+    <result column="syr" property="syr" jdbcType="VARCHAR" />
+    <result column="cpxh" property="cpxh" jdbcType="VARCHAR" />
+    <result column="zt" property="zt" jdbcType="VARCHAR" />
+    <result column="syxz" property="syxz" jdbcType="VARCHAR" />
+    <result column="ccdjrq" property="ccdjrq" jdbcType="CHAR" />
+    <result column="fzrq" property="fzrq" jdbcType="CHAR" />
+    <result column="jyyxqz" property="jyyxqz" jdbcType="CHAR" />
+    <result column="dyqk" property="dyqk" jdbcType="VARCHAR" />
+    <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="lstupdtime" property="lstupdtime" jdbcType="TIMESTAMP" />
+    <result column="resv1" property="resv1" jdbcType="VARCHAR" />
+    <result column="resv2" property="resv2" jdbcType="VARCHAR" />
+    <result column="resv3" property="resv3" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    cphm, cllx, syr, cpxh, zt, syxz, ccdjrq, fzrq, jyyxqz, dyqk, createtime, lstupdtime, 
+    resv1, resv2, resv3
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_drivinglicense_info
+    where cphm = #{cphm,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_drivinglicense_info
+    where cphm = #{cphm,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TDrivinglicenseInfo" >
+    insert into t_drivinglicense_info (cphm, cllx, syr, 
+      cpxh, zt, syxz, ccdjrq, 
+      fzrq, jyyxqz, dyqk, createtime, 
+      lstupdtime, resv1, resv2, 
+      resv3)
+    values (#{cphm,jdbcType=VARCHAR}, #{cllx,jdbcType=CHAR}, #{syr,jdbcType=VARCHAR}, 
+      #{cpxh,jdbcType=VARCHAR}, #{zt,jdbcType=VARCHAR}, #{syxz,jdbcType=VARCHAR}, #{ccdjrq,jdbcType=CHAR}, 
+      #{fzrq,jdbcType=CHAR}, #{jyyxqz,jdbcType=CHAR}, #{dyqk,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP}, 
+      #{lstupdtime,jdbcType=TIMESTAMP}, #{resv1,jdbcType=VARCHAR}, #{resv2,jdbcType=VARCHAR}, 
+      #{resv3,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TDrivinglicenseInfo" >
+    insert into t_drivinglicense_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="cphm != null" >
+        cphm,
+      </if>
+      <if test="cllx != null" >
+        cllx,
+      </if>
+      <if test="syr != null" >
+        syr,
+      </if>
+      <if test="cpxh != null" >
+        cpxh,
+      </if>
+      <if test="zt != null" >
+        zt,
+      </if>
+      <if test="syxz != null" >
+        syxz,
+      </if>
+      <if test="ccdjrq != null" >
+        ccdjrq,
+      </if>
+      <if test="fzrq != null" >
+        fzrq,
+      </if>
+      <if test="jyyxqz != null" >
+        jyyxqz,
+      </if>
+      <if test="dyqk != null" >
+        dyqk,
+      </if>
+      <if test="createtime != null" >
+        createtime,
+      </if>
+      <if test="lstupdtime != null" >
+        lstupdtime,
+      </if>
+      <if test="resv1 != null" >
+        resv1,
+      </if>
+      <if test="resv2 != null" >
+        resv2,
+      </if>
+      <if test="resv3 != null" >
+        resv3,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="cphm != null" >
+        #{cphm,jdbcType=VARCHAR},
+      </if>
+      <if test="cllx != null" >
+        #{cllx,jdbcType=CHAR},
+      </if>
+      <if test="syr != null" >
+        #{syr,jdbcType=VARCHAR},
+      </if>
+      <if test="cpxh != null" >
+        #{cpxh,jdbcType=VARCHAR},
+      </if>
+      <if test="zt != null" >
+        #{zt,jdbcType=VARCHAR},
+      </if>
+      <if test="syxz != null" >
+        #{syxz,jdbcType=VARCHAR},
+      </if>
+      <if test="ccdjrq != null" >
+        #{ccdjrq,jdbcType=CHAR},
+      </if>
+      <if test="fzrq != null" >
+        #{fzrq,jdbcType=CHAR},
+      </if>
+      <if test="jyyxqz != null" >
+        #{jyyxqz,jdbcType=CHAR},
+      </if>
+      <if test="dyqk != null" >
+        #{dyqk,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lstupdtime != null" >
+        #{lstupdtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="resv1 != null" >
+        #{resv1,jdbcType=VARCHAR},
+      </if>
+      <if test="resv2 != null" >
+        #{resv2,jdbcType=VARCHAR},
+      </if>
+      <if test="resv3 != null" >
+        #{resv3,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TDrivinglicenseInfo" >
+    update t_drivinglicense_info
+    <set >
+      <if test="cllx != null" >
+        cllx = #{cllx,jdbcType=CHAR},
+      </if>
+      <if test="syr != null" >
+        syr = #{syr,jdbcType=VARCHAR},
+      </if>
+      <if test="cpxh != null" >
+        cpxh = #{cpxh,jdbcType=VARCHAR},
+      </if>
+      <if test="zt != null" >
+        zt = #{zt,jdbcType=VARCHAR},
+      </if>
+      <if test="syxz != null" >
+        syxz = #{syxz,jdbcType=VARCHAR},
+      </if>
+      <if test="ccdjrq != null" >
+        ccdjrq = #{ccdjrq,jdbcType=CHAR},
+      </if>
+      <if test="fzrq != null" >
+        fzrq = #{fzrq,jdbcType=CHAR},
+      </if>
+      <if test="jyyxqz != null" >
+        jyyxqz = #{jyyxqz,jdbcType=CHAR},
+      </if>
+      <if test="dyqk != null" >
+        dyqk = #{dyqk,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lstupdtime != null" >
+        lstupdtime = #{lstupdtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="resv1 != null" >
+        resv1 = #{resv1,jdbcType=VARCHAR},
+      </if>
+      <if test="resv2 != null" >
+        resv2 = #{resv2,jdbcType=VARCHAR},
+      </if>
+      <if test="resv3 != null" >
+        resv3 = #{resv3,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where cphm = #{cphm,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TDrivinglicenseInfo" >
+    update t_drivinglicense_info
+    set cllx = #{cllx,jdbcType=CHAR},
+      syr = #{syr,jdbcType=VARCHAR},
+      cpxh = #{cpxh,jdbcType=VARCHAR},
+      zt = #{zt,jdbcType=VARCHAR},
+      syxz = #{syxz,jdbcType=VARCHAR},
+      ccdjrq = #{ccdjrq,jdbcType=CHAR},
+      fzrq = #{fzrq,jdbcType=CHAR},
+      jyyxqz = #{jyyxqz,jdbcType=CHAR},
+      dyqk = #{dyqk,jdbcType=VARCHAR},
+      createtime = #{createtime,jdbcType=TIMESTAMP},
+      lstupdtime = #{lstupdtime,jdbcType=TIMESTAMP},
+      resv1 = #{resv1,jdbcType=VARCHAR},
+      resv2 = #{resv2,jdbcType=VARCHAR},
+      resv3 = #{resv3,jdbcType=VARCHAR}
+    where cphm = #{cphm,jdbcType=VARCHAR}
+  </update>
+</mapper>

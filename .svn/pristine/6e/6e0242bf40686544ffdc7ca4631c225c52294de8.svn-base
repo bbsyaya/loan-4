@@ -1,0 +1,9 @@
+package com.hrbb.loan.pos.dao;
+
+import com.hrbb.loan.pos.dao.entity.pubtrandef;
+
+public interface PubtrandefDao {
+    int insert(pubtrandef record);
+
+    int insertSelective(pubtrandef record);
+}

@@ -1,0 +1,759 @@
+package com.hrbb.loan.controller;
+
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import jodd.util.StringUtil;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.controller.helper.ControllerHelper;
+import com.hrbb.loan.ftp.client.param.ParamReqBean;
+import com.hrbb.loan.pos.biz.backstage.inter.ApproveResultBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.ILoanPosCreditApplyBackStageBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosContractManagementBiz;
+import com.hrbb.loan.pos.dao.entity.TApproveReject;
+import com.hrbb.loan.pos.dao.entity.TApproveResult;
+import com.hrbb.loan.pos.dao.entity.TCallingTask;
+import com.hrbb.loan.pos.dao.entity.TContractManagement;
+import com.hrbb.loan.pos.dao.entity.TCreditApply;
+import com.hrbb.loan.pos.dao.entity.TCustomer;
+import com.hrbb.loan.pos.facade.LoanPosCustomerBizFacade;
+import com.hrbb.loan.pos.service.CallingTaskService;
+import com.hrbb.loan.pos.service.LoanPosBusinessCodeService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.IdUtil;
+import com.hrbb.loan.pos.util.constants.ReviewNoteConstants;
+import com.hrbb.loan.web.security.entity.AccessPrivilege;
+import com.hrbb.loan.web.security.entity.User;
+
+import freemarker.core.ParseException;
+
+@Controller
+@RequestMapping("/contractManagement")
+public class ContractManagementController {
+	private final Logger logger = LoggerFactory.getLogger(ContractManagementController.class);
+    @Autowired
+    private LoanPosCustomerBizFacade<TCustomer> loanPosCustomerBizFacade;
+    @Autowired
+	private ILoanPosCreditApplyBackStageBiz loanPosCreditApplyBackStageBiz;
+    @Autowired
+    private LoanPosContractManagementBiz loanPosContractManagementBiz ;
+	@Autowired
+	private LoanPosBusinessCodeService loanPosBusinessCodeService;
+	@Autowired
+	@Qualifier("CallingTaskService")
+	CallingTaskService service;
+	
+    @Autowired
+    private ApproveResultBiz arBiz ;
+    
+	@RequestMapping("/queryContractManagement")
+	public ModelAndView queryContractManagement(@RequestParam(value="rows", required = false)Integer pageSize, 
+			@RequestParam(value="page", required = false)Integer pageNo,
+			HttpServletRequest request, 
+			PrintWriter out){
+		
+		Map<String, Object> reqMap = Maps.newHashMap();
+		Map<String, Object> map = Maps.newHashMap();
+		if(!StringUtils.isEmpty(request.getParameter("loanIdLike"))){
+			reqMap.put("loanIdLike",ControllerHelper.getLikeString(request.getParameter("loanIdLike")));
+			map.put("loanIdLike",ControllerHelper.getLikeString(request.getParameter("loanIdLike")));
+		}
+		if(!StringUtils.isEmpty(request.getParameter("custNameLike"))){
+			reqMap.put("custNameLike", ControllerHelper.getLikeString(request.getParameter("custNameLike")));
+			map.put("custNameLike",ControllerHelper.getLikeString(request.getParameter("custNameLike")));
+		}
+		if(!StringUtils.isEmpty(request.getParameter("custIdNoLike"))){
+			reqMap.put("custIdNoLike", ControllerHelper.getLikeString(request.getParameter("custIdNoLike")));
+			map.put("custIdNoLike",ControllerHelper.getLikeString(request.getParameter("custIdNoLike")));
+		}
+		/*用户权限*/
+		AccessPrivilege access = (AccessPrivilege)request.getSession().getAttribute("accessPrivilege");
+		if(!access.hasAnyPrivilege("ROLE_APPROVED_QUERY")){			//有全局查询权限的情况
+			String approveStatus = request.getParameter("searchApproveStatus");
+			if(!StringUtils.isEmpty(approveStatus)){
+				reqMap.put("searchApproveStatus", approveStatus);
+				map.put("searchApproveStatus", approveStatus);
+			}
+		}
+		
+		reqMap.put("startPage", (pageNo - 1)*pageSize);
+		reqMap.put("limit", pageSize);
+		List<Map<String, Object>> lists = loanPosContractManagementBiz.queryContractManagement(reqMap);
+		long approvenumber = loanPosContractManagementBiz.countApprove(map);
+		for(Map<String, Object> r:lists){
+		    String a = (String) r.get("businessSource");
+		    String b = loanPosBusinessCodeService.getItemNameByNo("BizChannel",a);
+		    r.put("businessSource",b);
+		    
+	
+			String c = (String) r.get("applyMoneyKind");
+			String d = loanPosBusinessCodeService.getItemNameByNo("Currency",c);
+			r.put("applyMoneyKind",d);
+		
+			String e = (String) r.get("termUnit");
+			String f = loanPosBusinessCodeService.getItemNameByNo("TermUnit",e);
+			r.put("termUnit",f);
+			
+			String g = (String) r.get("paybackMethod");
+			String h = loanPosBusinessCodeService.getItemNameByNo("AccrualType",g);
+			r.put("paybackMethod",h);
+			
+			String m = (String) r.get("termUnit");
+			String n = loanPosBusinessCodeService.getItemNameByNo("TermUnit",m);
+			r.put("termUnit",n);
+			
+			String x = (String) r.get("accountOpenBank");
+			String y = loanPosBusinessCodeService.getItemNameByNo("BankNo",x);
+			r.put("accountOpenBank",y);
+	
+	
+		}
+		JSONObject aaJson =  new JSONObject();
+		aaJson.put("rows", lists);	
+		aaJson.put("total",approvenumber);
+		String aa = aaJson.toJSONString();
+		out.write(aa);
+		return null;	
+	}
+	
+   /**
+	 * 查询可生成协议批复列表
+	 * 
+	 * @param pageSize
+	 * @param pageNo
+	 * @param request
+	 * @param out
+	 * @return
+	 */
+	@RequestMapping("/queryAvailableContractManagement")
+	    public ModelAndView queryAvailableContractManagement(@RequestParam(value="rows", required = false)Integer pageSize, @RequestParam(value="page", required = false)Integer pageNo,HttpServletRequest request, PrintWriter out){
+	        Map<String, Object> reqMap = Maps.newHashMap();
+	        if(!StringUtils.isEmpty(request.getParameter("loanIdLike"))){
+	            reqMap.put("loanIdLike",ControllerHelper.getLikeString(request.getParameter("loanIdLike")));
+	        }
+	        if(!StringUtils.isEmpty(request.getParameter("custNameLike"))){
+	            reqMap.put("custNameLike", ControllerHelper.getLikeString(request.getParameter("custNameLike")));
+	        }
+	        if(!StringUtils.isEmpty(request.getParameter("merchantNameLike"))){
+	            reqMap.put("merchantNameLike", ControllerHelper.getLikeString(request.getParameter("merchantNameLike")));
+	        }
+	        if(!StringUtils.isEmpty(request.getParameter("custIdLike"))){
+	            reqMap.put("custIdLike", ControllerHelper.getLikeString(request.getParameter("custIdLike")));
+	        }
+	        if(!StringUtils.isEmpty(request.getParameter("custIdNoLike"))){
+	            reqMap.put("custIdNoLike", ControllerHelper.getLikeString(request.getParameter("custIdNoLike")));
+	        }
+	        String approveStatus = request.getParameter("searchApproveStatus");
+	        if(!StringUtils.isEmpty(approveStatus)){
+	            reqMap.put("searchApproveStatus", approveStatus);
+	        }
+	        reqMap.put("startPage", (pageNo - 1)*pageSize);
+	        reqMap.put("limit", pageSize);
+	        
+	        JSONObject aaJson =  new JSONObject();
+	        // 批复列表
+	        List<TApproveResult> lists = loanPosContractManagementBiz.queryAvailableContractManagement(reqMap);
+	        if(null != lists && lists.size()>0){
+    	        for(TApproveResult r:lists){
+        	        String businessSource = r.getBusinessSource();
+        	        businessSource = loanPosBusinessCodeService.getItemNameByNo("BizChannel",businessSource);
+        	        r.setBusinessSource(businessSource);
+        	        
+        	        String applyMoneyKind = r.getApplyMoneyKind();
+        	        applyMoneyKind = loanPosBusinessCodeService.getItemNameByNo("Currency",applyMoneyKind);
+        	        r.setApplyMoneyKind(applyMoneyKind); 
+        	        
+        	        String termUnit = r.getTermUnit();
+        	        termUnit = loanPosBusinessCodeService.getItemNameByNo("TermUnit",termUnit);
+        	        r.setTermUnit(termUnit);
+        	        
+        	        String accrualType = r.getPaybackMethod();
+        	        accrualType = loanPosBusinessCodeService.getItemNameByNo("AccrualType",accrualType);
+        	        r.setPaybackMethod(accrualType);
+        	        
+        	        String approveTermUnit = r.getApproveTermUnit();
+        	        approveTermUnit = loanPosBusinessCodeService.getItemNameByNo("TermUnit",approveTermUnit);
+        	        r.setApproveTermUnit(approveTermUnit);
+        	        
+        	        String accountOpenBank = r.getAccountOpenBank();
+        	        accountOpenBank = loanPosBusinessCodeService.getItemNameByNo("BankNo", accountOpenBank);
+        	        r.setAccountOpenBank(accountOpenBank);
+    	        }
+    	        // 总数
+                Long total = loanPosContractManagementBiz.countAvailableContractManagement(reqMap);
+                aaJson.put("rows", lists);  
+                aaJson.put("total", total);
+	        }else{
+	            aaJson.put("rows", lists);  
+                aaJson.put("total", 0);
+	        }
+	        out.write(aaJson.toJSONString());
+	        return null;    
+	    }
+	
+	@RequestMapping("/queryContractManagement1")
+	public ModelAndView queryContractManagement1(HttpServletRequest request, PrintWriter out){
+		
+	    String custId = request.getParameter("custId");
+	    TCustomer cust =  loanPosCustomerBizFacade.selectByPrimaryKey(custId);
+		if (cust != null) {
+			out.print(JSON.toJSONString(cust));
+		};
+		return null;	
+	}
+	
+	
+	@RequestMapping("/queryContractManagement2")
+	public ModelAndView queryContractManagement2(HttpServletRequest request, PrintWriter out){
+	    String loanId = request.getParameter("loanId");
+	    TCreditApply cust =  loanPosCreditApplyBackStageBiz.queryCreditApplyDetail(loanId);
+		if (cust != null) {
+			out.print(JSON.toJSONString(cust));
+		};
+		return null;	
+	}
+	
+	
+	@RequestMapping("/queryContractManagement3")
+	public ModelAndView queryContractManagement3(HttpServletRequest request, PrintWriter out) throws java.text.ParseException{
+		String unit = request.getParameter("apprTermUnit");
+		String beginDate = request.getParameter("beginDate");
+		int apprTerm = Integer.parseInt(request.getParameter("apprTerm"));
+		SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd");
+		 Calendar a = Calendar.getInstance();
+		 Date b = sdf3.parse(beginDate);
+		 a.setTime(b);
+		 Date signDate = new Date();
+		 String c = sdf3.format(signDate);
+	    if(unit.equals("年"))
+	   	 a.add(Calendar.YEAR, apprTerm);
+	    else if(unit.equals("月"))
+	   	 a.add(Calendar.MONTH, apprTerm);
+	    else
+	   	 a.add(Calendar.DAY_OF_MONTH, apprTerm);
+		   Date endDate = a.getTime();
+		   String d = sdf3.format(endDate);
+		   JSONObject e =  new JSONObject();
+			e.put("sd", c);	
+			e.put("ed", d);
+			String f = e.toJSONString();
+			out.write(f);
+			return null;		
+	}
+	
+
+	@RequestMapping("/queryContractManagement4")
+	public ModelAndView queryContractManagement4(HttpServletRequest request, PrintWriter out){
+		String custId = request.getParameter("custId");
+		TContractManagement cont =  loanPosContractManagementBiz.selectByPrimaryKey(custId);
+		JSONObject a =  new JSONObject();
+		SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd");
+		Date b = cont.getBeginDate();
+		Date c = cont.getEndDate();
+		Date m = cont.getSignDate();
+		String d = sdf3.format(b);
+		String e = sdf3.format(c);
+		String n = sdf3.format(m);
+		a.put("bd", d);	
+		a.put("ed", e);
+		a.put("sd",n);
+		String g = a.toJSONString();
+		out.write(g);
+		return null;
+	}
+		
+	
+	@RequestMapping("/queryDate1")
+	public ModelAndView check(HttpServletRequest request, PrintWriter out){
+	String approveId = request.getParameter("approveId");
+	TApproveResult t = loanPosContractManagementBiz.getApproveInfo(approveId);
+	Date ed = t.getExpiryDate();
+	Date ad = t.getApproveDate();
+	long ed1 = ed.getTime();
+	long ad1 = ad.getTime();
+	long dt = (ed1-ad1)/(1000*60*60*24);
+	int m = loanPosContractManagementBiz.selectRejectMaxApproveNumByApproveId(approveId);
+	int n = m-1;
+	Map<String, Object> updateMap = Maps.newHashMap();
+	updateMap.put("approveId",approveId);
+	updateMap.put("approvenum",n);
+	TApproveReject a = loanPosContractManagementBiz.getRejectInfo(updateMap);
+	Date b = a.getRejdt();
+	Calendar c =Calendar.getInstance();
+	c.setTime(b);
+	c.add(Calendar.MONTH, 1);
+	Date d=c.getTime();
+	Calendar e=Calendar.getInstance();
+	Date f =e.getTime();
+	int h;
+	if(d.after(f)){
+		  h=1;
+	}else{
+		  h=2;
+	}
+	if(dt>7){
+		h=3;
+	}
+	   out.print(h);
+		return null;
+	}
+		
+
+	@RequestMapping("/queryDate2")
+	public ModelAndView check2(HttpServletRequest request, PrintWriter out) throws ParseException{
+	String approveId = request.getParameter("approveId");
+	TApproveResult a =  loanPosContractManagementBiz.getApproveInfo(approveId);
+    Date endDate = a.getExpiryDate();
+    Date ad = a.getApproveDate();
+    long t1 = endDate.getTime();
+    long t2 = ad.getTime();
+    long t3 = (t1-t2)/(1000*60*60*24);
+    
+	Calendar c =Calendar.getInstance();
+	c.setTime(endDate);
+	c.add(Calendar.MONTH, 1);
+	Date d=c.getTime();
+	Calendar e=Calendar.getInstance();
+	Date f =e.getTime();
+	int h;
+	if(d.after(f)){
+		  h=1;
+	}else{
+		  h=2;
+	}
+	if(t3>7){
+		h=3;
+	}
+	   out.print(h);
+		return null;
+	}
+		
+	
+	@RequestMapping("/insertContractManagement")
+	public ModelAndView insertContractManagement(HttpServletRequest request, PrintWriter out) throws ParseException{
+	    User user = (User)request.getSession().getAttribute("USER");
+		try{
+		    Map<String, Object> updateMap = Maps.newHashMap();
+		    TApproveResult approveResult = loanPosContractManagementBiz.getApproveInfo(request.getParameter("approveId"));
+			String contNo = IdUtil.getId("cn");
+			updateMap.put("contNo", contNo);
+			updateMap.put("prodId", ReviewNoteConstants.POS_LOAN_ID);
+			updateMap.put("prodName", ReviewNoteConstants.FLOW_LOAN_NAME);
+			updateMap.put("approveId", approveResult.getApproveId());
+		    updateMap.put("channel",approveResult.getBusinessSource());
+		    updateMap.put("loanId",approveResult.getLoanId());
+            updateMap.put("custId",approveResult.getCustId());
+            updateMap.put("custName",approveResult.getCustName());
+		    updateMap.put("posCustId",approveResult.getPosCustId());
+		    updateMap.put("posCustName",approveResult.getPosCustName());
+		    updateMap.put("apprTotalAmt",approveResult.getApproveAmount());
+		    updateMap.put("approveMoneyKind",approveResult.getApproveMoneyKind());
+		    updateMap.put("approveInterest",approveResult.getApproveInterest());
+		    updateMap.put("applyTerm", approveResult.getApplyTerm());
+		    updateMap.put("creditLine", approveResult.getApproveAmount());
+		    updateMap.put("creditInterest", approveResult.getApproveInterest());
+		    updateMap.put("contTerm", approveResult.getApproveTerm());
+		    updateMap.put("contTotalAmt", approveResult.getApproveAmount());
+		    updateMap.put("paybackMethod",approveResult.getPaybackMethod());
+		    updateMap.put("acceptAccount",approveResult.getAcceptAccount());
+		    updateMap.put("accountOpenBank",approveResult.getAccountOpenBank());
+		    updateMap.put("accountBranchBank",approveResult.getAccountBranchBank());
+		    updateMap.put("accountSubBranchBank",approveResult.getAccountSubBranchBank());
+		    updateMap.put("beginDate",DateUtil.getDatePattern3(request.getParameter("beginDate")));
+		    if(!StringUtil.isEmpty(request.getParameter("endDate")) ){
+		        updateMap.put("endDate",DateUtil.getDatePattern3(request.getParameter("endDate")));
+		    }
+		    if(!StringUtil.isEmpty(request.getParameter("signDate"))){
+		        updateMap.put("signDate",DateUtil.getDatePattern3(request.getParameter("signDate")));
+		    }else{
+		        updateMap.put("signDate",new Date());
+		    }
+			updateMap.put("operId", user.getUserId());
+			updateMap.put("termUnit",approveResult.getTermUnit());
+			updateMap.put("agreementStatus", "06");	//06已签约未生效
+			logger.info("合同数据信息为"+updateMap);
+			int n = loanPosContractManagementBiz.insertContractManagementMap(updateMap);
+			if(n>0){
+			    out.print("签约成功");
+			}
+		}catch(Exception e){
+			logger.error("合同表插入数据失败",e);
+			out.print("签约失败");
+		}
+		return null;
+	}
+	
+
+	
+	@RequestMapping("/deleteContractManagement")
+	public ModelAndView deleteDbApp(HttpServletRequest request,
+			PrintWriter out, @RequestParam(value = "deleteItem", required = false)String deleteItemId){
+		loanPosContractManagementBiz.deleteContractManagementInfo(deleteItemId);
+		out.print("delete success");
+		//逻辑删除
+		return null;
+	}
+	
+	@RequestMapping("/updateContractManagement1")
+	public ModelAndView updateDbApp1(HttpServletRequest request, @RequestParam(value = "contNo", required = false)String contNo,@RequestParam(value = "custName", required = false)String custName,@RequestParam(value = "contTotalAmt", required = false)String contTotalAmt,PrintWriter out){
+		String approveId = request.getParameter("approveId");
+		Map<String, Object> updateMap = Maps.newHashMap();
+		updateMap.put("approveId", approveId);
+		updateMap.put("approveStatus", "02");
+		int a = loanPosContractManagementBiz.modifyContractManagementInfo(updateMap);
+		//发送批复确认短信
+		out.print("批复确认成功");
+		
+		//2015.06.23 guoyu 审批同意时不更新外呼任务
+//		Date d = new Date();
+////		TApproveResult t = loanPosContractManagementBiz.getApproveInfo(approveId);
+////		String loanId = t.getLoanId();
+////		logger.info("申请编号loanId为"+loanId);
+//		
+//		//TCallingTask TC = service.getTCallingTask(loanId).get(0);
+//		Map<String,Object> reqVars = Maps.newHashMap();
+//		reqVars.put("relaBizNo", approveId);		//外呼对象为批复
+//		reqVars.put("relaBizPhase", "APR");
+//		List<TCallingTask> tasks = service.getTCallingTask(reqVars);
+//		if(tasks!=null && tasks.size()>0){
+//			TCallingTask TC = tasks.get(0);
+//			logger.info("外呼任务为"+TC);
+//			Date ct = TC.getCallingTime();
+//			String taskNo = TC.getTaskNo();
+//			logger.info("外呼任务号为"+taskNo);
+//			
+//			if(ct!=null){
+//				logger.info("该外呼任务已经处理过");
+//			}else if(TC.getClaimerName()!=null&&TC.getClaimerId()!=null&&TC.getClaimTime()!=null){
+//				logger.info("该外呼任务已被认领但未被处理");
+//				Map<String,Object> Map = Maps.newHashMap();
+//				Map.put("taskNo",taskNo);
+//				Map.put("callingTime",d);
+//				Map.put("dealInfo","通过");
+//				logger.info("外呼任务map为"+Map);
+//				int b =service.updateTcallingTask1(Map);
+//				logger.info("更新外呼任务成功");
+//			}else{
+//				logger.info("该笔外呼任务未被认领处理");
+//				Map<String,Object> Map = Maps.newHashMap();
+//				Map.put("taskNo",taskNo);
+//				Map.put("claimerId","system");
+//				Map.put("claimerName","系统自动处理");
+//				Map.put("claimTime",d);
+//				Map.put("callingTime",d);
+//				Map.put("dealInfo","通过");
+//				logger.info("外呼任务map为"+Map);
+//				int b =service.updateTcallingTask2(Map);
+//				logger.info("更新外呼任务成功");
+//			}
+//		}
+		
+		return null;
+	}
+	
+	@RequestMapping("/updateContractManagement2")
+	public ModelAndView updateDbApp2(HttpServletRequest request,PrintWriter out){
+		String approveId = request.getParameter("approveId");
+		Map<String, Object> updateMap = Maps.newHashMap();
+		updateMap.put("approveId", approveId);
+		updateMap.put("approveStatus", "03");
+		Map<String, Object> map = Maps.newHashMap();
+		String rejreason = request.getParameter("rejectreason");
+		String reasondetail = request.getParameter("rejectdetail");
+		Calendar a =Calendar.getInstance();
+		Date b =a.getTime();
+		Object obj = request.getSession().getAttribute("USER");
+		com.hrbb.loan.web.security.entity.User user = (com.hrbb.loan.web.security.entity.User)obj;
+		int userId = user.getUserId();
+		int f = loanPosContractManagementBiz.selectRejectMaxApproveNumByApproveId(approveId);
+		map.put("approveId",approveId);
+		map.put("rejectreason",rejreason);
+		map.put("rejdetail",reasondetail);
+		map.put("rejdt",b);
+		map.put("rejperson",userId);
+		map.put("approvenum",f);
+		int d = loanPosContractManagementBiz.insertApproveReject(map);
+		int e = loanPosContractManagementBiz.modifyContractManagementInfo(updateMap);
+		out.print("拒绝批复成功");
+		//2015.06.23 guoyu 审批拒绝时不更新外呼任务
+		// 获得申请审批表中的批准信息
+		TApproveResult approve = arBiz.selectByPrimaryKey(approveId);
+		//拒绝时生成外呼任务
+		//生成外呼任务
+		insertCallingTask(approve, rejreason);
+//		
+//		Date dt = new Date();
+////		TApproveResult t = loanPosContractManagementBiz.getApproveInfo(approveId);
+////		String loanId = t.getLoanId();
+////		logger.info("申请编号loanId为"+loanId);
+//		
+//		//TCallingTask TC = service.getTCallingTask(loanId).get(0);
+//		Map<String,Object> reqVars = Maps.newHashMap();
+//		reqVars.put("relaBizNo", approveId);		//外呼对象为批复
+//		reqVars.put("relaBizPhase", "APR");
+//		List<TCallingTask> tasks = service.getTCallingTask(reqVars);
+//		if(tasks!=null && tasks.size()>0){
+//			TCallingTask TC = tasks.get(0);
+//			logger.info("外呼任务为"+TC);
+//			Date ct = TC.getCallingTime();
+//			String taskNo = TC.getTaskNo();
+//			logger.info("外呼任务号为"+taskNo);
+//			
+//			String dealInfo = null;
+//			if(!rejreason.equals("其他")){
+//				 dealInfo = "拒绝,"+rejreason;
+//			}else{
+//				dealInfo = "拒绝,"+reasondetail;
+//			}
+//			
+//			if(ct!=null){
+//				logger.info("该外呼任务已经处理过");
+//			}else if(TC.getClaimerName()!=null&&TC.getClaimerId()!=null&&TC.getClaimTime()!=null){
+//				logger.info("该外呼任务已被认领但未被处理");
+//				Map<String,Object> Map = Maps.newHashMap();
+//				Map.put("taskNo",taskNo);
+//				Map.put("callingTime",dt);
+//				Map.put("dealInfo",dealInfo);
+//				logger.info("外呼任务map为"+Map);
+//				int bc =service.updateTcallingTask1(Map);
+//				logger.info("更新外呼任务成功");
+//			}else{
+//				logger.info("该笔外呼任务未被认领处理");
+//				Map<String,Object> Map = Maps.newHashMap();
+//				Map.put("taskNo",taskNo);
+//				Map.put("claimerId","system");
+//				Map.put("claimerName","系统自动处理");
+//				Map.put("claimTime",dt);
+//				Map.put("callingTime",dt);
+//				Map.put("dealInfo",dealInfo);
+//				logger.info("外呼任务map为"+Map);
+//				int bc =service.updateTcallingTask2(Map);
+//				logger.info("更新外呼任务成功");
+//			}
+//		}
+		
+		return null;
+	}
+	
+	
+	@RequestMapping("/updateContractManagement3")
+	public ModelAndView updateDbApp3(HttpServletRequest request,PrintWriter out){
+		String approveId = request.getParameter("approveId");
+		String approveAmount = request.getParameter("approveAmount");
+		String approveInterest = request.getParameter("approveInterest");
+		//String approveTerm = request.getParameter("approveTerm");
+		String accountNo = request.getParameter("accountNo");
+		String bankId = request.getParameter("bankId");
+		String branchId = request.getParameter("branchId");
+		String subBranchId = request.getParameter("subBranchId");
+		String reasondetail = request.getParameter("changeReason");
+		
+		Map<String, Object> updateMap = Maps.newHashMap();
+		
+		/*批复对象*/
+        TApproveResult approval = loanPosContractManagementBiz.getApproveInfo(approveId);
+        BigDecimal apprAmt = new BigDecimal(approveAmount);
+        BigDecimal aprInt = new BigDecimal(approveInterest);
+        if(aprInt.compareTo(approval.getApproveInterest())!=0) updateMap.put("approveInterest", aprInt);
+        if(apprAmt.compareTo(approval.getApproveAmount())!=0) updateMap.put("approveAmount", apprAmt);
+        
+        if(!approval.getAcceptAccount().equals(accountNo)){
+        	//银行卡号变更则新增记录,其余更新原卡
+        	updateMap.put("isNewCard", true);
+        }else{
+        	updateMap.put("isNewCard", false);
+        }
+        updateMap.put("custId", approval.getCustId());
+        updateMap.put("approveId", approveId);
+        updateMap.put("accountNo", accountNo);
+        updateMap.put("bankId", bankId);
+        updateMap.put("bankBranName", branchId);
+        updateMap.put("bankSubbName", subBranchId);
+        updateMap.put("reasondetail", reasondetail);
+        
+        Object obj = request.getSession().getAttribute("USER");
+        com.hrbb.loan.web.security.entity.User user = (com.hrbb.loan.web.security.entity.User)obj;
+		String userName = user.getUserName();
+		updateMap.put("userName", userName);
+		
+        /*
+		Map<String, Object> updateMap = Maps.newHashMap();
+		updateMap.put("approveId", approveId);
+		updateMap.put("approveAmount", approveAmount);
+		updateMap.put("approveInterest", approveInterest);
+		//updateMap.put("approveTerm", approveTerm);
+		
+//		Calendar a =Calendar.getInstance();
+//		Date b =a.getTime();
+		Object obj = request.getSession().getAttribute("USER");
+		com.hrbb.loan.web.security.entity.User user = (com.hrbb.loan.web.security.entity.User)obj;
+//		int userId = user.getUserId();
+		String userName = user.getUserName();
+		
+		Map<String, Object> map = Maps.newHashMap();
+		int f = loanPosContractManagementBiz.selectAdjustMaxApproveNumByApproveId(approveId);
+		map.put("approveId",approveId);
+		map.put("approvenum",f);
+		map.put("adjustreason",reasondetail);
+		map.put("adjustdt", new Date());
+		map.put("adjustpersonId",userName);
+		int d = loanPosContractManagementBiz.insertApproveAdjust(map);
+		int e = loanPosContractManagementBiz.modifyContractManagementInfo(updateMap);
+		*/
+        
+        int status = loanPosContractManagementBiz.modifyApprovalInfo(updateMap);
+		out.print("调整批复成功");
+		return null;
+	}
+	
+	
+	
+	@RequestMapping("/updateContractManagement4")
+	public ModelAndView updateDbApp4(HttpServletRequest request, @RequestParam(value = "contNo", required = false)String contNo,@RequestParam(value = "custName", required = false)String custName,@RequestParam(value = "contTotalAmt", required = false)String contTotalAmt,PrintWriter out){
+		String approveId = request.getParameter("approveId");
+		TApproveResult t = loanPosContractManagementBiz.getApproveInfo(approveId);
+		Date ed = t.getExpiryDate();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(ed);
+		cal.add(Calendar.DATE,7);
+		Date ed1 = cal.getTime();
+		Map<String, Object> updateMap = Maps.newHashMap();
+		updateMap.put("approveId", approveId);
+		updateMap.put("approveStatus", "01");
+		updateMap.put("expiryDate",ed1);
+		int a = loanPosContractManagementBiz.modifyContractManagementInfo(updateMap);
+		out.print("激活成功");
+		return null;
+	}
+	
+
+	@RequestMapping("/updateContractManagement5")
+	public ModelAndView updateDbApp5(HttpServletRequest request, @RequestParam(value = "contNo", required = false)String contNo,@RequestParam(value = "custName", required = false)String custName,@RequestParam(value = "contTotalAmt", required = false)String contTotalAmt,PrintWriter out){
+		String approveId = request.getParameter("approveId");
+		Calendar a = Calendar.getInstance();
+		Date c = a.getTime();
+		a.add(Calendar.DAY_OF_MONTH, 7);
+		Date b = a.getTime();
+		Map<String, Object> updateMap = Maps.newHashMap();
+		updateMap.put("approveId", approveId);
+		updateMap.put("approveStatus", "01");
+		updateMap.put("expiryDate",b);
+		int f = loanPosContractManagementBiz.modifyContractManagementInfo(updateMap);
+		out.print("激活成功");
+		return null;
+	}
+	
+	
+	@RequestMapping("/updateContractStatus")
+	public ModelAndView updateContractStatus(HttpServletRequest request, @RequestParam(value = "ctNo", required = false)String contNo,PrintWriter out){
+		logger.info("updateContractStatus begin");
+		ParamReqBean paramReqBean = parseToParamReqBean(request);
+		logger.info("返回的参数列表信息"+paramReqBean.getDataMap());
+		String respCode = (String) paramReqBean.getDataMap().get("RespCode");
+		logger.info("respCode="+respCode);
+		if ("000".equals(respCode)) {
+			Map<String, Object> updateMap = Maps.newHashMap();
+			logger.info("contNo="+contNo);
+			logger.info("agreementStatus=06");
+			updateMap.put("contNo", contNo);
+			updateMap.put("agreementStatus", "06");
+			int flag = loanPosContractManagementBiz.updateContractStatus(updateMap);
+			if (flag ==1){
+				
+				logger.info("电子协议状态更改成功");
+			}else{
+				logger.info("电子协议状态更改失败");
+				
+			}
+		}else {
+			logger.info("电子协议下载失败");
+			
+		}
+		logger.info("updateContractStatus end");
+		return null;
+	}
+	
+	public ParamReqBean parseToParamReqBean(HttpServletRequest request) {
+	    ParamReqBean bean = new ParamReqBean();
+		Enumeration paramsEnum = request.getParameterNames();
+		while (paramsEnum.hasMoreElements()) {
+			String paramName = (String) paramsEnum.nextElement();
+			String paramValue = request.getParameter(paramName);
+			bean.setKeyValue(paramName, paramValue);
+		}
+		return bean;
+	}
+	
+	
+	@RequestMapping("/openChangeApprove")
+	public ModelAndView openChangeApprove(HttpServletRequest request, PrintWriter out){
+		ModelAndView mav = new ModelAndView();
+		String loanId = request.getParameter("loanId");
+		List<Map<String, Object>> approveList = loanPosContractManagementBiz.getApproveMap(loanId);
+		Map<String, Object> approveDetail = approveList.get(0);
+	    String channel = (String) approveDetail.get("channel");
+	    channel = loanPosBusinessCodeService.getItemNameByNo("BizChannel",channel);
+	    approveDetail.put("channel",channel);
+        
+	    String inChannelKind = (String) approveDetail.get("inChannelKind");
+	    inChannelKind = loanPosBusinessCodeService.getItemNameByNo("ImplType",inChannelKind);
+	    approveDetail.put("inChannelKind",inChannelKind);
+	    
+	    String approveMoneyKind = (String) approveDetail.get("approveMoneyKind");
+	    approveMoneyKind = loanPosBusinessCodeService.getItemNameByNo("Currency",approveMoneyKind);
+	    approveDetail.put("approveMoneyKind",approveMoneyKind);
+	    
+	    String applyMoneyKind = (String) approveDetail.get("applyMoneyKind");
+	    applyMoneyKind = loanPosBusinessCodeService.getItemNameByNo("Currency",applyMoneyKind);
+	    approveDetail.put("applyMoneyKind",applyMoneyKind);
+	    
+	    String paybackMethod = (String) approveDetail.get("paybackMethod");
+	    paybackMethod = loanPosBusinessCodeService.getItemNameByNo("AccrualType",paybackMethod);
+	    approveDetail.put("paybackMethod",paybackMethod);
+	    
+        
+        
+	    String jsonString = JSON.toJSONString(approveDetail);
+        out.write(jsonString);
+		return null;	
+	}
+    /**
+     * 生成外呼任务
+     * 
+     * @param ar,refusereason
+     * @return
+     */
+    private int insertCallingTask(TApproveResult ar,String refusereason){
+    	TCallingTask ct = new TCallingTask();
+    	ct.setTaskNo(IdUtil.getId(ReviewNoteConstants.CALLING_TASK_KEY_PREFIX));
+    	ct.setGenerateTime(new Date());
+    	ct.setCallingType(ReviewNoteConstants.CALLING_TASK_CALLINGTYPE_05);
+    	ct.setRelaBizNo(ar.getApproveId());
+    	ct.setRelaBizPhase(ReviewNoteConstants.CALLING_TASK_RELABIZPHASE_APR);
+    	ct.setCustId(ar.getCustId());
+    	ct.setPosCustId(ar.getPosCustId());
+    	ct.setDealInfo(refusereason);
+    	return service.insertSelective(ct);
+    }
+}

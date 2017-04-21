@@ -1,0 +1,29 @@
+/**
+ * 
+ */
+package com.hrbb.loan.pos.entity.listener;
+
+import com.hrbb.loan.pos.entity.event.EventException;
+import com.hrbb.loan.pos.entity.event.POSEvent;
+
+/**
+ * <p>Title: POSLinstener.java </p>
+ * <p>Description:  </p>
+ * <p>Copyright: Copyright (C) 2015 Hrbb Ltd. Co.</p> 
+ *     
+ * @author linzhaolin@hrbb.com.cn
+ * @version 
+ * @date 2015年7月8日
+ *
+ * logs: 1. 
+ */
+public interface POSListener extends java.util.EventListener {
+	
+	public static final int 监听事件类型_消息推送 = 1;  
+	public static final int 监听事件类型_发送短信 = 2;  
+	public static final int 监听事件类型_外呼任务 = 3;
+	
+	public void handleEvent(POSEvent event) throws EventException;
+	
+	public int getType();
+}

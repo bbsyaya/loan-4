@@ -1,0 +1,203 @@
+package com.hrbb.loan.spi.ZZ;
+
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.ftp.client.param.ParamReqBean;
+import com.hrbb.loan.ftp.client.param.ParamResBean;
+import com.hrbb.loan.ftp.client.utils.HttpClient;
+import com.hrbb.loan.pos.dao.entity.TContractManagement;
+import com.hrbb.loan.pos.service.LoanPosContractManagementService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.loan.spiconstants.CreditApplyHServiceConstants;
+import com.hrbb.loan.spiconstants.HServiceReturnCode;
+import com.hrbb.sh.framework.HResponse;
+import com.hrbb.sh.framework.HServiceException;
+
+/**
+ * TransType:AP0006 -> 电子协议回传.
+ * 
+ * @author xiongshaogang
+ * @version $Id: ZZAPPElectronicProtocolBackhaulServiceImpl.java, v 0.1 2015年4月21日 下午2:01:29 xiongshaogang Exp $
+ */
+@Service("zzAppElectronicProtocolBackhaul")
+public class ZZAPPElectronicProtocolBackhaulServiceImpl extends ZZAPPFoundationServiceImpl {
+
+	private final Logger logger = LoggerFactory
+			.getLogger(ZZAPPElectronicProtocolBackhaulServiceImpl.class);
+
+	@Autowired
+    private LoanPosContractManagementService loanPosContractManagementService;
+
+	@Value("#{systemInfo[url]}")
+	private String URL;
+
+	/**
+	 * @see com.hrbb.sh.framework.HService#serve(com.hrbb.sh.framework.HRequest)
+	 */
+	@Override
+	protected HResponse doProcesser(HResponse resp, Map<String, String> headerMap,
+                                    Map<String, String> bodyMap) throws HServiceException {
+
+		logger.debug("in ZZAPPElectronicProtocolBackhaulServiceImpl...");
+        
+        // 1. 电子协议检索
+        TContractManagement tContractManagement = loanPosContractManagementService
+            .getContractInfoByLoanId(bodyMap.get(CreditApplyHServiceConstants.loanid));
+        if (tContractManagement == null) {
+            bodyMap.put("respcode", HServiceReturnCode.LOANID_EXIST_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.LOANID_EXIST_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.LOANID_EXIST_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.LOANID_EXIST_ERROR.getReturnMessage());
+            resp.setRespTime(new Date());
+            logger.error("合同信息不存在");
+            return getBlankHResponse(resp, headerMap, bodyMap);
+        }
+        
+        // 2. 更新电子协议
+        try {
+            Map<String, Object> updateContractMap = Maps.newHashMap();
+            updateContractMap.put("contNo", tContractManagement.getContNo());
+            updateContractMap.put("agreementStatus", "06");
+            updateContractMap.put("signDate", DateUtil.getStrToDate1(bodyMap.get("signdate")));
+            updateContractMap.put("editReason", "电子协议回传");
+            updateContractMap.put("editDate", new Date());
+            updateContractMap.put("editPerson", "system");
+            
+            if (1 != loanPosContractManagementService.updateContractStatus(updateContractMap)) {
+                logger.error("更新电子协议失败");
+                bodyMap.put("respcode", HServiceReturnCode.POS_CONTRACT_ERROR.getReturnCode());
+                bodyMap.put("respmsg", HServiceReturnCode.POS_CONTRACT_ERROR.getReturnMessage());
+                resp.setRespCode(HServiceReturnCode.POS_CONTRACT_ERROR.getReturnCode());
+                resp.setRespMessage(HServiceReturnCode.POS_CONTRACT_ERROR.getReturnMessage());
+                resp.setRespTime(new Date());
+                return getBlankHResponse(resp, headerMap, bodyMap);
+            }
+        } catch (Exception e) {
+            logger.error("更新电子协议失败", e);
+            bodyMap.put("respcode", HServiceReturnCode.POS_CONTRACT_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.POS_CONTRACT_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.POS_CONTRACT_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.POS_CONTRACT_ERROR.getReturnMessage());
+            resp.setRespTime(new Date());
+            return getBlankHResponse(resp, headerMap, bodyMap);
+        }
+		
+		// 3. 通知下载归档
+		ParamReqBean paramReqBean = new ParamReqBean();
+		paramReqBean.setKeyValue(
+				CreditApplyHServiceConstants.ftp_map_key_instno,
+				"BD");
+		paramReqBean.setCustId(tContractManagement.getCustId());
+		logger.debug("CustId=" + tContractManagement.getCustId());
+		paramReqBean.setVersion(CreditApplyHServiceConstants.ftp_version);
+		paramReqBean.setBizType(CreditApplyHServiceConstants.ftp_biztype);
+		paramReqBean.setTransType(CreditApplyHServiceConstants.ftp_transtype);
+		paramReqBean.setKeyValue(
+				CreditApplyHServiceConstants.ftp_map_key_prefix,
+				CreditApplyHServiceConstants.ftp_prefix_app);
+		paramReqBean.setKeyValue(
+				CreditApplyHServiceConstants.ftp_map_key_remotefilename,
+				bodyMap.get(CreditApplyHServiceConstants.imagefilepackagename));
+		paramReqBean.setKeyValue(
+				CreditApplyHServiceConstants.ftp_map_key_LocalSubFolderNameDef,
+				bodyMap.get(bodyMap.get(CreditApplyHServiceConstants.loanid)));
+		paramReqBean.setKeyValue("ctNo", tContractManagement.getContNo());
+		paramReqBean.setKeyValue(CreditApplyHServiceConstants.ftp_map_key_url,
+            URL + CreditApplyHServiceConstants.contract_map_key_returnUrl);
+		logger.debug("url="
+				+ paramReqBean
+						.getValueByKey(CreditApplyHServiceConstants.ftp_map_key_url));
+		logger.debug("paramReqBean = " + paramReqBean.toURLParam());
+        ParamResBean paramResBean = HttpClient.send(paramReqBean);
+		if (paramResBean == null) {
+		    bodyMap.put("respcode", HServiceReturnCode.FTP_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.FTP_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.FTP_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.FTP_ERROR.getReturnMessage());
+            resp.setRespTime(new Date());
+            return getBlankHResponse(resp, headerMap, bodyMap);
+		}
+		logger.debug("paramResBean = " + paramResBean.toURLParam());
+		
+		// 4. 回写成功
+		Map<String, Object> rootMap = Maps.newHashMap();
+		bodyMap = Maps.newHashMap();
+		bodyMap.put("respcode", HServiceReturnCode.SUCCESS.getReturnCode());
+		bodyMap.put("respmsg", HServiceReturnCode.SUCCESS.getReturnMessage());
+		
+		// 4.1 签名处理
+        Map<String, Object> signMap = Maps.newHashMap();
+        for (Map.Entry<String, String> en : bodyMap.entrySet()) {
+            String key = en.getKey();
+            signMap.put(key, en.getValue());
+        }
+        headerMap.put("Mac", sign(signMap, null));
+		
+        rootMap.put("HrbbHeader", headerMap);
+        rootMap.put("HrbbBody", bodyMap);
+        resp.setRespCode(HServiceReturnCode.SUCCESS.getReturnCode());
+        resp.setRespMessage(HServiceReturnCode.SUCCESS.getReturnMessage());
+        resp.setRespTime(new Date());
+        resp.setProperties(rootMap);
+        logger.info("回写数据: " + resp.toString());
+        logger.debug("out ZZAPPElectronicProtocolBackhaulServiceImpl...");
+		return resp;
+	}
+	
+	/**
+     * 请求包校验处理.
+     * 
+     * @param headerMap
+     * @param bodyMap
+     * @return
+     * @throws Exception 
+     */
+    protected boolean validate(Map<String, String> headerMap, Map<String, String> bodyMap,
+                             HResponse resp) throws HServiceException {
+        if (!validateHeader(headerMap, bodyMap, resp)) {
+            return false;
+        }
+        
+        // 申请编号
+        if (StringUtil.isEmpty(bodyMap.get("loanid"))) {
+            logger.error("申请编号为空:[]", bodyMap.get("loanid"));
+            bodyMap.put("respcode", HServiceReturnCode.LOANID_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.LOANID_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.LOANID_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.LOANID_ERROR.getReturnMessage());
+            return false;
+        }
+        
+        // 影像文件包名
+        if (StringUtil.isEmpty(bodyMap.get("imagefilepackagename"))) {
+            logger.error("影像文件包名为空:[]", bodyMap.get("imagefilepackagename"));
+            bodyMap.put("respcode", HServiceReturnCode.IMAGEFILEPACKAGENAME_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.IMAGEFILEPACKAGENAME_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.IMAGEFILEPACKAGENAME_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.IMAGEFILEPACKAGENAME_ERROR.getReturnMessage());
+            return false;
+        }
+        
+        // 协议签订日期
+        if (StringUtil.isEmpty(bodyMap.get("signdate"))) {
+            logger.error("协议签订日期为空:[]", bodyMap.get("signdate"));
+            bodyMap.put("respcode", HServiceReturnCode.BEGINDATE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.BEGINDATE_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.BEGINDATE_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.BEGINDATE_ERROR.getReturnMessage());
+            return false;
+        }
+        
+        return true;
+    }
+}

@@ -1,0 +1,16 @@
+package com.hrbb.loan.pos.biz.backstage.inter;
+
+import java.util.List;
+import java.util.Map;
+
+import com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo;
+
+public interface LoanPosPaybackApplyBiz {
+	List<TPaybackApplyInfo> queryPaybackApplyInfo(Map<String, Object> reqMap);
+
+	int updatePaybackStatus(Map<String, Object> updateMap);
+	
+	List<Map<String, Object>> queryPaybackDetailsByMaps(Map<String, Object> map);
+	
+	List<Map<String, Object>> queryPaybackDetailsBySlApp(Map<String, Object> map);
+}

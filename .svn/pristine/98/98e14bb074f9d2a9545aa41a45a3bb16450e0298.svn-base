@@ -1,0 +1,28 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.sale.biz.inter;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 消费贷业务申请
+ * @author litengfeng
+ * @version $Id: ILoanSaleAppApplyBiz.java, v 0.1 2015年5月13日 上午10:34:43 litengfeng Exp $
+ */
+public interface ILoanSaleApplyBiz {
+    /**
+     * 贷款申请信息登记
+     * 
+     */
+    public Map<String, Object> SaleAppApplyReg(Map<String, Object> creMap,
+                                              Map<String, Object> custMap,
+                                              Map<String, Object> posCustMap,
+                                              Map<String, Object> bankMap,
+                                              Map<String, Object> relMap,
+                                              List<Map<String, Object>> bankSerList);
+    public List<Map<String,Object>> querySaleAppApplyInfoList(Map<String,String> reqMap);
+}

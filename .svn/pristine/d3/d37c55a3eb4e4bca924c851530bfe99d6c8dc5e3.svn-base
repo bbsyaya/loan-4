@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditReportResidenceMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditReportResidence" >
+    <id column="serialNo" property="serialNo" jdbcType="VARCHAR" />
+    <result column="reportNo" property="reportNo" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="updateDate" property="updateDate" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    serialNo, reportNo, address, type, updateDate
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_report_residence
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_credit_report_residence
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportResidence" >
+    insert into t_credit_report_residence (serialNo, reportNo, address, 
+      type, updateDate)
+    values (#{serialNo,jdbcType=VARCHAR}, #{reportNo,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+      #{type,jdbcType=VARCHAR}, #{updateDate,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportResidence" >
+    insert into t_credit_report_residence
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="updateDate != null" >
+        updateDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="Map" >
+    insert into t_credit_report_residence
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="updateDate != null" >
+        updateDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportResidence" >
+    update t_credit_report_residence
+    <set >
+      <if test="reportNo != null" >
+        reportNo = #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null" >
+        updateDate = #{updateDate,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportResidence" >
+    update t_credit_report_residence
+    set reportNo = #{reportNo,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR},
+      updateDate = #{updateDate,jdbcType=VARCHAR}
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,115 @@
+/**
+ * 
+ */
+package com.hrbb.loan.pos.factory.msgr;
+
+import java.util.Arrays;
+
+import com.hrbb.loan.pos.factory.ConfigService;
+import com.hrbb.loan.pos.factory.SysConfigFactory;
+import com.hrbb.loan.pos.util.MessageDigest;
+
+/**
+ * <p>Title: RNMessenger.java </p>
+ * <p>Description:  </p>
+ * <p>Copyright: Copyright (C) 2015 Hrbb Ltd. Co.</p> 
+ *     
+ * @author linzhaolin@hrbb.com.cn
+ * @version 
+ * @date Aug 26, 2015
+ *
+ * logs: 1. 
+ */
+public class RNMessenger extends AbsHttpMessener {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7170080912202687822L;
+	
+	private String messageUrl;
+	
+	private String key;
+	
+	public RNMessenger(){
+		ConfigService cfg = SysConfigFactory.getInstance().getService(getChannel());
+		messageUrl = cfg.getPropertyValue("messageUrl");
+		key = cfg.getPropertyValue("key");
+	}
+	
+	@Override
+	protected boolean initProcess() throws Exception{
+		if(!super.initProcess()){
+			return false;
+		}
+		
+		/*融360增加key和sign
+		 定义中的参数列表的基础上，要增加两个验证参数：
+		key=1264d0a51556dab9131ed88f5125e4cc   （此值固定，是分配给哈行的专用key值）
+		sign=? （计算规则见下述说明）
+		其中参数sign的计算规则为：
+		1.	将所有要传递的字段按名称自然排序（升序）
+		2.	将排好序的字段拼接成查询字符串（用&连接）
+		3.	在字符串的末尾加上  “&001afc9c734a1e1b6e821bfbcda18de1” （固定分给哈行的参数验证签名）
+		4.	对上述得到的字符串进行md5运算，得到的值就是参数sign的最终值
+		*/
+		try{
+			
+			String[] keys = new String[getMessagVars().keySet().size()];
+			getMessagVars().keySet().toArray(keys);
+			
+			Arrays.sort(keys);		//按升序排序
+			
+			StringBuffer signSource = new StringBuffer();
+			for(int i=0; i<keys.length; i++){
+				String colId = keys[i];
+				signSource.append(colId).append("=").append(getMessagVars().get(colId)).append("&");
+			}
+			signSource.append(key);
+			
+			String sign = MessageDigest.getDigestAsLowerHexString("MD5", signSource.toString());
+			
+			getMessagVars().put("key", key);
+			getMessagVars().put("sign", sign);
+		
+		}catch(Exception e){
+			logger.error("融360验证参数生成失败!",e);
+			return true;
+		}
+		
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.hrbb.loan.pos.factory.msgr.MessengerService#getChannel()
+	 */
+	@Override
+	public String getChannel() {
+		return "RN";
+	}
+
+	/* (non-Javadoc)
+	 * @see com.hrbb.loan.pos.factory.msgr.MessengerService#getEncryptedRander()
+	 */
+	@Override
+	public String getEncryptedRander() {
+		return "rn";
+	}
+
+	/* (non-Javadoc)
+	 * @see com.hrbb.loan.pos.factory.msgr.MessengerService#getTransCode()
+	 */
+	@Override
+	public String getTransCode() {
+		return "RNT15";
+	}
+
+	/* (non-Javadoc)
+	 * @see com.hrbb.loan.pos.factory.msgr.MessengerService#getUrl()
+	 */
+	@Override
+	public String getUrl() {
+		return messageUrl;
+	}
+
+}

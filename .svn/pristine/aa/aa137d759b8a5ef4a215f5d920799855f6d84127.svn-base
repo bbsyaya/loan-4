@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TBusinessDictionaryMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TBusinessDictionary" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="codeNo" property="codeNo" jdbcType="VARCHAR" />
+    <result column="codeName" property="codeName" jdbcType="VARCHAR" />
+    <result column="itemNo" property="itemNo" jdbcType="VARCHAR" />
+    <result column="itemName" property="itemName" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="extAttr" property="extAttr" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, codeNo, codeName, itemNo, itemName, status,extAttr
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_business_dictionary
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectMap" resultType="map" parameterType="map" >
+    SELECT 
+    <include refid="Base_Column_List" />
+    FROM t_business_dictionary
+    WHERE 1=1
+    <if test="codeNo != null">
+    	AND codeNo = #{codeNo}
+    </if>
+    <if test="codeName != null">
+    	AND codeName = #{codeName}
+    </if>
+    <if test="itemNo != null">
+    	AND itemNo = #{itemNo}
+    </if>
+    <if test="itemName != null">
+    	AND itemName = #{itemName}
+    </if>
+    <if test="itemNoLike != null">
+    	AND itemNo like #{itemNoLike}
+    </if>
+    <if test="itemNoNotLike != null">
+    	AND itemNo not like #{itemNoNotLike}
+    </if>
+    <if test="itemNoNotLike2 != null">
+    	AND itemNo not like #{itemNoNotLike2}
+    </if>
+    <if test="notItemNo != null">
+    	AND itemNo != #{notItemNo}
+    </if>
+    <if test="notItemNo2 != null">
+    	AND itemNo != #{notItemNo2}
+    </if>
+    <if test="status != null">
+    	AND status = #{status}
+    </if>
+    <if test="extAttr != null">
+    	AND (extAttr = #{extAttr} OR itemNo=9)
+    </if>
+    <if test="extAttrLike != null">
+    	AND extAttr like #{extAttrLike}
+    </if>
+    order by itemNo
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_business_dictionary
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TBusinessDictionary" >
+    insert into t_business_dictionary (id, codeNo, codeName, 
+      itemNo, itemName, status
+      )
+    values (#{id,jdbcType=INTEGER}, #{codeNo,jdbcType=VARCHAR}, #{codeName,jdbcType=VARCHAR}, 
+      #{itemNo,jdbcType=VARCHAR}, #{itemName,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TBusinessDictionary" >
+    insert into t_business_dictionary
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="codeNo != null" >
+        codeNo,
+      </if>
+      <if test="codeName != null" >
+        codeName,
+      </if>
+      <if test="itemNo != null" >
+        itemNo,
+      </if>
+      <if test="itemName != null" >
+        itemName,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="codeNo != null" >
+        #{codeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="codeName != null" >
+        #{codeName,jdbcType=VARCHAR},
+      </if>
+      <if test="itemNo != null" >
+        #{itemNo,jdbcType=VARCHAR},
+      </if>
+      <if test="itemName != null" >
+        #{itemName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TBusinessDictionary" >
+    update t_business_dictionary
+    <set >
+      <if test="codeNo != null" >
+        codeNo = #{codeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="codeName != null" >
+        codeName = #{codeName,jdbcType=VARCHAR},
+      </if>
+      <if test="itemNo != null" >
+        itemNo = #{itemNo,jdbcType=VARCHAR},
+      </if>
+      <if test="itemName != null" >
+        itemName = #{itemName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TBusinessDictionary" >
+    update t_business_dictionary
+    set codeNo = #{codeNo,jdbcType=VARCHAR},
+      codeName = #{codeName,jdbcType=VARCHAR},
+      itemNo = #{itemNo,jdbcType=VARCHAR},
+      itemName = #{itemName,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <select id="selectOne" resultMap="BaseResultMap" parameterType="com.hrbb.loan.pos.dao.entity.TBusinessDictionary" >
+    SELECT 
+    <include refid="Base_Column_List" />
+    FROM t_business_dictionary
+    WHERE 1=1
+    <if test="id != null">
+    	AND id = #{id}
+    </if>
+    <if test="codeNo != null">
+    	AND codeNo = #{codeNo}
+    </if>
+    <if test="itemNo != null">
+    	AND itemNo = #{itemNo}
+    </if>
+    <if test="status != null">
+    	AND status = #{status}
+    </if>
+  </select>
+  <select id="selectMapWithExtOrder" resultType="map" parameterType="map" >
+    SELECT 
+    <include refid="Base_Column_List" />
+    FROM t_business_dictionary
+    WHERE codeNo = #{codeNo}
+    <if test="itemNo != null">
+    	AND itemNo = #{itemNo}
+    </if>
+    <if test="extAttr != null">
+    	AND extAttr = #{extAttr}
+    </if>
+    <if test="status != null">
+    	AND status = #{status}
+    </if>
+    order by displayNo
+  </select>
+  <select id="selectRefuseReaonMap" resultType="map" parameterType="map" >
+    SELECT 
+    <include refid="Base_Column_List" />
+    FROM t_business_dictionary
+    WHERE 1=1
+    <if test="codeNo != null">
+    	AND codeNo = #{codeNo}
+    </if>
+    <if test="status != null">
+    	AND status = #{status}
+    </if>
+    <if test="extAttr != null">
+    	AND extAttr = #{extAttr}
+    </if>
+    <if test="extAttrLike != null">
+    	AND extAttr like #{extAttrLike}
+    </if>
+    <if test="opflag != null">
+        and itemNo != '08'
+    </if>
+    order by itemNo
+  </select>
+  <select id="selectAddInfoMap" resultType="map" parameterType="map" >
+    SELECT 
+    <include refid="Base_Column_List" />
+    FROM t_business_dictionary
+    WHERE 1=1
+    <if test="codeNo != null">
+    	AND codeNo = #{codeNo}
+    </if>
+    <if test="status != null">
+    	AND status = #{status}
+    </if>
+    <if test="extAttr != null">
+    	AND extAttr = #{extAttr}
+    </if>
+    <if test="extAttrLike != null">
+    	AND extAttr like #{extAttrLike}
+    </if>
+    <if test="opflag != null">
+        and itemNo != '08'
+    </if>
+    order by itemNo
+  </select>
+  <select id="selectByIds" resultMap="BaseResultMap">
+    SELECT 
+    <include refid="Base_Column_List" />
+    FROM t_business_dictionary
+    WHERE codeNo = #{codeNo}
+	AND itemNo in 
+	<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+	  #{item}  
+	</foreach>
+  </select>
+</mapper>

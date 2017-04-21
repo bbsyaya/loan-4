@@ -1,0 +1,32 @@
+package com.amarsoft.app.crq.report;
+
+import java.io.File;
+import java.nio.charset.Charset;
+import java.util.List;
+
+import com.amarsoft.are.jbo.BizObject;
+import com.google.common.io.Files;
+
+public class CreditJsonTest {
+
+	/**
+	 * @param args
+	 * @throws Exception 
+	 */
+	public static void main(String[] args) throws Exception {
+		String jsonStr="";
+		File file=new File("d:\\2015101300000012.txt");
+		StringBuffer sb = new StringBuffer();
+		List<String> list = Files.readLines(file, Charset.forName("GBK"));
+		for(String aa : list){
+			sb.append(aa);
+		}
+		CreditReport creditReport=CreditReportManager.convertJson2CreditReport(sb.toString());
+		//System.out.println("creditReport"+creditReport.getReportData().getPartByName("Header").getLabel());
+		
+		
+		
+         
+	}	
+
+}

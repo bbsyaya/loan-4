@@ -1,0 +1,52 @@
+package com.hrbb.loan.pos.dao.impl;
+
+import java.util.List;
+
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+import org.springframework.stereotype.Repository;
+
+import com.hrbb.loan.pos.dao.TUpsBillcardstatSerialDao;
+import com.hrbb.loan.pos.dao.entity.TUpsBillcardstatSerial;
+import com.hrbb.loan.pos.dao.entity.TUpsIndexConsumeCity;
+import com.hrbb.loan.pos.dao.entity.TUpsIndexConsumeGategories;
+import com.hrbb.loan.pos.dao.entity.TUpsIndexMonthConsumeCondition;
+
+@Repository("upsBillcardstatSerialDaoImpl")
+public class TUpsBillcardstatSerialDaoImpl extends SqlSessionDaoSupport implements TUpsBillcardstatSerialDao {
+
+    @Override
+    public int insert(TUpsBillcardstatSerial upsbillcardstatSercial) {
+        
+        return getSqlSession().insert("TUpsBillcardstatSerialMapper.insertSelective", upsbillcardstatSercial);
+    }
+    
+    
+    @Override
+    public int insertBatch(List<TUpsBillcardstatSerial> upsBillcardstatSercials) {
+        
+        return getSqlSession().insert("TUpsBillcardstatSerialMapper.insertBatch", upsBillcardstatSercials);
+    }
+
+    @Override
+    public List<TUpsBillcardstatSerial> selectTUpsBillcardstatSerials(String fileUuid) {
+        return getSqlSession().selectList("TUpsBillcardstatSerialMapper.selectListByFileUuid", fileUuid);
+    }
+    
+    @Override
+    public List<TUpsIndexMonthConsumeCondition> selectCondition(String fileUuid) {
+        return getSqlSession().selectList("TUpsBillcardstatSerialMapper.selectCondition",fileUuid);
+    }
+
+
+    @Override
+    public List<TUpsIndexConsumeCity> selectCity(String fileUuid) {
+        return getSqlSession().selectList("TUpsBillcardstatSerialMapper.selectCity",fileUuid);
+    }
+
+
+    @Override
+    public List<TUpsIndexConsumeGategories> selectMcc(String fileUuid) {
+        return getSqlSession().selectList("TUpsBillcardstatSerialMapper.selectMcc",fileUuid);
+    }
+
+}

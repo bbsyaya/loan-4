@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCfgCnapsInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCfgCnapsInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="bankNo" property="bankNo" jdbcType="VARCHAR" />
+    <result column="cnaps" property="cnaps" jdbcType="VARCHAR" />
+    <result column="cnapsName" property="cnapsName" jdbcType="VARCHAR" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="division" property="division" jdbcType="VARCHAR"/>
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, bankNo, cnaps, cnapsName, province, city, division, address, createTime, updateTime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_cfg_cnaps_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_cfg_cnaps_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCfgCnapsInfo" >
+    insert into t_cfg_cnaps_info (id, bankNo, cnaps, 
+      cnapsName, province, city, division,
+      address, createTime, updateTime
+      )
+    values (#{id,jdbcType=INTEGER}, #{bankNo,jdbcType=VARCHAR}, #{cnaps,jdbcType=VARCHAR}, 
+      #{cnapsName,jdbcType=VARCHAR}, #{province,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, #{division,jdbcType=VARCHAR},
+      #{address,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCfgCnapsInfo" >
+    insert into t_cfg_cnaps_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="bankNo != null" >
+        bankNo,
+      </if>
+      <if test="cnaps != null" >
+        cnaps,
+      </if>
+      <if test="cnapsName != null" >
+        cnapsName,
+      </if>
+      <if test="province != null" >
+        province,
+      </if>
+      <if test="city != null" >
+        city,
+      </if>
+      <if test="division != null" >
+      	division,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="createTime != null" >
+        createTime,
+      </if>
+      <if test="updateTime != null" >
+        updateTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="bankNo != null" >
+        #{bankNo,jdbcType=VARCHAR},
+      </if>
+      <if test="cnaps != null" >
+        #{cnaps,jdbcType=VARCHAR},
+      </if>
+      <if test="cnapsName != null" >
+        #{cnapsName,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null" >
+        #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="division != null">
+      	#{division,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCfgCnapsInfo" >
+    update t_cfg_cnaps_info
+    <set >
+      <if test="bankNo != null" >
+        bankNo = #{bankNo,jdbcType=VARCHAR},
+      </if>
+      <if test="cnaps != null" >
+        cnaps = #{cnaps,jdbcType=VARCHAR},
+      </if>
+      <if test="cnapsName != null" >
+        cnapsName = #{cnapsName,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null" >
+        province = #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        city = #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="division != null">
+      	division = #{division,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        createTime = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        updateTime = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCfgCnapsInfo" >
+    update t_cfg_cnaps_info
+    set bankNo = #{bankNo,jdbcType=VARCHAR},
+      cnaps = #{cnaps,jdbcType=VARCHAR},
+      cnapsName = #{cnapsName,jdbcType=VARCHAR},
+      province = #{province,jdbcType=VARCHAR},
+      city = #{city,jdbcType=VARCHAR},
+      division = ${division,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      createTime = #{createTime,jdbcType=TIMESTAMP},
+      updateTime = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="getBankInfoBySelective" parameterType="Map" resultType="Map">
+  	select 
+  	<include refid="Base_Column_List" />
+  	from t_cfg_cnaps_info
+  	where 1=1
+  	 <if test="bankNo != null" >
+        AND bankNo = #{bankNo}
+      </if>
+      <if test="cnaps != null" >
+        AND cnaps = #{cnaps}
+      </if>
+      <if test="cnapsName != null" >
+        AND cnapsName like #{cnapsName}
+      </if>
+      <if test="province != null" >
+        AND province = #{province}
+      </if>
+      <if test="city != null" >
+        AND city = #{city}
+      </if>
+      <if test="division != null">
+      	AND division = #{division}
+      </if>
+      <if test="address != null" >
+        AND address like #{address}
+      </if>
+      <if test="createTime != null" >
+        AND createTime = #{createTime}
+      </if>
+      <if test="updateTime != null" >
+        AND updateTime = #{updateTime}
+      </if>
+  </select>
+</mapper>

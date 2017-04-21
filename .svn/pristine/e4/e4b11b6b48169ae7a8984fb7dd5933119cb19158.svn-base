@@ -1,0 +1,224 @@
+package com.hrbb.loan.spi.HC;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executor;
+
+import javax.annotation.PostConstruct;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.constants.CreditApplyConstants;
+import com.hrbb.loan.pos.biz.backstage.inter.ILoanPosCreditApplyBackStageBiz;
+import com.hrbb.loan.pos.dao.entity.TCreditApply;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.ExecutorUtil;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.loan.pos.util.ValidateUtil;
+import com.hrbb.loan.pos.util.constants.BusinessDictionaryConstants;
+import com.hrbb.loan.spiconstants.CreditApplyHServiceConstants;
+import com.hrbb.loan.spiconstants.HServiceReturnCode;
+import com.hrbb.loan.thread.UmCreditApplyThread;
+import com.hrbb.sh.framework.HRequest;
+import com.hrbb.sh.framework.HResponse;
+import com.hrbb.sh.framework.HService;
+import com.hrbb.sh.framework.HServiceException;
+
+/**
+ * 银商pos流水上传
+ * @author Johnson
+ *
+ *
+ */
+@Service("hcPosSerial")
+public class HCPosSerialHServiceImpl implements HService{
+	
+	private Logger logger = LoggerFactory.getLogger(HCPosSerialHServiceImpl.class);
+	
+	@Autowired
+	private ILoanPosCreditApplyBackStageBiz loanPosCreditApplyBackStageBiz;
+	
+	Executor executor = null;
+	
+	@PostConstruct
+	private void initExecutor(){
+		executor = ExecutorUtil.getScheduledThreadExecutor(10);
+	}
+	
+	@Autowired
+	@Qualifier("umCreditApplyThread")
+	private UmCreditApplyThread runnable;
+
+	@Override
+	public HResponse serve(HRequest request) throws HServiceException {
+		Map<String, Object> props = request.getProperties();
+		//装载pos流水参数
+		List<Map<String, Object>> posSerialMapList = Lists.newArrayList();
+		
+		HResponse resp = new HResponse();
+		/*String custid = (String)props.get(CreditApplyHServiceConstants.custid);*/
+		/*if(StringUtil.isEmpty(custid)){
+			resp.setRespCode(HServiceReturnCode.CUSTID_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.CUSTID_ERROR.getReturnMessage());
+			return resp;
+		}*/
+			
+		/*
+		String custname = (String)props.get(CreditApplyHServiceConstants.custname);
+		
+		String paperkind = (String)props.get(CreditApplyHServiceConstants.paperkind);
+		
+		String paperid = (String)props.get(CreditApplyHServiceConstants.paperid);*/
+		//申请流水号
+		String loanid = (String)props.get(CreditApplyHServiceConstants.loanid);
+		if(StringUtil.isEmpty(loanid)){
+			resp.setRespCode(HServiceReturnCode.LOANID_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.LOANID_ERROR.getReturnMessage());
+			return resp;
+		}
+		//pos交易流水号
+		/*String posflowid = (String)props.get(CreditApplyHServiceConstants.posflowid);*/
+		//每月pos交易金额
+		String posamt = (String)props.get(CreditApplyHServiceConstants.posamt);
+		logger.debug("posamt:"+posamt);
+		if(StringUtil.isEmpty(posamt) || !ValidateUtil.checkIntegerOrDoubleArray(posamt.split("[|]"))){
+			resp.setRespCode(HServiceReturnCode.POSAMT_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.POSAMT_ERROR.getReturnMessage());
+			return resp;
+		}
+		//每月pos交易笔数
+		String possum = (String)props.get(CreditApplyHServiceConstants.possum);
+		logger.debug("possum:" + possum);
+		if(StringUtil.isEmpty(possum) || !ValidateUtil.checkIntegerArray(possum.split("[|]"))){
+			resp.setRespCode(HServiceReturnCode.POSSUM_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.POSSUM_ERROR.getReturnMessage());
+			return resp;
+		}
+		//每月正常时间的交易金额
+		String posamtnor = (String)props.get(CreditApplyHServiceConstants.posamtnor);
+		if(StringUtil.isEmpty(posamtnor) || !ValidateUtil.checkIntegerOrDoubleArray(posamtnor.split("[|]"))){
+			resp.setRespCode(HServiceReturnCode.POSAMTNOR_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.POSAMTNOR_ERROR.getReturnMessage());
+			return resp;
+		}
+		//每月正常时间的交易笔数
+		String possumnor = (String)props.get(CreditApplyHServiceConstants.possumnor);
+		if (StringUtil.isEmpty(possumnor) || !ValidateUtil.checkIntegerArray(possumnor.split("[|]"))) {
+			resp.setRespCode(HServiceReturnCode.POSSUMNOR_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.POSSUMNOR_ERROR.getReturnMessage());
+			return resp;
+		}
+		//每月最大单笔交易金额
+		String posamtmax = (String)props.get(CreditApplyHServiceConstants.posamtmax);
+		if(StringUtil.isEmpty(posamtmax) || !ValidateUtil.checkIntegerOrDoubleArray(posamtmax.split("[|]"))){
+			resp.setRespCode(HServiceReturnCode.POSAMTMAX_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.POSAMTMAX_ERROR.getReturnMessage());
+			return resp;
+		}
+		//每月信用卡交易金额占比
+		String posamtcreper = (String)props.get(CreditApplyHServiceConstants.posamtcreper);
+		if(StringUtil.isEmpty(posamtcreper)){
+			resp.setRespCode(HServiceReturnCode.POSAMTCREPER_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.POSAMTCREPER_ERROR.getReturnMessage());
+			return resp;
+		}
+		//每月信用卡交易笔数占比
+		String possumcreper = (String)props.get(CreditApplyHServiceConstants.possumcreper);
+		if(StringUtil.isEmpty(possumcreper)){
+			resp.setRespCode(HServiceReturnCode.POSSUMCREPER_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.POSSUMCREPER_ERROR.getReturnMessage());
+			return resp;
+		}
+		//每月不重复卡号数
+		String poscardsum = (String)props.get(CreditApplyHServiceConstants.poscardsum);
+		if(StringUtil.isEmpty(poscardsum) || !ValidateUtil.checkIntegerArray(poscardsum.split("[|]"))){
+			resp.setRespCode(HServiceReturnCode.POSCARDSUM_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.POSCARDSUM_ERROR.getReturnMessage());
+			return resp;
+		}
+		
+		String[] posamtArray = posamt.split("[|]");
+		String[] possumArray = possum.split("[|]");
+		String[] posamtnorArray = posamtnor.split("[|]");
+		String[] possumnorArray = possumnor.split("[|]");
+		String[] posamtmaxArray = posamtmax.split("[|]");
+		String[] posamtcreperArray = posamtcreper.split("[|]");
+		String[] possumcreperArray = possumcreper.split("[|]");
+		String[] poscardsumArray = poscardsum.split("[|]");
+		for(int i=0; i<12; i++){
+			Map<String, Object> posSerialMap = Maps.newHashMap();
+			posSerialMap.put(CreditApplyConstants.LOAN_ID, loanid);
+			posSerialMap.put(CreditApplyConstants.tradeAmt, posamtArray[i]);
+			posSerialMap.put(CreditApplyConstants.tradeNum, possumArray[i]);
+			posSerialMap.put(CreditApplyConstants.regTimeTradeAmt, posamtnorArray[i]);
+			posSerialMap.put(CreditApplyConstants.regTimeTradeNum, possumnorArray[i]);
+			posSerialMap.put(CreditApplyConstants.maxTradeAmtPerMonth, posamtmaxArray[i]);
+			posSerialMap.put(CreditApplyConstants.creditCardTradeAmtRate, posamtcreperArray[i]);
+			posSerialMap.put(CreditApplyConstants.creditCardTradeNumRate, possumcreperArray[i]);
+			posSerialMap.put(CreditApplyConstants.differentCardNoNum, poscardsumArray[i]);
+			posSerialMap.put(CreditApplyConstants.tradeDate, DateUtil.getEarlyMonthPattern11(i+1));
+			posSerialMapList.add(posSerialMap);
+		}
+		//POS明细汇总标识位
+		/*String posflag = (String)props.get(CreditApplyHServiceConstants.posflag);
+		//查询开始日期
+		String begindate = (String)props.get(CreditApplyHServiceConstants.begindate);
+		//查询截止日期
+		String enddate = (String)props.get(CreditApplyHServiceConstants.enddate);*/
+		/*//申请流水号(商户)
+		String stdshno = (String)props.get(CreditApplyHServiceConstants.stdshno);
+		//商户ID
+		String stdmerno = (String)props.get(CreditApplyHServiceConstants.stdmerno);*/
+		@SuppressWarnings("unchecked")
+		boolean bol = loanPosCreditApplyBackStageBiz.updloadPosSerial(BusinessDictionaryConstants.BIZ_CHANNEL_UM,
+				BusinessDictionaryConstants.POS_TYPE_MONTH_COLLECT, posSerialMapList);
+		//如果上传pos流水成功
+		if(bol){
+			TCreditApply tCreditApply = loanPosCreditApplyBackStageBiz.queryCreditApplyDetail(loanid);
+			if(tCreditApply != null){
+				//如果是待处理状态
+				if("00".equals(tCreditApply.getApplyStatus())){
+					logger.debug(loanid+"的订单状态为:00待处理中");
+					resp.setRespCode(HServiceReturnCode.SUCCESS.getReturnCode());
+					resp.setRespMessage(HServiceReturnCode.SUCCESS.getReturnMessage());
+					resp.setRespTime(new Date());
+					//查询出该笔申请,下载影像资料及工商，公安，账户验真
+					Map<String, Object> threadMap = Maps.newHashMap();
+					threadMap.put("imagefilepackagename", tCreditApply.getImageFilePackageName());
+					threadMap.put("loanid", loanid);
+					runnable.setReqMap(threadMap);
+					executor.execute(runnable);
+					return resp;
+				}else{
+					logger.debug(loanid+"的订单状态为:"+tCreditApply.getApplyStatus()+"说明直接被拒绝");
+					resp.setRespCode(HServiceReturnCode.OTHER_ERROR.getReturnCode());
+					resp.setRespMessage(HServiceReturnCode.OTHER_ERROR.getReturnMessage());
+					return resp;
+				}
+			}else{
+				logger.error(loanid + "没有该流水");
+				resp.setRespCode(HServiceReturnCode.OTHER_ERROR.getReturnCode());
+				resp.setRespMessage(HServiceReturnCode.OTHER_ERROR.getReturnMessage());
+				resp.setRespTime(new Date());
+				return resp;
+			}
+		//如果失败
+		}else{
+			resp.setRespCode(HServiceReturnCode.OTHER_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.OTHER_ERROR.getReturnMessage());
+			resp.setRespTime(new Date());
+			return resp;
+		}
+		
+	}
+	
+	
+
+}

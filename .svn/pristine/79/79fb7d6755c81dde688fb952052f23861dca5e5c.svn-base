@@ -1,0 +1,38 @@
+package com.hrbb.loan.pos.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.hrbb.loan.pos.dao.TUpsBillcardstatQueryInfoDao;
+import com.hrbb.loan.pos.dao.TUpsBillcardstatSerialDao;
+import com.hrbb.loan.pos.dao.entity.TUpsBillcardstatQueryInfo;
+import com.hrbb.loan.pos.dao.entity.TUpsBillcardstatSerial;
+import com.hrbb.loan.pos.service.UpsDataApiService;
+
+@Component("upsDataApiServiceImpl")
+public class UpsDataApiServiceImpl implements UpsDataApiService {
+
+    @Autowired
+    private TUpsBillcardstatSerialDao upsBillcardstatSerialDao;
+    
+    @Autowired
+    private TUpsBillcardstatQueryInfoDao upsBillcardstatQueryInfoDao;
+    
+    @Override
+    public int saveTUpsBillcardstatSerial(TUpsBillcardstatSerial upsBillcardstatSerial) {
+        
+        return upsBillcardstatSerialDao.insert(upsBillcardstatSerial);
+    }
+    @Override
+    public int saveTUpsBillcardstatSerialBatch(List<TUpsBillcardstatSerial> upsBillcardstatSerials) {
+        return upsBillcardstatSerialDao.insertBatch(upsBillcardstatSerials);
+    }
+    
+    @Override
+    public int saveUpsBillcardstatQueryInfo(TUpsBillcardstatQueryInfo upsBillcardstatQueryInfo){
+        return upsBillcardstatQueryInfoDao.insert(upsBillcardstatQueryInfo);
+    }
+
+}

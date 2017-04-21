@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditReportGuaranteeMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditReportGuarantee" >
+    <id column="serialNo" property="serialNo" jdbcType="VARCHAR" />
+    <result column="reportNo" property="reportNo" jdbcType="VARCHAR" />
+    <result column="organName" property="organName" jdbcType="VARCHAR" />
+    <result column="contractAmt" property="contractAmt" jdbcType="DECIMAL" />
+    <result column="beginDate" property="beginDate" jdbcType="VARCHAR" />
+    <result column="endDate" property="endDate" jdbcType="VARCHAR" />
+    <result column="guaranteeAmt" property="guaranteeAmt" jdbcType="DECIMAL" />
+    <result column="guaranteeBalance" property="guaranteeBalance" jdbcType="DECIMAL" />
+    <result column="class5State" property="class5State" jdbcType="VARCHAR" />
+    <result column="billingDate" property="billingDate" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    serialNo, reportNo, organName, contractAmt, beginDate, endDate, guaranteeAmt, guaranteeBalance, 
+    class5State, billingDate
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_report_guarantee
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_credit_report_guarantee
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportGuarantee" >
+    insert into t_credit_report_guarantee (serialNo, reportNo, organName, 
+      contractAmt, beginDate, endDate, 
+      guaranteeAmt, guaranteeBalance, class5State, 
+      billingDate)
+    values (#{serialNo,jdbcType=VARCHAR}, #{reportNo,jdbcType=VARCHAR}, #{organName,jdbcType=VARCHAR}, 
+      #{contractAmt,jdbcType=DECIMAL}, #{beginDate,jdbcType=VARCHAR}, #{endDate,jdbcType=VARCHAR}, 
+      #{guaranteeAmt,jdbcType=DECIMAL}, #{guaranteeBalance,jdbcType=DECIMAL}, #{class5State,jdbcType=VARCHAR}, 
+      #{billingDate,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportGuarantee" >
+    insert into t_credit_report_guarantee
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="organName != null" >
+        organName,
+      </if>
+      <if test="contractAmt != null" >
+        contractAmt,
+      </if>
+      <if test="beginDate != null" >
+        beginDate,
+      </if>
+      <if test="endDate != null" >
+        endDate,
+      </if>
+      <if test="guaranteeAmt != null" >
+        guaranteeAmt,
+      </if>
+      <if test="guaranteeBalance != null" >
+        guaranteeBalance,
+      </if>
+      <if test="class5State != null" >
+        class5State,
+      </if>
+      <if test="billingDate != null" >
+        billingDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="organName != null" >
+        #{organName,jdbcType=VARCHAR},
+      </if>
+      <if test="contractAmt != null" >
+        #{contractAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="beginDate != null" >
+        #{beginDate,jdbcType=VARCHAR},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=VARCHAR},
+      </if>
+      <if test="guaranteeAmt != null" >
+        #{guaranteeAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="guaranteeBalance != null" >
+        #{guaranteeBalance,jdbcType=DECIMAL},
+      </if>
+      <if test="class5State != null" >
+        #{class5State,jdbcType=VARCHAR},
+      </if>
+      <if test="billingDate != null" >
+        #{billingDate,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="map" >
+    insert into t_credit_report_guarantee
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="organName != null" >
+        organName,
+      </if>
+      <if test="contractAmt != null" >
+        contractAmt,
+      </if>
+      <if test="beginDate != null" >
+        beginDate,
+      </if>
+      <if test="endDate != null" >
+        endDate,
+      </if>
+      <if test="guaranteeAmt != null" >
+        guaranteeAmt,
+      </if>
+      <if test="guaranteeBalance != null" >
+        guaranteeBalance,
+      </if>
+      <if test="class5State != null" >
+        class5State,
+      </if>
+      <if test="billingDate != null" >
+        billingDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="organName != null" >
+        #{organName,jdbcType=VARCHAR},
+      </if>
+      <if test="contractAmt != null" >
+        #{contractAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="beginDate != null" >
+        #{beginDate,jdbcType=VARCHAR},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=VARCHAR},
+      </if>
+      <if test="guaranteeAmt != null" >
+        #{guaranteeAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="guaranteeBalance != null" >
+        #{guaranteeBalance,jdbcType=DECIMAL},
+      </if>
+      <if test="class5State != null" >
+        #{class5State,jdbcType=VARCHAR},
+      </if>
+      <if test="billingDate != null" >
+        #{billingDate,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportGuarantee" >
+    update t_credit_report_guarantee
+    <set >
+      <if test="reportNo != null" >
+        reportNo = #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="organName != null" >
+        organName = #{organName,jdbcType=VARCHAR},
+      </if>
+      <if test="contractAmt != null" >
+        contractAmt = #{contractAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="beginDate != null" >
+        beginDate = #{beginDate,jdbcType=VARCHAR},
+      </if>
+      <if test="endDate != null" >
+        endDate = #{endDate,jdbcType=VARCHAR},
+      </if>
+      <if test="guaranteeAmt != null" >
+        guaranteeAmt = #{guaranteeAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="guaranteeBalance != null" >
+        guaranteeBalance = #{guaranteeBalance,jdbcType=DECIMAL},
+      </if>
+      <if test="class5State != null" >
+        class5State = #{class5State,jdbcType=VARCHAR},
+      </if>
+      <if test="billingDate != null" >
+        billingDate = #{billingDate,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportGuarantee" >
+    update t_credit_report_guarantee
+    set reportNo = #{reportNo,jdbcType=VARCHAR},
+      organName = #{organName,jdbcType=VARCHAR},
+      contractAmt = #{contractAmt,jdbcType=DECIMAL},
+      beginDate = #{beginDate,jdbcType=VARCHAR},
+      endDate = #{endDate,jdbcType=VARCHAR},
+      guaranteeAmt = #{guaranteeAmt,jdbcType=DECIMAL},
+      guaranteeBalance = #{guaranteeBalance,jdbcType=DECIMAL},
+      class5State = #{class5State,jdbcType=VARCHAR},
+      billingDate = #{billingDate,jdbcType=VARCHAR}
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

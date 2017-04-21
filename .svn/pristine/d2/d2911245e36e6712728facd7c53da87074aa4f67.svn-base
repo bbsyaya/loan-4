@@ -1,0 +1,86 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.service.impl;
+
+import java.util.Date;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.dao.TCreditReportBriefDao;
+import com.hrbb.loan.pos.dao.entity.TCreditReportBrief;
+import com.hrbb.loan.pos.service.CreditReportService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.constants.ReviewNoteConstants;
+
+/**
+ * 
+ * @author marco
+ * @version $Id: CreditReportServiceImpl.java, v 0.1 2015-3-2 下午1:59:24 marco
+ *          Exp $
+ */
+@Service("creditReportService")
+public class CreditReportServiceImpl implements CreditReportService {
+
+	@Autowired
+	@Qualifier("tCreditReportBriefDao")
+	private TCreditReportBriefDao tCreditReportBriefDao;
+
+	/**
+	 * 查询征信报告
+	 * 
+	 * @throws Exception
+	 * 
+	 * @see com.hrbb.loan.pos.service.CreditReportService#queryCreditReport(java.lang.String)
+	 */
+	@Override
+	public int checkCreditReport(String paperId) {
+		Map<String, Object> reqMap = Maps.newHashMap();
+		reqMap.put(ReviewNoteConstants.CREDIT_REPORT_MAP_KEY_CERTNO, paperId);
+		reqMap.put(ReviewNoteConstants.CREDIT_REPORT_MAP_KEY_CERTTYPE,
+				ReviewNoteConstants.CREDIT_REPORT_MAP_VALUE_CERTTYPE_0);
+		TCreditReportBrief crf = tCreditReportBriefDao
+				.selectOneByCertNo(reqMap);
+		// 没有记录
+		if (crf == null) {
+			return ReviewNoteConstants.CREDIT_REPORT_RESULT_VALUE_1;
+		}
+		// 记录存在
+		// 征信报告不完整
+		if (!ReviewNoteConstants.CREDIT_REPORT_COMPLETEFLAG_0.equals(crf
+				.getCompleteFlag())) {
+			return ReviewNoteConstants.CREDIT_REPORT_RESULT_VALUE_2;
+		}
+		// 征信报告完整
+		Date queryTime = null;
+		try {
+			queryTime = DateUtil.getDatePattern9(crf.getQueryTime());
+		} catch (Exception e) {
+			// 查询时间错误，征信报告失效
+			return ReviewNoteConstants.CREDIT_REPORT_RESULT_VALUE_3;
+		}
+		long diffDay = DateUtil.getDateDiffFromToday(queryTime);
+		// 查询时间大于20天
+		if (diffDay > 20) {
+			return ReviewNoteConstants.CREDIT_REPORT_RESULT_VALUE_4;
+		}
+		return ReviewNoteConstants.CREDIT_REPORT_RESULT_VALUE_0;
+	}
+
+	@Override
+	public TCreditReportBrief getBrief(String paperId) {
+		TCreditReportBrief brief = new TCreditReportBrief();
+		brief.setCertNo(paperId);
+		brief.setCertType(ReviewNoteConstants.CREDIT_REPORT_MAP_VALUE_CERTTYPE_0);
+		
+		brief = tCreditReportBriefDao.selectOne(brief);
+		
+		return brief;
+	}
+}

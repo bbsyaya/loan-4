@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+	    http://www.springframework.org/schema/beans/spring-beans.xsd
+	    http://www.springframework.org/schema/context
+	    http://www.springframework.org/schema/context/spring-context.xsd
+	    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+        xmlns:util="http://www.springframework.org/schema/util">
+	
+
+    <bean id="jobSendMessage" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="sendMessageTask"/>
+        <property name="targetMethod" value="execute"/>
+        <property name="concurrent" value="false"/>
+    </bean>
+    <bean id="jobSendRepaySms" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="repaySmsTask"/>
+        <property name="targetMethod" value="execute"/>
+        <property name="concurrent" value="false"/>
+    </bean>
+    
+    <bean id="jobAddRepaymentAuto" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="addRepaymentAutoTask"/>
+        <property name="targetMethod" value="execute"/>
+        <property name="concurrent" value="false"/>
+    </bean>
+    
+    <bean id="jobRepaymentAuto" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+    	<property name="targetObject" ref="repaymentAutoTask"/>
+    	<property name="targetMethod" value="execute"/>
+    	<property name="concurrent" value="false"/>
+    </bean>
+    
+    
+    <bean id="jobExpiredApprove" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="expiredApproveTask"/>
+        <property name="targetMethod" value="execute"/>
+        <property name="concurrent" value="false"/>
+    </bean>
+	
+	<bean id="jobSendSmsMessage" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="sendSmsMessageTask"/>
+        <property name="targetMethod" value="execute"/>
+        <property name="concurrent" value="false"/>
+    </bean>
+    
+    <bean id="jobAsynchronousNotify" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="asynchronousNotify"/>
+        <property name="targetMethod" value="execute"/>
+        <property name="concurrent" value="false"/>
+    </bean>
+    <!-- 审批结果通知 时间分别是 9am/1pm/5pm -->
+    <bean id="jobApprovalMailNotify" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="approvalMailNotify"/>
+        <property name="targetMethod" value="execute"/>
+        <property name="concurrent" value="false"/>
+    </bean>
+    <!-- 通用邮件通知,每10分钟检索一次 
+    <bean id="jobGeneralMailNotify" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="generalMailNotify"/>
+        <property name="targetMethod" value="execute"/>
+        <property name="concurrent" value="false"/>
+    </bean>-->
+    
+    <bean id="jobSendMail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="sendMailJob"/>
+        <property name="targetMethod" value="execute"/>
+        <property name="concurrent" value="false"/>
+    </bean>
+    
+    <bean id="jobExtCreditReportPool" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="extCreditReportPoolTask"/>
+        <property name="targetMethod" value="execute"/>
+        <property name="concurrent" value="false"/>
+    </bean>
+    
+    <bean id="creditReportPoolTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobExtCreditReportPool"/>
+        <property name="cronExpression">
+            <value>0 0/1 * * * ?</value>
+        </property>
+    </bean>
+
+    <bean id="sendMessageTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobSendMessage"/>
+        <property name="cronExpression">
+            <value>0 0/3 * * * ?</value>
+        </property>
+    </bean>
+    
+    <bean id="addRepaymentAutoTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobAddRepaymentAuto"/>
+        <property name="cronExpression">
+            <value>0 40 6 * * ?</value>
+        </property>
+    </bean>
+    
+    <bean id="repaymentAutoTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobRepaymentAuto"/>
+        <property name="cronExpression">
+            <value>0 0 12 * * ?</value>
+        </property>
+    </bean>
+    
+    <bean id="repaymentAutoTrigger2" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobRepaymentAuto"/>
+        <property name="cronExpression">
+            <value>0 0 15 * * ?</value>
+        </property>
+    </bean>
+    
+    
+    <bean id="expiredApproveTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobExpiredApprove"/>
+        <property name="cronExpression">
+            <value>0 0 22 * * ?</value>
+        </property>
+    </bean>
+    
+    <bean id="sendSmsMsgTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobSendSmsMessage"/>
+        <property name="cronExpression">
+            <value>0 0/30 8-20 * * ?</value>
+        </property>
+    </bean>
+    
+    
+    <bean id="sendRepaySmsTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobSendRepaySms"/>
+        <property name="cronExpression">
+            <value>0 0 14 * * ?</value>
+        </property>
+    </bean>
+    
+    <bean id="asynchronousNotifyTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobAsynchronousNotify"/>
+        <property name="cronExpression">
+            <value>0 0 0/1 * * ?</value>
+        </property>
+    </bean>
+    <!-- 审批结果通知 时间分别是 9am/1pm/5pm -->
+    <bean id="approvalMailNotifyTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobApprovalMailNotify"/>
+        <property name="cronExpression">
+        <value>0 15 8-20/2 * * ?</value>
+        </property>
+    </bean>
+    <!-- 通用邮件通知,每10分钟检索一次 
+    <bean id="generalMailNotifyTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobGeneralMailNotify"/>
+        <property name="cronExpression">
+            <value>0 0/10 * * * ?</value>
+        </property>
+    </bean>-->
+    <bean id="sendMailTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobSendMail"/>
+        <property name="cronExpression">
+            <value>0 0/10 * * * ?</value>
+        </property>
+    </bean>
+    
+    <bean id="transerTaskJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="cronExpression" value="0 0/30 * * * ?"/>
+		<property name="jobDetail" ref="transerTaskJobDetail"></property>
+	</bean>
+	
+	<bean id="transerTaskJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="transerTask"/>
+        <property name="targetMethod" value="execute"/>
+        <property name="concurrent" value="false"/>
+    </bean> 
+    
+    <bean id="startQuartz" lazy-init="false" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="sendMessageTrigger"/>
+                <ref bean="expiredApproveTrigger"/>
+                <ref bean="sendSmsMsgTrigger"/>
+            	<ref bean="asynchronousNotifyTrigger"/>
+            	<ref bean="sendMailTrigger"/>
+            	<ref bean="approvalMailNotifyTrigger"/>
+            	<ref bean="creditReportPoolTrigger"/>
+            	<ref bean="sendRepaySmsTrigger"/>
+            	<ref bean="addRepaymentAutoTrigger"/>
+                <ref bean="transerTaskJobTrigger"/>
+                <ref bean="repaymentAutoTrigger"/>
+                <ref bean="repaymentAutoTrigger2"/>
+            </list>
+        </property>
+    </bean> 
+
+</beans>

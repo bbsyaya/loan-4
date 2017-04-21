@@ -1,0 +1,52 @@
+package com.hrbb.loan.quartz;
+
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
+import com.hrbb.loan.channel.sms.SmsProcesser;
+import com.hrbb.loan.pos.biz.backstage.inter.ISmsSenderBiz;
+
+@Component("sendSmsMessageTask")
+public class SendSmsMessageTask {
+	
+	Logger logger = LoggerFactory.getLogger(SendSmsMessageTask.class);
+	
+	@Autowired
+	private ISmsSenderBiz senderBiz;
+	
+	@Autowired
+	@Qualifier("smsProcesser")
+	private SmsProcesser smsProcesser;
+	
+	
+	
+	public void execute(){
+		//发送短信
+		List<Map<String, Object>> resList = senderBiz.getAllSmsMessage();
+		logger.debug("发送短信开始。。。。");
+		for(Map<String, Object> map : resList){
+			try{
+				String sendContent = (String)map.get("sendContent");
+				String mobile = (String)map.get("mobile"); 
+				if(smsProcesser.sendSmsNoTemplate(mobile, sendContent)){
+					//如果成功删除记录
+					senderBiz.deleteSmsMessage((Integer)map.get("id"));
+					//将短信记录插入短信历史表中
+					senderBiz.insertSmsMessageHist("", mobile, sendContent);
+				}else{
+					logger.debug("发送失败");
+				}
+				
+			}catch(Exception e){
+				logger.error("发送短信异常:" + e.getMessage());
+			}
+		}
+		logger.debug("发送短信结束。。。。");
+	}
+}

@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TAICBasicInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TAICBasicInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="posCustId" property="posCustId" jdbcType="VARCHAR" />
+    <result column="orderNo" property="orderNo" jdbcType="VARCHAR" />
+    <result column="frName" property="frName" jdbcType="VARCHAR" />
+    <result column="regNo" property="regNo" jdbcType="VARCHAR" />
+    <result column="regCap" property="regCap" jdbcType="VARCHAR" />
+    <result column="regCapCur" property="regCapCur" jdbcType="VARCHAR" />
+    <result column="entStatus" property="entStatus" jdbcType="VARCHAR" />
+    <result column="entType" property="entType" jdbcType="VARCHAR" />
+    <result column="esDate" property="esDate" jdbcType="VARCHAR" />
+    <result column="opFrom" property="opFrom" jdbcType="VARCHAR" />
+    <result column="opTo" property="opTo" jdbcType="VARCHAR" />
+    <result column="addr" property="addr" jdbcType="VARCHAR" />
+    <result column="regOrg" property="regOrg" jdbcType="VARCHAR" />
+    <result column="abuiTem" property="abuiTem" jdbcType="VARCHAR" />
+    <result column="cbuiTem" property="cbuiTem" jdbcType="VARCHAR" />
+    <result column="opScope" property="opScope" jdbcType="VARCHAR" />
+    <result column="opScoAndForm" property="opScoAndForm" jdbcType="VARCHAR" />
+    <result column="anCheYear" property="anCheYear" jdbcType="VARCHAR" />
+    <result column="canDate" property="canDate" jdbcType="VARCHAR" />
+    <result column="revDate" property="revDate" jdbcType="VARCHAR" />
+    <result column="anCheDate" property="anCheDate" jdbcType="VARCHAR" />
+    <result column="industryPhyCode" property="industryPhyCode" jdbcType="VARCHAR" />
+    <result column="industryCoCode" property="industryCoCode" jdbcType="VARCHAR" />
+    <result column="cdId" property="cdId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, posCustId, orderNo, frName, regNo, regCap, regCapCur, entStatus, entType, esDate, 
+    opFrom, opTo, addr, regOrg, abuiTem, cbuiTem, opScope, opScoAndForm, anCheYear, canDate, 
+    revDate, anCheDate, industryPhyCode, industryCoCode, cdId, entName, recCap, oriRegNo
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_basic_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+ <select id="selectBySelectiveMap" resultType="Map" parameterType="Map">
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_basic_info
+    where orderNo = #{orderNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_aic_basic_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TAICBasicInfo" >
+    insert into t_aic_basic_info (id, posCustId, orderNo, 
+      frName, regNo, regCap, 
+      regCapCur, entStatus, entType, 
+      esDate, opFrom, opTo, 
+      addr, regOrg, abuiTem, 
+      cbuiTem, opScope, opScoAndForm, 
+      anCheYear, canDate, revDate, 
+      anCheDate, industryPhyCode, industryCoCode, 
+      cdId)
+    values (#{id,jdbcType=INTEGER}, #{posCustId,jdbcType=VARCHAR}, #{orderNo,jdbcType=VARCHAR}, 
+      #{frName,jdbcType=VARCHAR}, #{regNo,jdbcType=VARCHAR}, #{regCap,jdbcType=VARCHAR}, 
+      #{regCapCur,jdbcType=VARCHAR}, #{entStatus,jdbcType=VARCHAR}, #{entType,jdbcType=VARCHAR}, 
+      #{esDate,jdbcType=VARCHAR}, #{opFrom,jdbcType=VARCHAR}, #{opTo,jdbcType=VARCHAR}, 
+      #{addr,jdbcType=VARCHAR}, #{regOrg,jdbcType=VARCHAR}, #{abuiTem,jdbcType=VARCHAR}, 
+      #{cbuiTem,jdbcType=VARCHAR}, #{opScope,jdbcType=VARCHAR}, #{opScoAndForm,jdbcType=VARCHAR}, 
+      #{anCheYear,jdbcType=VARCHAR}, #{canDate,jdbcType=VARCHAR}, #{revDate,jdbcType=VARCHAR}, 
+      #{anCheDate,jdbcType=VARCHAR}, #{industryPhyCode,jdbcType=VARCHAR}, #{industryCoCode,jdbcType=VARCHAR}, 
+      #{cdId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICBasicInfo" >
+    insert into t_aic_basic_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="orderNo != null" >
+        orderNo,
+      </if>
+      <if test="frName != null" >
+        frName,
+      </if>
+      <if test="regNo != null" >
+        regNo,
+      </if>
+      <if test="regCap != null" >
+        regCap,
+      </if>
+      <if test="regCapCur != null" >
+        regCapCur,
+      </if>
+      <if test="entStatus != null" >
+        entStatus,
+      </if>
+      <if test="entType != null" >
+        entType,
+      </if>
+      <if test="esDate != null" >
+        esDate,
+      </if>
+      <if test="opFrom != null" >
+        opFrom,
+      </if>
+      <if test="opTo != null" >
+        opTo,
+      </if>
+      <if test="addr != null" >
+        addr,
+      </if>
+      <if test="regOrg != null" >
+        regOrg,
+      </if>
+      <if test="abuiTem != null" >
+        abuiTem,
+      </if>
+      <if test="cbuiTem != null" >
+        cbuiTem,
+      </if>
+      <if test="opScope != null" >
+        opScope,
+      </if>
+      <if test="opScoAndForm != null" >
+        opScoAndForm,
+      </if>
+      <if test="anCheYear != null" >
+        anCheYear,
+      </if>
+      <if test="canDate != null" >
+        canDate,
+      </if>
+      <if test="revDate != null" >
+        revDate,
+      </if>
+      <if test="anCheDate != null" >
+        anCheDate,
+      </if>
+      <if test="industryPhyCode != null" >
+        industryPhyCode,
+      </if>
+      <if test="industryCoCode != null" >
+        industryCoCode,
+      </if>
+      <if test="cdId != null" >
+        cdId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="frName != null" >
+        #{frName,jdbcType=VARCHAR},
+      </if>
+      <if test="regNo != null" >
+        #{regNo,jdbcType=VARCHAR},
+      </if>
+      <if test="regCap != null" >
+        #{regCap,jdbcType=VARCHAR},
+      </if>
+      <if test="regCapCur != null" >
+        #{regCapCur,jdbcType=VARCHAR},
+      </if>
+      <if test="entStatus != null" >
+        #{entStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="entType != null" >
+        #{entType,jdbcType=VARCHAR},
+      </if>
+      <if test="esDate != null" >
+        #{esDate,jdbcType=VARCHAR},
+      </if>
+      <if test="opFrom != null" >
+        #{opFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="opTo != null" >
+        #{opTo,jdbcType=VARCHAR},
+      </if>
+      <if test="addr != null" >
+        #{addr,jdbcType=VARCHAR},
+      </if>
+      <if test="regOrg != null" >
+        #{regOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="abuiTem != null" >
+        #{abuiTem,jdbcType=VARCHAR},
+      </if>
+      <if test="cbuiTem != null" >
+        #{cbuiTem,jdbcType=VARCHAR},
+      </if>
+      <if test="opScope != null" >
+        #{opScope,jdbcType=VARCHAR},
+      </if>
+      <if test="opScoAndForm != null" >
+        #{opScoAndForm,jdbcType=VARCHAR},
+      </if>
+      <if test="anCheYear != null" >
+        #{anCheYear,jdbcType=VARCHAR},
+      </if>
+      <if test="canDate != null" >
+        #{canDate,jdbcType=VARCHAR},
+      </if>
+      <if test="revDate != null" >
+        #{revDate,jdbcType=VARCHAR},
+      </if>
+      <if test="anCheDate != null" >
+        #{anCheDate,jdbcType=VARCHAR},
+      </if>
+      <if test="industryPhyCode != null" >
+        #{industryPhyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="industryCoCode != null" >
+        #{industryCoCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cdId != null" >
+        #{cdId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="Map" >
+    insert into t_aic_basic_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="orderNo != null" >
+        orderNo,
+      </if>
+      <if test="frName != null" >
+        frName,
+      </if>
+      <if test="regNo != null" >
+        regNo,
+      </if>
+      <if test="regCap != null" >
+        regCap,
+      </if>
+      <if test="regCapCur != null" >
+        regCapCur,
+      </if>
+      <if test="entStatus != null" >
+        entStatus,
+      </if>
+      <if test="entType != null" >
+        entType,
+      </if>
+      <if test="esDate != null" >
+        esDate,
+      </if>
+      <if test="opFrom != null" >
+        opFrom,
+      </if>
+      <if test="opTo != null" >
+        opTo,
+      </if>
+      <if test="addr != null" >
+        addr,
+      </if>
+      <if test="regOrg != null" >
+        regOrg,
+      </if>
+      <if test="abuiTem != null" >
+        abuiTem,
+      </if>
+      <if test="cbuiTem != null" >
+        cbuiTem,
+      </if>
+      <if test="opScope != null" >
+        opScope,
+      </if>
+      <if test="opScoAndForm != null" >
+        opScoAndForm,
+      </if>
+      <if test="anCheYear != null" >
+        anCheYear,
+      </if>
+      <if test="canDate != null" >
+        canDate,
+      </if>
+      <if test="revDate != null" >
+        revDate,
+      </if>
+      <if test="anCheDate != null" >
+        anCheDate,
+      </if>
+      <if test="industryPhyCode != null" >
+        industryPhyCode,
+      </if>
+      <if test="industryCoCode != null" >
+        industryCoCode,
+      </if>
+      <if test="cdId != null" >
+        cdId,
+      </if>
+      <if test="entName != null">
+      	entName,
+      </if>
+      <if test="recCap != null">
+      	recCap,
+      </if>
+      <if test="oriRegNo != null">
+      	oriRegNo,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="frName != null" >
+        #{frName,jdbcType=VARCHAR},
+      </if>
+      <if test="regNo != null" >
+        #{regNo,jdbcType=VARCHAR},
+      </if>
+      <if test="regCap != null" >
+        #{regCap,jdbcType=VARCHAR},
+      </if>
+      <if test="regCapCur != null" >
+        #{regCapCur,jdbcType=VARCHAR},
+      </if>
+      <if test="entStatus != null" >
+        #{entStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="entType != null" >
+        #{entType,jdbcType=VARCHAR},
+      </if>
+      <if test="esDate != null" >
+        #{esDate,jdbcType=VARCHAR},
+      </if>
+      <if test="opFrom != null" >
+        #{opFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="opTo != null" >
+        #{opTo,jdbcType=VARCHAR},
+      </if>
+      <if test="addr != null" >
+        #{addr,jdbcType=VARCHAR},
+      </if>
+      <if test="regOrg != null" >
+        #{regOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="abuiTem != null" >
+        #{abuiTem,jdbcType=VARCHAR},
+      </if>
+      <if test="cbuiTem != null" >
+        #{cbuiTem,jdbcType=VARCHAR},
+      </if>
+      <if test="opScope != null" >
+        #{opScope,jdbcType=VARCHAR},
+      </if>
+      <if test="opScoAndForm != null" >
+        #{opScoAndForm,jdbcType=VARCHAR},
+      </if>
+      <if test="anCheYear != null" >
+        #{anCheYear,jdbcType=VARCHAR},
+      </if>
+      <if test="canDate != null" >
+        #{canDate,jdbcType=VARCHAR},
+      </if>
+      <if test="revDate != null" >
+        #{revDate,jdbcType=VARCHAR},
+      </if>
+      <if test="anCheDate != null" >
+        #{anCheDate,jdbcType=VARCHAR},
+      </if>
+      <if test="industryPhyCode != null" >
+        #{industryPhyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="industryCoCode != null" >
+        #{industryCoCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cdId != null" >
+        #{cdId,jdbcType=VARCHAR},
+      </if>
+      <if test="entName != null">
+      	#{entName},
+      </if>
+      <if test="recCap != null">
+      	#{recCap},
+      </if>
+      <if test="oriRegNo != null">
+      	#{oriRegNo},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICBasicInfo" >
+    update t_aic_basic_info
+    <set >
+      <if test="posCustId != null" >
+        posCustId = #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        orderNo = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="frName != null" >
+        frName = #{frName,jdbcType=VARCHAR},
+      </if>
+      <if test="regNo != null" >
+        regNo = #{regNo,jdbcType=VARCHAR},
+      </if>
+      <if test="regCap != null" >
+        regCap = #{regCap,jdbcType=VARCHAR},
+      </if>
+      <if test="regCapCur != null" >
+        regCapCur = #{regCapCur,jdbcType=VARCHAR},
+      </if>
+      <if test="entStatus != null" >
+        entStatus = #{entStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="entType != null" >
+        entType = #{entType,jdbcType=VARCHAR},
+      </if>
+      <if test="esDate != null" >
+        esDate = #{esDate,jdbcType=VARCHAR},
+      </if>
+      <if test="opFrom != null" >
+        opFrom = #{opFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="opTo != null" >
+        opTo = #{opTo,jdbcType=VARCHAR},
+      </if>
+      <if test="addr != null" >
+        addr = #{addr,jdbcType=VARCHAR},
+      </if>
+      <if test="regOrg != null" >
+        regOrg = #{regOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="abuiTem != null" >
+        abuiTem = #{abuiTem,jdbcType=VARCHAR},
+      </if>
+      <if test="cbuiTem != null" >
+        cbuiTem = #{cbuiTem,jdbcType=VARCHAR},
+      </if>
+      <if test="opScope != null" >
+        opScope = #{opScope,jdbcType=VARCHAR},
+      </if>
+      <if test="opScoAndForm != null" >
+        opScoAndForm = #{opScoAndForm,jdbcType=VARCHAR},
+      </if>
+      <if test="anCheYear != null" >
+        anCheYear = #{anCheYear,jdbcType=VARCHAR},
+      </if>
+      <if test="canDate != null" >
+        canDate = #{canDate,jdbcType=VARCHAR},
+      </if>
+      <if test="revDate != null" >
+        revDate = #{revDate,jdbcType=VARCHAR},
+      </if>
+      <if test="anCheDate != null" >
+        anCheDate = #{anCheDate,jdbcType=VARCHAR},
+      </if>
+      <if test="industryPhyCode != null" >
+        industryPhyCode = #{industryPhyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="industryCoCode != null" >
+        industryCoCode = #{industryCoCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cdId != null" >
+        cdId = #{cdId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TAICBasicInfo" >
+    update t_aic_basic_info
+    set posCustId = #{posCustId,jdbcType=VARCHAR},
+      orderNo = #{orderNo,jdbcType=VARCHAR},
+      frName = #{frName,jdbcType=VARCHAR},
+      regNo = #{regNo,jdbcType=VARCHAR},
+      regCap = #{regCap,jdbcType=VARCHAR},
+      regCapCur = #{regCapCur,jdbcType=VARCHAR},
+      entStatus = #{entStatus,jdbcType=VARCHAR},
+      entType = #{entType,jdbcType=VARCHAR},
+      esDate = #{esDate,jdbcType=VARCHAR},
+      opFrom = #{opFrom,jdbcType=VARCHAR},
+      opTo = #{opTo,jdbcType=VARCHAR},
+      addr = #{addr,jdbcType=VARCHAR},
+      regOrg = #{regOrg,jdbcType=VARCHAR},
+      abuiTem = #{abuiTem,jdbcType=VARCHAR},
+      cbuiTem = #{cbuiTem,jdbcType=VARCHAR},
+      opScope = #{opScope,jdbcType=VARCHAR},
+      opScoAndForm = #{opScoAndForm,jdbcType=VARCHAR},
+      anCheYear = #{anCheYear,jdbcType=VARCHAR},
+      canDate = #{canDate,jdbcType=VARCHAR},
+      revDate = #{revDate,jdbcType=VARCHAR},
+      anCheDate = #{anCheDate,jdbcType=VARCHAR},
+      industryPhyCode = #{industryPhyCode,jdbcType=VARCHAR},
+      industryCoCode = #{industryCoCode,jdbcType=VARCHAR},
+      cdId = #{cdId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

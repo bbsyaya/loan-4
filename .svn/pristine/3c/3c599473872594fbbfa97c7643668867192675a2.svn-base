@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditReportProfessionMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditReportProfession" >
+    <id column="serialNo" property="serialNo" jdbcType="VARCHAR" />
+    <result column="reportNo" property="reportNo" jdbcType="VARCHAR" />
+    <result column="employer" property="employer" jdbcType="VARCHAR" />
+    <result column="employerAddr" property="employerAddr" jdbcType="VARCHAR" />
+    <result column="occupation" property="occupation" jdbcType="VARCHAR" />
+    <result column="industry" property="industry" jdbcType="VARCHAR" />
+    <result column="duty" property="duty" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="startYear" property="startYear" jdbcType="VARCHAR" />
+    <result column="updateDate" property="updateDate" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    serialNo, reportNo, employer, employerAddr, occupation, industry, duty, title, startYear, 
+    updateDate
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_report_profession
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_credit_report_profession
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportProfession" >
+    insert into t_credit_report_profession (serialNo, reportNo, employer, 
+      employerAddr, occupation, industry, 
+      duty, title, startYear, 
+      updateDate)
+    values (#{serialNo,jdbcType=VARCHAR}, #{reportNo,jdbcType=VARCHAR}, #{employer,jdbcType=VARCHAR}, 
+      #{employerAddr,jdbcType=VARCHAR}, #{occupation,jdbcType=VARCHAR}, #{industry,jdbcType=VARCHAR}, 
+      #{duty,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{startYear,jdbcType=VARCHAR}, 
+      #{updateDate,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportProfession" >
+    insert into t_credit_report_profession
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="employer != null" >
+        employer,
+      </if>
+      <if test="employerAddr != null" >
+        employerAddr,
+      </if>
+      <if test="occupation != null" >
+        occupation,
+      </if>
+      <if test="industry != null" >
+        industry,
+      </if>
+      <if test="duty != null" >
+        duty,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="startYear != null" >
+        startYear,
+      </if>
+      <if test="updateDate != null" >
+        updateDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="employer != null" >
+        #{employer,jdbcType=VARCHAR},
+      </if>
+      <if test="employerAddr != null" >
+        #{employerAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="occupation != null" >
+        #{occupation,jdbcType=VARCHAR},
+      </if>
+      <if test="industry != null" >
+        #{industry,jdbcType=VARCHAR},
+      </if>
+      <if test="duty != null" >
+        #{duty,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="startYear != null" >
+        #{startYear,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="map" >
+    insert into t_credit_report_profession
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="employer != null" >
+        employer,
+      </if>
+      <if test="employerAddr != null" >
+        employerAddr,
+      </if>
+      <if test="occupation != null" >
+        occupation,
+      </if>
+      <if test="industry != null" >
+        industry,
+      </if>
+      <if test="duty != null" >
+        duty,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="startYear != null" >
+        startYear,
+      </if>
+      <if test="updateDate != null" >
+        updateDate,
+      </if>
+       <if test="queryId != null">
+      	queryId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="employer != null" >
+        #{employer,jdbcType=VARCHAR},
+      </if>
+      <if test="employerAddr != null" >
+        #{employerAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="occupation != null" >
+        #{occupation,jdbcType=VARCHAR},
+      </if>
+      <if test="industry != null" >
+        #{industry,jdbcType=VARCHAR},
+      </if>
+      <if test="duty != null" >
+        #{duty,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="startYear != null" >
+        #{startYear,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=VARCHAR},
+      </if>
+       <if test="queryId != null">
+      	#{queryId},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportProfession" >
+    update t_credit_report_profession
+    <set >
+      <if test="reportNo != null" >
+        reportNo = #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="employer != null" >
+        employer = #{employer,jdbcType=VARCHAR},
+      </if>
+      <if test="employerAddr != null" >
+        employerAddr = #{employerAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="occupation != null" >
+        occupation = #{occupation,jdbcType=VARCHAR},
+      </if>
+      <if test="industry != null" >
+        industry = #{industry,jdbcType=VARCHAR},
+      </if>
+      <if test="duty != null" >
+        duty = #{duty,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="startYear != null" >
+        startYear = #{startYear,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null" >
+        updateDate = #{updateDate,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportProfession" >
+    update t_credit_report_profession
+    set reportNo = #{reportNo,jdbcType=VARCHAR},
+      employer = #{employer,jdbcType=VARCHAR},
+      employerAddr = #{employerAddr,jdbcType=VARCHAR},
+      occupation = #{occupation,jdbcType=VARCHAR},
+      industry = #{industry,jdbcType=VARCHAR},
+      duty = #{duty,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR},
+      startYear = #{startYear,jdbcType=VARCHAR},
+      updateDate = #{updateDate,jdbcType=VARCHAR}
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+  <select id="selectSelective" resultMap="BaseResultMap" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportProfession" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_report_profession
+    where queryId = #{queryId,jdbcType=VARCHAR}
+    order by updateDate desc
+  </select>
+</mapper>

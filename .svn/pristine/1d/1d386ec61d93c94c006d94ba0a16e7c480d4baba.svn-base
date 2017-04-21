@@ -1,0 +1,33 @@
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- 客户端Hessian代理工厂Bean -->
+	<bean id="toUM" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<!-- 请求代理Servlet路径 -->		
+		<property name="serviceUrl">
+             <value>http://35.8.5.48:11097/frontier/remoting/toUm</value>
+             <!-- <value>http://127.0.0.1:8080/h-frontier/remoting/toUm</value> -->
+		</property>
+		<!-- 接口定义 -->
+		<property name="serviceInterface">
+			<value>com.hrbb.sh.framework.HService</value>
+		</property>
+	</bean>
+	
+	<bean id="sendSM" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<!-- 请求代理Servlet路径 -->		
+		<property name="serviceUrl">
+             <value>http://35.8.5.48:11097/frontier/remoting/sendSM</value>
+             <!-- <value>http://127.0.0.1:8080/h-frontier/remoting/sendSM</value> -->
+		</property>
+		<!-- 接口定义 -->
+		<property name="serviceInterface">
+			<value>com.hrbb.sh.framework.SendSMMessageService</value>
+		</property>
+	</bean>
+	
+	<bean id="ftpTransUpload" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+	    <property name="serviceUrl" value="http://35.8.33.21:11096/loan-ftp-web/ftpTransUpload.do" />
+	<!--	<property name="serviceUrl" value="http://10.1.5.225:11097/loan-ftp-web/ftpTransUpload.do" /> -->
+		<property name="serviceInterface" value="com.hrbb.loan.pos.tools.main.ftp.web.controller.FtpTransUpload" />
+	</bean>
+</beans>

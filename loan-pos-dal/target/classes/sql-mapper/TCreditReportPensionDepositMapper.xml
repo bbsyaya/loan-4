@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditReportPensionDepositMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditReportPensionDeposit" >
+    <id column="serialNo" property="serialNo" jdbcType="VARCHAR" />
+    <result column="reportNo" property="reportNo" jdbcType="VARCHAR" />
+    <result column="area" property="area" jdbcType="VARCHAR" />
+    <result column="registerDate" property="registerDate" jdbcType="VARCHAR" />
+    <result column="duration" property="duration" jdbcType="INTEGER" />
+    <result column="workDate" property="workDate" jdbcType="VARCHAR" />
+    <result column="state" property="state" jdbcType="VARCHAR" />
+    <result column="depositBasic" property="depositBasic" jdbcType="DECIMAL" />
+    <result column="depositAmt" property="depositAmt" jdbcType="DECIMAL" />
+    <result column="updateDate" property="updateDate" jdbcType="VARCHAR" />
+    <result column="depositUnit" property="depositUnit" jdbcType="VARCHAR" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    serialNo, reportNo, area, registerDate, duration, workDate, state, depositBasic, 
+    depositAmt, updateDate, depositUnit, reason
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_report_pension_deposit
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_credit_report_pension_deposit
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportPensionDeposit" >
+    insert into t_credit_report_pension_deposit (serialNo, reportNo, area, 
+      registerDate, duration, workDate, 
+      state, depositBasic, depositAmt, 
+      updateDate, depositUnit, reason
+      )
+    values (#{serialNo,jdbcType=VARCHAR}, #{reportNo,jdbcType=VARCHAR}, #{area,jdbcType=VARCHAR}, 
+      #{registerDate,jdbcType=VARCHAR}, #{duration,jdbcType=INTEGER}, #{workDate,jdbcType=VARCHAR}, 
+      #{state,jdbcType=VARCHAR}, #{depositBasic,jdbcType=DECIMAL}, #{depositAmt,jdbcType=DECIMAL}, 
+      #{updateDate,jdbcType=VARCHAR}, #{depositUnit,jdbcType=VARCHAR}, #{reason,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportPensionDeposit" >
+    insert into t_credit_report_pension_deposit
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="area != null" >
+        area,
+      </if>
+      <if test="registerDate != null" >
+        registerDate,
+      </if>
+      <if test="duration != null" >
+        duration,
+      </if>
+      <if test="workDate != null" >
+        workDate,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="depositBasic != null" >
+        depositBasic,
+      </if>
+      <if test="depositAmt != null" >
+        depositAmt,
+      </if>
+      <if test="updateDate != null" >
+        updateDate,
+      </if>
+      <if test="depositUnit != null" >
+        depositUnit,
+      </if>
+      <if test="reason != null" >
+        reason,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="area != null" >
+        #{area,jdbcType=VARCHAR},
+      </if>
+      <if test="registerDate != null" >
+        #{registerDate,jdbcType=VARCHAR},
+      </if>
+      <if test="duration != null" >
+        #{duration,jdbcType=INTEGER},
+      </if>
+      <if test="workDate != null" >
+        #{workDate,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=VARCHAR},
+      </if>
+      <if test="depositBasic != null" >
+        #{depositBasic,jdbcType=DECIMAL},
+      </if>
+      <if test="depositAmt != null" >
+        #{depositAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=VARCHAR},
+      </if>
+      <if test="depositUnit != null" >
+        #{depositUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        #{reason,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="map" >
+    insert into t_credit_report_pension_deposit
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="area != null" >
+        area,
+      </if>
+      <if test="registerDate != null" >
+        registerDate,
+      </if>
+      <if test="duration != null" >
+        duration,
+      </if>
+      <if test="workDate != null" >
+        workDate,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="depositBasic != null" >
+        depositBasic,
+      </if>
+      <if test="depositAmt != null" >
+        depositAmt,
+      </if>
+      <if test="updateDate != null" >
+        updateDate,
+      </if>
+      <if test="depositUnit != null" >
+        depositUnit,
+      </if>
+      <if test="reason != null" >
+        reason,
+      </if>
+       <if test="queryId != null">
+      	queryId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="area != null" >
+        #{area,jdbcType=VARCHAR},
+      </if>
+      <if test="registerDate != null" >
+        #{registerDate,jdbcType=VARCHAR},
+      </if>
+      <if test="duration != null" >
+        #{duration,jdbcType=INTEGER},
+      </if>
+      <if test="workDate != null" >
+        #{workDate,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=VARCHAR},
+      </if>
+      <if test="depositBasic != null" >
+        #{depositBasic,jdbcType=DECIMAL},
+      </if>
+      <if test="depositAmt != null" >
+        #{depositAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=VARCHAR},
+      </if>
+      <if test="depositUnit != null" >
+        #{depositUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        #{reason,jdbcType=VARCHAR},
+      </if>
+       <if test="queryId != null">
+      	#{queryId},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportPensionDeposit" >
+    update t_credit_report_pension_deposit
+    <set >
+      <if test="reportNo != null" >
+        reportNo = #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="area != null" >
+        area = #{area,jdbcType=VARCHAR},
+      </if>
+      <if test="registerDate != null" >
+        registerDate = #{registerDate,jdbcType=VARCHAR},
+      </if>
+      <if test="duration != null" >
+        duration = #{duration,jdbcType=INTEGER},
+      </if>
+      <if test="workDate != null" >
+        workDate = #{workDate,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=VARCHAR},
+      </if>
+      <if test="depositBasic != null" >
+        depositBasic = #{depositBasic,jdbcType=DECIMAL},
+      </if>
+      <if test="depositAmt != null" >
+        depositAmt = #{depositAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="updateDate != null" >
+        updateDate = #{updateDate,jdbcType=VARCHAR},
+      </if>
+      <if test="depositUnit != null" >
+        depositUnit = #{depositUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        reason = #{reason,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportPensionDeposit" >
+    update t_credit_report_pension_deposit
+    set reportNo = #{reportNo,jdbcType=VARCHAR},
+      area = #{area,jdbcType=VARCHAR},
+      registerDate = #{registerDate,jdbcType=VARCHAR},
+      duration = #{duration,jdbcType=INTEGER},
+      workDate = #{workDate,jdbcType=VARCHAR},
+      state = #{state,jdbcType=VARCHAR},
+      depositBasic = #{depositBasic,jdbcType=DECIMAL},
+      depositAmt = #{depositAmt,jdbcType=DECIMAL},
+      updateDate = #{updateDate,jdbcType=VARCHAR},
+      depositUnit = #{depositUnit,jdbcType=VARCHAR},
+      reason = #{reason,jdbcType=VARCHAR}
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

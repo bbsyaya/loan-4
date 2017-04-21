@@ -1,0 +1,9 @@
+package com.hrbb.activity.action.inter;
+
+import java.util.Map;
+
+public interface ActivityActionInter {
+
+	
+	public Map<String, Object> doAction(Object obj);
+}

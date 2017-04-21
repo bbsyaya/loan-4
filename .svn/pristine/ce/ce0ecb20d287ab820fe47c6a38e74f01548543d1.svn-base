@@ -1,0 +1,169 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.biz.backstage.inter.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
+import com.hrbb.loan.pos.biz.backstage.inter.CreditApplyAprvInfoBiz;
+import com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo;
+import com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfoKey;
+import com.hrbb.loan.pos.service.CreditApplyAprvInfoService;
+
+/**
+ * 
+ * @author marco
+ * @version $Id: CreditApplyAprvInfoBizImpl.java, v 0.1 2015-3-10 下午5:57:04
+ *          marco Exp $
+ */
+@Component("creditApplyAprvInfoBiz")
+public class CreditApplyAprvInfoBizImpl implements CreditApplyAprvInfoBiz {
+
+	private Logger log = LoggerFactory.getLogger(CreditApplyAprvInfoBizImpl.class);
+
+	@Autowired
+	@Qualifier("creditApplyAprvInfoService")
+	private CreditApplyAprvInfoService serivce;
+
+	/**
+	 * @see com.hrbb.loan.pos.biz.backstage.inter.CreditApplyAprvInfoBiz#deleteByPrimaryKey(com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfoKey)
+	 */
+	@Override
+	public int deleteByPrimaryKey(TCreditApplyAprvInfoKey key) {
+		return 0;
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.biz.backstage.inter.CreditApplyAprvInfoBiz#insert(com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo)
+	 */
+	@Override
+	public int insert(TCreditApplyAprvInfo record) {
+		return 0;
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.biz.backstage.inter.CreditApplyAprvInfoBiz#insertSelective(com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo)
+	 */
+	@Override
+	public int insertSelective(TCreditApplyAprvInfo record) {
+		return serivce.insertSelective(record);
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.biz.backstage.inter.CreditApplyAprvInfoBiz#selectByPrimaryKey(com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfoKey)
+	 */
+	@Override
+	public TCreditApplyAprvInfo selectByPrimaryKey(TCreditApplyAprvInfoKey key) {
+		return null;
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.biz.backstage.inter.CreditApplyAprvInfoBiz#selectSelective(java.util.Map)
+	 */
+	@Override
+	public List<TCreditApplyAprvInfo> selectBackToInfo(
+			TCreditApplyAprvInfo record) {
+		return serivce.selectBackToInfo(record);
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.biz.backstage.inter.CreditApplyAprvInfoBiz#updateByPrimaryKeySelective(com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo)
+	 */
+	@Override
+	public int updateByPrimaryKeySelective(TCreditApplyAprvInfo record) {
+		return serivce.updateByPrimaryKeySelective(record);
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.biz.backstage.inter.CreditApplyAprvInfoBiz#updateByPrimaryKey(com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo)
+	 */
+	@Override
+	public int updateByPrimaryKey(TCreditApplyAprvInfo record) {
+		return 0;
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.biz.backstage.inter.CreditApplyAprvInfoBiz#selectNotSubbmit(com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfoKey)
+	 */
+	@Override
+	public TCreditApplyAprvInfo selectNotSubmit(TCreditApplyAprvInfoKey key) {
+		return serivce.selectNotSubmit(key);
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.biz.backstage.inter.CreditApplyAprvInfoBiz#update(com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo)
+	 */
+	@Override
+	public int update(TCreditApplyAprvInfo record) {
+		return serivce.update(record);
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.biz.backstage.inter.CreditApplyAprvInfoBiz#updateByBankSerialInfo(com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo,
+	 *      java.util.List)
+	 */
+	@Override
+	public int updateByBankSerialInfo(TCreditApplyAprvInfo record,
+			List<Map<String, Object>> bankSerialList) {
+		return serivce.updateByBankSerialInfo(record, bankSerialList);
+	}
+	
+	/**
+	 * @see com.hrbb.loan.pos.biz.backstage.inter.CreditApplyAprvInfoBiz#updateByBankSerialInfo(com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo,
+	 *      java.util.List)
+	 */
+	@Override
+	public List<TCreditApplyAprvInfo> selectInforAuditList(TCreditApplyAprvInfo record){
+		return serivce.selectInforAuditList(record);
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.biz.backstage.inter.CreditApplyAprvInfoBiz#updateBackToReview(com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo)
+	 */
+	@Override
+	public int updateBackToReview(TCreditApplyAprvInfo record) {
+		return serivce.updateBackToReview(record);
+	}
+	
+	/**
+	 * @see com.hrbb.loan.pos.biz.backstage.inter.CreditApplyAprvInfoBiz#sendMsg(String)
+	 */
+	@Override
+	public int sendMsg(String loanId) {
+		return serivce.sendMsg(loanId);
+	}
+	
+	/**
+	 * @see com.hrbb.loan.pos.biz.backstage.inter.CreditApplyAprvInfoBiz#selectLastSubbmitted(com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfoKey)
+	 */
+	@Override
+	public TCreditApplyAprvInfo selectLastSubbmitted(TCreditApplyAprvInfoKey key) {
+		return serivce.selectLastSubbmitted(key);
+	}
+
+	/** 
+	 * @see com.hrbb.loan.pos.biz.backstage.inter.CreditApplyAprvInfoBiz#updateCreditApplyForUpSign(com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo)
+	 */
+	@Override
+	public int updateCreditApplyForUpSign(TCreditApplyAprvInfo record) {
+		return serivce.updateCreditApplyForUpSign(record);
+	}
+
+    /** 
+     * @see com.hrbb.loan.pos.biz.backstage.inter.CreditApplyAprvInfoBiz#updateCreditApplyAprvInfo(java.util.Map)
+     */
+    @Override
+    public int updateCreditApplyAprvInfo(Map<String, Object> reqMap) {
+        return serivce.updateCreditApplyAprv(reqMap);
+    }
+
+}

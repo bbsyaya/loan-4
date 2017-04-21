@@ -1,0 +1,63 @@
+package com.hrbb.loan.pos.dao.entity;
+
+public class TChannelBankInfo {
+    private Integer serial;
+
+    private String channel;
+
+    private String bankName;
+
+    private String mapBankId;
+
+    private String mapBankName;
+
+    private String remark;
+
+    public Integer getSerial() {
+        return serial;
+    }
+
+    public void setSerial(Integer serial) {
+        this.serial = serial;
+    }
+
+    public String getChannel() {
+        return channel;
+    }
+
+    public void setChannel(String channel) {
+        this.channel = channel == null ? null : channel.trim();
+    }
+
+    public String getBankName() {
+        return bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName == null ? null : bankName.trim();
+    }
+
+    public String getMapBankId() {
+        return mapBankId;
+    }
+
+    public void setMapBankId(String mapBankId) {
+        this.mapBankId = mapBankId == null ? null : mapBankId.trim();
+    }
+
+    public String getMapBankName() {
+        return mapBankName;
+    }
+
+    public void setMapBankName(String mapBankName) {
+        this.mapBankName = mapBankName == null ? null : mapBankName.trim();
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark == null ? null : remark.trim();
+    }
+}

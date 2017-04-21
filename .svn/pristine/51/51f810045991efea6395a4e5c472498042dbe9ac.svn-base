@@ -1,0 +1,90 @@
+package com.hrbb.loan.pos.dao.entity;
+
+import java.io.Serializable;
+
+public class TAICEntinvInfo implements Serializable{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7379133162351449796L;
+
+	private Integer id;
+
+    private String posCustId;
+
+    private String entName;
+
+    private String regCap;
+
+    private String entStatus;
+
+    private String regOrg;
+
+    private String subConAm;
+
+    private String congroCur;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getPosCustId() {
+        return posCustId;
+    }
+
+    public void setPosCustId(String posCustId) {
+        this.posCustId = posCustId == null ? null : posCustId.trim();
+    }
+
+    public String getEntName() {
+        return entName;
+    }
+
+    public void setEntName(String entName) {
+        this.entName = entName == null ? null : entName.trim();
+    }
+
+    public String getRegCap() {
+        return regCap;
+    }
+
+    public void setRegCap(String regCap) {
+        this.regCap = regCap == null ? null : regCap.trim();
+    }
+
+    public String getEntStatus() {
+        return entStatus;
+    }
+
+    public void setEntStatus(String entStatus) {
+        this.entStatus = entStatus == null ? null : entStatus.trim();
+    }
+
+    public String getRegOrg() {
+        return regOrg;
+    }
+
+    public void setRegOrg(String regOrg) {
+        this.regOrg = regOrg == null ? null : regOrg.trim();
+    }
+
+    public String getSubConAm() {
+        return subConAm;
+    }
+
+    public void setSubConAm(String subConAm) {
+        this.subConAm = subConAm == null ? null : subConAm.trim();
+    }
+
+    public String getCongroCur() {
+        return congroCur;
+    }
+
+    public void setCongroCur(String congroCur) {
+        this.congroCur = congroCur == null ? null : congroCur.trim();
+    }
+}

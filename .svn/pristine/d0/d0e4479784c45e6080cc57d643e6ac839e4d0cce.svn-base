@@ -1,0 +1,193 @@
+package com.hrbb.loan.spi.ZZ;
+
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.channel.sms.SmsProcesser;
+import com.hrbb.loan.pos.util.MapUtils;
+import com.hrbb.loan.pos.util.SignUtil;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.loan.pos.util.ValidateUtil;
+import com.hrbb.loan.spiconstants.HServiceReturnCode;
+import com.hrbb.sh.framework.HRequest;
+import com.hrbb.sh.framework.HResponse;
+import com.hrbb.sh.framework.HService;
+import com.hrbb.sh.framework.HServiceException;
+
+/**
+ * TransType:AP0018 -> 短信下行通道.
+ * 
+ * @author xiongshaogang
+ * @version $Id: ZZAPPSmsSenderServiceImpl.java, v 0.1 2015年4月29日 下午5:04:48 xiongshaogang Exp $
+ */
+@Service("zzAppSmsSender")
+public class ZZAPPSmsSenderServiceImpl implements HService {
+
+    Logger                                   logger = LoggerFactory
+                                                        .getLogger(ZZAPPSmsSenderServiceImpl.class);
+
+    @Autowired
+    @Qualifier("smsProcesser")
+    private SmsProcesser smsProcesser;
+
+    @Override
+    public HResponse serve(HRequest request) throws HServiceException {
+        logger.debug("in ZZAPPSmsSenderServiceImpl...");
+        
+        // 0. 接收请求包，解包
+        Map<String, String> headerMap = (Map<String, String>) request.getProperties().get("HrbbHeader");
+        Map<String, String> bodyMap = (Map<String, String>) request.getProperties().get("HrbbBody");
+        logger.info("headerMap : " + MapUtils.toString(headerMap));
+        logger.info("bodyMap : " + MapUtils.toString(bodyMap));
+        
+        // 1. 请求包校验
+        HResponse resp = new HResponse();
+        if (!validate(headerMap, bodyMap, resp)) {
+            resp.setRespTime(new Date());
+            return getBlankHResponse(resp, headerMap, bodyMap);
+        }
+
+        // 2. 验证数字签名,暂不实现
+        String signedMsg = SignUtil.getSignMsg((Map<String, Object>)request.getProperties().get("HrbbBody"), null);
+        logger.info("请求待签名串 signedMsg = [" + signedMsg + "]");
+//        if (!SignUtil.verifySign(SignUtil.MD5_ALG, signedMsg, headerMap.get("Mac"), SignUtil.getProperty("app_posloan_signkey"))) {
+//            logger.error("数字签名验证失败");
+//            bodyMap.put("respcode", HServiceReturnCode.OTHER_ERROR.getReturnCode());
+//            bodyMap.put("respmsg", HServiceReturnCode.OTHER_ERROR.getReturnMessage());
+//            resp.setRespCode(HServiceReturnCode.OTHER_ERROR.getReturnCode());
+//            resp.setRespMessage(HServiceReturnCode.OTHER_ERROR.getReturnMessage());
+//            resp.setRespTime(new Date());
+//            return getBlankHResponse(resp, headerMap, bodyMap);
+//        }
+        logger.info("数字签名验证通过!");
+
+        // 3. 短信下行处理
+        Map<String, String> paramsMap = Maps.newHashMap();
+        paramsMap.putAll(bodyMap);
+        paramsMap.remove("mobile");
+        paramsMap.remove("smstype");
+        logger.info("短信下行参数 : [" + MapUtils.toString(paramsMap) + "]");
+        if (!smsProcesser.sendSms(bodyMap.get("mobile"), "", bodyMap.get("smstype"), paramsMap, true, true)) {
+            logger.error("短信下行失败, 已加入重发机制!");
+//            bodyMap.put("respcode", HServiceReturnCode.SMSSENDFAIL_ERROR.getReturnCode());
+//            bodyMap.put("respmsg", HServiceReturnCode.SMSSENDFAIL_ERROR.getReturnMessage());
+//            resp.setRespCode(HServiceReturnCode.SMSSENDFAIL_ERROR.getReturnCode());
+//            resp.setRespMessage(HServiceReturnCode.SMSSENDFAIL_ERROR.getReturnMessage());
+//            return getBlankHResponse(resp, headerMap, bodyMap);
+        }
+        
+        // 4. 回写成功应答
+        Map<String, Object> rootMap = Maps.newHashMap();
+        bodyMap.put("respcode", HServiceReturnCode.SUCCESS.getReturnCode());
+        bodyMap.put("respmsg", HServiceReturnCode.SUCCESS.getReturnMessage());
+        
+        // 4.1 签名处理
+        Map<String, Object> signMap = Maps.newHashMap();
+        for (Map.Entry<String, String> en : bodyMap.entrySet()) {
+            String key = en.getKey();
+            signMap.put(key, en.getValue());
+        }
+        headerMap.put("Mac", sign(signMap, null));
+        
+        rootMap.put("HrbbHeader", headerMap);
+        rootMap.put("HrbbBody", bodyMap);
+        resp.setRespCode(HServiceReturnCode.SUCCESS.getReturnCode());
+        resp.setRespMessage(HServiceReturnCode.SUCCESS.getReturnMessage());
+        resp.setRespTime(new Date());
+        resp.setProperties(rootMap);
+        logger.info("回写数据: " + resp.toString());
+        logger.debug("out ZZAPPSmsSenderServiceImpl...");
+        return resp;
+    }
+
+    /**
+     * 请求包校验处理.
+     * 
+     * @param headerMap
+     * @param bodyMap
+     * @return
+     * @throws Exception 
+     */
+    protected boolean validate(Map<String, String> headerMap, Map<String, String> bodyMap,
+                             HResponse resp) throws HServiceException {
+        // 版本号
+        if (StringUtil.isEmpty(headerMap.get("Version"))
+            || !"20150415".equals(headerMap.get("Version"))) {
+            logger.error("接口版本号为空或不合法:[]", headerMap.get("Version"));
+            bodyMap.put("respcode", HServiceReturnCode.VERSION_ERRO_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.VERSION_ERRO_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.VERSION_ERRO_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.VERSION_ERRO_ERROR.getReturnMessage());
+            return false;
+        }
+
+        // 申请编号
+        if (StringUtil.isEmpty(bodyMap.get("smstype"))) {
+            logger.error("模板编号为空或不合法:[]", bodyMap.get("smstype"));
+            bodyMap.put("respcode", HServiceReturnCode.SMSTYPE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.SMSTYPE_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.SMSTYPE_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.SMSTYPE_ERROR.getReturnMessage());
+            return false;
+        }
+        
+        // 手机号码
+        if (StringUtil.isEmpty(bodyMap.get("mobile")) || !ValidateUtil.checkMobile(bodyMap.get("mobile"))) {
+            logger.error("手机号码为空或不合法:[]", bodyMap.get("mobile"));
+            bodyMap.put("respcode", HServiceReturnCode.MOBILEPHONE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.MOBILEPHONE_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.MOBILEPHONE_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.MOBILEPHONE_ERROR.getReturnMessage());
+            return false;
+        }
+
+        return true;
+    }
+    
+    /**
+     * 失败应答.
+     * 
+     * @param response
+     * @return
+     */
+    protected HResponse getBlankHResponse(HResponse response, Map<String, String> headerMap, Map<String, String> bodyMap) {
+        Map<String, Object> respMap = Maps.newHashMap();
+        
+        // 签名处理
+        Map<String, Object> signMap = Maps.newHashMap();
+        for (Map.Entry<String, String> en : bodyMap.entrySet()) {
+            String key = en.getKey();
+            signMap.put(key, en.getValue());
+        }
+        headerMap.put("Mac", sign(signMap, null));
+        
+        respMap.put("HrbbHeader", headerMap);
+        respMap.put("HrbbBody", bodyMap);
+        response.setProperties(respMap);
+        return response;
+    }
+    
+    /**
+     * 回写签名处理.
+     * 
+     * @param signMap
+     * @param ignoreSet
+     * @return
+     */
+    protected String sign(Map<String, Object> signMap, Set<String> ignoreSet) {
+        String signedMsg = SignUtil.getSignMsg(signMap, ignoreSet);
+        logger.info("应答待签名串 signedMsg = [" + signedMsg + "]");
+        String signRet = SignUtil.sign(SignUtil.MD5_ALG, signedMsg, SignUtil.getProperty("app_posloan_signkey"));
+        logger.info("应答签名 Mac = [" + signRet + "]");
+        return signRet;
+    }
+}

@@ -1,0 +1,45 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+  pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<!-- 展业机构信息 -->
+<div title="机构信息" style="padding: 20px; margin: auto; width: 90%">
+  <table style="width: 100%">
+    <tr>
+      <td style="width: 15%;" class="tdtitle">地区code:</td>
+      <td style="width: 35%;"><input type="text" id="region_code"
+       class="easyui-validatebox" value="${tRiskZoneConfig.region_code}" <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if>  size="30" data-options="required:true"></td>
+      <td class="tdtitle">风险等级:</td>
+      <td><input type="text" id="risk_type"
+        value="${tRiskZoneConfig.risk_type}" <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if> size="30"></td>
+    </tr>
+    <tr>
+      <td class="tdtitle">风险等级代码:</td>
+      <td><input type="text" id="risk_type_code"
+        value="${tRiskZoneConfig.risk_type_code}" <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if> size="30"></td>
+      <td class="tdtitle">是否生效:</td>
+      <td><select id="deleted_flag_select" class="deleted_flag" style="width: 243px;" <c:if test="${oprFlag=='3'}">disabled</c:if>>
+          <option value="Y">是</option>
+          <option <c:if test="${tRiskZoneConfig.deleted_flag == 'N'}">selected</c:if> value="N">否</option>
+      </select></td>
+    </tr>
+    <tr>
+      <td class="tdtitle">生效时间:</td>
+      <td><input type="text" id="valid_date" class="easyui-datebox"
+        value='<fmt:formatDate value="${tRiskZoneConfig.valid_date}" pattern="yyyy-MM-dd"/>' <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if> size="30"/></td>
+      <td class="tdtitle">失效时间:</td>
+      <td><input type="text" id="invalid_date" class="easyui-datebox"
+        value='<fmt:formatDate value="${tRiskZoneConfig.invalid_date}" pattern="yyyy-MM-dd"/>' <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if> size="30"></td>
+    </tr>
+  </table>
+  <br /> <br />
+  <div style="text-align: center;display:${oprFlag=='3' ? 'none' : 'block'}">
+    <input type="hidden" id="orgId" value="${institution.orgId}" /> <a
+      href="javascript:void(0)" id="save" width="100px"
+      class="easyui-linkbutton" iconCls="icon-ok"
+      onclick="saveRiskzoneConfig(${oprFlag})">保存</a>&nbsp;&nbsp; <a
+      href="javascript:void(0)" id="cancel" width="100px"
+      class="easyui-linkbutton" iconCls="icon-no"
+      onclick="cancelRiskzoneConfig(${oprFlag})">返回</a>
+  </div>
+</div>

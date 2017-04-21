@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd
+        http://cxf.apache.org/jaxws
+        http://cxf.apache.org/schemas/jaxws.xsd" default-autowire="byName">
+    	
+    <bean class="com.pinganfu.transcore.common.util.StatusValidatorFactory" lazy-init="false">
+        <constructor-arg ref="statusValidatorMap"/>
+    </bean>
+
+	<!-- StatusValidator 的集合, 默认包含了交易单状态的验证规则  参考 StatusValidatorType-->
+     <util:map id="statusValidatorMap" key-type="java.lang.String"
+              value-type="com.pinganfu.transcore.common.util.abs.StatusValidator">
+        <entry key="TRANSCTION_COMMIT">
+            <bean class="com.pinganfu.transcore.common.util.TransCommitStatusValidator">
+            	<constructor-arg ref="transCommitValidatorMap"/>
+            </bean>
+        </entry>
+    </util:map>
+    
+    <!-- 交易单状态规则集合 根据业务场景码区分 （交易码 + 产品码） -->
+    <util:map id="transCommitValidatorMap" key-type="java.lang.String"
+              value-type="java.util.Map">
+        <entry key="default" value-ref="defaultStatusMap"/>
+      <!--   <entry key="04-100010010000" value-ref="defaultStatus"/>  -->
+    </util:map>
+    
+    <!-- 默认状态规则配置 -->
+    <!-- key : status  value : 允许的状态所包含的 statusCode 的交集    参考 TransactionStatusConstants-->
+    <util:map id="defaultStatusMap" key-type="java.lang.String"
+              value-type="java.lang.String">
+        <entry key="01" value="00000101001"/>
+        <entry key="00" value="00000100000"/>
+    </util:map>
+</beans>

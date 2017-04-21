@@ -1,0 +1,65 @@
+/**
+ * 
+ */
+package com.hrbb.loan.pos.entity.event;
+
+import com.hrbb.loan.pos.entity.event.impl.CallingTaskEvent;
+import com.hrbb.loan.pos.entity.event.impl.MailEvent;
+import com.hrbb.loan.pos.entity.event.impl.MsgEvent;
+import com.hrbb.loan.pos.entity.event.impl.NtfEvent;
+import com.hrbb.loan.pos.entity.event.impl.SMSEvent;
+import com.hrbb.loan.pos.entity.listener.POSListener;
+
+/**
+ * <p>Title: EventFactory.java </p>
+ * <p>Description:  </p>
+ * <p>Copyright: Copyright (C) 2015 Hrbb Ltd. Co.</p> 
+ *     
+ * @author linzhaolin@hrbb.com.cn
+ * @version 
+ * @date 2015年7月8日
+ *
+ * logs: 1. 
+ */
+public class EventFactory {
+	
+	private volatile static EventFactory ef = null;
+	
+	private EventFactory(){}
+	
+	public static EventFactory getInstance(){
+		if(ef == null){
+			synchronized (EventFactory.class){
+				if(ef == null){
+					ef = new EventFactory();
+				}
+			}
+		}
+		return ef;
+	}
+	
+	public POSEvent getEvent(int type, Object source){
+		POSEvent event = null;
+		switch(type){
+			case POSListener.监听事件类型_发送短信:
+				event = new SMSEvent(source);
+				break;
+			case POSListener.监听事件类型_外呼任务:
+				event = new CallingTaskEvent(source);
+				break;
+			case POSListener.监听事件类型_消息推送:
+				event = new MsgEvent(source);
+				break;
+			case POSListener.监听事件类型_异步通知:
+				event = new NtfEvent(source);
+				break;
+			case POSListener.监听事件类型_邮件通知:
+				event = new MailEvent(source);
+				break;
+			default:
+				
+		}
+		
+		return event;
+	}
+}

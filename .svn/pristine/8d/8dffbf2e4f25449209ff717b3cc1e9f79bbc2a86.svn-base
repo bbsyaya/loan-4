@@ -1,0 +1,45 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.biz.facade;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
+import com.hrbb.loan.pos.biz.convert.DueDiligenceAddConvert;
+import com.hrbb.loan.pos.dao.entity.TDueDiligence;
+import com.hrbb.loan.pos.facade.DueDiligenceBizFacade;
+import com.hrbb.loan.pos.facade.bean.DueDiligenceReq;
+import com.hrbb.loan.pos.service.DueDiligenceService;
+
+/**
+ * 
+ * @author marco
+ * @version $Id: DueDiligenceBizFacadeImpl.java, v 0.1 2015-3-2 下午7:48:07 marco
+ *          Exp $
+ */
+@Component("dueDiligenceBiz")
+public class DueDiligenceBizFacadeImpl implements DueDiligenceBizFacade {
+
+	@Autowired
+	@Qualifier("dueDiligenceService")
+	private DueDiligenceService dueDiligenceService;
+
+	/**
+	 * @see com.hrbb.loan.pos.facade.DueDiligenceBizFacade#insertSelective(com.hrbb.loan.pos.facade.bean.DueDiligenceReq)
+	 */
+	@Override
+	public int insertSelective(DueDiligenceReq record) {
+		TDueDiligence dd = DueDiligenceAddConvert
+				.DueDiligenceReq2TDueDiligence(record);
+		return dueDiligenceService.insertSelective(dd);
+	}
+
+	@Override
+	public TDueDiligence selectByPrimaryKey(String loanid) {
+		return dueDiligenceService.selectByPrimaryKey(loanid);
+	}
+}

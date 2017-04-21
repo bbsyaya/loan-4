@@ -1,0 +1,260 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.spi.TC2;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import com.hrbb.loan.acct.facade2.MadeLoanProcessQueryBankAcctBalFacade;
+import com.hrbb.loan.acct.facade2.bean.QueryBankAcctBalReq;
+import com.hrbb.loan.acct.facade2.bean.QueryBankAcctBalRes;
+import com.hrbb.loan.constants.PaymentApplyConstants;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosContractManagementBiz;
+import com.hrbb.loan.pos.dao.TBankAccnoInfoDao;
+import com.hrbb.loan.pos.dao.TCfgFundingPoolDao;
+import com.hrbb.loan.pos.dao.TMessageDao;
+import com.hrbb.loan.pos.dao.TPaymentApplyDao;
+import com.hrbb.loan.pos.dao.TReceiptInfoDao;
+import com.hrbb.loan.pos.dao.entity.TBankAccnoInfo;
+import com.hrbb.loan.pos.dao.entity.TCfgFundingPool;
+import com.hrbb.loan.pos.dao.entity.TContractManagement;
+import com.hrbb.loan.pos.dao.entity.TMessage;
+import com.hrbb.loan.pos.dao.entity.TPaymentApply;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+import com.hrbb.loan.pos.service.bean.BondSupplementMessage;
+import com.hrbb.loan.pos.util.IdUtil;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.loan.spi.TC.TCPaymentApplyServiceImpl;
+import com.hrbb.loan.spiconstants.PaymentApplyHServiceConstants;
+
+/**
+ * 
+ * T62用款申请
+ * 
+ * @author marco
+ * @version $Id: TC2PaymentApplyServiceImpl.java, v 0.1 2015-8-20 上午11:34:55
+ *          marco Exp $
+ */
+@Service("tc2PaymentApply")
+public class TC2PaymentApplyServiceImpl extends TCPaymentApplyServiceImpl {
+
+	@Autowired
+	private LoanPosContractManagementBiz contBiz;
+
+	@Autowired
+	@Qualifier("tBankAccnoInfoDao")
+	private TBankAccnoInfoDao tBankAccnoInfoDao;
+
+	@Autowired
+	private TMessageDao tMessageDao;
+
+	@Autowired
+	@Qualifier("tCfgFundingPoolDao")
+	private TCfgFundingPoolDao tCfgFundingPoolDao;
+
+	@Autowired
+	private TPaymentApplyDao tPaymentApplyDao;
+
+	@Autowired
+	private TReceiptInfoDao tReceiptInfoDao;
+
+	@Autowired
+	private MadeLoanProcessQueryBankAcctBalFacade queryBankAcctBal;
+
+	/**
+	 * 卡验真
+	 * 
+	 * @param accNo
+	 *            卡号
+	 * @return
+	 */
+	@Override
+	protected boolean checkBankCardStatus(String accNo) {
+		TBankAccnoInfo record = tBankAccnoInfoDao.selectByPrimaryKey(accNo);
+		if (record == null || StringUtil.isEmpty(record.getStatus())
+				|| "02".equals(record.getStatus())) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * 卡验真
+	 * 
+	 * @param accNo
+	 *            卡号
+	 * @return
+	 */
+	@Override
+	protected boolean checkCfgFundingPool() {
+		// 查询保证金账号信息
+		Map<String, Object> p = new HashMap<>();
+		p.put("channel", getChannel());
+		TCfgFundingPool cfp = tCfgFundingPoolDao.selectOneSelective(p);
+		// 没有有效的资金池信息
+		if (cfp == null || StringUtil.isEmpty(cfp.getBailAccount())
+				|| cfp.getLeverage() == null) {
+			logger.debug("没有有效的资金池配置信息");
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * 校验保证金
+	 * 
+	 * @param reqMap
+	 * @return
+	 */
+	@Override
+	protected boolean checkCautionMoney(Map<String, Object> reqMap) {
+
+		logger.debug("checkCautionMoney begin");
+
+		try {
+
+			// 用款申请编号
+			String payApplyId = reqMap.get(PaymentApplyConstants.ISSUE_ID)
+					.toString();
+			logger.debug("payApplyId=" + payApplyId);
+			// 银行账户开户行
+			/*String loanbankname = reqMap.get(
+					PaymentApplyHServiceConstants.loanbankname).toString();
+			logger.debug("银行账户开户行loanbankname=" + loanbankname);*/
+			// 用款额度
+			/*String payApplyAmt = reqMap.get(PaymentApplyConstants.payApplyAmt)
+					.toString();*/
+			/*logger.debug("用款额度payApplyAmt=" + payApplyAmt);*/
+			TPaymentApply paymentApply = tPaymentApplyDao.selectByPrimaryKey(payApplyId);
+			BigDecimal payApplyAmt = paymentApply.getPayApplyAmt();
+
+			// 查询保证金账号信息
+			Map<String, Object> p = new HashMap<>();
+			p.put("channel", getChannel());
+			TCfgFundingPool cfp = tCfgFundingPoolDao.selectOneSelective(p);
+
+			// 保证金账号
+			String bailAccount = cfp.getBailAccount();
+			logger.debug("证金账号bailAccount=" + bailAccount);
+
+			// 杠杆倍数
+			BigDecimal leverage = cfp.getLeverage();
+			logger.debug("杠杆倍数leverage=" + leverage);
+
+			// 用款额度
+			BigDecimal payApplyAmtB = paymentApply.getPayApplyAmt();
+			logger.debug("用款额度payApplyAmtB=" + payApplyAmtB);
+
+			// 调用核算查询保证金账户余额
+			/*QueryBankAcctBalReq bReq = new QueryBankAcctBalReq();
+			bReq.setBankAcctNo(bailAccount);
+			bReq.setBankAcctName(loanbankname);
+			bReq.setSeqNo(IdUtil.getId("Seq"));
+			QueryBankAcctBalRes bRes = queryBankAcctBal.queryBankAcctBal(bReq);
+			if (bRes == null || StringUtil.isEmpty(bRes.getBankAcctBalance())) {
+				logger.error("调用核算查询保证金账户余额处理异常!");
+				return false;
+			}
+			logger.debug("保证金账户余额BankAcctBalance=" + bRes.getBankAcctBalance());
+			BigDecimal balance = new BigDecimal(bRes.getBankAcctBalance());*/
+			BigDecimal balance = new BigDecimal("10000000");
+
+			p.clear();
+			// 该笔用款申请先更新用款申请状态为00，再进行计算，根据结果修改状态
+			p.put("payApplyId", payApplyId);
+			p.put("status", "00");
+			int result = tPaymentApplyDao.updateSelectiveMap(p);
+			if (result == 1) {
+				logger.debug("用款申请状态更新为00，成功");
+			} else {
+				logger.debug("用款申请状态更新为00，失败");
+			}
+
+			p.clear();
+			// 设置渠道
+			p.put("channel", getChannel());
+			// 贷款总余额
+			TReceiptInfo loanTotalBalanceR = tReceiptInfoDao
+					.selectTotalBalanceSum(p);
+			BigDecimal loanTotalBalanceSum = loanTotalBalanceR
+					.getLoanTotalBalance();
+			logger.debug("贷款总余额loanTotalBalanceSum=" + loanTotalBalanceSum);
+
+			// 借据总金额
+			TReceiptInfo payApplyAmtR = tReceiptInfoDao.selectPayApplyAmtSum(p);
+			BigDecimal payApplyAmtSum = payApplyAmtR.getPayApplyAmt();
+			logger.debug("借据总余额payApplyAmtSum=" + payApplyAmtSum);
+
+			// 在途总用款金额
+			TPaymentApply pa = tPaymentApplyDao.selectPayApplyAmtSum(p);
+			BigDecimal payApplyAmtSumPA = pa.getPayApplyAmt();
+			logger.debug("在途总用款金额payApplyAmtSumPA=" + payApplyAmtSumPA);
+
+			// 应追加金额=(贷款总余额+借据总金额+在途总用款金额+该笔用款金额)*杠杆倍数-保证金余额
+			BigDecimal margin = loanTotalBalanceSum.add(payApplyAmtSum)
+					.add(payApplyAmtSumPA).add(payApplyAmtB)
+					.divide(leverage, 2, RoundingMode.UP).subtract(balance);
+			logger.debug("应追加金额margin=" + margin);
+
+			// 应追加金额大于0，需要追加保证金
+			if (margin.compareTo(BigDecimal.ZERO) == 1) {
+				logger.debug("应追加金额大于0，需要追加保证金");
+				// 查询合同信息
+				TContractManagement contract = contBiz
+						.getContractByPayApplyId(payApplyId);
+				// 推送不足保证金消息
+				TMessage message = new TMessage();
+				message.setListId(payApplyId);
+				message.setContNo(contract.getContNo());
+				message.setLoanId(contract.getLoanId());
+				message.setCustId(contract.getCustId());
+				message.setChannel(getChannel());
+				message.setMessageType("15");
+				message.setInChannelKind(getInChannelKind());
+
+				BondSupplementMessage boMessage = new BondSupplementMessage();
+				// 用款申请编号
+				boMessage.setIssueid(payApplyId);
+				// 保证金账号
+				boMessage.setAccno(bailAccount);
+				// 账户余额
+				boMessage.setBalance(balance);
+				// 应追加金额
+				boMessage.setMargin(margin);
+				message.setMessageInfo(boMessage.toString());
+				result = tMessageDao.insert(message);
+				if (result == 1) {
+					logger.debug("发送保证金补充通知，成功");
+				} else {
+					logger.debug("发送保证金补充通知，失败");
+				}
+			} else {
+				logger.debug("应追加金额小于等于0，无需追加保证金");
+				p.clear();
+				// 更新用款申请状态为00
+				p.put("payApplyId", payApplyId);
+				p.put("status", "10");
+				result = tPaymentApplyDao.updateSelectiveMap(p);
+				if (result == 1) {
+					logger.debug("用款申请状态更新为10，成功");
+				} else {
+					logger.debug("用款申请状态更新为10，失败");
+				}
+			}
+		} catch (Exception e) {
+			logger.error("处理异常：", e);
+			return false;
+		}
+		logger.debug("checkCautionMoney end");
+		return true;
+	}
+}

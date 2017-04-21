@@ -1,0 +1,25 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:fram="http://framework.facade.common.transcore.pinganfu.com/">
+	<soapenv:Header />
+	<soapenv:Body>
+		<fram:execProxyWithold>
+			<arg0>
+				<bankInfo>
+					 
+				</bankInfo>
+				<bindBankId>1511</bindBankId>
+				<busiChannel>B</busiChannel>
+				<credentialType>1</credentialType>
+				<customerId>1000010000000734</customerId>
+				<dcFlag>D</dcFlag>
+				<merchantNum>1111111</merchantNum>
+				<orderNo>${orderNo}</orderNo> 
+				<productCode>200010020000</productCode> <!-- 陆金所/小贷系统(批量)  -->
+				<toCustomerId>1000010000026540</toCustomerId> <!-- 00户 -->
+				<transAmt>1000000</transAmt>
+				<transFactAmt>1000000</transFactAmt>
+				<transType>63</transType> <!-- 通用代收   -->
+			</arg0>
+		</fram:execProxyWithold>
+	</soapenv:Body>
+</soapenv:Envelope>

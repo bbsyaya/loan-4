@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TPdfSignatureMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TPdfSignature" >
+    <id column="contNo" property="contNo" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.hrbb.loan.pos.dao.entity.TPdfSignature" extends="BaseResultMap" >
+    <result column="signature" property="signature" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    contNo
+  </sql>
+  <sql id="Blob_Column_List" >
+    signature
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_pdf_signature
+    where contNo = #{contNo,jdbcType=VARCHAR}
+  </select>
+    <select id="selectSinatureByContNo" resultType="Map" parameterType="java.lang.String" >
+    select s.signature, c.signDate, c.repayMethod,c.loanId,c.custId
+    from t_pdf_signature s,t_contract_info c
+    where contNo = #{contNo} and c.contNo = s.contNo
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_pdf_signature
+    where contNo = #{contNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TPdfSignature" >
+    insert into t_pdf_signature (contNo, signature)
+    values (#{contNo,jdbcType=VARCHAR}, #{signature,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TPdfSignature" >
+    insert into t_pdf_signature
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="contNo != null" >
+        contNo,
+      </if>
+      <if test="signature != null" >
+        signature,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="contNo != null" >
+        #{contNo,jdbcType=VARCHAR},
+      </if>
+      <if test="signature != null" >
+        #{signature,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TPdfSignature" >
+    update t_pdf_signature
+    <set >
+      <if test="signature != null" >
+        signature = #{signature,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where contNo = #{contNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.hrbb.loan.pos.dao.entity.TPdfSignature" >
+    update t_pdf_signature
+    set signature = #{signature,jdbcType=LONGVARCHAR}
+    where contNo = #{contNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

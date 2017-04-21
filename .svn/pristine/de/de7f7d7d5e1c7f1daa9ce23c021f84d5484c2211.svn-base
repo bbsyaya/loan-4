@@ -1,0 +1,26 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!-- 还款记录 -->
+<div title="还款记录" style="padding: 20px;">
+	<table id="paybackRecord" class="easyui-datagrid" width="100%" style="height: 480px" rownumbers="true" pagination="true">
+		<thead>
+			<tr>
+				<th field="paybackRunningRecordId" hidden="true">还款记录编号</th>
+				<th field="paybackApplyId" hidden="true">还款申请编号</th>
+				<th field="receiptId" width="120">借据编号</th>
+				<th field="supposedPaybackDate" width="80" formatter="dateFormat" align="center">应还日期</th>
+				<th field="supposedTotalAmount" width="100" formatter="formatMoney" align="right">应还总金额</th>
+				<th field="supposedCapital" width="80" formatter="formatMoney" align="right">应还本金</th>
+				<th field="supposedInterest" width="80" formatter="formatMoney" align="right">应还利息</th>
+				<th field="actualPaybackDate" width="80" formatter="dateFormat" align="center">实还日期</th>
+				<th field="actualTotalAmount" width="100" formatter="formatMoney" align="right">实还总金额</th>
+				<th field="actualCapital" width="80" formatter="formatMoney" align="right">实还本金</th>
+				<th field="actualInterest" width="80" formatter="formatMoney" align="right">实还利息</th>
+				<th field="paybackChannel" hidden="true">还款渠道</th>
+				<th field="paybackImportId" hidden="true">还款进项编号</th>
+				<th field="runningStatus" hidden="true">流水编号</th>
+			</tr>
+		</thead>
+	</table>
+</div>
+

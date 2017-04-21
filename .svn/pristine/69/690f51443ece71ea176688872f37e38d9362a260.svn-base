@@ -1,0 +1,36 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.hrbb.loan.pos.biz.backstage.inter.IPDFService;
+import com.hrbb.loan.pos.util.HtmlGenerator;
+
+/**
+ * @author yida
+ * @date 2015年10月28日 下午1:53:22
+ */
+@Controller
+@RequestMapping("/pdf")
+public class PDFController {
+    
+    @Autowired
+    private IPDFService pdfService;
+    
+    @RequestMapping("generate")
+    public void generatePdf(@RequestParam String category){
+        //获取协议模板
+        String fileName = category+".ftl";
+        String template = HtmlGenerator.generate(fileName, null);
+        //异步调用生成pdf
+        pdfService.generate(template);
+    }
+
+}

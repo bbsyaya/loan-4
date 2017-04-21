@@ -1,0 +1,2158 @@
+package com.hrbb.loan.controller;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.constants.CreditApplyConstants;
+import com.hrbb.loan.constants.PaymentApplyConstants;
+import com.hrbb.loan.constants.black.BlacklistConstants;
+import com.hrbb.loan.constants.customer.CustomerInfoConstants;
+import com.hrbb.loan.ftp.client.param.ParamResBean;
+import com.hrbb.loan.ftp.web.controller.FtpTransUpload;
+import com.hrbb.loan.pos.biz.backstage.inter.CreditApplyAprvInfoBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.IGenericConfigBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.ILoanPosBusinessCodeBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.ILoanPosCreditApplyBackStageBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.IPaymentApplyBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.IReceiptManageBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.ImageDataViewBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosContractManagementBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanRiskCheckBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.UserApprInfoBiz;
+import com.hrbb.loan.pos.dao.entity.TApproveResult;
+import com.hrbb.loan.pos.dao.entity.TBankAccnoInfo;
+import com.hrbb.loan.pos.dao.entity.TContractManagement;
+import com.hrbb.loan.pos.dao.entity.TCreditApply;
+import com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo;
+import com.hrbb.loan.pos.dao.entity.TCustomer;
+import com.hrbb.loan.pos.dao.entity.TPaymentApply;
+import com.hrbb.loan.pos.dao.entity.TRiskCheckResult;
+import com.hrbb.loan.pos.dao.entity.TUserApprInfo;
+import com.hrbb.loan.pos.service.LoanPosCreditApplyService;
+import com.hrbb.loan.pos.service.LoanPosCustomerService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.FileUtil;
+import com.hrbb.loan.pos.util.IdUtil;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.loan.pos.util.ZipUtils;
+import com.hrbb.loan.pos.util.constants.BusinessDictionaryConstants;
+import com.hrbb.loan.pos.util.constants.ReviewNoteConstants;
+import com.hrbb.loan.pos.util.excel.ExcelExportUtil;
+import com.hrbb.loan.spi.ZJ.ZJAddImageDataServiceImpl;
+import com.hrbb.loan.spiconstants.CreditApplyHServiceConstants;
+import com.hrbb.loan.web.security.entity.AccessPrivilege;
+import com.hrbb.loan.web.security.entity.User;
+import com.hrbb.sh.framework.HRequest;
+import com.hrbb.sh.framework.HResponse;
+import com.hrbb.sh.framework.HServiceException;
+import com.hrbb.sh.framework.ftpproxy.HFTPFile;
+import com.hrbb.sh.framework.ftpproxy.HFTPService;
+
+
+/**
+ *<h1></h1>
+ *@author Johnson Song
+ *@version Id: NavigationController.java, v 1.0 2015-2-26 下午3:27:47 Johnson Song Exp
+ */
+@Controller
+@RequestMapping("/navigation")
+public class NavigationController {
+    
+    private Logger logger = LoggerFactory.getLogger(NavigationController.class);
+
+	private List<Map<String, Object>> channelDictionary;
+	
+	private List<Map<String, Object>> posTypeDictionary;
+	
+	private List<Map<String, Object>> provinceList;
+
+	private List<Map<String, Object>> paperList;
+	
+	private List<Map<String, Object>> currSignList;
+	
+	private List<Map<String, Object>> returnKindList;
+	
+	private List<Map<String, Object>> sexList;
+	
+	private List<Map<String, Object>> maritalList;
+	
+	private List<Map<String, Object>> eduList;
+	
+	private List<Map<String, Object>> relList;
+	
+	private List<Map<String, Object>> cities;
+	
+	private List<Map<String, Object>> divisions;
+	
+	private List<Map<String, Object>> bankNoList;
+	
+	private List<Map<String, Object>> implTypeList;
+	
+	private List<Map<String, Object>> repayMethodList;
+	
+	private List<Map<String, Object>> paymentApplyList;
+	
+	private List<Map<String, Object>> loanPurposeList;
+	
+	private List<Map<String, Object>> contactFlags;
+	
+	private List<Map<String, Object>> callingTypeList;
+	
+	private List<Map<String, Object>> HrrbIndustTypeList;
+	//拒绝代码
+	private List<Map<String, Object>> refuseCodeList;
+	
+	@Autowired
+	private ILoanPosBusinessCodeBiz loanPosBusinessCodeBiz;
+	
+	@Autowired
+	private LoanPosCreditApplyService loanPosCreditApplyService;
+	
+	@Autowired
+	private LoanPosCustomerService loanPosCustomerService;
+	
+	@Autowired
+	private ILoanPosCreditApplyBackStageBiz loanPosCreditApplyBackStageBiz;
+	
+    @Autowired
+    @Qualifier("zjAddImageDataService")
+    private ZJAddImageDataServiceImpl zJAddImageDataServiceImpl;
+    
+    @Autowired
+	private HFTPService hftpService;
+
+    @Autowired
+    private LoanPosContractManagementBiz loanPosContractManagementBiz;
+	
+	@Autowired
+	private ImageDataViewBiz imageDataViewBiz;
+	
+	@Autowired
+	private IPaymentApplyBiz paymentApplyBiz;
+	
+	@Autowired
+	private IReceiptManageBiz receiptManageBiz;
+	@Autowired
+	@Qualifier("loanRiskCheckBiz")
+	private LoanRiskCheckBiz riskCheckBiz;
+	
+	@Autowired
+	@Qualifier("genericConfigBiz")
+	private IGenericConfigBiz configBiz;
+	
+	@Autowired
+	@Qualifier("creditApplyAprvInfoBiz")
+	private CreditApplyAprvInfoBiz apprBiz;
+	
+	@Autowired
+	@Qualifier("userApprInfoBiz")
+	private UserApprInfoBiz userApprInfoBiz;
+	
+	@Resource(name = "ftpTransUpload")
+	private FtpTransUpload ftpTransUpload;
+
+    @Value("#{systemInfo[imageUrl]}")
+    private String imageUrl;
+	
+	@PostConstruct
+	public void loadDictionary(){
+//		channelDictionary = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.BizChannel);
+		/* 对BizChannel进行过滤不显示ZZ, 对displayNo作为排序基准
+		 * add by Lin,Zhaolin at 2015-5-25*/
+		Map<String, Object> reqChannel = Maps.newHashMap();
+		reqChannel.put("codeNo", BusinessDictionaryConstants.BizChannel);
+		reqChannel.put("extAttr", "Y");
+		channelDictionary = loanPosBusinessCodeBiz.getItemNamesWithExtOrder(reqChannel);
+		
+		posTypeDictionary = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.POSType);
+		loanPurposeList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.Purpose);
+		provinceList = loanPosBusinessCodeBiz.getProvinceCityOrDic("__0000");
+		Map<String, Object> reqMap = Maps.newHashMap();
+		reqMap.put("codeNo", BusinessDictionaryConstants.AdminDivision);		//add by Lin,Zhaolin
+		reqMap.put(CreditApplyConstants.ITEMN_NO_LIKE, "____00");
+		reqMap.put(CreditApplyConstants.ITEM_NO_NOT_LIKE, "__0000");
+		cities = loanPosBusinessCodeBiz.getSeletiveMap(reqMap);
+		reqMap = Maps.newHashMap();
+		reqMap.put("codeNo", BusinessDictionaryConstants.AdminDivision);		//add by Lin,Zhaolin
+		reqMap.put(CreditApplyConstants.ITEMN_NO_LIKE, "______");
+		reqMap.put(CreditApplyConstants.ITEM_NO_NOT_LIKE, "__0000");
+		reqMap.put(CreditApplyConstants.ITEM_NO_NOT_LIKE_2, "____00");
+		divisions = loanPosBusinessCodeBiz.getSeletiveMap(reqMap);
+		paperList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.CertType);
+		currSignList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.Currency);
+		returnKindList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.AccrualType);
+		sexList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.Sex);
+		maritalList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.Marital);
+		eduList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.Education);
+		relList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.Relationship);
+		bankNoList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.BankNo);
+		implTypeList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.ImplType);
+		repayMethodList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.RepayMethod);
+		paymentApplyList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.IssueApplyStatus);
+		contactFlags = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.CONTACT_ADDRESS);
+		callingTypeList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.CallingType);
+		HrrbIndustTypeList = loanPosBusinessCodeBiz.getItemNames("HrrbIndustType");
+		refuseCodeList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.RefuseCode);
+	}
+
+    @RequestMapping("/roleOneNav")
+    public ModelAndView roleOneNav(){
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName(CreditApplyConstants.NAVIGATION);
+        return mav;
+    }
+
+    @RequestMapping("/queryBlacklistNav")
+    public ModelAndView queryBlacklistNav(){
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName(BlacklistConstants.QUERY_BLACKLIST_NAV);
+        return mav;
+    }
+    
+    @RequestMapping("/queryCustomerNav")
+    public ModelAndView queryCustomerNav(){
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName(CustomerInfoConstants.QUERY_CUSTOMER_NAV);
+        return mav;
+    }
+    
+    @RequestMapping("/queryCustRelaNav")
+    public ModelAndView queryCustRelaNav(){
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName(CustomerInfoConstants.QUERY_CUST_RELA_NAV);
+        return mav;
+    }
+    
+    @RequestMapping("/queryCustMerchantNav")
+    public ModelAndView queryCustMerchantNav(){
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName(CustomerInfoConstants.QUERY_CUST_MERCHANT_NAV);
+        return mav;
+    }
+    
+    @RequestMapping("/queryCustBankNav")
+    public ModelAndView queryCustBankNav(){
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName(CustomerInfoConstants.QUERY_CUST_BANK_NAV);
+        return mav;
+    }
+    
+    @RequestMapping("/queryContractManagementNav")
+    public ModelAndView queryContractManagementNav(){
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("queryContractManagementNavi");
+        return mav;
+    }
+
+    
+    @RequestMapping("/openCreditApplyAndCustomer")
+    public ModelAndView openCreditApplyAndCustomer(@RequestParam(value="loanId",required=false)String loanId,
+    		@RequestParam(value="direct2Path",required=false)String direct2Path){
+        ModelAndView mav = new ModelAndView();
+        if(loanId!=null && loanId.trim().length()>0){		//load detail when loanId is null
+			// 查询出
+			List<Map<String, Object>> resList = loanPosCreditApplyBackStageBiz.getCreditApplyDetail(loanId);
+			if(resList!=null && resList.size()>0){
+				//--------追加地址中的市和县一级代码名称,0业务申请信息;1客户信息;3商户信息;4银行账户信息;2亲属信息
+				Object residentCity = resList.get(1).get("residentCity");
+				if(residentCity!=null) resList.get(1).put("residentCityName", getItemValue(cities,residentCity.toString()));
+				Object residentDivision = resList.get(1).get("residentDivision");
+				if(residentDivision!=null) resList.get(1).put("residentDivisionName", getItemValue(divisions,residentDivision.toString()));
+				
+				Object posCustCity = resList.get(3).get("posCustCity");
+				if(posCustCity!=null) resList.get(3).put("posCustCityName", getItemValue(cities,posCustCity.toString()));
+				Object posCustDivision = resList.get(3).get("operAddrCode");
+				if(posCustDivision!=null) resList.get(3).put("posCustDivisionName", getItemValue(divisions,posCustDivision.toString()));
+				//--------商户行业分类代码转换
+				Object industryTypeId = resList.get(3).get("industryTypeId");
+				if(industryTypeId!=null) {
+					String itemName = loanPosBusinessCodeBiz.getItemNameByNo(BusinessDictionaryConstants.IndustryType,(String)industryTypeId);
+					if(itemName!=null && itemName.trim().length()>0){
+						resList.get(3).put("industryTypeName", "["+industryTypeId+"] "+itemName);
+					}
+				}
+				logger.info(JSON.toJSONString(resList));
+				Object applyDetail = JSON.toJSON(resList);
+				mav.addObject("applyDetail", applyDetail);
+			}
+		}else{
+			//generate loadId
+			loanId = IdUtil.getId("LO");
+		}
+		mav.addObject("loanId", loanId);
+        mav.setViewName(direct2Path);
+        return mav;
+    }
+
+    
+    @RequestMapping("/queryContractManagementNav1")
+    public ModelAndView queryContractManagementNav1(@RequestParam(value="approveStatus", required = false)String approveStatus){
+        ModelAndView mav = new ModelAndView();
+    	mav.addObject("loanPurposeList",loanPurposeList);
+        mav.addObject("approveStatus",approveStatus);
+        mav.addObject("bizChannel", channelDictionary);
+        mav.addObject("implTypeList", implTypeList);
+        mav.addObject("currSignList", currSignList);
+        mav.addObject("returnKindList", returnKindList);
+        mav.addObject("paperList", paperList);
+        mav.addObject("sexList", sexList);
+        mav.addObject("eduList", eduList);
+        mav.addObject("maritalList", maritalList);
+		mav.addObject("province", provinceList);
+		mav.addObject("cities", cities);
+		mav.addObject("divisions", divisions);
+		mav.addObject("repayMethodList", repayMethodList);
+        mav.setViewName("contract/unApprovedContractNavi");
+        return mav;
+    }
+    
+    @RequestMapping("/queryContractManagementNav2")
+    public ModelAndView queryContractManagementNav2(@RequestParam(value="approveStatus", required = false)String approveStatus){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("approveStatus",approveStatus);
+        mav.addObject("bizChannel", channelDictionary);
+        mav.addObject("implTypeList", implTypeList);
+        mav.addObject("currSignList", currSignList);
+        mav.addObject("returnKindList", returnKindList);
+        mav.addObject("paperList", paperList);
+        mav.addObject("sexList", sexList);
+        mav.addObject("eduList", eduList);
+        mav.addObject("maritalList", maritalList);
+        mav.addObject("province", provinceList);
+		mav.addObject("cities", cities);
+		mav.addObject("divisions", divisions);
+		mav.addObject("repayMethodList", repayMethodList);
+        mav.setViewName("contract/approvedContractNavi");
+        return mav;
+    }
+    
+    @RequestMapping("/queryContractManagementNav3")
+    public ModelAndView queryContractManagementNav3(@RequestParam(value="approveStatus", required = false)String approveStatus){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("approveStatus",approveStatus);
+        mav.addObject("bizChannel", channelDictionary);
+        mav.addObject("implTypeList", implTypeList);
+        mav.addObject("currSignList", currSignList);
+        mav.addObject("returnKindList", returnKindList);
+        mav.addObject("paperList", paperList);
+        mav.addObject("sexList", sexList);
+        mav.addObject("eduList", eduList);
+        mav.addObject("maritalList", maritalList);
+        mav.addObject("province", provinceList);
+		mav.addObject("cities", cities);
+		mav.addObject("divisions", divisions);
+		mav.addObject("repayMethodList", repayMethodList);
+        mav.setViewName("contract/refusedContractNavi");
+        return mav;
+    }
+    
+    @RequestMapping("/queryContractManagementNav4")
+    public ModelAndView queryContractManagementNav4(@RequestParam(value="approveStatus", required = false)String approveStatus){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("approveStatus",approveStatus);
+        mav.addObject("bizChannel", channelDictionary);
+        mav.addObject("implTypeList", implTypeList);
+        mav.addObject("currSignList", currSignList);
+        mav.addObject("returnKindList", returnKindList);
+        mav.addObject("paperList", paperList);
+        mav.addObject("sexList", sexList);
+        mav.addObject("eduList", eduList);
+        mav.addObject("maritalList", maritalList);
+        mav.addObject("province", provinceList);
+		mav.addObject("cities", cities);
+		mav.addObject("divisions", divisions);
+		mav.addObject("repayMethodList", repayMethodList);
+        mav.setViewName("contract/invalidateContractNavi");
+        return mav;
+    }
+    
+    @RequestMapping("/unClearedBusiness")
+    public ModelAndView queryReceiptInfo1(@RequestParam(value="clearStatus", required = false)String clearStatus){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("clearStatus",clearStatus);
+        mav.addObject("bizChannel", channelDictionary);
+        mav.addObject("implTypeList", implTypeList);
+        mav.addObject("currSignList", currSignList);
+        mav.addObject("returnKindList", returnKindList);
+        mav.addObject("paperList", paperList);
+        mav.addObject("sexList", sexList);
+        mav.addObject("eduList", eduList);
+        mav.addObject("maritalList", maritalList);
+        mav.addObject("province", provinceList);
+		mav.addObject("cities", cities);
+		mav.addObject("divisions", divisions);
+		mav.addObject("repayMethodList", repayMethodList);
+        mav.setViewName("payback/unClearedReceipt");
+        return mav;
+    }
+    
+    @RequestMapping("/clearedBusiness")
+    public ModelAndView queryReceiptInfo2(@RequestParam(value="clearStatus", required = false)String clearStatus){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("clearStatus",clearStatus);
+        mav.addObject("bizChannel", channelDictionary);
+        mav.addObject("implTypeList", implTypeList);
+        mav.addObject("currSignList", currSignList);
+        mav.addObject("returnKindList", returnKindList);
+        mav.addObject("paperList", paperList);
+        mav.addObject("sexList", sexList);
+        mav.addObject("eduList", eduList);
+        mav.addObject("maritalList", maritalList);
+        mav.addObject("province", provinceList);
+		mav.addObject("cities", cities);
+		mav.addObject("divisions", divisions);
+		mav.addObject("repayMethodList", repayMethodList);
+        mav.setViewName("payback/clearedReceipt");
+        return mav;
+    }
+    
+    
+    @RequestMapping("/unSentApply")
+    public ModelAndView paybackApply(@RequestParam(value="paybackStatus", required = false)String paybackStatus){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("paybackStatus",paybackStatus);
+        mav.addObject("bizChannel", channelDictionary);
+        mav.addObject("implTypeList", implTypeList);
+        mav.addObject("currSignList", currSignList);
+        mav.addObject("returnKindList", returnKindList);
+        mav.addObject("paperList", paperList);
+        mav.addObject("sexList", sexList);
+        mav.addObject("eduList", eduList);
+        mav.addObject("maritalList", maritalList);
+        mav.addObject("province", provinceList);
+		mav.addObject("cities", cities);
+		mav.addObject("divisions", divisions);
+		mav.addObject("repayMethodList", repayMethodList);
+		mav.addObject("loanPurposeList",loanPurposeList);
+        mav.setViewName("payback/noSentInstructionApply");
+        return mav;
+    }
+    
+    
+    @RequestMapping("/waitToDeductPayback")
+    public ModelAndView waitToDeductPayback(@RequestParam(value="paybackStatus", required = false)String paybackStatus){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("paybackStatus",paybackStatus);
+        mav.addObject("bizChannel", channelDictionary);
+        mav.addObject("implTypeList", implTypeList);
+        mav.addObject("currSignList", currSignList);
+        mav.addObject("returnKindList", returnKindList);
+        mav.addObject("paperList", paperList);
+        mav.addObject("sexList", sexList);
+        mav.addObject("eduList", eduList);
+        mav.addObject("maritalList", maritalList);
+        mav.addObject("province", provinceList);
+		mav.addObject("cities", cities);
+		mav.addObject("divisions", divisions);
+		mav.addObject("repayMethodList", repayMethodList);
+		mav.addObject("loanPurposeList",loanPurposeList);
+        mav.setViewName("payback/waitToDeductPayback");
+        return mav;
+    }
+    
+    
+    @RequestMapping("/deductSucPayback")
+    public ModelAndView deductSucPayback(@RequestParam(value="paybackStatus", required = false)String paybackStatus){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("paybackStatus",paybackStatus);
+        mav.addObject("bizChannel", channelDictionary);
+        mav.addObject("implTypeList", implTypeList);
+        mav.addObject("currSignList", currSignList);
+        mav.addObject("returnKindList", returnKindList);
+        mav.addObject("paperList", paperList);
+        mav.addObject("sexList", sexList);
+        mav.addObject("eduList", eduList);
+        mav.addObject("maritalList", maritalList);
+        mav.addObject("province", provinceList);
+		mav.addObject("cities", cities);
+		mav.addObject("divisions", divisions);
+		mav.addObject("repayMethodList", repayMethodList);
+		mav.addObject("loanPurposeList",loanPurposeList);
+        mav.setViewName("payback/deductSucPayback");
+        return mav;
+    }
+    
+    
+    @RequestMapping("/deductFailPayback")
+    public ModelAndView deductFailPayback(@RequestParam(value="paybackStatus", required = false)String paybackStatus){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("paybackStatus",paybackStatus);
+        mav.addObject("bizChannel", channelDictionary);
+        mav.addObject("implTypeList", implTypeList);
+        mav.addObject("currSignList", currSignList);
+        mav.addObject("returnKindList", returnKindList);
+        mav.addObject("paperList", paperList);
+        mav.addObject("sexList", sexList);
+        mav.addObject("eduList", eduList);
+        mav.addObject("maritalList", maritalList);
+        mav.addObject("province", provinceList);
+		mav.addObject("cities", cities);
+		mav.addObject("divisions", divisions);
+		mav.addObject("repayMethodList", repayMethodList);
+		mav.addObject("loanPurposeList",loanPurposeList);
+        mav.setViewName("payback/deductFailPayback");
+        return mav;
+    }
+    
+    
+    @RequestMapping("/canceledPayback")
+    public ModelAndView canceledPayback(@RequestParam(value="paybackStatus", required = false)String paybackStatus){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("paybackStatus",paybackStatus);
+        mav.addObject("bizChannel", channelDictionary);
+        mav.addObject("implTypeList", implTypeList);
+        mav.addObject("currSignList", currSignList);
+        mav.addObject("returnKindList", returnKindList);
+        mav.addObject("paperList", paperList);
+        mav.addObject("sexList", sexList);
+        mav.addObject("eduList", eduList);
+        mav.addObject("maritalList", maritalList);
+        mav.addObject("province", provinceList);
+		mav.addObject("cities", cities);
+		mav.addObject("divisions", divisions);
+		mav.addObject("repayMethodList", repayMethodList);
+		mav.addObject("loanPurposeList",loanPurposeList);
+        mav.setViewName("payback/canceledPayback");
+        return mav;
+    }
+    
+    
+    //未匹配还款进项
+    @RequestMapping("/notMatchedPaybackImport")
+    public ModelAndView notMatchedPaybackImport(@RequestParam(value="viewStatus", required = false)String viewStatus){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("bizChannel", channelDictionary);
+        mav.addObject("implTypeList", implTypeList);
+        mav.addObject("currSignList", currSignList);
+        mav.addObject("returnKindList", returnKindList);
+        mav.addObject("paperList", paperList);
+        mav.addObject("sexList", sexList);
+        mav.addObject("eduList", eduList);
+        mav.addObject("maritalList", maritalList);
+        mav.addObject("province", provinceList);
+		mav.addObject("cities", cities);
+		mav.addObject("divisions", divisions);
+		mav.addObject("repayMethodList", repayMethodList);
+		mav.addObject("loanPurposeList",loanPurposeList);
+		mav.addObject("viewStatus",viewStatus);		//add by Lin,Zhaolin
+        mav.setViewName("payback/notMatchedPaybackImport");
+        return mav;
+    }
+    
+    //已匹配还款进项
+    @RequestMapping("/matchedPaybackImport")
+    public ModelAndView matchedPaybackImport(){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("bizChannel", channelDictionary);
+        mav.addObject("implTypeList", implTypeList);
+        mav.addObject("currSignList", currSignList);
+        mav.addObject("returnKindList", returnKindList);
+        mav.addObject("paperList", paperList);
+        mav.addObject("sexList", sexList);
+        mav.addObject("eduList", eduList);
+        mav.addObject("maritalList", maritalList);
+        mav.addObject("province", provinceList);
+		mav.addObject("cities", cities);
+		mav.addObject("divisions", divisions);
+		mav.addObject("repayMethodList", repayMethodList);
+		mav.addObject("loanPurposeList",loanPurposeList);
+        mav.setViewName("payback/matchedPaybackImport");
+        return mav;
+    }
+    
+    
+    //待确认存疑流水
+    @RequestMapping("/notConfirmedQuestionRunning")
+    public ModelAndView notConfirmedQuestion(@RequestParam(value="runningStatus", required = false)String runningStatus){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("runningStatus",runningStatus);
+        mav.addObject("bizChannel", channelDictionary);
+        mav.addObject("implTypeList", implTypeList);
+        mav.addObject("currSignList", currSignList);
+        mav.addObject("returnKindList", returnKindList);
+        mav.addObject("paperList", paperList);
+        mav.addObject("sexList", sexList);
+        mav.addObject("eduList", eduList);
+        mav.addObject("maritalList", maritalList);
+        mav.addObject("province", provinceList);
+		mav.addObject("cities", cities);
+		mav.addObject("divisions", divisions);
+		mav.addObject("repayMethodList", repayMethodList);
+		mav.addObject("loanPurposeList",loanPurposeList);
+        mav.setViewName("payback/running/notConfirmedQuestion");
+        return mav;
+    }
+    
+    
+    //已匹配还款流水
+    @RequestMapping("/matchedPaybackRunning")
+    public ModelAndView matchedPaybackImport(@RequestParam(value="runningStatus", required = false)String runningStatus){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("runningStatus",runningStatus);
+        mav.addObject("bizChannel", channelDictionary);
+        mav.addObject("implTypeList", implTypeList);
+        mav.addObject("currSignList", currSignList);
+        mav.addObject("returnKindList", returnKindList);
+        mav.addObject("paperList", paperList);
+        mav.addObject("sexList", sexList);
+        mav.addObject("eduList", eduList);
+        mav.addObject("maritalList", maritalList);
+        mav.addObject("province", provinceList);
+		mav.addObject("cities", cities);
+		mav.addObject("divisions", divisions);
+		mav.addObject("repayMethodList", repayMethodList);
+		mav.addObject("loanPurposeList",loanPurposeList);
+        mav.setViewName("payback/running/matchedQuestion");
+        return mav;
+    }
+    
+    
+    //确认待冲销流水
+    @RequestMapping("/confirmToOffsetRunning")
+    public ModelAndView confirmToOffset(@RequestParam(value="runningStatus", required = false)String runningStatus){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("runningStatus",runningStatus);
+        mav.addObject("bizChannel", channelDictionary);
+        mav.addObject("implTypeList", implTypeList);
+        mav.addObject("currSignList", currSignList);
+        mav.addObject("returnKindList", returnKindList);
+        mav.addObject("paperList", paperList);
+        mav.addObject("sexList", sexList);
+        mav.addObject("eduList", eduList);
+        mav.addObject("maritalList", maritalList);
+        mav.addObject("province", provinceList);
+		mav.addObject("cities", cities);
+		mav.addObject("divisions", divisions);
+		mav.addObject("repayMethodList", repayMethodList);
+		mav.addObject("loanPurposeList",loanPurposeList);
+        mav.setViewName("payback/running/confirmToOffset");
+        return mav;
+    }
+    
+    
+    //确认已冲销流水
+    @RequestMapping("/confirmedOffsetRunning")
+    public ModelAndView confirmedOffset(@RequestParam(value="runningStatus", required = false)String runningStatus){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("runningStatus",runningStatus);
+        mav.addObject("bizChannel", channelDictionary);
+        mav.addObject("implTypeList", implTypeList);
+        mav.addObject("currSignList", currSignList);
+        mav.addObject("returnKindList", returnKindList);
+        mav.addObject("paperList", paperList);
+        mav.addObject("sexList", sexList);
+        mav.addObject("eduList", eduList);
+        mav.addObject("maritalList", maritalList);
+        mav.addObject("province", provinceList);
+		mav.addObject("cities", cities);
+		mav.addObject("divisions", divisions);
+		mav.addObject("repayMethodList", repayMethodList);
+		mav.addObject("loanPurposeList",loanPurposeList);
+        mav.setViewName("payback/running/confirmedOffset");
+        return mav;
+    }
+    
+    
+    
+	@RequestMapping("/queryCreditApplyForReview")
+	public ModelAndView queryCreditApplyForReview(){
+		ModelAndView mav = new ModelAndView();
+		List<Map<String, String>> dateList = DateUtil.getOverNumMonths(CreditApplyConstants.monthNum);
+		mav.addObject("overMonths", dateList);
+		mav.addObject("province", provinceList);
+		mav.addObject("bizChannel", channelDictionary);
+		mav.addObject("paperList", paperList);
+		mav.addObject("returnKindList", returnKindList);
+		mav.addObject("currSignList", currSignList);
+		mav.addObject("sexList", sexList);
+		mav.addObject("maritalList", maritalList);
+		mav.addObject("eduList", eduList);
+		mav.addObject("relList", relList);
+		mav.addObject("cities", cities);
+		mav.addObject("divisions", divisions);
+		mav.addObject("bankNoList", bankNoList);
+		mav.addObject("implTypeList", implTypeList);
+		mav.addObject("repayMethodList", repayMethodList);
+		mav.setViewName("review/queryCreditApplyForReviewNavi");
+		return mav;
+	}
+
+	/**
+	 * 导航至协议申请页面
+	 * @param applyStatus
+	 * @return
+	 */
+	@RequestMapping("/queryCreditApplyNav")
+	public ModelAndView queryCreditApplyNav(@RequestParam(value="applyStatus",required=false)String applyStatus,@RequestParam(value="isApplyStatus",required=false)String isApplyStatus){
+		ModelAndView mav = new ModelAndView();
+		List<Map<String, String>> dateList = DateUtil.getOverNumMonths(CreditApplyConstants.monthNum);
+		mav.addObject("overMonths", dateList);
+		mav.addObject("province", provinceList);
+		mav.addObject("bizChannel", channelDictionary);
+		mav.addObject("paperList", paperList);
+		mav.addObject("returnKindList", returnKindList);
+		mav.addObject("currSignList", currSignList);
+		mav.addObject("sexList", sexList);
+		mav.addObject("maritalList", maritalList);
+		mav.addObject("eduList", eduList);
+		mav.addObject("relList", relList);
+		mav.addObject("cities", cities);
+		mav.addObject("divisions", divisions);
+		mav.addObject("bankNoList", bankNoList);
+		mav.addObject("implTypeList", implTypeList);
+		mav.addObject("repayMethodList", repayMethodList);
+		if(!StringUtil.isEmpty(applyStatus)){
+			mav.addObject(CreditApplyConstants.APPLY_STATUS, applyStatus);
+		}
+		if(!StringUtil.isEmpty(isApplyStatus)){
+		    mav.addObject("isApplyStatus",isApplyStatus);
+		}
+		mav.setViewName(CreditApplyConstants.QUERY_CREDIT_APPLY_NAV);
+		return mav;
+	}
+	/**
+	 * 导航到客服外呼页面
+	 * @return ModelAndView
+	 */
+	@RequestMapping("/queryCallingTaskForReview")
+	public ModelAndView queryCallingTaskForReview(){
+		ModelAndView mav = new ModelAndView();
+		
+		List<Map<String, String>> dateList = DateUtil.getOverNumMonths(CreditApplyConstants.monthNum);
+		mav.addObject("overMonths", dateList);
+		mav.addObject("province", provinceList);
+		mav.addObject("bizChannel", channelDictionary);
+		mav.addObject("paperList", paperList);
+		mav.addObject("returnKindList", returnKindList);
+		mav.addObject("currSignList", currSignList);
+		mav.addObject("sexList", sexList);
+		mav.addObject("maritalList", maritalList);
+		mav.addObject("eduList", eduList);
+		mav.addObject("relList", relList);
+		mav.addObject("cities", cities);
+		mav.addObject("divisions", divisions);
+		mav.addObject("bankNoList", bankNoList);
+		mav.addObject("implTypeList", implTypeList);
+		mav.addObject("repayMethodList", repayMethodList);
+		mav.addObject("callingTypeList", callingTypeList);
+		mav.setViewName("outBound/queryCallingTaskForReview");
+		return mav;
+	}
+	/**
+	 * 导航至协议管理界面
+	 * @param loanId
+	 * @return
+	 */
+	@RequestMapping("/queryAgreeMentNavi")
+	public ModelAndView queryAgreeMentNavi(@RequestParam(value="agreementStatus")String agreementStatus){
+		ModelAndView mav = new ModelAndView();
+		if(!StringUtil.isEmpty(agreementStatus)){
+			mav.addObject(CreditApplyConstants.AGREEMENT_STATUS, agreementStatus);
+		}
+		mav.addObject("bizChannel", channelDictionary);
+		mav.addObject("paperList", paperList);
+		mav.addObject("returnKindList", returnKindList);
+		mav.addObject("agreementStatus", agreementStatus);
+		mav.addObject("maritalList", maritalList);
+		mav.addObject("sexList", sexList);
+		mav.addObject("eduList",eduList);
+		mav.addObject("currSignList",currSignList);
+	    mav.addObject("loanPurposeList",loanPurposeList);
+        mav.addObject("implTypeList", implTypeList);
+        mav.addObject("province", provinceList);
+        mav.addObject("cities", cities);
+        mav.addObject("divisions", divisions);
+        mav.addObject("repayMethodList", repayMethodList);
+        mav.addObject("bankNoList", bankNoList);
+		mav.setViewName(CreditApplyConstants.QUERY_AGREEMENT_NAV);
+		return mav;
+	}
+	
+	/**
+	 * 待签约协议
+	 * 
+	 * @param approveStatus
+	 * @param direct2Path
+	 * @param out
+	 * @return
+	 */
+	@RequestMapping("/openSignReply")
+	public ModelAndView openSignReply(@RequestParam(value="approveStatus",required=false)String approveStatus,
+	                                  @RequestParam(value="direct2Path",required=false)String direct2Path,PrintWriter out ){
+	    ModelAndView mav = new ModelAndView();
+	    mav.addObject("approveStatus",approveStatus);
+	    mav.setViewName(direct2Path);;
+	    return mav;
+	}
+	/**
+	 * 协议信息
+	 * 
+	 * @param approveId
+	 * @param direct2Path
+	 * @return
+	 */
+	@RequestMapping("/openContractWindow")
+	public ModelAndView openContractWindow( @RequestParam(value="approveId",required=false)String approveId,@RequestParam(value="direct2Path",required=false)String direct2Path){
+	    ModelAndView mav = new ModelAndView();
+	    mav.addObject("bizChannel", channelDictionary);
+        mav.addObject("paperList", paperList);
+        mav.addObject("returnKindList", returnKindList);
+        mav.addObject("maritalList", maritalList);
+        mav.addObject("sexList", sexList);
+        mav.addObject("eduList",eduList);
+        mav.addObject("currSignList",currSignList);
+        mav.addObject("loanPurposeList",loanPurposeList);
+        mav.addObject("implTypeList", implTypeList);
+        mav.addObject("province", provinceList);
+        mav.addObject("cities", cities);
+        mav.addObject("divisions", divisions);
+        mav.addObject("repayMethodList", repayMethodList);
+        TApproveResult approveResult = loanPosContractManagementBiz.getApproveInfo(approveId);
+        Date beginDate =new Date();
+        mav.addObject("beginDate",beginDate);
+        Date endDate;
+        try {
+            endDate = DateUtil.getDatePattern3(DateUtil.getRelativeDate(beginDate, 0, Integer.parseInt(approveResult.getApproveTerm()), -1));
+            mav.addObject("endDate",endDate);
+        } catch (Exception e) {
+            logger.error("日期转换错误", e);
+        }
+        TCreditApply creditApply = loanPosCreditApplyBackStageBiz.queryCreditApplyDetail(approveResult.getLoanId());
+        mav.addObject("approveResult",approveResult);
+        mav.addObject("inChannelKind",creditApply.getInChannelKind());
+        String accountOpenBank = loanPosBusinessCodeBiz.getItemNameByNo("BankNo", approveResult.getAccountOpenBank());
+        mav.addObject("accountOpenBank",accountOpenBank);
+        mav.setViewName(direct2Path);;
+        return mav;
+	}
+	
+	@RequestMapping("/openApprovalWin")
+	public ModelAndView openApprovalWin( @RequestParam(value="approveId",required=false)String approveId,
+			@RequestParam(value="direct2Path",required=false)String direct2Path){
+	    ModelAndView mav = new ModelAndView();
+	    mav.addObject("bankNoList", bankNoList);
+	    /*批复对象*/
+        TApproveResult approveResult = loanPosContractManagementBiz.getApproveInfo(approveId);
+        if(approveResult.getApproveMoneyKind()!=null){
+        	approveResult.setApproveMoneyKind(getItemValue(currSignList,approveResult.getApproveMoneyKind()).toString());
+        }
+        if(approveResult.getPaybackMethod()!=null){
+        	approveResult.setPaybackMethod(loanPosBusinessCodeBiz.getItemNameByNo("AccrualType", approveResult.getPaybackMethod()));
+        }
+        
+        mav.addObject("approval",approveResult);
+        
+        mav.setViewName(direct2Path);
+        
+        return mav;
+	}
+	
+	@RequestMapping("/openAgreementDetail")
+	public ModelAndView openAgreementView( @RequestParam(value="contractNo",required=false)String contractNo){
+	    ModelAndView mav = new ModelAndView();
+	    mav.addObject("bizChannel", channelDictionary);
+        mav.addObject("paperList", paperList);
+        mav.addObject("returnKindList", returnKindList);
+        mav.addObject("maritalList", maritalList);
+        mav.addObject("sexList", sexList);
+        mav.addObject("eduList",eduList);
+        mav.addObject("currSignList",currSignList);
+        mav.addObject("loanPurposeList",loanPurposeList);
+        mav.addObject("implTypeList", implTypeList);
+        mav.addObject("province", provinceList);
+        mav.addObject("cities", cities);
+        mav.addObject("divisions", divisions);
+        mav.addObject("bankNoList", bankNoList);
+		mav.addObject("repayMethodList", repayMethodList);
+		mav.addObject("contactFlags", contactFlags);
+		mav.addObject("HrrbIndustTypeList", HrrbIndustTypeList);
+        
+        /*协议对象*/
+        TContractManagement contract = loanPosContractManagementBiz.getContractForDisplay(contractNo);
+        Object jsonContract = JSON.toJSON(contract);
+		mav.addObject("contract", jsonContract);
+		
+        /*批复对象*/
+        TApproveResult approval = loanPosContractManagementBiz.getApproveInfo(contract.getApproveId());
+        Object jsonApproval = JSON.toJSON(approval);
+		mav.addObject("approveInfo", jsonApproval);
+		
+		Object applyDetail = null;
+		if(approval == null){
+			List<Map<String, Object>> applyList = Lists.newArrayList();
+			Map<String, Object> a1 = Maps.newHashMap();
+			applyList.add(a1);
+			applyList.add(a1);
+			applyList.add(a1);
+			applyList.add(a1);
+			applyDetail = JSON.toJSON(applyList);
+			
+		}else{
+	        // 查询出申请详情中的各部分信息0业务申请信息;1客户信息;3商户信息;4银行账户信息;2亲属信息
+	     	List<Map<String, Object>> applyList = loanPosCreditApplyBackStageBiz.getCreditApplyDetail(approval.getLoanId());
+		     	if(applyList!=null && applyList.size()>0){
+		     	//--------追加地址中的市和县一级代码名称,0业务申请信息;1客户信息;3商户信息;4银行账户信息;2亲属信息
+				Object residentCity = applyList.get(1).get("residentCity");
+				if(residentCity!=null) applyList.get(1).put("residentCityName", getItemValue(cities,residentCity.toString()));
+				Object residentDivision = applyList.get(1).get("residentDivision");
+				if(residentDivision!=null) applyList.get(1).put("residentDivisionName", getItemValue(divisions,residentDivision.toString()));
+				
+				Object posCustCity = applyList.get(3).get("posCustCity");
+				if(posCustCity!=null) applyList.get(3).put("posCustCityName", getItemValue(cities,posCustCity.toString()));
+				Object posCustDivision = applyList.get(3).get("operAddrCode");
+				if(posCustDivision!=null) applyList.get(3).put("posCustDivisionName", getItemValue(divisions,posCustDivision.toString()));
+				//--------商户行业分类代码转换
+				Object industryTypeId = applyList.get(3).get("industryTypeId");
+				if(industryTypeId!=null) {
+					String itemName = loanPosBusinessCodeBiz.getItemNameByNo(BusinessDictionaryConstants.IndustryType,(String)industryTypeId);
+					if(itemName!=null && itemName.trim().length()>0){
+						applyList.get(3).put("industryTypeName", "["+industryTypeId+"] "+itemName);
+					}
+				}
+	     	}
+			
+	     	applyDetail = JSON.toJSON(applyList);
+		}
+		
+		mav.addObject("applyDetail", applyDetail);
+		
+        mav.setViewName("agreementMrg/agreementDetail/detailAgreementMain");;
+        return mav;
+	}
+	
+	/**
+	 * 用款申请
+	 * 
+	 * @param paymentStatus
+	 * @return
+	 */
+	@RequestMapping("/queryPaymentApplyNav")
+	public ModelAndView queryPaymentApplyNav(@RequestParam(value="paymentStatus")String paymentStatus,@RequestParam(value="excuteStatus",required=false)String excuteStatus){
+	    ModelAndView mav = new ModelAndView();
+	    if(!StringUtil.isEmpty(paymentStatus)){
+	        mav.addObject(PaymentApplyConstants.PAYMENT_APPLY_STATUS, paymentStatus);
+	    }
+	    if(!StringUtil.isEmpty(excuteStatus)){
+	        mav.addObject("excuteStatus",excuteStatus);
+	    }
+	    mav.setViewName(PaymentApplyConstants.QUERY_PAYMENT_APPLY_PAGE);
+	    return mav;
+	}
+	
+	@RequestMapping("/posSerialNav")
+	public ModelAndView posSerialNav(@RequestParam(value="loanId", required = false)String loanId,
+			@RequestParam(value="container",required = false) String container){
+		ModelAndView mav = new ModelAndView();
+		mav.addObject(CreditApplyConstants.POS_SELECT_CHANNEL, channelDictionary);
+		mav.addObject(CreditApplyConstants.POS_SERIAL_TYPE, posTypeDictionary);
+		mav.addObject(CreditApplyConstants.LOAN_ID, loanId);
+		mav.addObject("container", container);			//通过container指定刷新datagrid
+		mav.setViewName(CreditApplyConstants.POS_SERIAL_NAV);
+		return mav;
+	}
+	
+	@RequestMapping("/insertCreditImageDataNav")
+    public ModelAndView insertCreditImageDataNav(@RequestParam(value="loanId", required = false)String loanId,@RequestParam(value="currSign",required = false) String currSign){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject(CreditApplyConstants.LOAN_ID, loanId);
+        mav.addObject(CreditApplyConstants.currSign,currSign);
+        mav.setViewName(CreditApplyConstants.LOAN_POS_INSERT_IMAGE_DATA_NAV);
+        return mav;
+    }
+	
+	@RequestMapping("/insertCreditImageDataNavForReview")
+	public ModelAndView insertCreditImageDataNavForReview(@RequestParam(value="loanId", required = false)String loanId){
+		ModelAndView mav = new ModelAndView();
+		mav.addObject(CreditApplyConstants.LOAN_ID, loanId);
+		mav.setViewName(CreditApplyConstants.LOAN_POS_INSERT_IMAGE_DATA_NAV_REVIEW);
+		return mav;
+	}
+	
+	@RequestMapping("/loanPosImageDataNav")
+    public ModelAndView loanPosImageDataNav(@RequestParam(value="loanId", required = false)String loanId, @RequestParam(value="custId", required = false)String custId){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject(CreditApplyConstants.LOAN_POS_IMAGE_DATA, imageDataViewBiz.getImageDataNames(loanId, custId));
+        mav.addObject(CreditApplyConstants.LOAN_ID, loanId);
+        mav.addObject(CreditApplyConstants.CUST_ID, custId);
+        mav.addObject("imageUrl",imageUrl);
+        mav.setViewName(CreditApplyConstants.LOAN_POS_IMAGE_DATA_NAV);
+        return mav;
+    }
+	@RequestMapping("/loanPosImageDataNavBigger")
+    public ModelAndView loanPosImageDataNavBigger(@RequestParam(value="loanId", required = false)String loanId, @RequestParam(value="custId", required = false)String custId){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject(CreditApplyConstants.LOAN_POS_IMAGE_DATA, imageDataViewBiz.getImageDataNames(loanId, custId));
+        mav.addObject(CreditApplyConstants.LOAN_ID, loanId);
+        mav.addObject(CreditApplyConstants.CUST_ID, custId);
+        mav.addObject("imageUrl",imageUrl);
+        mav.setViewName(CreditApplyConstants.LOAN_POS_IMAGE_DATA_NAV_BIGGER);
+        return mav;
+    }
+	
+	@RequestMapping("/loanPOSImageFiles")
+    public ModelAndView loanPOSImageFiles(@RequestParam(value="loanId", required = true)String loanId, 
+    		@RequestParam(value="custId", required = false)String custId,
+    		@RequestParam(value="directTo", required = false)String directTo
+    		){
+        ModelAndView mav = new ModelAndView();
+        /*输出结果*/
+        List<Map<String,Object>> listImgs = new ArrayList<Map<String,Object>>();
+        try{
+	        /*获取影像文件*/
+	        List<Map<String, Object>> imgFiles = imageDataViewBiz.getImageDataNames(loanId, custId);
+	        if(imgFiles!=null && imgFiles.size()>0){
+	        	for(Map<String, Object> file:imgFiles){
+	        		Map<String,Object> img = Maps.newHashMap();
+	        		img.put("image", imageUrl+"imagedatawork/"+loanId+"/"+file.get("fileName"));
+	        		//img.put("image", file.get("fileName"));
+	        		img.put("title", file.get("fileDesc"));
+	        		//img.put("thumb", value);
+	        		//img.put("url", value);
+	        		listImgs.add(img);
+	        	}
+	        }
+        }catch(Exception e){
+        	logger.warn("获取申请["+loanId+"]的影像文件失败!",e);
+        }
+        
+        mav.addObject("listImgFiles", JSON.toJSON(listImgs));
+        
+        mav.setViewName((directTo!=null)?directTo:"creditApply/ImageFilesView");
+        return mav;
+    }
+	
+	/*@RequestMapping("/testNav")
+	public ModelAndView testNav(){
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("testPro", provinceList);
+		mav.setViewName("creditApplyz/testPage");
+		return mav;
+	}*/
+	
+	/**
+	 * 上传pos流水文件
+	 */
+	@RequestMapping("/uploadPosSerial")
+	public ModelAndView uploadPosSerial(
+			@RequestParam(value = "uploadFile", required = false) MultipartFile multipartFile,
+			@RequestParam(value = "posChannel", required = false) String posChannel,
+			@RequestParam(value = "posType", required = false) String posType,
+			@RequestParam(value = "container", required = false) String container,
+			@RequestParam(value = "loanId",required=false) String loanId)
+			throws Exception {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName(CreditApplyConstants.POS_SERIAL_NAV);
+		if (multipartFile.isEmpty()) {
+			mav.addObject("result", "文件不能为空");
+			return mav;
+		}
+		String fileName = multipartFile.getOriginalFilename();
+		File file = new File(fileName);
+		multipartFile.transferTo(file);
+		//判断是否pos流水已存在
+		Long count = loanPosCreditApplyBackStageBiz.countPosSerials(loanId);
+		if(count > 0){
+		    //如果流水已存在,那么删除
+		    loanPosCreditApplyBackStageBiz.deletePosSerial(loanId);
+		}
+			boolean bol = loanPosCreditApplyBackStageBiz.uploadPosSerial(file, posChannel, posType, loanId);
+			mav.addObject(CreditApplyConstants.POS_SELECT_CHANNEL, channelDictionary);
+			mav.addObject(CreditApplyConstants.POS_SERIAL_TYPE, posTypeDictionary);
+			mav.addObject(CreditApplyConstants.LOAN_ID, loanId);
+			mav.addObject(CreditApplyConstants.posChannel, posChannel);
+			mav.addObject("posType", posType);
+			mav.addObject("container", container);
+			if(file.exists()){
+				file.delete();
+			}
+			if(bol){
+				mav.addObject("result", "上传成功");
+			}else{
+				mav.addObject("result", "上传失败,您输入的excel格式不正确");			
+			}
+		return mav;   
+	}
+	
+	/**
+	 * 
+	 * 影像件上传
+	 * 
+	 * @param multipartFiles0101
+	 * @param multipartFiles0102
+	 * @param multipartFiles0103
+	 * @param multipartFiles0104
+	 * @param multipartFiles0105
+	 * @param multipartFiles0106
+	 * @param multipartFiles0107
+	 * @param multipartFiles0108
+	 * @param multipartFiles0109
+	 * @param multipartFiles0110
+	 * @param multipartFiles0111
+	 * @param multipartFiles0112
+	 * @param multipartFiles0113
+	 * @param multipartFiles0114
+	 * @param multipartFiles0115
+	 * @param multipartFiles0116
+	 * @param multipartFiles0117
+	 * @param multipartFiles0118
+	 * @param multipartFiles0119
+	 * @param multipartFiles0120
+	 * @param multipartFiles0121
+	 * @param multipartFiles0122
+	 * @param multipartFiles0123
+	 * @param multipartFiles0124
+	 * @param multipartFiles0125
+	 * @param multipartFiles0126
+	 * @param multipartFiles0127
+	 * @param multipartFiles0128
+	 * @param multipartFiles0129
+	 * @param multipartFiles0130
+	 * @param multipartFiles0131
+	 * @param multipartFiles0132
+	 * @param multipartFiles0199
+	 * @param loanId
+	 * @param request
+	 * @param out
+	 * @return
+	 * @throws IllegalStateException
+	 * @throws IOException
+	 * @throws HServiceException
+	 */
+	@RequestMapping("/uploadImageData")
+	public ModelAndView uploadImageData(@RequestParam(value = "imageDataFile0101", required = false) MultipartFile[] multipartFiles0101,
+	                                    @RequestParam(value = "imageDataFile0102", required = false) MultipartFile[] multipartFiles0102,
+	                                    @RequestParam(value = "imageDataFile0103", required = false) MultipartFile[] multipartFiles0103,
+	                                    @RequestParam(value = "imageDataFile0104", required = false) MultipartFile[] multipartFiles0104,
+	                                    @RequestParam(value = "imageDataFile0105", required = false) MultipartFile[] multipartFiles0105,
+	                                    @RequestParam(value = "imageDataFile0106", required = false) MultipartFile[] multipartFiles0106,
+	                                    @RequestParam(value = "imageDataFile0107", required = false) MultipartFile[] multipartFiles0107,
+	                                    @RequestParam(value = "imageDataFile0108", required = false) MultipartFile[] multipartFiles0108,
+	                                    @RequestParam(value = "imageDataFile0109", required = false) MultipartFile[] multipartFiles0109,
+	                                    @RequestParam(value = "imageDataFile0110", required = false) MultipartFile[] multipartFiles0110,
+	                                    @RequestParam(value = "imageDataFile0111", required = false) MultipartFile[] multipartFiles0111,
+	                                    @RequestParam(value = "imageDataFile0112", required = false) MultipartFile[] multipartFiles0112,
+	                                    @RequestParam(value = "imageDataFile0113", required = false) MultipartFile[] multipartFiles0113,
+	                                    @RequestParam(value = "imageDataFile0114", required = false) MultipartFile[] multipartFiles0114,
+	                                    @RequestParam(value = "imageDataFile0115", required = false) MultipartFile[] multipartFiles0115,
+	                                    @RequestParam(value = "imageDataFile0116", required = false) MultipartFile[] multipartFiles0116,
+	                                    @RequestParam(value = "imageDataFile0117", required = false) MultipartFile[] multipartFiles0117,
+	                                    @RequestParam(value = "imageDataFile0118", required = false) MultipartFile[] multipartFiles0118,
+	                                    @RequestParam(value = "imageDataFile0119", required = false) MultipartFile[] multipartFiles0119,
+	                                    @RequestParam(value = "imageDataFile0120", required = false) MultipartFile[] multipartFiles0120,
+	                                    @RequestParam(value = "imageDataFile0121", required = false) MultipartFile[] multipartFiles0121,
+	                                    @RequestParam(value = "imageDataFile0122", required = false) MultipartFile[] multipartFiles0122,
+	                                    @RequestParam(value = "imageDataFile0123", required = false) MultipartFile[] multipartFiles0123,
+	                                    @RequestParam(value = "imageDataFile0124", required = false) MultipartFile[] multipartFiles0124,
+	                                    @RequestParam(value = "imageDataFile0125", required = false) MultipartFile[] multipartFiles0125,
+	                                    @RequestParam(value = "imageDataFile0126", required = false) MultipartFile[] multipartFiles0126,
+	                                    @RequestParam(value = "imageDataFile0127", required = false) MultipartFile[] multipartFiles0127,
+	                                    @RequestParam(value = "imageDataFile0128", required = false) MultipartFile[] multipartFiles0128,
+	                                    @RequestParam(value = "imageDataFile0129", required = false) MultipartFile[] multipartFiles0129,
+	                                    @RequestParam(value = "imageDataFile0130", required = false) MultipartFile[] multipartFiles0130,
+	                                    @RequestParam(value = "imageDataFile0131", required = false) MultipartFile[] multipartFiles0131,
+	                                    @RequestParam(value = "imageDataFile0132", required = false) MultipartFile[] multipartFiles0132,
+	                                    @RequestParam(value = "imageDataFile0199", required = false) MultipartFile[] multipartFiles0199,
+                                        @RequestParam(value = "imageLoanId", required = false) String loanId,HttpServletRequest request,PrintWriter out) throws IllegalStateException, IOException, HServiceException {
+	    logger.debug("申请编号为："+loanId);
+        JSONObject aaJson = new JSONObject();
+        logger.debug("影像资料上传开始。。。。。");
+        
+        logger.debug("第一步:影像件重命名");
+        Long step1BeginTime = System.currentTimeMillis();
+        // 构建文件Map<String,MultipartFile[]>  其中key表示文件类型，value表示对应的文件列表
+	    Map<String,MultipartFile[]> multipartFilesMap = new HashMap<String, MultipartFile[]>();
+	    checkMultipartFilesIsEmpty(multipartFiles0101,"0101",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0102,"0102",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0103,"0103",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0104,"0104",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0105,"0105",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0106,"0106",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0107,"0107",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0108,"0108",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0109,"0109",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0110,"0110",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0111,"0111",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0112,"0112",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0113,"0113",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0114,"0114",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0115,"0115",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0116,"0116",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0117,"0117",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0118,"0118",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0119,"0119",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0120,"0120",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0121,"0121",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0122,"0122",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0123,"0123",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0124,"0124",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0125,"0125",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0126,"0126",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0127,"0127",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0128,"0128",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0129,"0129",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0130,"0130",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0131,"0131",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0132,"0132",multipartFilesMap);
+	    checkMultipartFilesIsEmpty(multipartFiles0199,"0199",multipartFilesMap);
+        // 申请阶段
+        String currentStage = "APP";
+        // 文件重命名逻辑
+        String fileDirString = request.getSession().getServletContext().getRealPath("/")+loanId;
+        //创建压缩目录
+        File fileDir = new File(fileDirString);
+        fileDir.mkdirs();
+        String name = fileDir.getName();  
+        String basePath = fileDir.getParent();  
+        //压缩后文件名称
+        String destPath = basePath + name + ".zip"; 
+        File destFile = new File(destPath);
+        if(!destFile.exists()){
+            destFile.createNewFile();
+        }
+        // 重命名文件
+        transferToFile(multipartFilesMap, loanId, currentStage, fileDirString);
+        Long step1EndTime = System.currentTimeMillis();
+        logger.debug("影像件重命名完成。耗时"+(step1EndTime-step1BeginTime)+"毫秒");
+        
+        logger.debug("第二步:影像件打包");
+        try {  
+            Long step2BeginTime = System.currentTimeMillis();
+            //影像资料打包
+            ZipUtils.compress(fileDir);
+            Long step2EndTime = System.currentTimeMillis();
+            logger.debug("影像件打包完成。耗时"+(step2EndTime-step2BeginTime)+"毫秒");
+        } catch (Exception e) {  
+            logger.error("影像件打包异常",e);
+            aaJson.put("resultCode", "999");
+            aaJson.put("resultMsg", "影像件资料打包失败！");
+            out.write(aaJson.toJSONString());
+            return null;
+        }  
+        
+        logger.debug("第三步:影像件上传");
+        //上传影像件zip包到ftp
+        Long step3BeginTime = System.currentTimeMillis();
+        InputStream zis  = new FileInputStream(destFile);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        byte[] b= new byte[2048];
+        while((zis.read(b)) != -1){
+            bos.write(b);
+        }
+        byte[] bytes = bos.toByteArray();
+        ParamResBean paramResBean = new ParamResBean();
+        //上传文件
+        try {
+            HFTPFile file = new HFTPFile();
+            file.setData(bytes);
+            file.setName(destFile.getName());
+            paramResBean = ftpTransUpload.uploadFile("LC", file);
+            Long step3EndTime = System.currentTimeMillis();
+            logger.debug("影像件上传完成。耗时"+(step3EndTime-step3BeginTime)+"毫秒");
+            if(null != paramResBean.getRespCode() && "000".equals(paramResBean.getRespCode())){
+                logger.debug("第四步:通知ftp做下载归档处理");
+                Long step4BeginTime = System.currentTimeMillis();
+
+                HRequest hrequest = new HRequest();
+                hrequest.getProperties().put(CreditApplyHServiceConstants.loanid, loanId);
+                hrequest.getProperties().put(CreditApplyHServiceConstants.imagefilepackagename,destFile.getName());
+                HResponse response;
+                try {
+                    response = zJAddImageDataServiceImpl.serve(hrequest);
+                    if(CreditApplyHServiceConstants.ftp_resp_code_000.equals(response.getRespCode())){
+                        aaJson.put("resultCode", "000");
+                        aaJson.put("resultMsg", "影像件上传成功！");
+                        out.write(aaJson.toJSONString());
+                        Long step4EndTime = System.currentTimeMillis();
+                        logger.debug("通知ftp做下载归档处理完成.耗时"+(step4EndTime-step4BeginTime)+"毫秒");
+                    }else{
+                        aaJson.put("resultCode", "999");
+                        aaJson.put("resultMsg", "通知ftp处理影像件失败");
+                        out.write(aaJson.toJSONString());
+                    }
+                } catch (HServiceException e) {
+                    aaJson.put("resultCode", "999");
+                    aaJson.put("resultMsg", "通知ftp处理影像件失败");
+                    out.write(aaJson.toJSONString());
+                    logger.error("通知ftp处理影像件失败", e);
+                }
+            }else{
+                aaJson.put("resultCode", "999");
+                aaJson.put("resultMsg", "通知ftp处理影像件失败");
+                out.write(aaJson.toJSONString());
+            }
+        } catch (Exception e) {
+            logger.error("影像件上传异常", e);
+            aaJson.put("resultCode", "999");
+            aaJson.put("resultMsg", "影像件上传异常");
+            out.write(aaJson.toJSONString());
+        }
+        
+        logger.debug("第五步:删除本地临时文件");
+        //删除zip文件包
+        Long step5BeginTime = System.currentTimeMillis();
+        logger.debug("删除临时包开始");
+        FileUtil fileUtil = new FileUtil();
+        fileUtil.deleteFile(destFile);
+        fileUtil.deleteFile(fileDir);
+        Long step5EndTime = System.currentTimeMillis();
+        logger.debug("删除临时文件完成.耗时"+(step5EndTime-step5BeginTime)+"毫秒");
+        
+        logger.debug("影像资料上传结束。。。。。");
+        return null;
+        
+   }
+
+	@RequestMapping("/openCreditMain")
+    public ModelAndView openCreditMain(@RequestParam(value="loanId",required=false)String loanId,
+    		@RequestParam(value="applyStatus",required=false)String applyStatus,
+    		@RequestParam(value="direct2Path",required=false)String direct2Path){
+        ModelAndView mav = new ModelAndView();
+        List<Map<String, String>> dateList = DateUtil.getOverNumMonths(CreditApplyConstants.monthNum);
+		mav.addObject("overMonths", dateList);
+		mav.addObject("province", provinceList);
+		mav.addObject("bizChannel", channelDictionary);
+		mav.addObject("paperList", paperList);
+		mav.addObject("returnKindList", returnKindList);
+		mav.addObject("currSignList", currSignList);
+		mav.addObject("sexList", sexList);
+		mav.addObject("maritalList", maritalList);
+		mav.addObject("eduList", eduList);
+		mav.addObject("relList", relList);
+		mav.addObject("cities", cities);
+		mav.addObject("divisions", divisions);
+		mav.addObject("bankNoList", bankNoList);
+		mav.addObject("implTypeList", implTypeList);
+		mav.addObject("repayMethodList", repayMethodList);
+		mav.addObject("contactFlags", contactFlags);
+		mav.addObject("HrrbIndustTypeList", HrrbIndustTypeList);
+		
+		if(!StringUtil.isEmpty(applyStatus)){
+			mav.addObject(CreditApplyConstants.APPLY_STATUS, applyStatus);
+		}
+		/*
+		if(!StringUtil.isEmpty(isApplyStatus)){
+		    mav.addObject("isApplyStatus",isApplyStatus);
+		}
+		*/
+		if(loanId!=null && loanId.trim().length()>0){		//load detail when loanId is null
+			// 查询出
+			List<Map<String, Object>> resList = loanPosCreditApplyBackStageBiz.getCreditApplyDetail(loanId);
+			if(resList!=null && resList.size()>0){
+				//--------追加地址中的市和县一级代码名称,0业务申请信息;1客户信息;3商户信息;4银行账户信息;2亲属信息
+				Object residentCity = resList.get(1).get("residentCity");
+				if(residentCity!=null) resList.get(1).put("residentCityName", getItemValue(cities,residentCity.toString()));
+				Object residentDivision = resList.get(1).get("residentDivision");
+				if(residentDivision!=null) resList.get(1).put("residentDivisionName", getItemValue(divisions,residentDivision.toString()));
+				
+				Object posCustCity = resList.get(3).get("posCustCity");
+				if(posCustCity!=null) resList.get(3).put("posCustCityName", getItemValue(cities,posCustCity.toString()));
+				Object posCustDivision = resList.get(3).get("operAddrCode");
+				if(posCustDivision!=null) resList.get(3).put("posCustDivisionName", getItemValue(divisions,posCustDivision.toString()));
+				//--------商户行业分类代码转换
+				Object industryTypeId = resList.get(3).get("industryTypeId");
+				if(industryTypeId!=null) {
+					String itemName = loanPosBusinessCodeBiz.getItemNameByNo(BusinessDictionaryConstants.IndustryType,(String)industryTypeId);
+					if(itemName!=null && itemName.trim().length()>0){
+						resList.get(3).put("industryTypeName", "["+industryTypeId+"] "+itemName);
+					}
+				}
+				
+				logger.info(JSON.toJSONString(resList));
+				Object applyDetail = JSON.toJSON(resList);
+				mav.addObject("applyDetail", applyDetail);
+			}
+		}else{
+			//generate loadId
+			loanId = IdUtil.getId("LO");
+		}
+		mav.addObject("loanId", loanId);
+		
+        mav.setViewName(direct2Path);
+        return mav;
+    }
+	
+	
+	@RequestMapping("/openAcceptResult")
+	public ModelAndView openAcceptApprove(HttpServletRequest request, 
+			@RequestParam(value = "loanId", required = false)String loanId,
+			@RequestParam(value="direct2Path",required=false)String direct2Path,PrintWriter out){
+		ModelAndView mav = new ModelAndView();
+		String loanId1 = request.getParameter("loanId");
+		List<Map<String, Object>> resList = loanPosCreditApplyBackStageBiz.getCreditApplyDetail(loanId1);
+		if(resList!=null && resList.size()>0){
+			//--------追加地址中的市和县一级代码名称,0业务申请信息;1客户信息;3商户信息;4银行账户信息;2亲属信息
+			Object residentCity = resList.get(1).get("residentCity");
+			if(residentCity!=null) resList.get(1).put("residentCityName", getItemValue(cities,residentCity.toString()));
+			Object residentDivision = resList.get(1).get("residentDivision");
+			if(residentDivision!=null) resList.get(1).put("residentDivisionName", getItemValue(divisions,residentDivision.toString()));
+			
+			Object posCustCity = resList.get(3).get("posCustCity");
+			if(posCustCity!=null) resList.get(3).put("posCustCityName", getItemValue(cities,posCustCity.toString()));
+			Object posCustDivision = resList.get(3).get("operAddrCode");
+			if(posCustDivision!=null) resList.get(3).put("posCustDivisionName", getItemValue(divisions,posCustDivision.toString()));
+			//--------商户行业分类代码转换
+			Object industryTypeId = resList.get(3).get("industryTypeId");
+			if(industryTypeId!=null) {
+				String itemName = loanPosBusinessCodeBiz.getItemNameByNo(BusinessDictionaryConstants.IndustryType,(String)industryTypeId);
+				if(itemName!=null && itemName.trim().length()>0){
+					resList.get(3).put("industryTypeName", "["+industryTypeId+"] "+itemName);
+				}
+			}
+			
+			Object applyDetail = JSON.toJSON(resList);
+			mav.addObject("applyDetail", applyDetail);
+		
+			List<Map<String, Object>> approveDetail = loanPosContractManagementBiz.getApproveMap(loanId1);
+			Object approveInfo = JSON.toJSON(approveDetail.get(0));
+			mav.addObject("approveInfo", approveInfo);
+			
+			TBankAccnoInfo bankCard = loanPosCreditApplyService.selectByBankAccno((String)approveDetail.get(0).get("acceptAccount"));
+			mav.addObject("cardStatus", bankCard.getStatus());		//01未验真//FIXME;
+			
+			/**/
+			AccessPrivilege access = (AccessPrivilege)request.getSession().getAttribute("accessPrivilege");
+			boolean hasManageRole = access.hasAnyPrivilege("ROLE_APPROVED_ADMIN");
+			mav.addObject("hasManageRole", hasManageRole);
+			
+			List<Map<String, String>> dateList = DateUtil.getOverNumMonths(CreditApplyConstants.monthNum);
+			mav.addObject("overMonths", dateList);
+			mav.addObject("province", provinceList);
+			mav.addObject("bizChannel", channelDictionary);
+			mav.addObject("paperList", paperList);
+			mav.addObject("returnKindList", returnKindList);
+			mav.addObject("currSignList", currSignList);
+			mav.addObject("sexList", sexList);
+			mav.addObject("maritalList", maritalList);
+			mav.addObject("eduList", eduList);
+			mav.addObject("relList", relList);
+			mav.addObject("cities", cities);
+			mav.addObject("divisions", divisions);
+			mav.addObject("bankNoList", bankNoList);
+			mav.addObject("implTypeList", implTypeList);
+			mav.addObject("repayMethodList", repayMethodList);
+			mav.addObject("contactFlags", contactFlags);
+			mav.addObject("HrrbIndustTypeList", HrrbIndustTypeList);
+			mav.setViewName(direct2Path);
+		}
+		return mav;
+	}
+
+	
+
+	
+	
+	private Object getItemValue(List<Map<String,Object>> clib, String itemNo){
+		for(Map<String,Object> r:clib){
+			if(r.get("itemNo").equals(itemNo)){
+				return r.get("itemName");
+			}
+		}
+		return null;
+	}
+	
+	/**/
+	@RequestMapping("/directAccess")
+    public ModelAndView directAccess(@RequestParam(value="srcpath", required = true)String srcpath){
+		int idx = srcpath.lastIndexOf(".");
+		if(idx>0) srcpath = srcpath.substring(0,idx);
+		
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName(srcpath);
+        return mav;
+    }
+	
+	/**
+	 * 根据3级区划编码，转换为完整的区划名称:省+市+区
+	 * @param divisionCode
+	 * @return
+	 */
+	private String getFullyDivisonName(String divisionCode){
+		if(divisionCode==null || divisionCode.trim().length()!=6){
+			logger.warn("行政区划代码 ["+divisionCode+"] 有误");
+			return "";
+		}
+		String prov = divisionCode.substring(0,2)+"0000";
+		String provName = (String)getItemValue(provinceList,prov);
+		String city = divisionCode.substring(0,4)+"00";
+		String cityName = (String)getItemValue(cities,city);
+		String countryName =  (String)getItemValue(divisions,divisionCode);
+		
+		return provName+" / "+cityName+" / "+countryName+" / ";			//省+市+区
+	}
+	
+	/**
+	 * 根据申请流水号获取审批相关的业务数据
+	 * @param loanId
+	 * @param directTo
+	 * @return
+	 */
+	@RequestMapping("/openApprovalView")
+    public ModelAndView openApprovalView(@RequestParam(value="loanId",required=false)String loanId,
+    		@RequestParam(value="opflag",required=false)String opflag,
+    		@RequestParam(value="directTo",required=false)String directTo, HttpServletRequest request){
+		if(loanId == null || loanId.trim().length()==0){
+			logger.debug(this.getClass().getName()+" 传入的贷款申请流水号为空!");
+			return null;
+		}
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("province", provinceList);
+		mav.addObject("bizChannel", channelDictionary);
+		mav.addObject("paperList", paperList);
+		mav.addObject("returnKindList", returnKindList);
+		mav.addObject("currSignList", currSignList);
+		mav.addObject("sexList", sexList);
+		mav.addObject("maritalList", maritalList);
+		mav.addObject("eduList", eduList);
+		mav.addObject("relList", relList);
+		mav.addObject("cities", cities);
+		mav.addObject("divisions", divisions);
+		mav.addObject("bankNoList", bankNoList);
+		mav.addObject("implTypeList", implTypeList);
+		mav.addObject("repayMethodList", repayMethodList);
+		mav.addObject("contactFlags", contactFlags);
+		
+		mav.addObject("opflag", opflag);
+		
+		// 查询出申请详情中的各部分信息0业务申请信息;1客户信息;3商户信息;4银行账户信息;2亲属信息
+		List<Map<String, Object>> applyList = loanPosCreditApplyBackStageBiz.getCreditApplyDetail(loanId);
+		//将需要显示的代码项转换成名称
+		if(applyList!=null && applyList.size()>0){
+			//--------追加地址中的市和县一级代码名称,0业务申请信息;1客户信息;3商户信息;4银行账户信息;2亲属信息
+			Object residentCity = applyList.get(1).get("residentCity");
+			if(residentCity!=null) applyList.get(1).put("residentCityName", getItemValue(cities,residentCity.toString()));
+			Object residentDivision = applyList.get(1).get("residentDivision");
+			if(residentDivision!=null) applyList.get(1).put("residentDivisionName", getItemValue(divisions,residentDivision.toString()));
+			
+			Object posCustCity = applyList.get(3).get("posCustCity");
+			if(posCustCity!=null) applyList.get(3).put("posCustCityName", getItemValue(cities,posCustCity.toString()));
+			Object posCustDivision = applyList.get(3).get("operAddrCode");
+			if(posCustDivision!=null) applyList.get(3).put("posCustDivisionName", getItemValue(divisions,posCustDivision.toString()));
+			//--------商户行业分类代码转换
+			Object industryTypeId = applyList.get(3).get("industryTypeId");
+			if(industryTypeId!=null) {
+				String itemName = loanPosBusinessCodeBiz.getItemNameByNo(BusinessDictionaryConstants.IndustryType,(String)industryTypeId);
+				if(itemName!=null && itemName.trim().length()>0){
+					applyList.get(3).put("industryTypeName", "["+industryTypeId+"] "+itemName);
+				}
+			}
+			
+			//渠道
+			Object channel = applyList.get(0).get("channel");
+			if(channel!=null) applyList.get(0).put("channelName", getItemValue(channelDictionary,channel.toString()));
+			//产品名称
+			Object prodId = applyList.get(0).get("prodId");
+			if(prodId!=null){
+				String prodName = loanPosBusinessCodeBiz.getItemNameByNo(BusinessDictionaryConstants.ProductNo,(String)prodId);
+				applyList.get(0).put("prodName", prodName);
+			}
+			//申请状态
+			Object applyStatus = applyList.get(0).get("applyStatus");
+			//if(applyStatus!=null) applyList.get(0).put("applyStatusName", getItemValue(xx,applyStatus.toString()));
+			if(applyStatus!=null){
+				String applyStatusName = loanPosBusinessCodeBiz.getItemNameByNo(BusinessDictionaryConstants.ApplyStatus,(String)applyStatus);
+				applyList.get(0).put("applyStatusName", applyStatusName);
+			}
+			//经营地
+			Object region = applyList.get(0).get("region");
+			if(region!=null){
+				String regionId = (String)region;
+				if(regionId.length()>=2) regionId = regionId.substring(0,2)+"0000";		//显示省一级
+				String regionName = loanPosBusinessCodeBiz.getItemNameByNo("AdminDivision",(String)regionId);
+				applyList.get(0).put("regionName", regionName);
+			}
+			
+			//性别
+			Object sexSign = applyList.get(1).get("sexSign");
+			if(sexSign!=null) applyList.get(1).put("sexSignName", getItemValue(sexList,sexSign.toString()));
+			//受教育程度
+			Object educSign = applyList.get(1).get("educSign");
+			if(educSign!=null) applyList.get(1).put("educSignnName", getItemValue(eduList,educSign.toString()));
+			//婚姻状况
+			Object marrSign = applyList.get(1).get("marrSign");
+			if(marrSign!=null) applyList.get(1).put("marrSignName", getItemValue(maritalList,marrSign.toString()));
+			
+//			Object residentDivision = applyList.get(1).get("residentDivision");
+//			if(residentDivision!=null) applyList.get(1).put("residentDivisionName", getItemValue(divisions,residentDivision.toString()));
+			String residentAddress = getFullyDivisonName((String)residentDivision)+applyList.get(1).get("residentDetail");
+			applyList.get(1).put("residentAddress", residentAddress);
+			
+			//联系地址类型
+			Object contactAddrFlag = applyList.get(1).get("contactAddrFlag");
+			//if(contactAddrFlag!=null) applyList.get(1).put("contactAddrFlagName", getItemValue(xx,contactAddrFlag.toString()));
+			if(contactAddrFlag!=null){
+				String contactAddrFlagName = loanPosBusinessCodeBiz.getItemNameByNo("ContactAddress",(String)contactAddrFlag);
+				applyList.get(1).put("contactAddrName", contactAddrFlagName);
+			}
+			
+			//证件所属地
+			Object paperId = applyList.get(1).get("paperId");
+			if(paperId!=null && String.valueOf(paperId).length()>=6){
+				applyList.get(1).put("paperIdBelong", loanPosBusinessCodeBiz.getItemNameByNo("CertIDRegion",(String)String.valueOf(paperId).substring(0,6)));
+			}
+			Object matePaperId = applyList.get(1).get("matePaperId");
+			if(matePaperId!=null && String.valueOf(matePaperId).length()>=6){
+				applyList.get(1).put("matePaperIdBelong", loanPosBusinessCodeBiz.getItemNameByNo("CertIDRegion",(String)String.valueOf(matePaperId).substring(0,6)));
+			}
+			//手机归属地
+			Object mobilePhone = applyList.get(1).get("mobilePhone");
+			if(mobilePhone!=null && String.valueOf(mobilePhone).length()>=7){
+				applyList.get(1).put("mobileBelong", configBiz.getMobileBelong((String)mobilePhone));
+			}
+			Object mateMobilephone = applyList.get(1).get("mateMobilephone");
+			if(mateMobilephone!=null && String.valueOf(mateMobilephone).length()>=7){
+				applyList.get(1).put("mateMobileBeolong", configBiz.getMobileBelong((String)mateMobilephone));
+			}
+			
+			
+			String bizAddress = getFullyDivisonName((String)applyList.get(3).get("operAddrCode"))+applyList.get(3).get("posCustAddress");
+			applyList.get(3).put("bizAddress", bizAddress);
+			
+			if(applyStatus!=null && !String.valueOf(applyStatus).matches("(00|10|20|21|30|93)")){		//00|10|20|21|30 没有模型结果
+				//PHASE02  初审模型结果
+				TRiskCheckResult model = riskCheckBiz.queryRiskCheckResult(loanId);
+				if(model!=null){
+					//属相
+					String zodiac = model.getResult33();
+					applyList.get(1).put("zodiacName", loanPosBusinessCodeBiz.getItemNameByNo("Zodiac",zodiac));
+					
+//					if(model.getResult09()!=null){
+//						model.setResult09(model.getResult09().multiply(new BigDecimal(100.00)));
+//					}
+				}
+				mav.addObject("RiskModel", model);
+			}
+			
+			Object applyDetail = JSON.toJSON(applyList);
+			mav.addObject("applyDetail", applyDetail);
+		}
+		
+		//PHASE03 暂存的审批信息
+		User user = (User) request.getSession().getAttribute("USER");
+		TCreditApplyAprvInfo record = new TCreditApplyAprvInfo();
+		record.setLoanId(loanId);
+		record.setApprvId(user.getUserName());
+		// 当前工作
+		if ("1".equals(opflag)) {
+			// 查询保存的审批信息
+			record = apprBiz.selectNotSubmit(record);
+			// 已完成工作
+		} else {
+			// 查询最近一次提交的审批信息
+			record = apprBiz.selectLastSubbmitted(record);
+		}
+		mav.addObject("ApprOpinion", record);
+		
+		//PHASE04 审批记录中的回退人员列表
+		// 申请状态设定
+		String applyStatus = (String)applyList.get(0).get("applyStatus");
+		if(applyStatus.matches("(31|33|41)")){		//31复审1 33复审3 41尽调审核  三阶段可见回退
+			List<String> applyStatuses = new ArrayList<String>();
+			applyStatuses.add(ReviewNoteConstants.APPLYSTATUS_CODE_20);
+			// 复审2阶段
+			if (ReviewNoteConstants.APPLYSTATUS_CODE_33.equals(applyStatus)) {
+				applyStatuses.add(ReviewNoteConstants.APPLYSTATUS_CODE_31);
+				// 尽调复审
+			} else if (ReviewNoteConstants.APPLYSTATUS_CODE_41.equals(applyStatus)) {
+				applyStatuses.add(ReviewNoteConstants.APPLYSTATUS_CODE_31);
+				applyStatuses.add(ReviewNoteConstants.APPLYSTATUS_CODE_33);
+				applyStatuses.add(ReviewNoteConstants.APPLYSTATUS_CODE_34);
+			}
+			record.setLoanId(loanId);
+			
+			record.setApplyStatuses(applyStatuses);
+			List<TCreditApplyAprvInfo> l = apprBiz.selectBackToInfo(record);
+			mav.addObject("BackRoller", l);
+		}
+		//拒绝代码
+		mav.addObject("refuseCodeList", refuseCodeList);
+		
+		//PHASE05 审批人审批限额
+		// 查询保存的审批信息
+		TUserApprInfo uai = userApprInfoBiz.selectByPrimaryKey(user
+				.getUserName());
+		// 查询操作者的最大审批额度
+		if (uai == null || uai.getQuota() == null) {
+			mav.addObject("apprQuota", 0);
+		} else {
+			mav.addObject("apprQuota", uai.getQuota());
+		}
+		
+        mav.setViewName(directTo);
+		
+        return mav;
+	}
+	   
+    /**
+     * 用款申请
+     * 
+     * @param paymentStatus
+     * @return
+     */
+    @RequestMapping("/queryPaymentInfo")
+    public ModelAndView queryPaymentInfo(@RequestParam(value = "paymentStatus", required = false)String paymentStatus){
+        ModelAndView mav = new ModelAndView();
+        if(!StringUtil.isEmpty(paymentStatus)){
+            mav.addObject(PaymentApplyConstants.PAYMENT_APPLY_STATUS, paymentStatus);
+        }
+        mav.addObject("paymentApplyList", paymentApplyList);
+        mav.setViewName(PaymentApplyConstants.QUERY_PAYMENT_APPLY_PAGE);
+        return mav;
+    }
+	
+	/**
+	 * 新增用款申请
+	 * 
+	 * @param loanId
+	 * @param status
+	 * @param direct2Path
+	 * @return
+	 */
+	@RequestMapping("/openCreatePaymentApply")
+    public ModelAndView openCreatePaymentApply(@RequestParam(value="loanId",required=false)String loanId,
+            @RequestParam(value="status",required=false)String status,
+            @RequestParam(value="direct2Path",required=false)String direct2Path){
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName(direct2Path);
+        return mav;
+	}
+	
+
+    /**
+     * 用款申请
+     * 
+     * @param contNo
+     * @param direct2Path
+     * @return
+     */
+    @RequestMapping("/openInsertPaymentApply")
+    public ModelAndView openopenInsertPaymentApply(@RequestParam(value="contNo",required=false)String contNo,
+            @RequestParam(value="direct2Path",required=false)String direct2Path){
+        ModelAndView mav = new ModelAndView();
+        TContractManagement contractManagement = loanPosContractManagementBiz.getContractByContNo(contNo);
+//        String paybackMethodName = loanPosBusinessCodeBiz.getItemNameByNo("AccrualType", contractManagement.getPaybackMethod());
+        BigDecimal sum = (receiptManageBiz.sumLoanTotalBalance(contNo)) == null ? BigDecimal.ZERO : new BigDecimal(receiptManageBiz.sumLoanTotalBalance(contNo));
+        BigDecimal availableBalance = contractManagement.getCreditLine().subtract(sum);
+        mav.addObject("contract", contractManagement);
+        mav.addObject("contNo",contNo);
+//        mav.addObject("paybackMethodName",paybackMethodName);
+        mav.addObject("returnKindList", returnKindList);
+        mav.addObject("availableBalance",availableBalance);
+        mav.setViewName(direct2Path);
+        return mav;
+    }
+    
+    /**
+     * 用款详情
+     * @param payApplyId
+     * @param direct2Path
+     * @return
+     */
+    @RequestMapping("/openDetailPaymentApply")
+    public ModelAndView openDetailPaymentApply(@RequestParam(value="payApplyId",required=false) String payApplyId,@RequestParam(value="direct2Path",required=false)String direct2Path){
+        ModelAndView mav = new ModelAndView();
+        TPaymentApply paymentApply = new TPaymentApply();
+        TContractManagement contractManagement = new TContractManagement();
+        TCustomer customer = new TCustomer();
+        //List<Map<String,Object>> creditApplyMap = new ArrayList<Map<String,Object>>();
+        String channelName = "";
+        String paybackMethodName = "";
+        String expectedEndDate = "";
+        String openBankName = "";
+        if(!StringUtil.isEmpty(payApplyId)){
+            paymentApply = paymentApplyBiz.queryPaymentApplyById(payApplyId);
+            //根据期望用款日计算用款结束日
+            Date expectedDate = paymentApply.getExpectedDate();
+            if(expectedDate != null){
+                expectedEndDate = DateUtil.getRelativeDate(expectedDate, 0, Integer.parseInt(paymentApply.getPayApplyTerm()), 0);
+            }
+        }
+        String contNo = paymentApply.getContNo();
+        if(!StringUtil.isEmpty(contNo)){
+            // 协议信息
+            contractManagement = loanPosContractManagementBiz.getContractByContNo(contNo);
+            contractManagement.getChannel();
+            channelName = loanPosBusinessCodeBiz.getItemNameByNo("BizChannel", contractManagement.getChannel());
+            paybackMethodName = loanPosBusinessCodeBiz.getItemNameByNo("AccrualType", contractManagement.getPaybackMethod());
+            openBankName = loanPosBusinessCodeBiz.getItemNameByNo("BankNo", contractManagement.getAccountOpenBank());
+            // 申请信息		//comment by Lin,Zhaolin
+            //if(!StringUtil.isEmpty(contractManagement.getLoanId())){
+            //    creditApplyMap = loanPosCreditApplyBackStageBiz.getCreditApplyDetail(contractManagement.getLoanId());
+            //}
+        }
+        //get customerinfo from db, add by Lin,Zhaolin
+        String residentDetail = "";
+        if(!StringUtil.isEmpty(contractManagement.getCustId())){
+        	customer = loanPosCustomerService.getCustumerInfoById(contractManagement.getCustId());
+        	//逆序确认行政区划  区县-->城市-->省
+        	String residentDivision = customer.getResidentDivision()!=null?customer.getResidentDivision():(customer.getResidentCity()!=null?customer.getResidentCity():customer.getResidentProv());
+        	String divisionName = loanPosBusinessCodeBiz.getExtAttrByNo("AdminDivision", residentDivision);
+        	residentDetail = (divisionName==null?"":divisionName)+" "+(customer.getResidentDetail()==null?"":customer.getResidentDetail());
+        }
+        //add End
+        
+        mav.addObject("contract", contractManagement);
+        mav.addObject("paymentApply",paymentApply);
+        mav.addObject("customer",customer);
+        //mav.addObject("creditApplyMap",creditApplyMap);		//comment by Lin,Zhaolin
+        mav.addObject("payApplyId",payApplyId);
+        mav.addObject("channelName",channelName);
+        mav.addObject("paybackMethodName",paybackMethodName);
+        mav.addObject("openBankName",openBankName);
+        mav.addObject("expectedEndDate",expectedEndDate);
+        mav.addObject("paperList", paperList);
+        mav.addObject("returnKindList", returnKindList);
+        mav.addObject("currSignList", currSignList);
+        mav.addObject("sexList", sexList);
+        mav.addObject("maritalList", maritalList);
+        mav.addObject("eduList", eduList);
+        mav.addObject("relList", relList);
+        mav.addObject("cities", cities);
+        mav.addObject("divisions", divisions);
+        mav.addObject("bankNoList", bankNoList);
+        mav.addObject("implTypeList", implTypeList);
+        mav.addObject("repayMethodList", repayMethodList);
+        mav.addObject("contactFlags", contactFlags);	//add by Lin,Zhaolin
+        mav.addObject("residentDetail", residentDetail);
+        
+        mav.setViewName(direct2Path);
+        return mav;
+    }
+    
+    /**
+     * 取消用款申请
+     * 
+     * @param payApplyId
+     * @param direct2Path
+     * @return
+     */
+    @RequestMapping("/openCancelPaymentApply")
+    public ModelAndView openCancelPaymentApply(@RequestParam(value="payApplyId",required=false) String payApplyId,@RequestParam(value="direct2Path",required=false) String direct2Path){
+        ModelAndView mav = new ModelAndView();
+        TPaymentApply paymentApply = new TPaymentApply();
+        TContractManagement contractManagement = new TContractManagement();
+        TCustomer customer = new TCustomer();
+        List<Map<String,Object>> creditApplyMap = new ArrayList<Map<String,Object>>();
+        String channelName = "";
+        String paybackMethodName = "";
+        String expectedEndDate = "";
+        String openBankName = "";
+        if(!StringUtil.isEmpty(payApplyId)){
+            paymentApply = paymentApplyBiz.queryPaymentApplyById(payApplyId);
+            //根据期望用款日计算用款结束日
+            Date expectedDate = paymentApply.getExpectedDate();
+            if(expectedDate != null){
+                expectedEndDate = DateUtil.getRelativeDate(expectedDate, 0, Integer.parseInt(paymentApply.getPayApplyTerm()), 0);
+            }
+        }
+        String contNo = paymentApply.getContNo();
+        if(!StringUtil.isEmpty(contNo)){
+            // 协议信息
+            contractManagement = loanPosContractManagementBiz.getContractByContNo(contNo);
+            contractManagement.getChannel();
+            channelName = loanPosBusinessCodeBiz.getItemNameByNo("BizChannel", contractManagement.getChannel());
+            paybackMethodName = loanPosBusinessCodeBiz.getItemNameByNo("AccrualType", contractManagement.getPaybackMethod());
+            openBankName = loanPosBusinessCodeBiz.getItemNameByNo("BankNo", contractManagement.getAccountOpenBank());
+            // 申请信息
+            if(!StringUtil.isEmpty(contractManagement.getLoanId())){
+                creditApplyMap = loanPosCreditApplyBackStageBiz.getCreditApplyDetail(contractManagement.getLoanId());
+            }
+        }
+        mav.addObject("contract", contractManagement);
+        mav.addObject("paymentApply",paymentApply);
+        mav.addObject("customer",customer);
+        mav.addObject("creditApplyMap",creditApplyMap);
+        mav.addObject("payApplyId",payApplyId);
+        mav.addObject("channelName",channelName);
+        mav.addObject("paybackMethodName",paybackMethodName);
+        mav.addObject("openBankName",openBankName);
+        mav.addObject("expectedEndDate",expectedEndDate);
+        mav.addObject("paperList", paperList);
+        mav.addObject("returnKindList", returnKindList);
+        mav.addObject("currSignList", currSignList);
+        mav.addObject("sexList", sexList);
+        mav.addObject("maritalList", maritalList);
+        mav.addObject("eduList", eduList);
+        mav.addObject("relList", relList);
+        mav.addObject("cities", cities);
+        mav.addObject("divisions", divisions);
+        mav.addObject("bankNoList", bankNoList);
+        mav.addObject("implTypeList", implTypeList);
+        mav.addObject("repayMethodList", repayMethodList);
+        mav.setViewName(direct2Path);
+        return mav;
+    }
+    
+     /**
+     * 查询用款审批
+     * 
+     * @return
+     */
+    @RequestMapping("/queryPaymentReview")
+     public ModelAndView queryPaymentReview(@RequestParam(value="reviewStatus",required=false)String reviewStatus,PrintWriter out){
+         ModelAndView mav = new ModelAndView();
+         List<Map<String, String>> dateList = DateUtil.getOverNumMonths(CreditApplyConstants.monthNum);
+         mav.addObject("overMonths", dateList);
+         mav.addObject("province", provinceList);
+         mav.addObject("bizChannel", channelDictionary);
+         mav.addObject("paperList", paperList);
+         mav.addObject("returnKindList", returnKindList);
+         mav.addObject("currSignList", currSignList);
+         mav.addObject("sexList", sexList);
+         mav.addObject("maritalList", maritalList);
+         mav.addObject("eduList", eduList);
+         mav.addObject("relList", relList);
+         mav.addObject("cities", cities);
+         mav.addObject("divisions", divisions);
+         mav.addObject("bankNoList", bankNoList);
+         mav.addObject("implTypeList", implTypeList);
+         mav.addObject("repayMethodList", repayMethodList);
+         mav.addObject("reviewStatus",reviewStatus);
+         mav.setViewName(PaymentApplyConstants.QUERY_PAYMENT_FOR_REVIEW_PAGE);
+         return mav;
+     } 
+    
+    /**
+     * 跳转签署意见
+     * 
+     * @param payApplyIds
+     * @param out
+     * @param request
+     * @return
+     */
+    @RequestMapping("/sign")
+    public ModelAndView sign(@RequestParam(value = "payApplyId", required = false) String payApplyId,PrintWriter out, HttpServletRequest request) {
+        Map<String,Object> map = Maps.newHashMap();
+       if(!StringUtil.isEmpty(payApplyId)){
+           map.put("payApplyId", payApplyId);
+           List<Map<String,Object>> tp = paymentApplyBiz.queryPaymentApplyByPayApplyId(map);
+           if(null != tp.get(0).get("expectedDate")){
+               String expectedDate =  DateUtil.getDateToString3((Date)tp.get(0).get("expectedDate"));
+               tp.get(0).put("expectedDate", expectedDate);
+               try {
+                   String expectedEndDate = DateUtil.getRelativeDate(expectedDate, 0, Integer.parseInt((String)tp.get(0).get("payApplyTerm")), -1);
+                   tp.get(0).put("expectedEndDate", expectedEndDate);
+                   String accountOpenBank = (String)tp.get(0).get("accountOpenBank");
+                   accountOpenBank = loanPosBusinessCodeBiz.getItemNameByNo("BankNo", accountOpenBank);
+                   tp.get(0).put("accountOpenBank", accountOpenBank);
+               } catch (ParseException e) {
+                   logger.error("期限类型转换错误", e);
+               }
+           }
+           out.print(JSON.toJSONString(tp.get(0)));
+       }
+        return null;
+    }
+    
+    
+    /**
+     * 校验文件是否为空
+     * 
+     * @param multipartFiles
+     * @param multipartFilesType
+     * @param multipartFilesMap
+     */
+    private void checkMultipartFilesIsEmpty(MultipartFile[] multipartFiles,String multipartFilesType,
+                                            Map<String, MultipartFile[]> multipartFilesMap) {
+        if(multipartFiles!=null && multipartFiles.length>0){
+            multipartFilesMap.put(multipartFilesType,multipartFiles);
+        }
+    }
+
+    /**
+     * 
+     * 批量文件上传，重命名
+     * 
+     * @param multipartFilesMap
+     * @param loanId
+     * @param currentStage
+     * @param fileDirString
+     * @throws IOException
+     */
+    private void transferToFile(Map<String,MultipartFile[]> multipartFilesMap, String loanId, String currentStage, String fileDirString) throws IOException {
+        // 指定类型文件集合
+        MultipartFile[] multipartFiles;
+        // 文件
+        MultipartFile multipartFile;
+        // 影像件类别
+        String imageType = "";
+        // 文件名称
+        String originalFilename = "";
+        // 旧文件名
+        String originalFilenameOld = "";
+        //新文件名
+        String originalFilenameNew = "";
+        // 文件名称索引
+        int index = 0;
+        // 文件重命名后缀编号
+        String lastNumber;
+        // 遍历文件
+        Set<String> multipartFilesTypes = multipartFilesMap.keySet();
+        for (String multipartFilesType:multipartFilesTypes) {
+            imageType = multipartFilesType;
+            multipartFiles = multipartFilesMap.get(multipartFilesType);
+            for (int i = 0; i < multipartFiles.length; i++) {
+                lastNumber = (String) ((i<10)?("0"+i):i);
+                multipartFile = multipartFiles[i];
+                // 文件不为空,重命名文件
+                if(!multipartFile.isEmpty()){
+                    originalFilename = multipartFile.getOriginalFilename();
+                    index = originalFilename.indexOf('.');
+                    // 原文件名字
+                    originalFilenameOld = originalFilename.substring(0,index);
+                    // 重命名
+                    originalFilenameNew = currentStage+"_"+loanId+"_"+imageType+"_"+lastNumber;
+                    // 重命名后的文件全名
+                    originalFilename = originalFilename.replace(originalFilenameOld, originalFilenameNew);
+                    File file = new File(fileDirString+"/"+originalFilename);
+                    if(!file.exists()){
+                        file.createNewFile();
+                    }
+                    multipartFile.transferTo(file);
+                }
+            }
+        }
+    }
+    
+    @RequestMapping("/modelResultImport")                                                                           
+    public ModelAndView modelResultImport(){                                                                    
+        ModelAndView mav = new ModelAndView();                                                                  
+        mav.setViewName(CreditApplyConstants.MODEL_RESULT_IMPORT);                                              
+        return mav;                                                                                             
+    }                                                                                                           
+                                                                                                                
+    /**                                                                                                         
+     * 上传模型结果文件                                                                                         
+     */                                                                                                         
+    @RequestMapping("/uploadModelResult")                                                                       
+    public ModelAndView uploadModelResult(                                                                      
+            @RequestParam(value = "uploadFile", required = false) MultipartFile multipartFile)throws Exception {
+        ModelAndView mav = new ModelAndView();                                                                  
+        mav.setViewName(CreditApplyConstants.MODEL_RESULT_IMPORT);                                              
+        if (multipartFile.isEmpty()) {                                                                          
+            mav.addObject("result", "文件不能为空");                                                            
+            return mav;                                                                                         
+        }                                                                                                       
+        String fileName = multipartFile.getOriginalFilename();                                                  
+        File file = new File(fileName);                                                                         
+        boolean bol = false;                                                                                    
+        try{                                                                                                    
+            multipartFile.transferTo(file);                                                                     
+            bol = riskCheckBiz.uploadModelResult(file);                                                         
+        }catch(Exception e){                                                                                    
+            logger.error("上传文件出错。");                                                                     
+        }finally{                                                                                               
+            if(file.exists()){                                                                                  
+                file.delete();                                                                                  
+            }                                                                                                   
+        }                                                                                                       
+                                                                                                                
+        if(bol){                                                                                                
+            mav.addObject("result", "上传成功");                                                                
+        }else{                                                                                                  
+            mav.addObject("result", "上传失败,您输入的excel格式不正确");                                        
+        }                                                                                                       
+        return mav;                                                                                             
+    }                                                                                                           
+                                                                                                                
+    @RequestMapping("/bizDataPageNav")                                                                          
+    public ModelAndView bizDataPageNav(){                                                                       
+        ModelAndView mav = new ModelAndView();                                                                  
+        mav.setViewName(CreditApplyConstants.BIZ_DATA_PAGE);                                                    
+        return mav;                                                                                             
+    }                                                                                                           
+                                                                                                                
+    
+    
+    @RequestMapping("/exportBizData") 
+    public ModelAndView exportBizData(HttpServletRequest request,HttpServletResponse response) throws Exception{
+        Map<String, Object> reqMap = Maps.newHashMap(); 
+        if(StringUtil.isNotEmpty(request.getParameter("beginDate"))){
+            reqMap.put("beginDate", request.getParameter("beginDate"));   
+        }
+        if(StringUtil.isNotEmpty(request.getParameter("endDate"))){            
+            reqMap.put("endDate", request.getParameter("endDate"));  
+        }
+        if(StringUtil.isNotEmpty(request.getParameter("prodId"))){
+            reqMap.put("prodId", request.getParameter("prodId")); 
+        }
+        if(StringUtil.isNotEmpty(request.getParameter("channel"))){
+            reqMap.put("channel", request.getParameter("channel")); 
+        }
+        reqMap.put("applyStatus", "20");  //目前只导出审核通过的数据
+        reqMap.put("apprState", "20");
+        List<Map<String, Object>> list = loanPosCreditApplyService.getBizData(reqMap);                          
+        OutputStream outputStream = null;    
+        InputStream inStream = null;
+        File file = null;
+                         
+        try {
+            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMddHHmmss");                                     
+            String fileName = sdf1.format(new Date());
+            file = new File(request.getRealPath("/")+fileName+".xls");                                                          
+            ExcelExportUtil excelExportUtil = new ExcelExportUtil(channelDictionary,provinceList,cities,loanPosCreditApplyService);                                   
+            excelExportUtil.exportBizData(list,file); 
+            inStream = new FileInputStream(file);
+            
+            response.setContentType("application/vnd.ms-excel");
+            response.setCharacterEncoding("UTF-8");
+            response.addHeader("Content-Disposition", "attachment; filename=\"" + fileName + ".xls\"");          
+            byte[] b = new byte[100];
+            int len;
+            outputStream = response.getOutputStream();
+            while ((len = inStream.read(b)) > 0) {
+                outputStream.write(b, 0, len);
+            }
+            outputStream.flush();
+        }catch (Exception e) {                                                                                  
+            logger.error("导出excel文件失败", e);                                                                 
+        }finally{  
+            if (inStream != null) {
+                inStream.close();
+            }
+            if (outputStream != null) {                                                                         
+                outputStream.close();                                                                           
+            }
+            if(file.exists()){
+                file.delete();
+            }
+        }                                                                                                       
+        return null;                                                                                            
+    }
+                                                                                                                
+                                                                                                                
+    
+}

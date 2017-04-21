@@ -1,0 +1,561 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.service.impl;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.dao.TApproveResultDao;
+import com.hrbb.loan.pos.dao.TBlacklistDao;
+import com.hrbb.loan.pos.dao.TCreditApplyAprvInfoDao;
+import com.hrbb.loan.pos.dao.TCreditApplyDao;
+import com.hrbb.loan.pos.dao.TCreditApplyForReviewDao;
+import com.hrbb.loan.pos.dao.TCreditApplyReturnInfoDao;
+import com.hrbb.loan.pos.dao.TCreditReportIdentityDao;
+import com.hrbb.loan.pos.dao.TCreditReportProfessionDao;
+import com.hrbb.loan.pos.dao.TRiskCheckCalcIndexDao;
+import com.hrbb.loan.pos.dao.entity.TApproveResult;
+import com.hrbb.loan.pos.dao.entity.TCreditApply;
+import com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo;
+import com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfoKey;
+import com.hrbb.loan.pos.dao.entity.TCreditApplyReturnInfo;
+import com.hrbb.loan.pos.service.CreditApplyForReviewService;
+import com.hrbb.loan.pos.service.LoanPosBusinessCodeService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.constants.BusinessDictionaryConstants;
+import com.hrbb.loan.pos.util.constants.ReviewNoteConstants;
+
+/**
+ * 
+ * @author marco
+ * @version $Id: ReviewNoteServiceImpl.java, v 0.1 2015-3-2 下午1:59:24 marco Exp
+ *          $
+ */
+@Service("creditApplyForReviewService")
+public class CreditApplyForReviewServiceImpl implements
+		CreditApplyForReviewService {
+
+	private Logger log = LoggerFactory
+			.getLogger(LoanRiskCheckServiceImpl.class);
+
+	@Autowired
+	@Qualifier("tCreditApplyForReviewDao")
+	private TCreditApplyForReviewDao dao;
+
+	@Autowired
+	@Qualifier("tCreditApplyAprvInfoDao")
+	private TCreditApplyAprvInfoDao daoAI;
+
+	@Autowired
+	// @Qualifier("TBlacklistDao")
+	private TBlacklistDao daoBL;
+
+	@Autowired
+	@Qualifier("tRiskCheckCalcIndexDao")
+	private TRiskCheckCalcIndexDao daoCCI;
+
+	@Autowired
+	private TCreditReportIdentityDao tCreditReportIdentityDao;
+
+	@Autowired
+	private TCreditReportProfessionDao tCreditReportProfessionDao;
+
+	@Autowired
+	private TCreditApplyDao caDao;
+
+	@Autowired
+	private LoanPosBusinessCodeService loanPosBusinessCodeService;
+
+	@Autowired
+	private TCreditApplyReturnInfoDao daoRI;
+
+	@Autowired
+	@Qualifier("tApproveResultDao")
+	private TApproveResultDao daoAR;
+
+	/**
+	 * @see com.hrbb.loan.pos.service.ReviewNoteService#getReviewNoteInfoSelective()
+	 */
+	@Override
+	public TCreditApply selectOne(String loanid) {
+		return dao.selectOne(loanid);
+	}
+
+	/**
+	 * 检索申请信息
+	 * 
+	 * @see com.hrbb.loan.pos.service.ReviewNoteService#selectForRiskDetectionByOne()
+	 */
+	@Override
+	public Map<String, Object> selectForRiskDetectionByOne(String loanid) {
+		return dao.selectForRiskDetection(loanid);
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.service.ReviewNoteService#getReviewNoteInfoSelective()
+	 */
+	@Override
+	public List<TCreditApply> selectSelective(TCreditApply ca) {
+		List<TCreditApply> l = dao.selectSelective(ca);
+		for (TCreditApply r : l) {
+			r.setBeginDateStr(DateUtil.getDateToString3(r.getBeginDate()));
+
+			// 将代码转换从外链接转为逐条查询，避免对db的负载
+			String channelName = loanPosBusinessCodeService.getItemNameByNo(
+					BusinessDictionaryConstants.BizChannel, r.getChannel());
+			String inChannelKindName = loanPosBusinessCodeService
+					.getItemNameByNo(BusinessDictionaryConstants.ImplType,
+							r.getInChannelKind());
+			String applyStatusName = loanPosBusinessCodeService
+					.getItemNameByNo(BusinessDictionaryConstants.ApplyStatus,
+							r.getApplyStatus());
+			String currSignName = loanPosBusinessCodeService.getItemNameByNo(
+					BusinessDictionaryConstants.Currency, r.getCurrSign());
+			String returnKindName = loanPosBusinessCodeService.getItemNameByNo(
+					BusinessDictionaryConstants.AccrualType, r.getReturnKind());
+			String prodName = loanPosBusinessCodeService.getItemNameByNo(
+					BusinessDictionaryConstants.ProductNo, r.getProdId());
+			String region = "";
+			if (r.getRegion() != null && r.getRegion().length() >= 2) {
+				region = loanPosBusinessCodeService.getItemNameByNo(
+						BusinessDictionaryConstants.AdminDivision, (r
+								.getRegion().substring(0, 2) + "0000"));
+				r.setRegion(region);
+			}
+			if (r.getApplyTerm() != null && r.getApplyTerm().length() > 0) {
+				String termUnitName = loanPosBusinessCodeService
+						.getItemNameByNo(BusinessDictionaryConstants.TermUnit,
+								r.getTermUnit());
+				r.setTermUnit(termUnitName);
+				r.setApplyTerm(r.getApplyTerm() + termUnitName);
+			}
+			if (r.getOccurType() != null && r.getOccurType().length() > 0) {
+				String occurTypeName = loanPosBusinessCodeService
+						.getItemNameByNo(BusinessDictionaryConstants.OccurType,
+								r.getOccurType());
+				r.setOccurTypeName(occurTypeName);
+			}
+
+			r.setChannelName(channelName);
+			r.setInChannelKindName(inChannelKindName);
+			r.setApplyStatusName(applyStatusName);
+			r.setCurrSignName(currSignName);
+			r.setReturnKindName(returnKindName);
+			r.setProdName(prodName);
+			// 贷款方式
+			String loanTypeName = loanPosBusinessCodeService.getItemNameByNo(
+					BusinessDictionaryConstants.loanType, r.getLoanType());
+			r.setLoanTypeName(loanTypeName);
+		}
+		return l;
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.service.ReviewNoteService#getReviewNoteInfoSelective()
+	 */
+	@Override
+	public long selectSelectiveCount(TCreditApply ca) {
+		return dao.selectSelectiveCount(ca);
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.service.CreditApplyForReviewService#claim(com.hrbb.loan.pos.dao.entity.TCreditApply)
+	 */
+	@Override
+	public Map<String, Object> claim(TCreditApply ca) {
+
+		String[] loanids = ca.getLoanId().split(
+				ReviewNoteConstants.STRING_SEPARATOR_CODE);
+		String[] applyStatuses = ca.getApplyStatus().split(
+				ReviewNoteConstants.STRING_SEPARATOR_CODE);
+		String[] bizLoanIds = ca.getBizLoanId().split(
+				ReviewNoteConstants.STRING_SEPARATOR_CODE);
+
+		int flag = 0;
+
+		TCreditApplyAprvInfo aprvInfo = null;
+		TCreditApplyAprvInfo aprvInfoLastOne = null;
+		// 被认领的申请编号
+		List<String> loanIdClaimed = new ArrayList<>();
+
+		for (int i = 0; i < loanids.length; i++) {
+
+			ca.setLoanId(loanids[i]);
+			ca.setApplyStatus(applyStatuses[i]);
+			// 根据申请状态设置权限，并更新相应操作人
+			setPrivilege(ca);
+			// 已被认领
+			if (!checkClaimed(ca)) {
+				loanIdClaimed.add(bizLoanIds[i]);
+				continue;
+			}
+			// 更新申请表的信贷复审人员
+			flag = dao.claim(ca);
+			// 更新异常
+			if (flag < 0) {
+				break;
+			}
+
+			aprvInfo = new TCreditApplyAprvInfo();
+			// 业务编号
+			aprvInfo.setLoanId(ca.getLoanId());
+			// 信贷复审人员
+			aprvInfo.setApprvId(ca.getOperName());
+			// 申请状态
+			aprvInfo.setApprState(applyStatuses[i]);
+			// 审批发起时间
+			aprvInfo.setAppBeginTime(ca.getLastOperTime());
+			// 不是受理，资料审核，资料复审状态
+			if (!ReviewNoteConstants.APPLYSTATUS_CODE_10
+					.equals(applyStatuses[i])
+					&& !ReviewNoteConstants.APPLYSTATUS_CODE_20
+							.equals(applyStatuses[i])
+					&& !ReviewNoteConstants.APPLYSTATUS_CODE_21
+							.equals(applyStatuses[i])) {
+
+				// 查询上次审批结果
+				aprvInfoLastOne = new TCreditApplyAprvInfo();
+				aprvInfoLastOne.setLoanId(aprvInfo.getLoanId());
+
+				aprvInfoLastOne = daoAI.selectLastOne(aprvInfoLastOne);
+				// 批准金额
+				aprvInfo.setApprAmount(aprvInfoLastOne.getApprAmount());
+				// 批准利率
+				aprvInfo.setApprInte(aprvInfoLastOne.getApprInte());
+				// 备注
+				aprvInfo.setRemark(aprvInfoLastOne.getRemark());
+				// 复审2，3，4，尽调审核状态时，自动带出上次提交的信息
+				if (ReviewNoteConstants.APPLYSTATUS_CODE_33
+						.equals(applyStatuses[i])
+						|| ReviewNoteConstants.APPLYSTATUS_CODE_34
+								.equals(applyStatuses[i])
+						|| ReviewNoteConstants.APPLYSTATUS_CODE_35
+								.equals(applyStatuses[i])
+						|| ReviewNoteConstants.APPLYSTATUS_CODE_41
+								.equals(applyStatuses[i])) {
+					// 还款方式
+					aprvInfo.setRetuKind(aprvInfoLastOne.getRetuKind());
+					// 审批意见
+					aprvInfo.setApprResult(aprvInfoLastOne.getApprResult());
+					// 通过码
+					aprvInfo.setPassCode(aprvInfoLastOne.getPassCode());
+					// 拒绝码
+					aprvInfo.setRefuseCode(aprvInfoLastOne.getRefuseCode());
+					// 审批意见内部
+					aprvInfo.setApprInfo(aprvInfoLastOne.getApprInfo());
+					// 审批意见外部
+					aprvInfo.setApprInfoExt(aprvInfoLastOne.getApprInfoExt());
+				}
+				if (ReviewNoteConstants.APPLYSTATUS_CODE_31
+						.equals(applyStatuses[i])) {
+					TCreditApply caTemp = dao.selectOne(aprvInfo.getLoanId());
+					// 还款方式
+					aprvInfo.setRetuKind(caTemp.getReturnKind());
+				}
+				// 资料审核
+			} else if (ReviewNoteConstants.APPLYSTATUS_CODE_20
+					.equals(applyStatuses[i])) {
+				TCreditApply caTemp = dao.selectOne(ca.getLoanId());
+				// 备注
+				aprvInfo.setRemark(caTemp.getRemark());
+			}
+			// 登录申请审批记录
+			flag = daoAI.insertSelective(aprvInfo);
+			// 更新异常
+			if (flag < 1) {
+				break;
+			}
+		}
+		// 已被认领的申请流水号
+		ca.setLoanIdClaimed(loanIdClaimed);
+		Map<String, Object> respMap = Maps.newHashMap();
+		respMap.put("flag", flag);
+		respMap.put("tCreditApply", ca);
+		return respMap;
+	}
+
+	/**
+	 * 查询是否已被认领
+	 * 
+	 * @return
+	 */
+	private boolean checkClaimed(TCreditApply ca) {
+		// 查询是否已被认领
+		long count = dao.selectCheckClaimed(ca);
+		// 未被认领
+		if (count == 0) {
+			return true;
+		}
+		// 已被认领
+		return false;
+	}
+
+	/**
+	 * 根据申请状态设置权限，并更新相应操作人
+	 */
+	private void setPrivilege(TCreditApply ca) {
+		if (ReviewNoteConstants.APPLYSTATUS_CODE_10.equals(ca.getApplyStatus())) {
+			ca.setPrivilege0(ReviewNoteConstants.ROLE_CODE_0);
+		} else if (ReviewNoteConstants.APPLYSTATUS_CODE_20.equals(ca
+				.getApplyStatus())
+				|| ReviewNoteConstants.APPLYSTATUS_CODE_21.equals(ca
+						.getApplyStatus())) {
+			ca.setPrivilege1(ReviewNoteConstants.ROLE_CODE_1);
+		} else if (ReviewNoteConstants.APPLYSTATUS_CODE_31.equals(ca
+				.getApplyStatus())
+				|| ReviewNoteConstants.APPLYSTATUS_CODE_33.equals(ca
+						.getApplyStatus())
+				|| ReviewNoteConstants.APPLYSTATUS_CODE_34.equals(ca
+						.getApplyStatus())
+				|| ReviewNoteConstants.APPLYSTATUS_CODE_35.equals(ca
+						.getApplyStatus())
+				|| ReviewNoteConstants.APPLYSTATUS_CODE_32.equals(ca
+						.getApplyStatus())) {
+			ca.setPrivilege2(ReviewNoteConstants.ROLE_CODE_2);
+		} else if (ReviewNoteConstants.APPLYSTATUS_CODE_41.equals(ca
+				.getApplyStatus())) {
+			ca.setPrivilege3(ReviewNoteConstants.ROLE_CODE_3);
+		}
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.service.CreditApplyForReviewService#doNotclaim(com.hrbb.loan.pos.dao.entity.TCreditApply)
+	 */
+	@Override
+	public Map<String, Object> doNotClaim(TCreditApply ca) {
+		// 根据申请状态设置权限，并更新相应操作人
+		setPrivilege(ca);
+
+		int flag = dao.doNotClaim(ca);
+		// 更新成功
+		if (flag == 1) {
+		    log.debug("更新申请信息成功");
+			// 审批记录信息设置
+			TCreditApplyAprvInfo aprvInfo = new TCreditApplyAprvInfo();
+			// 业务编号
+			aprvInfo.setLoanId(ca.getLoanId());
+			// 信贷复审人员
+			aprvInfo.setApprvId(ca.getLastOperId());
+
+			// 插入回池表
+			TCreditApplyReturnInfo returnInfo = new TCreditApplyReturnInfo();
+			returnInfo.setLoanId(ca.getLoanId());
+			returnInfo.setApplyStatus(ca.getApplyStatus());
+			returnInfo.setClaimUserId(ca.getLastOperId());
+			returnInfo.setReturnTime(ca.getLastOperTime());
+			returnInfo.setReturnReason(ca.getBackReason());
+			// 认领时间
+			log.debug("查询出申请审批信息");
+			TCreditApplyAprvInfo aprvInfoNotSubmit = daoAI
+					.selectNotSubmit(aprvInfo);
+			returnInfo.setClaimTime(aprvInfoNotSubmit.getAppBeginTime());
+			flag = daoRI.insertSelective(returnInfo);
+
+			// 更新成功
+			if (flag == 1) {
+				// 删除申请审批记录表的记录
+				flag = daoAI.deleteSelective(aprvInfo);
+			}
+		}
+		Map<String, Object> respMap = Maps.newHashMap();
+		respMap.put("flag", flag);
+		respMap.put("tCreditApply", ca);
+		return respMap;
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.service.CreditApplyForReviewService#updateByPrimaryKeySelective(com.hrbb.loan.pos.dao.entity.TCreditApply)
+	 */
+	@Override
+	public int updateByPrimaryKeySelective(TCreditApply ca) {
+		return dao.updateByPrimaryKeySelective(ca);
+	}
+
+	@Override
+	public int updateApplyStatusForDownloadImages(TCreditApply ca) {
+		// TODO Auto-generated method stub
+		return caDao.updateApplyStatusForDownloadImages(ca);
+	}
+
+	/**
+	 * 申请复议
+	 * 
+	 * @see com.hrbb.loan.pos.service.CreditApplyForReviewService#doNotclaim(com.hrbb.loan.pos.dao.entity.TCreditApply)
+	 */
+	@Override
+	public Map<String, Object> reconsider(TCreditApply ca) {
+		log.debug("reconsider begin");
+
+		TCreditApplyAprvInfoKey key = new TCreditApplyAprvInfoKey();
+		key.setLoanId(ca.getLoanId());
+		log.debug("LoanId=" + key.getLoanId());
+		String apprStateNow = ca.getApplyStatus();
+		log.debug("apprStateNow=" + apprStateNow);
+		// 查询上一次申请信息
+		TCreditApplyAprvInfo caai = daoAI.selectLastSubbmitted(key);
+		String apprState = caai.getApprState();
+		log.debug("上次提交ApprState=" + apprState);
+		// 申请复议时，根据申请状态设置清空相应操作人
+		setPrivilegeForReconsider(apprState, ca);
+		// 更新申请表
+		int flag = dao.updateForReconsider(ca);
+		// 更新成功
+		if (flag == 1) {
+			// 插入回池表
+			TCreditApplyReturnInfo returnInfo = new TCreditApplyReturnInfo();
+			returnInfo.setLoanId(ca.getLoanId());
+			returnInfo.setApplyStatus(ca.getApplyStatus());
+			returnInfo.setClaimUserId(ca.getLastOperId());
+			returnInfo.setReturnTime(ca.getLastOperTime());
+			returnInfo.setReturnReason(ca.getBackReason());
+			// 申请复议的记录没有认领时间
+			// TCreditApplyAprvInfo aprvInfoNotSubmit = daoAI
+			// .selectNotSubmit(aprvInfo);
+			// returnInfo.setClaimTime(aprvInfoNotSubmit.getAppBeginTime());
+			flag = daoRI.insertSelective(returnInfo);
+			// 更新成功
+			if (flag == 1) {
+				// 审批通过复议时，更新批复表
+				if (ReviewNoteConstants.APPLYSTATUS_CODE_90
+						.equals(apprStateNow)) {
+					// 批复数据移到批复历史表，更新批复状态
+					flag = updateApproveResult(ca.getLoanId());
+				}
+			}
+		}
+		log.debug("reconsider end");
+		Map<String, Object> respMap = Maps.newHashMap();
+		respMap.put("flag", flag);
+		respMap.put("tCreditApply", ca);
+		return respMap;
+	}
+
+	/**
+	 * 批复数据移到批复历史表，更新批复状态
+	 * 
+	 * @param loanId
+	 * @return
+	 */
+	private int updateApproveResult(String loanId) {
+		TApproveResult ar = daoAR.selectByLoanId(loanId);
+		ar.setApproveStatus("09");
+		ar.setExpiryDate(new Date());
+		int flag = daoAR.insertSelectiveToHist(ar);
+		// 更新成功
+		if (flag == 0) {
+			return flag;
+		}
+		return daoAR.deleteByPrimaryKey(ar.getApproveId());
+	}
+
+	/**
+	 * 申请复议时，根据申请状态设置清空相应操作人
+	 */
+	private void setPrivilegeForReconsider(String applyStatus, TCreditApply ca) {
+		// 申请，资料审核，资料审核补件
+		if (ReviewNoteConstants.APPLYSTATUS_CODE_00.equals(applyStatus)
+				|| ReviewNoteConstants.APPLYSTATUS_CODE_10.equals(applyStatus)
+				|| ReviewNoteConstants.APPLYSTATUS_CODE_20.equals(applyStatus)
+				|| ReviewNoteConstants.APPLYSTATUS_CODE_21.equals(applyStatus)) {
+			ca.setPrivilege1(ReviewNoteConstants.ROLE_CODE_1);
+			ca.setPrivilege2(ReviewNoteConstants.ROLE_CODE_2);
+			ca.setPrivilege3(ReviewNoteConstants.ROLE_CODE_3);
+			ca.setApplyStatus(ReviewNoteConstants.APPLYSTATUS_CODE_20);
+			// 模型审批拒绝时，复议后变成复审1状态
+		} else if (ReviewNoteConstants.APPLYSTATUS_CODE_30.equals(applyStatus)) {
+			ca.setPrivilege2(ReviewNoteConstants.ROLE_CODE_2);
+			ca.setPrivilege3(ReviewNoteConstants.ROLE_CODE_3);
+			ca.setApplyStatus(ReviewNoteConstants.APPLYSTATUS_CODE_31);
+			// 复审1,2,3,4
+		} else if (ReviewNoteConstants.APPLYSTATUS_CODE_31.equals(applyStatus)
+				|| ReviewNoteConstants.APPLYSTATUS_CODE_33.equals(applyStatus)
+				|| ReviewNoteConstants.APPLYSTATUS_CODE_34.equals(applyStatus)
+				|| ReviewNoteConstants.APPLYSTATUS_CODE_35.equals(applyStatus)
+				|| ReviewNoteConstants.APPLYSTATUS_CODE_32.equals(applyStatus)) {
+			ca.setPrivilege2(ReviewNoteConstants.ROLE_CODE_2);
+			ca.setPrivilege3(ReviewNoteConstants.ROLE_CODE_3);
+			ca.setApplyStatus(applyStatus);
+			// 尽调
+		} else if (ReviewNoteConstants.APPLYSTATUS_CODE_41.equals(applyStatus)) {
+			ca.setPrivilege3(ReviewNoteConstants.ROLE_CODE_3);
+			ca.setApplyStatus(applyStatus);
+		}
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.service.CreditApplyForReviewService#selectNewCustCountForUM(java.lang.String)
+	 */
+	@Override
+	public List<Map<String, String>> selectNewCustCountForUM(
+			Map<String, String> p) {
+		return dao.selectNewCustCountForUM(p);
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.service.CreditApplyForReviewService#selectNewCustCountForUM(java.lang.String)
+	 */
+	@Override
+	public List<Map<String, Object>> selectSummaryBase(Map<String, String> p) {
+		return dao.selectSummaryBase(p);
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.service.CreditApplyForReviewService#selectNewCustCountForUM(java.lang.String)
+	 */
+	@Override
+	public List<Map<String, Object>> selectSummary0(Map<String, String> p) {
+		return dao.selectSummary0(p);
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.service.CreditApplyForReviewService#selectNewCustCountForUM(java.lang.String)
+	 */
+	@Override
+	public List<Map<String, Object>> selectSummary1(Map<String, String> p) {
+		return dao.selectSummary1(p);
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.service.CreditApplyForReviewService#selectNewCustCountForUM(java.lang.String)
+	 */
+	@Override
+	public List<Map<String, Object>> selectSummary2(Map<String, String> p) {
+		return dao.selectSummary2(p);
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.service.CreditApplyForReviewService#selectNewCustCountForUM(java.lang.String)
+	 */
+	@Override
+	public List<Map<String, Object>> selectSummary3(Map<String, String> p) {
+		return dao.selectSummary3(p);
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.service.CreditApplyForReviewService#selectNewCustCountForUM(java.lang.String)
+	 */
+	@Override
+	public List<Map<String, Object>> selectSummary4(Map<String, String> p) {
+		return dao.selectSummary4(p);
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.service.CreditApplyForReviewService#selectNewCustCountForUM(java.lang.String)
+	 */
+	@Override
+	public List<Map<String, Object>> selectSummary5(Map<String, String> p) {
+		return dao.selectSummary5(p);
+	}
+}

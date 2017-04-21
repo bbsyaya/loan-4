@@ -1,0 +1,23 @@
+package com.hrbb.test;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.hrbb.loan.spi.TC.TCCreditApplyUpdateSyncServiceImpl;
+import com.hrbb.loan.spi.UM.UMContractQueryHserviceImpl;
+
+public class TCCreditApplyUpdateSyncServiceImplTest extends UnitTest {
+	@Autowired
+	private TCCreditApplyUpdateSyncServiceImpl tcCreditApplyUpdateSync;
+	@Test
+	public void testSendUpdateInfo()  throws Exception  {
+		String loanId = "LO2015051814251967152379210900";
+		System.out.println("test send message!");
+		tcCreditApplyUpdateSync.sendUpdateInfo(loanId);
+		
+		
+	}
+
+}

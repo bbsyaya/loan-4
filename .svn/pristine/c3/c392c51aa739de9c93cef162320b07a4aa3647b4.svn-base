@@ -1,0 +1,50 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<html>
+<head>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery-1.7.2.min.js"></script>
+</head>
+<body>
+<div title="工商信息" style="padding:20px;">
+	<fieldset style="padding:5px; color:#333; border:#06c dashed 1px;">
+			<legend id="t_aic_alidebt_info" class='dialog-label' style="color:#06c; font-weight:800; background:#fff;">阿里欠款</legend>
+			<table>
+			<tr>
+				<td>${aicInfo.personMap}</td>
+			</tr>
+			</table>
+	</fieldset>
+	<fieldset style="padding:5px; color:#333; border:#06c dashed 1px;">
+			<legend id="t_aic_basic_info" class='dialog-label' style="color:#06c; font-weight:800; background:#fff;">业务照面信息</legend>
+	</fieldset>
+	<fieldset style="padding:5px; color:#333; border:#06c dashed 1px;">
+			<legend id="t_aic_case_info" class='dialog-label' style="color:#06c; font-weight:800; background:#fff;">行政处罚信息</legend>
+	</fieldset>
+	<fieldset style="padding:5px; color:#333; border:#06c dashed 1px;">
+			<legend id="t_aic_entinv_info" class='dialog-label' style="color:#06c; font-weight:800; background:#fff;">企业对外投资信息</legend>
+	</fieldset>
+	<fieldset style="padding:5px; color:#333; border:#06c dashed 1px;">
+			<legend id="t_aic_frinv_info" class='dialog-label' style="color:#06c; font-weight:800; background:#fff;">企业法定代表人对外投资信息</legend>
+	</fieldset>
+	<fieldset style="padding:5px; color:#333; border:#06c dashed 1px;">
+			<legend id="t_aic_frposition_info" class='dialog-label' style="color:#06c; font-weight:800; background:#fff;">企业法定代表人其他公司任职信息</legend>
+	</fieldset>
+	<fieldset style="padding:5px; color:#333; border:#06c dashed 1px;">
+			<legend id="t_aic_orderlist_info" class='dialog-label' style="color:#06c; font-weight:800; background:#fff;">订单信息</legend>
+	</fieldset>
+	<fieldset style="padding:5px; color:#333; border:#06c dashed 1px;">
+			<legend id="t_aic_person_info" class='dialog-label' style="color:#06c; font-weight:800; background:#fff;">企业主要管理人员信息</legend>
+	</fieldset>
+	<fieldset style="padding:5px; color:#333; border:#06c dashed 1px;">
+			<legend id="t_aic_punish_break_info" class='dialog-label' style="color:#06c; font-weight:800; background:#fff;">失信被执行人信息</legend>
+	</fieldset>
+	<fieldset style="padding:5px; color:#333; border:#06c dashed 1px;">
+			<legend id="t_aic_punished_info" class='dialog-label' style="color:#06c; font-weight:800; background:#fff;">被知心人信息</legend>
+	</fieldset>
+	<fieldset style="padding:5px; color:#333; border:#06c dashed 1px;">
+			<legend id="t_aic_shareholder_info" class='dialog-label' style="color:#06c; font-weight:800; background:#fff;">企业股东及主次信息</legend>
+	</fieldset>
+	
+	</div>
+	</body>

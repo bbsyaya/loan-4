@@ -1,0 +1,80 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.tools.main.synFile;
+
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.hrbb.loan.pos.util.FileUtil;
+import com.hrbb.loan.pos.tools.main.synFile.fileMaker.SynFileMaker58;
+import com.hrbb.loan.pos.tools.main.synFile.fileMaker.SynFileMakerHC;
+import com.hrbb.loan.pos.tools.main.synFile.fileMaker.SynFileMakerUM;
+import com.hrbb.loan.pos.tools.main.synFile.fileMaker.SynFileMakerZW;
+import com.hrbb.pos.loan.tools.database.LoanDatabase;
+
+/**
+ * 数据同步接口
+ * 
+ * @author marco
+ * @version $Id: SynFileMake.java, v 0.1 2015-4-24 下午4:20:22 marco Exp $
+ */
+public class SynFileMake {
+
+	private final static Logger LOG = LoggerFactory
+			.getLogger(SynFileMake.class);
+
+	// 持久层会话工厂
+	private static SqlSessionFactory sqlSessionFactory = null;
+	static {
+		sqlSessionFactory = LoanDatabase.getSqlSessionFactory();
+	}
+
+	/**
+	 * @see com.hrbb.loan.pos.biz.backstage.inter.LedgerBiz#makeSynFile()
+	 */
+	public static boolean makeSynFile(String path, String today, String channel) {
+
+		LOG.debug("SynFileMake.makeSynFile begin");
+		// 取得路径
+		LOG.debug("取得路径path=" + path);
+		// 判断路径存在
+		if (!FileUtil.createDirectory(path)) {
+			LOG.debug("创建路径失败！");
+			return false;
+		} else {
+			LOG.debug("路径存在");
+		}
+
+		// 读取配置
+		SqlSession sqlSession = sqlSessionFactory.openSession();
+
+		switch (channel) {
+		case SynFileConstants.CHANNEL_CODE_UM:
+			SynFileMakerUM.makeSynFile(path, today, channel, sqlSession);
+			break;
+		case SynFileConstants.CHANNEL_CODE_SM:
+		case SynFileConstants.CHANNEL_CODE_58:
+			SynFileMaker58.makeSynFile(path, today, channel, sqlSession);
+			break;
+
+		case SynFileConstants.CHANNEL_CODE_HC:
+			SynFileMakerHC.makeSynFile(path, today, channel, sqlSession);
+			break;
+		case SynFileConstants.CHANNEL_CODE_ZW:
+			SynFileMakerZW.makeSynFile(path, today, channel, sqlSession);
+			break;
+		default:
+			break;
+		}
+		// 关闭数据库连接
+		sqlSession.close();
+
+		LOG.debug("SynFileMake.makeSynFile end");
+		return true;
+	}
+}

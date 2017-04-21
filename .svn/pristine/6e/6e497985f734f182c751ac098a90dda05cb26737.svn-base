@@ -1,0 +1,891 @@
+package com.hrbb.loan.spi.SALE;
+
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import com.brbb.loan.sale.validate.LoanSaleValidate;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.channel.user.UserProcesser;
+import com.hrbb.loan.constants.saleapp.SaleAppApplyConstants;
+import com.hrbb.loan.constants.saleapp.SaleAppApplyHServiceConstants;
+import com.hrbb.loan.constants.saleapp.SaleAppPaymentApplyConstants;
+import com.hrbb.loan.ftp.client.param.ParamReqBean;
+import com.hrbb.loan.ftp.client.param.ParamResBean;
+import com.hrbb.loan.ftp.client.utils.HttpClient;
+import com.hrbb.loan.pos.dao.entity.TLoanUser;
+import com.hrbb.loan.pos.util.IdUtil;
+import com.hrbb.loan.pos.util.MapUtils;
+import com.hrbb.loan.pos.util.SignUtil;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.loan.pos.util.ValidateUtil;
+import com.hrbb.loan.sale.biz.inter.ILoanSaleApplyBiz;
+import com.hrbb.loan.sale.biz.inter.ILoanSalePaymentApplyBiz;
+import com.hrbb.loan.sale.biz.inter.ILoanUserBiz;
+import com.hrbb.loan.spiconstants.LoanRequestHeaderConstants;
+import com.hrbb.loan.spiconstants.SaleLoanReturnCode;
+import com.hrbb.sh.framework.HRequest;
+import com.hrbb.sh.framework.HResponse;
+import com.hrbb.sh.framework.HService;
+import com.hrbb.sh.framework.HServiceException;
+import com.hrbb.ump.facade.bean.requests.user.UserInformationQueryRequest;
+import com.hrbb.ump.facade.bean.responses.user.UserInformationQueryResponse;
+
+/**
+ * SL0001: 消费贷  贷款申请通道.
+ * 
+ * @author xiongshaogang
+ * @version $Id: ZzSaleAppLoanApplyServiceImpl.java, v 0.1 2015年4月14日 下午1:56:49 xiongshaogang Exp $
+ */
+@Service("zzSaleAppLoanApply")
+public class ZzSaleAppLoanApplyServiceImpl implements HService {
+
+	Logger logger = LoggerFactory.getLogger(ZzSaleAppLoanApplyServiceImpl.class);
+
+	@Autowired
+	private ILoanSaleApplyBiz loanSaleApplyBiz;
+	@Autowired
+	private ILoanUserBiz loanUserBiz;
+	@Autowired
+	private UserProcesser userProcesser;
+	@Autowired
+	private ILoanSalePaymentApplyBiz loanSalePaymentApplyBiz;  
+	@Value("#{systemInfo[url]}")
+    private String URL;
+
+	@Override
+	public HResponse serve(HRequest request) throws HServiceException {
+		logger.debug("in ZzSaleAppLoanApplyServiceImpl...");
+		
+		// 0. 接收请求包，解包
+		Map<String, String> headerMap = (Map<String, String>) request.getProperties().get("HrbbHeader");
+		Map<String, String> bodyMap = (Map<String, String>) request.getProperties().get("HrbbBody");
+		logger.info("headerMap : " + MapUtils.toString(headerMap));
+		logger.info("bodyMap : " + MapUtils.toString(bodyMap));
+		
+		// 1. 请求包校验
+		HResponse resp = new HResponse();
+		if (!validate(headerMap, bodyMap, resp)) {
+            resp.setRespTime(new Date());
+            return getBlankHResponse(resp, headerMap, bodyMap);
+        }
+		
+		// 2. 验证数字签名,暂不实现
+		String signedMsg = SignUtil.getSignMsg((Map<String, Object>)request.getProperties().get("HrbbBody"), null);
+        logger.info("请求待签名串 signedMsg = [" + signedMsg + "]");
+//        if (!SignUtil.verifySign(SignUtil.MD5_ALG, signedMsg, headerMap.get("Mac"), SignUtil.getProperty("app_posloan_signkey"))) {
+//            logger.error("数字签名验证失败");
+//            bodyMap.put("respcode", SaleLoanReturnCode.OTHER_ERROR.getReturnCode());
+//            bodyMap.put("respmsg", SaleLoanReturnCode.OTHER_ERROR.getReturnMessage());
+//            resp.setRespCode(SaleLoanReturnCode.OTHER_ERROR.getReturnCode());
+//            resp.setRespMessage(SaleLoanReturnCode.OTHER_ERROR.getReturnMessage());
+//            resp.setRespTime(new Date());
+//            return getBlankHResponse(resp, headerMap, bodyMap);
+//        }
+        logger.info("数字签名验证通过!");
+		// 3. 调用用户系统，判断该用户是否是登录状态
+        /*boolean status = userProcesser.CheckUserLoginStatus(headerMap.get(LoanRequestHeaderConstants.userid), headerMap.get(LoanRequestHeaderConstants.sessionid));
+        if(!status){
+            logger.error("查询登录状态返回，未登录");
+            bodyMap.put("respcode", SaleLoanReturnCode.OTHER_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.OTHER_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.OTHER_ERROR.getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.OTHER_ERROR.getReturnMessage());
+            resp.setRespTime(new Date());
+            return getBlankHResponse(resp, headerMap, bodyMap);
+        }*/
+		// 4. 业务数据交换
+		// 4.1 申请信息
+		Map<String, Object> creMap = Maps.newHashMap();
+//		creMap.put(SaleAppApplyConstants.posOrg, bodyMap.get(SaleAppApplyHServiceConstants.posorg));    // 收单机构
+		// 影像资料文件包名SaleAppApplyHServiceConstants
+		if (!StringUtil.isEmpty(bodyMap.get(SaleAppApplyHServiceConstants.imagefilepackagename))) {
+		    creMap.put(SaleAppApplyHServiceConstants.imagefilepackagename, bodyMap.get(SaleAppApplyHServiceConstants.imagefilepackagename));
+		}
+        creMap.put(SaleAppApplyConstants.applyAmt, bodyMap.get(SaleAppApplyHServiceConstants.tcapi));    // 申请额度
+        if (StringUtil.isEmpty(bodyMap.get(SaleAppApplyHServiceConstants.tterm))) {
+            creMap.put(SaleAppApplyConstants.applyTerm, "12");  // 申请期限
+        } else {
+            creMap.put(SaleAppApplyConstants.applyTerm, bodyMap.get(SaleAppApplyHServiceConstants.tterm));  // 申请期限
+        }
+        creMap.put(SaleAppApplyConstants.prodId, "1001020351");  // 消费贷 产品ID
+        //creMap.put(SaleAppApplyConstants.BIZ_LOAN_ID, IdUtil.getBizLoanId(SaleAppApplyConstants.CHANNEL_ZZ, "01"));  // 业务申请ID
+        // 还款方式1
+        if (!StringUtil.isEmpty(bodyMap.get(SaleAppApplyHServiceConstants.retukind))) {
+            creMap.put(SaleAppApplyConstants.returnKind, bodyMap.get(SaleAppApplyHServiceConstants.retukind));
+        }
+        // 还款方式2
+         creMap.put(SaleAppApplyConstants.repayMethod, SaleAppApplyConstants.repayMethodDefault);     //默认为代扣还款方式
+        // 发生方式
+//        creMap.put(SaleAppApplyConstants.occurType, SaleAppApplyConstants.occurTypeAdd);
+//        creMap.put(SaleAppApplyConstants.occurType, bodyMap.get(SaleAppApplyHServiceConstants.accepttpye));    // 发生方式
+        // 银行卡号
+        creMap.put(SaleAppApplyConstants.bankAccno, bodyMap.get(SaleAppApplyHServiceConstants.bankaccno));
+        // 进件方式
+        creMap.put(SaleAppApplyConstants.inChannelKind, SaleAppApplyConstants.inChannelApp);  // 申请来源:进件方式：app默认：01
+        
+        // 机构号/推荐机构
+//        creMap.put(SaleAppApplyConstants.recOrg, bodyMap.get(SaleAppApplyHServiceConstants.bankid));
+        // 营销经理/推荐人
+//        creMap.put(SaleAppApplyConstants.recPerson, bodyMap.get(SaleAppApplyHServiceConstants.operid));
+        creMap.put(SaleAppApplyConstants.beginDate, new Date());                 //申请日期
+        creMap.put(SaleAppApplyConstants.APPLY_STATUS, SaleAppApplyConstants.STATUS_DATA_EXAM);//申请状态，资料审核
+//        creMap.put(SaleAppApplyConstants.POS_CUST_NAME, bodyMap.get(SaleAppApplyHServiceConstants.poscustname));
+        creMap.put(SaleAppApplyConstants.channel, SaleAppApplyConstants.CHANNEL_SL);  // 机构代码
+        creMap.put(SaleAppApplyConstants.operName, "系统自动处理");
+        creMap.put(SaleAppApplyConstants.operId, "system");
+//        creMap.put(SaleAppApplyConstants.region, bodyMap.get(SaleAppApplyHServiceConstants.operaddrRegion));
+        //申请期限单位默认为月M
+      	creMap.put(SaleAppApplyConstants.termUnit, SaleAppApplyConstants.MONTH);
+      	// 客户姓名
+      	creMap.put(SaleAppApplyConstants.custName, bodyMap.get(SaleAppApplyHServiceConstants.custname));
+      	// 币种 默认为人民币
+      	creMap.put(SaleAppApplyConstants.currSign, "CNY");
+      		
+        logger.info("申请信息 creMap : " + MapUtils.toString(creMap));
+		
+		// 4.2 客户信息,调用用户系统，获取用户信息
+		Map<String, Object> custMap = Maps.newHashMap();
+		UserInformationQueryRequest queryRequest = new UserInformationQueryRequest();                 //请求信息
+		queryRequest.setUserId(Integer.parseInt(headerMap.get(LoanRequestHeaderConstants.userid)));   //用户系统客户号
+		UserInformationQueryResponse response = userProcesser.queryUserInfo(queryRequest);
+		if(null != response){
+		    custMap.put(SaleAppApplyConstants.CUST_NAME, response.getUserName());    // 客户姓名
+	        custMap.put(SaleAppApplyConstants.paperKind, response.getIdType());       // 证件类型
+	        custMap.put(SaleAppApplyConstants.PAPER_ID, response.getIdNo());  // 证件号码
+	        custMap.put(SaleAppApplyConstants.sexSign, response.getGender());   // 性别
+	        custMap.put(SaleAppApplyConstants.mobilePhone,response.getMobile());   // 手机
+//	        custMap.put(SaleAppApplyConstants.busiYear, response.getIdNo()); // 从业年限
+//	        custMap.put(SaleAppApplyConstants.marrSign, response.getIdNo()); // 婚姻状况
+//	        custMap.put(SaleAppApplyConstants.educSign, response.getIdNo()); // 受教育程度
+//	        custMap.put(SaleAppApplyConstants.childNum, response.getIdNo()); // 子女人数
+//	        custMap.put(SaleAppApplyConstants.localHouseNum, response.getIdNo());   // 拥有经营地房产数量
+//	        custMap.put(SaleAppApplyConstants.otherHouseNum, bodyMap.get(SaleAppApplyHServiceConstants.otherhousenum));   // 拥有非经营地房产数量
+
+//	        custMap.put(SaleAppApplyConstants.tel, bodyMap.get(SaleAppApplyHServiceConstants.tel));   // 办公电话
+	        // 居住地-行政区划
+	        String resident = response.getResidentialAddressCode();
+	        if(StringUtil.isNotEmpty(resident) && resident.length()>3){
+	            custMap.put(SaleAppApplyConstants.residentProv, resident.substring(0, 2) + "0000");
+	            custMap.put(SaleAppApplyConstants.residentCity, resident.substring(0, 4) + "00");
+	        }
+	        custMap.put(SaleAppApplyConstants.residentDivision,resident);
+	        // 居住地址-具体
+	        custMap.put(SaleAppApplyConstants.residentDetail, response.getResidentialAddressDetail());
+	        custMap.put(SaleAppApplyConstants.workCorp, response.getCompanyName());//单位名称
+	        
+//	        custMap.put(SaleAppApplyConstants.contactAddrFlag, bodyMap.get(SaleAppApplyHServiceConstants.contactaddrflag));   // 联系地址
+//	        if (!StringUtil.isEmpty(bodyMap.get(SaleAppApplyHServiceConstants.weixinno))) {
+//	            custMap.put(SaleAppApplyConstants.weixinNo, bodyMap.get(SaleAppApplyHServiceConstants.weixinno));   // 微信号
+//	        }
+//	        if (!StringUtil.isEmpty(bodyMap.get(SaleAppApplyHServiceConstants.qqno))) {
+//	            custMap.put(SaleAppApplyConstants.qqNo, bodyMap.get(SaleAppApplyHServiceConstants.qqno));     // QQ号
+//	        }
+	        if (!StringUtil.isEmpty(response.getMail())) {
+	            custMap.put(SaleAppApplyConstants.email, response.getMail());   // 电子邮箱
+	        }
+		}
+		
+		
+//		if ("20".equals(bodyMap.get(SaleAppApplyHServiceConstants.marrsign))) {
+//		    custMap.put(SaleAppApplyConstants.familyCustName, bodyMap.get(SaleAppApplyHServiceConstants.familycustname));    // 配偶姓名
+//		    custMap.put(SaleAppApplyConstants.matePaperKind, bodyMap.get(SaleAppApplyHServiceConstants.matepaperkind));  // 配偶证件类型
+//		    custMap.put(SaleAppApplyConstants.matePaperId, bodyMap.get(SaleAppApplyHServiceConstants.matepaperid));  // 配偶证件号码
+//		    custMap.put(SaleAppApplyConstants.mateMobilePhone, bodyMap.get(SaleAppApplyHServiceConstants.matemobilephone));  // 配偶手机
+//        }
+		
+		
+		logger.info("客户信息 custMap : " + MapUtils.toString(custMap));
+		// 4.3 商户信息  
+//		Map<String, Object> posCustMap = Maps.newHashMap();
+//		posCustMap.put(SaleAppApplyConstants.POS_CUST_NAME, bodyMap.get(SaleAppApplyHServiceConstants.poscustname));    // 商户名称
+//		posCustMap.put(SaleAppApplyConstants.REG_CODE, bodyMap.get(SaleAppApplyHServiceConstants.regicode));            // 营业执照号
+//		posCustMap.put(SaleAppApplyConstants.posCustBusiScope, bodyMap.get(SaleAppApplyHServiceConstants.dealscope));   // 主营业务
+//		posCustMap.put(SaleAppApplyConstants.operAddrCode, bodyMap.get(SaleAppApplyHServiceConstants.operaddrRegion));  // 实际经营地址-行政区划
+//		posCustMap.put(SaleAppApplyConstants.posCustAddress, bodyMap.get(SaleAppApplyHServiceConstants.operaddrdetail));    // 实际经营地址-具体
+//		posCustMap.put(SaleAppApplyConstants.industryTypeId, bodyMap.get(SaleAppApplyHServiceConstants.industrytypeid));    // 所属行业
+//		posCustMap.put(SaleAppApplyConstants.industryTypeId2, CreditApplyFactory.getIndustryType(bodyMap.get(SaleAppApplyHServiceConstants.dealscope)));    // 所属行业
+//		if (StringUtil.isNotEmpty(bodyMap.get("haspos"))) {
+//		    posCustMap.put("isPosInstall", bodyMap.get("haspos"));  // 是否安装POS机标志 2：未安装 1：安装
+//        }
+//		
+//		logger.info("商户信息 posCustMap : " + MapUtils.toString(posCustMap));
+		
+		// 4.4 亲属信息
+		Map<String, Object> relaMap = Maps.newHashMap();
+//		if (!"20".equals(bodyMap.get(SaleAppApplyHServiceConstants.marrsign))) {
+//		    relaMap.put(SaleAppApplyConstants.relaCustName, bodyMap.get(SaleAppApplyHServiceConstants.relacustname));   // 亲属姓名
+//		    relaMap.put(SaleAppApplyConstants.relaKind, bodyMap.get(SaleAppApplyHServiceConstants.relakind));   // 亲属类型
+//		    relaMap.put(SaleAppApplyConstants.relaMobilePhone, bodyMap.get(SaleAppApplyHServiceConstants.relamobilephone)); // 亲属手机
+//		    relaMap.put(SaleAppApplyConstants.relaTel, bodyMap.get(SaleAppApplyHServiceConstants.relatel));     // 亲属固话
+//        }
+		
+		logger.info("亲属信息 relaMap : " + MapUtils.toString(relaMap));
+		
+		// 4.5 银行账号信息
+		Map<String, Object> bankMap = Maps.newHashMap();
+		// 银行账号/卡号
+		bankMap.put(SaleAppApplyConstants.bankAccno, bodyMap.get(SaleAppApplyHServiceConstants.bankaccno));
+		// 账户开户行
+		bankMap.put(SaleAppApplyConstants.bankName, bodyMap.get(SaleAppApplyHServiceConstants.bankName));
+		// 账户分行
+		bankMap.put(SaleAppApplyConstants.bankBranName, bodyMap.get(SaleAppApplyHServiceConstants.bankBrandName));
+		// 账户支行
+		bankMap.put(SaleAppApplyConstants.bankSubName, bodyMap.get(SaleAppApplyHServiceConstants.bankSubName));
+		
+		logger.info("银行账户信息 bankMap : " + MapUtils.toString(bankMap));
+		
+		// 5. 消费贷业务受理入库
+		Map<String, Object> resMap = loanSaleApplyBiz
+				.SaleAppApplyReg(creMap, custMap, null, bankMap, null,null);
+		if(resMap.isEmpty()){
+		    bodyMap.put("respcode", SaleLoanReturnCode.OTHER_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.OTHER_ERROR.getReturnMessage());
+			resp.setRespCode(SaleLoanReturnCode.OTHER_ERROR.getReturnCode());
+			resp.setRespMessage(SaleLoanReturnCode.OTHER_ERROR.getReturnMessage());
+			resp.setRespTime(new Date());
+			return getBlankHResponse(resp, headerMap, bodyMap);
+		}
+		
+		
+		// 6 影像资料拆包
+		noticeFtp(headerMap, bodyMap, resMap, resp);
+		
+		// 7. 调征信接口
+		// 7.1 调用风控模型
+		// 8. 插入临时用款申请库
+		Map<String,Object> tmpMap = Maps.newHashMap();
+		bodyMap.put(SaleAppApplyConstants.CUST_ID, (String) custMap.get(SaleAppApplyConstants.CUST_ID));//获取客户ID号
+		initPaymentApplyTmp(bodyMap,tmpMap);                                                            //初始化用款申请临时表数据
+		Map<String, Object> insertRetMap = loanSalePaymentApplyBiz.insertLoanSalePaymentApply(tmpMap);                                           
+		// 9. 插入贷款与用户对应表
+		TLoanUser loanUser = new TLoanUser();
+		loanUser.setLoanId((String)creMap.get(SaleAppApplyConstants.BIZ_LOAN_ID));
+		loanUser.setUserId(headerMap.get(LoanRequestHeaderConstants.userid));
+		loanUser.setAppSource(headerMap.get(LoanRequestHeaderConstants.appsource));
+		loanUser.setPayapplyid((String)insertRetMap.get("listid"));
+		loanUserBiz.addLoanUser(loanUser);
+		
+		// 9. 如果都成功, 回写数据
+		Map<String, Object> respMap = Maps.newHashMap();
+		resMap.put("respcode", SaleLoanReturnCode.SUCCESS.getReturnCode());
+		resMap.put("respmsg", SaleLoanReturnCode.SUCCESS.getReturnMessage());
+		
+		// 9.1 签名处理
+        headerMap.put("Mac", sign(respMap, null));
+		
+		respMap.put("HrbbHeader", headerMap);
+        respMap.put("HrbbBody", resMap);
+		resp.setProperties(respMap);
+		resp.setRespCode(SaleLoanReturnCode.SUCCESS.getReturnCode());
+		resp.setRespMessage(SaleLoanReturnCode.SUCCESS.getReturnMessage());
+		resp.setRespTime(new Date());
+		logger.info("回写数据: " + resp.toString());
+		logger.debug("out ZzSaleAppLoanApplyServiceImpl...");
+		return resp;
+	}
+	
+	/**
+	 * 通知FTP 拆包.
+	 * 
+	 * @param headerMap
+	 * @param bodyMap
+	 * @param resMap
+	 * @param resp
+	 * @return
+	 */
+	private boolean noticeFtp(Map<String, String> headerMap, Map<String, String> bodyMap, Map<String, Object> resMap, HResponse resp) {
+	    ParamReqBean paramReqBean = new ParamReqBean();
+        paramReqBean.setApplyNo(bodyMap.get(SaleAppApplyHServiceConstants.loanid));
+        paramReqBean.setKeyValue(
+                SaleAppApplyHServiceConstants.ftp_map_key_instno,
+                SaleAppApplyHServiceConstants.ftp_instno_ap);
+        paramReqBean.setCustId(bodyMap.get(SaleAppApplyHServiceConstants.custid));
+        paramReqBean.setVersion(SaleAppApplyHServiceConstants.ftp_version);
+        paramReqBean.setBizType(SaleAppApplyHServiceConstants.ftp_biztype);
+        paramReqBean.setTransType(SaleAppApplyHServiceConstants.ftp_transtype);
+        paramReqBean.setKeyValue(
+                SaleAppApplyHServiceConstants.ftp_map_key_prefix,
+                SaleAppApplyHServiceConstants.ftp_prefix_app);
+        paramReqBean.setKeyValue(
+                SaleAppApplyHServiceConstants.ftp_map_key_remotefilename,
+                bodyMap.get(SaleAppApplyHServiceConstants.imagefilepackagename));
+        paramReqBean.setKeyValue(
+                SaleAppApplyHServiceConstants.ftp_map_key_LocalSubFolderNameDef,
+                bodyMap.get(resMap.get(SaleAppApplyHServiceConstants.loanid)));
+
+        paramReqBean.setKeyValue(SaleAppApplyHServiceConstants.ftp_map_key_url,
+                URL + "creditApplyUpdate/updateBackToAddit.do");
+        logger.debug("影像资料 请求报文 paramReqBean = " + paramReqBean.toURLParam());
+        ParamResBean paramResBean = HttpClient.send(paramReqBean);
+        if (paramResBean == null) {
+            bodyMap.put("respcode", SaleLoanReturnCode.FTP_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.FTP_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.FTP_ERROR.getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.FTP_ERROR.getReturnMessage());
+            resp.setRespTime(new Date());
+            return false;
+        }
+        logger.debug("影像资料 应答报文 paramResBean = " + paramResBean.toURLParam());
+        return true;
+	}
+	
+	/**
+	 * 请求包校验处理.
+	 * 
+	 * @param headerMap
+	 * @param bodyMap
+	 * @return
+	 */
+	private boolean validate(Map<String, String> headerMap, Map<String, String> bodyMap, HResponse resp) {
+	    
+	    if(!LoanSaleValidate.validateHeader(headerMap,bodyMap,resp)){
+	        return false;
+	    }
+	    // 收单机构
+//        String posorg = (String) bodyMap.get(SaleAppApplyHServiceConstants.posorg);
+//        if (StringUtil.isEmpty(posorg)) {
+//            logger.error("收单机构为空或不合法:[]", posorg);
+//            bodyMap.put("respcode", SaleLoanReturnCode.POS_ORG_ERROR.getReturnCode());
+//            bodyMap.put("respmsg", SaleLoanReturnCode.POS_ORG_ERROR.getReturnMessage());
+//            resp.setRespCode(SaleLoanReturnCode.POS_ORG_ERROR.getReturnCode());
+//            resp.setRespMessage(SaleLoanReturnCode.POS_ORG_ERROR.getReturnMessage());
+//            return false;
+//        }
+        // 商户名称
+//        String poscustname = (String) bodyMap.get(SaleAppApplyHServiceConstants.poscustname);
+//        if (StringUtil.isEmpty(poscustname)) {
+//            logger.error("商户名称为空或不合法:[]", poscustname);
+//            bodyMap.put("respcode", SaleLoanReturnCode.POSCUSTNAME_ERROR.getReturnCode());
+//            bodyMap.put("respmsg", SaleLoanReturnCode.POSCUSTNAME_ERROR.getReturnMessage());
+//            resp.setRespCode(SaleLoanReturnCode.POSCUSTNAME_ERROR.getReturnCode());
+//            resp.setRespMessage(SaleLoanReturnCode.POSCUSTNAME_ERROR.getReturnMessage());
+//            return false;
+//        }
+//        logger.info("poscustname validate success !");
+        // 营业执照号
+//        String regicode = (String) bodyMap
+//                .get(SaleAppApplyHServiceConstants.regicode);
+//        if (StringUtil.isEmpty(regicode)) {
+//            logger.error("营业执照号为空或不合法:[]", regicode);
+//            bodyMap.put("respcode", SaleLoanReturnCode.REGICODE_ERROR.getReturnCode());
+//            bodyMap.put("respmsg", SaleLoanReturnCode.REGICODE_ERROR.getReturnMessage());
+//            resp.setRespCode(SaleLoanReturnCode.REGICODE_ERROR.getReturnCode());
+//            resp.setRespMessage(SaleLoanReturnCode.REGICODE_ERROR
+//                    .getReturnMessage());
+//            return false;
+//        }
+//        logger.info("regicode validate success !");
+//        // 主营业务
+//        String dealscope = (String) bodyMap
+//                .get(SaleAppApplyHServiceConstants.dealscope);
+//        if (StringUtil.isEmpty(dealscope)) {
+//            logger.error("主营业务为空或不合法:[]", dealscope);
+//            bodyMap.put("respcode", SaleLoanReturnCode.DEALSCOPE_ERROR.getReturnCode());
+//            bodyMap.put("respmsg", SaleLoanReturnCode.DEALSCOPE_ERROR.getReturnMessage());
+//            resp.setRespCode(SaleLoanReturnCode.DEALSCOPE_ERROR.getReturnCode());
+//            resp.setRespMessage(SaleLoanReturnCode.DEALSCOPE_ERROR
+//                    .getReturnMessage());
+//            return false;
+//        }
+//        logger.info("dealscope validate success !");
+//        // 实际经营地址-行政区划
+//        String operaddrRegion = (String) bodyMap
+//                .get(SaleAppApplyHServiceConstants.operaddrRegion);
+//        if (StringUtil.isEmpty(operaddrRegion)) {
+//            logger.error("行政区划为空或有误:[]", operaddrRegion);
+//            bodyMap.put("respcode", SaleLoanReturnCode.OPERADDRREGION_ERROR.getReturnCode());
+//            bodyMap.put("respmsg", SaleLoanReturnCode.OPERADDRREGION_ERROR.getReturnMessage());
+//            resp.setRespCode(SaleLoanReturnCode.OPERADDRREGION_ERROR
+//                    .getReturnCode());
+//            resp.setRespMessage(SaleLoanReturnCode.OPERADDRREGION_ERROR
+//                    .getReturnMessage());
+//            return false;
+//        }
+//        logger.info("operaddrRegion validate success !");
+//        // 实际经营地址-具体
+//        String operaddrdetail = (String) bodyMap
+//                .get(SaleAppApplyHServiceConstants.operaddrdetail);
+//        if (StringUtil.isEmpty(operaddrdetail)) {
+//            logger.error("具体经营地址为空或有误:[]", operaddrdetail);
+//            bodyMap.put("respcode", SaleLoanReturnCode.OPERADDRDETAIL_ERROR.getReturnCode());
+//            bodyMap.put("respmsg", SaleLoanReturnCode.OPERADDRDETAIL_ERROR.getReturnMessage());
+//            resp.setRespCode(SaleLoanReturnCode.OPERADDRDETAIL_ERROR
+//                    .getReturnCode());
+//            resp.setRespMessage(SaleLoanReturnCode.OPERADDRDETAIL_ERROR
+//                    .getReturnMessage());
+//            return false;
+//        }
+//        logger.info("operaddrdetail validate success !");
+//
+//        // 所属行业
+//        String industrytypeid = (String) bodyMap
+//                .get(SaleAppApplyHServiceConstants.industrytypeid);
+//        if (StringUtil.isEmpty(industrytypeid)) {
+//            logger.error("所属行业为空:[]", industrytypeid);
+//            bodyMap.put("respcode", SaleLoanReturnCode.INDUSTRYTYPEID_ERROR.getReturnCode());
+//            bodyMap.put("respmsg", SaleLoanReturnCode.INDUSTRYTYPEID_ERROR.getReturnMessage());
+//            resp.setRespCode(SaleLoanReturnCode.INDUSTRYTYPEID_ERROR.getReturnCode());
+//            resp.setRespMessage(SaleLoanReturnCode.INDUSTRYTYPEID_ERROR
+//                    .getReturnMessage());
+//            return false;
+//        }
+//        logger.info("industrytypeid validate success !");
+
+        // 影像资料文件包名
+//        String imagefilepackagename = (String) bodyMap
+//                .get(SaleAppApplyHServiceConstants.imagefilepackagename);
+//        if (StringUtil.isEmpty(imagefilepackagename)) {
+//            logger.error("影像资料文件包名为空或有误:[]", imagefilepackagename);
+//            bodyMap.put("respcode", SaleLoanReturnCode.IMAGEFILEPACKAGENAME_ERROR.getReturnCode());
+//            bodyMap.put("respmsg", SaleLoanReturnCode.IMAGEFILEPACKAGENAME_ERROR.getReturnMessage());
+//            resp.setRespCode(SaleLoanReturnCode.IMAGEFILEPACKAGENAME_ERROR
+//                    .getReturnCode());
+//            resp.setRespMessage(SaleLoanReturnCode.IMAGEFILEPACKAGENAME_ERROR
+//                    .getReturnMessage());
+//            return false;
+//        }
+//        logger.info("imagefilepackagename validate success !");
+        // 申请额度
+        String apptcapi = (String) bodyMap
+                .get(SaleAppApplyHServiceConstants.tcapi);
+        if (StringUtil.isEmpty(apptcapi) || !ValidateUtil.checkDouble(apptcapi)) {
+            logger.error("申请额度为空或有误:[]", apptcapi);
+            bodyMap.put("respcode", SaleLoanReturnCode.APPTCAPI_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.APPTCAPI_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.APPTCAPI_ERROR.getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.APPTCAPI_ERROR
+                    .getReturnMessage());
+            return false;
+        }
+        logger.info("apptcapi validate success !");
+        // 申请期限
+//        String appterm = (String) bodyMap
+//                .get(SaleAppApplyHServiceConstants.appterm);
+//        if (StringUtil.isEmpty(appterm)) {
+//            logger.error("申请期限为空或有误:[]", appterm);
+//            bodyMap.put("respcode", SaleLoanReturnCode.APPTERM_ERROR.getReturnCode());
+//            bodyMap.put("respmsg", SaleLoanReturnCode.APPTERM_ERROR.getReturnMessage());
+//            resp.setRespCode(SaleLoanReturnCode.APPTERM_ERROR.getReturnCode());
+//            resp.setRespMessage(SaleLoanReturnCode.APPTERM_ERROR
+//                    .getReturnMessage());
+//            return false;
+//        }
+        // 还款方式1
+        String retukind1 = (String) bodyMap
+                .get(SaleAppApplyHServiceConstants.retukind);
+        // 还款方式2
+//        String retukind2 = (String) bodyMap
+//                .get(SaleAppApplyHServiceConstants.retukind2);
+//        if (StringUtil.isEmpty(retukind1) && StringUtil.isEmpty(retukind2)) {
+        if (StringUtil.isEmpty(retukind1)) {
+            bodyMap.put("respcode", SaleLoanReturnCode.RETURNKIND_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.RETURNKIND_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.RETURNKIND_ERROR
+                    .getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.RETURNKIND_ERROR
+                    .getReturnMessage());
+            return false;
+        }
+        logger.info("retukind1 validate success !");
+
+        // 银行账号/卡号
+        String bankaccno = (String) bodyMap
+                .get(SaleAppApplyHServiceConstants.bankaccno);
+        if (StringUtil.isEmpty(bankaccno)
+                || !ValidateUtil.checkInteger(bankaccno)) {
+            bodyMap.put("respcode", SaleLoanReturnCode.BANKACCNO_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.BANKACCNO_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.BANKACCNO_ERROR.getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.BANKACCNO_ERROR
+                    .getReturnMessage());
+            return false;
+        }
+        logger.info("bankaccno validate success !");
+        // 账户开户行
+        String bankName = (String) bodyMap
+                .get(SaleAppApplyHServiceConstants.bankName);
+        if (StringUtil.isEmpty(bankName)) {
+            bodyMap.put("respcode", SaleLoanReturnCode.BANKNAME_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.BANKNAME_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.BANKNAME_ERROR.getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.BANKBRANNAME_ERROR
+                    .getReturnMessage());
+            return false;
+        }
+        logger.info("bankName validate success !");
+
+        // 账户分行
+        String bankBrandName = (String) bodyMap
+                .get(SaleAppApplyHServiceConstants.bankBrandName);
+        if (StringUtil.isEmpty(bankaccno)
+                || !ValidateUtil.checkChinese(bankBrandName)) {
+            bodyMap.put("respcode", SaleLoanReturnCode.BANKBRANNAME_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.BANKBRANNAME_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.BANKBRANNAME_ERROR
+                    .getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.BANKBRANNAME_ERROR
+                    .getReturnMessage());
+            return false;
+        }
+        logger.info("bankBrandName validate success !");
+
+        // 账户支行
+        String bankSubName = (String) bodyMap
+                .get(SaleAppApplyHServiceConstants.bankSubName);
+        if (StringUtil.isEmpty(bankSubName)
+                || !ValidateUtil.checkChinese(bankSubName)) {
+            bodyMap.put("respcode", SaleLoanReturnCode.BANKSUBNAME_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.BANKSUBNAME_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.BANKSUBNAME_ERROR
+                    .getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.BANKSUBNAME_ERROR
+                    .getReturnMessage());
+            return false;
+        }
+        logger.info("bankSubName validate success !");
+
+        // 机构号/推荐机构
+//        String bankid = (String) bodyMap.get(SaleAppApplyHServiceConstants.bankid);
+//        if (StringUtil.isEmpty(bankid)) {
+//            bodyMap.put("respcode", SaleLoanReturnCode.BANKID_ERROR.getReturnCode());
+//            bodyMap.put("respmsg", SaleLoanReturnCode.BANKID_ERROR.getReturnMessage());
+//            resp.setRespCode(SaleLoanReturnCode.BANKID_ERROR.getReturnCode());
+//            resp.setRespMessage(SaleLoanReturnCode.BANKID_ERROR
+//                    .getReturnMessage());
+//            return false;
+//        }
+
+        // 营销经理/推荐人
+//        String operid = (String) bodyMap.get(SaleAppApplyHServiceConstants.operid);
+//        if (StringUtil.isEmpty(operid)) {
+//            bodyMap.put("respcode", SaleLoanReturnCode.OTHER_ERROR.getReturnCode());
+//            bodyMap.put("respmsg", SaleLoanReturnCode.OTHER_ERROR.getReturnMessage());
+//            resp.setRespCode(SaleLoanReturnCode.OPERID_ERROR.getReturnCode());
+//            resp.setRespCode(SaleLoanReturnCode.OPERID_ERROR.getReturnMessage());
+//            return false;
+//        }
+        
+        // 发生方式 01-新增 02-续贷
+//        String accepttpye = bodyMap.get(SaleAppApplyHServiceConstants.accepttpye);
+//        if (StringUtil.isEmpty(accepttpye) || "01|02".indexOf(accepttpye) < 0) {
+//            bodyMap.put("respcode", SaleLoanReturnCode.OTHER_ERROR.getReturnCode());
+//            bodyMap.put("respmsg", SaleLoanReturnCode.OTHER_ERROR.getReturnMessage());
+//            resp.setRespCode(SaleLoanReturnCode.OTHER_ERROR.getReturnCode());
+//            resp.setRespCode(SaleLoanReturnCode.OTHER_ERROR.getReturnMessage());
+//            return false;
+//        }
+//        logger.info("accepttpye validate success !");
+        
+        
+        logger.info("validate success !");
+	    return true;
+	}
+	
+	
+	
+	/**
+	 * 验证客户信息
+	 * 
+	 * @return
+	 */
+	/*public boolean validateUser(){
+	    // 客户姓名
+        String custname = (String) bodyMap
+                .get(SaleAppApplyHServiceConstants.custname);
+        if (StringUtil.isEmpty(custname)
+                || !ValidateUtil.checkChinese(custname)) {
+            logger.error("客户姓名为空或有误:[]", custname);
+            bodyMap.put("respcode", SaleLoanReturnCode.CUSTNAME_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.CUSTNAME_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.CUSTNAME_ERROR.getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.CUSTNAME_ERROR
+                    .getReturnMessage());
+            return false;
+        }
+        logger.info("custname validate success !");
+
+        // 证件类型
+        String paperkind = (String) bodyMap
+                .get(SaleAppApplyHServiceConstants.paperkind);
+        if (StringUtil.isEmpty(paperkind) || !paperkind.equals("01")) {
+            logger.error("证件类型为空或有误:[]", paperkind);
+            bodyMap.put("respcode", SaleLoanReturnCode.PAPERKIND_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.PAPERKIND_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.PAPERKIND_ERROR.getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.PAPERKIND_ERROR
+                    .getReturnMessage());
+            return false;
+        }
+        logger.info("paperkind validate success !");
+        // 证件号码
+        String paperid = (String) bodyMap
+                .get(SaleAppApplyHServiceConstants.paperid);
+        if (StringUtil.isEmpty(paperid) || !ValidateUtil.checkIdNumber2(paperid)) {
+            logger.error("证件号码为空或有误:[]", paperid);
+            bodyMap.put("respcode", SaleLoanReturnCode.PAPERID_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.PAPERID_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.PAPERID_ERROR.getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.PAPERID_ERROR
+                    .getReturnMessage());
+            return false;
+        }
+        logger.info("paperid validate success !");
+        // 性别
+        String sexsign = (String) bodyMap
+                .get(SaleAppApplyHServiceConstants.sexsign);
+        if (StringUtil.isEmpty(sexsign)
+                || "1|2".indexOf(sexsign) < 0) {
+            logger.error("性别为空或有误:[]", sexsign);
+            bodyMap.put("respcode", SaleLoanReturnCode.SEXSIGN_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.SEXSIGN_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.SEXSIGN_ERROR.getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.SEXSIGN_ERROR
+                    .getReturnMessage());
+            return false;
+        }
+        logger.info("sexsign validate success !");
+
+        // 从业年限
+        String busiyear = (String) bodyMap
+                .get(SaleAppApplyHServiceConstants.busiyear);
+        if (StringUtil.isEmpty(busiyear)
+                || !ValidateUtil.checkInteger(busiyear)) {
+            logger.error("从业年限为空或有误:[]", busiyear);
+            bodyMap.put("respcode", SaleLoanReturnCode.BUSIYEAR_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.BUSIYEAR_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.BUSIYEAR_ERROR.getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.BUSIYEAR_ERROR
+                    .getReturnMessage());
+            return false;
+        }
+        logger.info("busiyear validate success !");
+        // 婚姻状况
+        String marrsign = (String) bodyMap
+                .get(SaleAppApplyHServiceConstants.marrsign);
+        if (StringUtil.isEmpty(marrsign)
+                || "10|20|30|40".indexOf(marrsign) < 0) {
+            logger.error("婚姻状况为空或有误:[]",marrsign);
+            bodyMap.put("respcode", SaleLoanReturnCode.MARRSIGN_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.MARRSIGN_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.MARRSIGN_ERROR.getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.MARRSIGN_ERROR
+                    .getReturnMessage());
+            return false;
+        }
+        logger.info("marrsign validate success !");
+        // 受教育程度
+        String educsign = (String) bodyMap
+                .get(SaleAppApplyHServiceConstants.edusign);
+        if (StringUtil.isEmpty(educsign)
+                || "10|20|30|40|50|60".indexOf(educsign) < 0) {
+            logger.error("受教育程度为空或有误:[]", educsign);
+            bodyMap.put("respcode", SaleLoanReturnCode.EDUSIGN_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.EDUSIGN_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.EDUSIGN_ERROR.getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.EDUSIGN_ERROR
+                    .getReturnMessage());
+            return false;
+        }
+        logger.info("educsign validate success !");
+        // 子女人数
+        String childnum = (String) bodyMap
+                .get(SaleAppApplyHServiceConstants.childnum);
+        if (StringUtil.isEmpty(childnum)
+                || !ValidateUtil.checkInteger(childnum)) {
+            logger.error("子女人数为空或有误:[]", childnum);
+            bodyMap.put("respcode", SaleLoanReturnCode.CHILDNUM_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.CHILDNUM_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.CHILDNUM_ERROR.getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.CHILDNUM_ERROR
+                    .getReturnMessage());
+            return false;
+        }
+        logger.info("childnum validate success !");
+
+        // 拥有经营地房产数量
+        String localhousenum = (String) bodyMap
+                .get(SaleAppApplyHServiceConstants.localhousenum);
+        if (StringUtil.isEmpty(localhousenum)
+                || !ValidateUtil.checkInteger(localhousenum)) {
+            logger.error("拥有经营地房产数为空或有误:[]", localhousenum);
+            bodyMap.put("respcode", SaleLoanReturnCode.LOCALHOUSENUM_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.LOCALHOUSENUM_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.LOCALHOUSENUM_ERROR
+                    .getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.LOCALHOUSENUM_ERROR
+                    .getReturnMessage());
+            return false;
+        }
+        logger.info("localhousenum validate success !");
+
+        // 拥有非经营地房产数量
+        String otherhousenum = (String) bodyMap
+                .get(SaleAppApplyHServiceConstants.otherhousenum);
+        if (StringUtil.isEmpty(otherhousenum)
+                || !ValidateUtil.checkInteger(otherhousenum)) {
+            logger.error("拥有非经营地房产数量为空:[]", otherhousenum);
+            bodyMap.put("respcode", SaleLoanReturnCode.OTHERHOUSENUM_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.OTHERHOUSENUM_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.OTHERHOUSENUM_ERROR
+                    .getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.OTHERHOUSENUM_ERROR
+                    .getReturnMessage());
+            return false;
+        }
+        logger.info("otherhousenum validate success !");
+
+        // 手机
+        String mobilephone = (String) bodyMap
+                .get(SaleAppApplyHServiceConstants.mobilephone);
+        if (StringUtil.isEmpty(mobilephone)
+                || !ValidateUtil.checkMobile(mobilephone)) {
+            logger.error("手机号为空或有误:[]", mobilephone);
+            bodyMap.put("respcode", SaleLoanReturnCode.MOBILEPHONE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.MOBILEPHONE_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.MOBILEPHONE_ERROR
+                    .getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.MOBILEPHONE_ERROR
+                    .getReturnMessage());
+            return false;
+        }
+        logger.info("mobilephone validate success !");
+
+        // 办公电话
+        String tel = (String) bodyMap.get(SaleAppApplyHServiceConstants.tel);
+        if (StringUtil.isEmpty(tel) || !ValidateUtil.checkTelephone(tel)) {
+            logger.error("办公电话为空或有误:[]", tel);
+            bodyMap.put("respcode", SaleLoanReturnCode.TEL_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.TEL_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.TEL_ERROR.getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.TEL_ERROR.getReturnMessage());
+            return false;
+        }
+        logger.info("tel validate success !");
+        // 居住地-行政区划
+        String residentRegion = (String) bodyMap
+                .get(SaleAppApplyHServiceConstants.residentRegion);
+        if (StringUtil.isEmpty(residentRegion)) {
+            logger.error("居住地行政区划为空或有误:[]", residentRegion);
+            bodyMap.put("respcode", SaleLoanReturnCode.RESIDENTREGION_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.RESIDENTREGION_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.RESIDENTREGION_ERROR
+                    .getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.RESIDENTREGION_ERROR
+                    .getReturnMessage());
+            return false;
+        }
+        logger.info("residentRegion validate success !");
+
+        // 居住地址-具体
+        String residentdetail = (String) bodyMap
+                .get(SaleAppApplyHServiceConstants.residentdetail);
+        if (StringUtil.isEmpty(residentdetail)) {
+            logger.error("具体居住地址为空或有误:[]", residentdetail);
+            bodyMap.put("respcode", SaleLoanReturnCode.RESIDENTDETAIL_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.RESIDENTDETAIL_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.RESIDENTDETAIL_ERROR
+                    .getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.RESIDENTDETAIL_ERROR
+                    .getReturnMessage());
+            return false;
+        }
+        logger.info("residentdetail validate success !");
+        // 联系地址
+        String contactaddrflag = (String) bodyMap
+                .get(SaleAppApplyHServiceConstants.contactaddrflag);
+        if (StringUtil.isEmpty(contactaddrflag)) {
+            logger.error("联系地址为空或有误:[]", contactaddrflag);
+            bodyMap.put("respcode", SaleLoanReturnCode.CONTACTADDRFALG_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.CONTACTADDRFALG_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.CONTACTADDRFALG_ERROR
+                    .getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.CONTACTADDRFALG_ERROR
+                    .getReturnMessage());
+            return false;
+        }
+        logger.info("contactaddrflag validate success !");
+	}*/
+	
+	/**
+	 * 业务错误应答.
+	 * 
+	 * @param response
+	 * @return
+	 */
+	private HResponse getBlankHResponse(HResponse response, Map<String, String> headerMap, Map<String, String> bodyMap){
+		Map<String, Object> respMap = Maps.newHashMap();
+		bodyMap.put(SaleAppApplyHServiceConstants.loanid, "");
+		bodyMap.put(SaleAppApplyHServiceConstants.custid, "");
+		
+		// 5.1 签名处理
+        Map<String, Object> signMap = Maps.newHashMap();
+        for (Iterator<String> it = bodyMap.keySet().iterator(); it.hasNext();) {
+            String key = it.next();
+            signMap.put(key, bodyMap.get(key));
+        }
+        headerMap.put("Mac", sign(signMap, null));
+		
+		respMap.put("HrbbHeader", headerMap);
+		respMap.put("HrbbBody", bodyMap);
+		response.setProperties(respMap);
+		return response;
+	}
+	/**
+	 * 初始化用款申请临时表信息
+	 * @param bodyMap
+	 * @param tmpMap
+	 */
+	public void initPaymentApplyTmp(Map<String, String> bodyMap,Map<String,Object> tmpMap ){
+	    String payApplyAmt = bodyMap.get(SaleAppApplyHServiceConstants.tcapi);            //用款金额
+	    String payApplyTerm = bodyMap.get(SaleAppApplyHServiceConstants.tterm);          //用款期限
+	    String returnType = bodyMap.get(SaleAppApplyHServiceConstants.retukind);              //还款方式
+	    String accNo = bodyMap.get(SaleAppApplyHServiceConstants.bankaccno);                        //用款账号
+	    String expectedDate = bodyMap.get(SaleAppApplyHServiceConstants.desireddate);          //期望用款日期
+	    String applyMemo = bodyMap.get(SaleAppApplyHServiceConstants.applyMemo);                //资金用途
+	    String custId = bodyMap.get(SaleAppApplyConstants.CUST_ID);                            //客户ID
+        if(!StringUtils.isEmpty(payApplyAmt)){
+            tmpMap.put(SaleAppPaymentApplyConstants.payApplyAmt, payApplyAmt);
+        }
+        if(!StringUtils.isEmpty(payApplyTerm)){
+            tmpMap.put(SaleAppPaymentApplyConstants.payApplyTerm, payApplyTerm);
+        }
+        if(!StringUtils.isEmpty(returnType)){
+            tmpMap.put(SaleAppPaymentApplyConstants.returnType, returnType);
+        }
+        if(!StringUtils.isEmpty(accNo)){
+            tmpMap.put(SaleAppPaymentApplyConstants.accNo, accNo);
+        }
+        if(!StringUtils.isEmpty(expectedDate)){
+            tmpMap.put(SaleAppPaymentApplyConstants.expectedDate, expectedDate);
+        }
+        if(!StringUtils.isEmpty(applyMemo)){
+            tmpMap.put(SaleAppPaymentApplyConstants.applyMemo, applyMemo);
+        }
+        if(!StringUtils.isEmpty(custId)){
+            tmpMap.put(SaleAppApplyConstants.CUST_ID,custId);
+        }
+	}
+	/**
+     * 回写签名处理.
+     * 
+     * @param signMap
+     * @param ignoreSet
+     * @return
+     */
+    private String sign(Map<String, Object> signMap, Set<String> ignoreSet) {
+        String signedMsg = SignUtil.getSignMsg(signMap, ignoreSet);
+        logger.info("应答待签名串 signedMsg = [" + signedMsg + "]");
+        String signRet = SignUtil.sign(SignUtil.MD5_ALG, signedMsg, SignUtil.getProperty("app_posloan_signkey"));
+        logger.info("应答签名 Mac = [" + signRet + "]");
+        return signRet;
+    }
+}

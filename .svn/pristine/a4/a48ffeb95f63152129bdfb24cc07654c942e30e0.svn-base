@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TSmsMessageMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TSmsMessage" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="sendContent" property="sendContent" jdbcType="VARCHAR" />
+    <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="tempId" property="tempId" jdbcType="VARCHAR"/>
+    <result column="channel" property="channel" jdbcType="VARCHAR"/>
+    <result column="notifyType" property="notifyType" jdbcType="VARCHAR"/>
+    <result column="schedSendTime" property="schedSendTime" jdbcType="TIMESTAMP"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, mobile, sendContent, createTime, tempId, channel, notifyType, schedSendTime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_sms_message
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_sms_message
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TSmsMessage" >
+    insert into t_sms_message (id, mobile, sendContent, 
+      createTime, tempId, channel, notifyType)
+    values (#{id,jdbcType=INTEGER}, #{mobile,jdbcType=VARCHAR}, #{sendContent,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{tempId,idbcType=VARCHAR}, #{channel,jdbcType=VARCHAR},
+      #{notifyType,jdbcType=VARCHAR})
+  </insert>
+    <insert id="batchInsert" parameterType="List" >
+    insert into t_sms_message (mobile, sendContent, tempId, createTime, channel, notifyType) values
+        <foreach collection="list" item="obj" index="index" separator=",">
+             (#{obj.mobile}, #{obj.sendContent}, #{obj.tempId}, #{obj.createTime}, #{obj.channel},
+             #{obj.notifyType})
+        </foreach>
+
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TSmsMessage" >
+    insert into t_sms_message
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="sendContent != null" >
+        sendContent,
+      </if>
+      <if test="createTime != null" >
+        createTime,
+      </if>
+      <if test="tempId != null">
+      	tempId,
+      </if>
+	<if test="channel != null">
+		channel,
+	</if>
+	<if test="notifyType != null">
+		notifyType,
+	</if>
+	<if test="schedSendTime != null">
+		schedSendTime,
+	</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="sendContent != null" >
+        #{sendContent,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="tempId != null">
+      	#{tempId,jdbcType=VARCHAR},
+      </if>
+       <if test="channel != null">
+      	#{channel,jdbcType=VARCHAR},
+      </if>
+      <if test="notifyType != null">
+      	#{notifyType,jdbcType=VARCHAR},
+      </if>
+      <if test="schedSendTime != null">
+      	#{schedSendTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="Map" >
+    insert into t_sms_message
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="sendContent != null" >
+        sendContent,
+      </if>
+      <if test="createTime != null" >
+        createTime,
+      </if>
+      <if test="tempId != null">
+      	tempId,
+      </if>
+      <if test="channel != null">
+      	channel,
+      </if>
+      <if test="notifyType != null">
+      	notifyType,
+      </if>
+      <if test="schedSendTime != null">
+		schedSendTime,
+	</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="sendContent != null" >
+        #{sendContent,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="tempId != null">
+      	#{tempId,jdbcType=VARCHAR},
+      </if>
+      <if test="channel != null">
+      	#{channel,jdbcType=VARCHAR},
+      </if>
+      <if test="notifyType != null">
+      	#{notifyType,jdbcType=VARCHAR},
+      </if>
+      <if test="schedSendTime != null">
+      	#{schedSendTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSmsMsgBatch" parameterType="List" >
+    insert into t_sms_message
+  	(mobile, sendContent, createTime, tempId, channel, notifyType)
+   	values
+   	<foreach collection="list" item="obj" index="index" separator=",">
+       (#{obj.mobile}, #{obj.sendContent}, #{obj.createTime}, #{obj.tempId}, #{obj.channel}, #{obj.notifyType})
+     </foreach>
+  </insert>
+  
+  
+   <select id="selectSelectiveMap" resultType="Map" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_sms_message
+    where 1=1
+    <if test="mobile != null">
+    	AND mobile = #{mobile}
+    </if>
+    <if test="tempId != null">
+    	AND tempId = #{tempId}
+    </if>
+    <if test="channel != null">
+    	AND channel = #{channel}
+    </if>
+    <if test="notifyType != null">
+    	AND notifyType = #{notifyType}
+    </if>
+    <if test="schedSendTime != null">
+    	AND schedSendTime &gt;= #{schedSendTime,jdbcType=TIMESTAMP}
+    </if>
+  </select>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TSmsMessage" >
+    update t_sms_message
+    <set >
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="sendContent != null" >
+        sendContent = #{sendContent,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        createTime = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="channel != null">
+      	channel = #{channel,jdbcType=VARCHAR},
+      </if>
+      <if test="notifyType != null">
+      	notifyType = #{notifyType,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TSmsMessage" >
+    update t_sms_message
+    set mobile = #{mobile,jdbcType=VARCHAR},
+      sendContent = #{sendContent,jdbcType=VARCHAR},
+      createTime = #{createTime,jdbcType=TIMESTAMP},
+      channel = #{channel,jdbctype=VARCHAR},
+      notifyType = #{notifyType,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

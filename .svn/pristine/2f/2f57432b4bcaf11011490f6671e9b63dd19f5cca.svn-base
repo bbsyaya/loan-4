@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="TMessageMapper">
+                  
+    <resultMap type="com.hrbb.loan.pos.dao.entity.TMessage" id="messageResult">	
+        <result column="id" property="id"  jdbcType="INTEGER"/>
+		<result column="messageType" property="messageType"/>
+		<result column="messageInfo" property="messageInfo"/>
+		<result column="messageAddi" property="messageAddi"/>
+		<result column="custId" property="custId"/>
+		<result column="loanId" property="loanId"/>
+		<result column="contNo" property="contNo"/>
+		<result column="listId" property="listId"/>
+		<result column="loanAcNo" property="loanAcNo"/>
+		<result column="createTime" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="timerDate" property="timerDate" jdbcType="DATE"/>
+		<result column="stdshNo" property="stdshNo"/>
+		<result column="stdMerNo" property="stdMerNo"/>
+        <result column="sendTime" property="sendTime" jdbcType="TIMESTAMP"/>
+		<result column="channel" property="channel"/>
+		<result column="inChannelKind" property="inChannelKind"/>
+	</resultMap>
+	<insert id="insert">
+		insert into t_message (messageType, messageInfo, messageAddi, custId, loanId, contNo, listId, loanAcNo,
+		createTime, timerDate, stdshNo, stdMerNo, channel, inChannelKind) 
+		 values(#{messageType}, #{messageInfo}, #{messageAddi}, #{custId}, #{loanId}, #{contNo}, #{listId},#{loanAcNo},
+		now(), #{timerDate}, #{stdshNo}, #{stdMerNo}, #{channel}, #{inChannelKind})
+	</insert>
+
+	<!-- 根据ID删除 -->
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from t_message
+		where id = #{id}
+	</delete>
+
+	<select id="selectAll" resultMap="messageResult">
+		select 
+		id, messageType, messageInfo, messageAddi, custId, loanId, contNo, listId, loanAcNo,
+		timerDate, stdshNo, stdMerNo, sendTime, channel, inChannelKind
+		from t_message
+		where (timerDate is null OR ( timerDate is not null AND now() > timerDate ))
+	</select>
+	
+	<insert id="insertSelectiveMapBatch" parameterType="List" >
+   	insert into t_message (messageType, messageInfo, messageAddi, custId, loanId, contNo, listId, loanAcNo,
+		 timerDate, stdshNo, stdMerNo, channel, inChannelKind) 
+		 values
+   	<foreach collection="list" item="obj" index="index" separator=",">
+       (#{obj.messageType}, #{obj.messageInfo}, #{obj.messageAddi}, #{obj.custId}, #{obj.loanId}, #{obj.contNo}, #{obj.listId},#{obj.loanAcNo},
+		#{obj.timerDate}, #{obj.stdshno}, #{obj.stdmerno}, #{obj.channel}, #{obj.inChannelKind})
+     </foreach>
+  </insert>
+  
+  <select id="selectByMap" resultMap="messageResult" parameterType="map">
+		select 
+		id, messageType, messageInfo, messageAddi, custId, loanId, contNo, listId, loanAcNo,
+		timerDate, stdshNo, stdMerNo, sendTime, channel, inChannelKind
+		from t_message
+		where 1=1
+		<if test="id != null" >
+        	and id = #{id,jdbcType=INTEGER}
+       	</if>
+       	<if test="channel != null" >
+       	 	and channel = #{channel,jdbcType=VARCHAR}
+       	</if>
+       	<if test="channel != null" >
+       	 	and inChannelKind = #{inChannelKind,jdbcType=VARCHAR}
+       	</if>
+	</select>	
+</mapper>

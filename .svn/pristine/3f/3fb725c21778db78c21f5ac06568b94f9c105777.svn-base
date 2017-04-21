@@ -1,0 +1,57 @@
+package com.hrbb.loan.pos.dao.entity;
+
+public class TActivityDimInfo {
+    private Integer id;
+
+    private String dimenSql;
+
+    private String dimName;
+    
+    private String actFlag;
+    
+    private String dimParamType;
+    
+    
+    
+    
+
+    public String getDimParamType() {
+		return dimParamType;
+	}
+
+	public void setDimParamType(String dimParamType) {
+		this.dimParamType = dimParamType;
+	}
+
+	public String getActFlag() {
+		return actFlag;
+	}
+
+	public void setActFlag(String actFlag) {
+		this.actFlag = actFlag;
+	}
+
+	public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getDimenSql() {
+        return dimenSql;
+    }
+
+    public void setDimenSql(String dimenSql) {
+        this.dimenSql = dimenSql == null ? null : dimenSql.trim();
+    }
+
+    public String getDimName() {
+        return dimName;
+    }
+
+    public void setDimName(String dimName) {
+        this.dimName = dimName == null ? null : dimName.trim();
+    }
+}

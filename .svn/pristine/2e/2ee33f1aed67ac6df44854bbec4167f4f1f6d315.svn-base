@@ -1,0 +1,74 @@
+package com.hrbb.loan.pos.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.hrbb.loan.pos.dao.TPaymentApplyApprovalDao;
+import com.hrbb.loan.pos.dao.entity.TPaymentApplyApproval;
+import com.hrbb.loan.pos.service.PaymentApplyApprovalService;
+@Service("payemntApplyApproval")
+public class PaymentApplyApprovalImpl implements PaymentApplyApprovalService {
+    
+    @Autowired
+    TPaymentApplyApprovalDao payemntApplyApprovalDao;
+
+    @Override
+    public TPaymentApplyApproval selectOneByPayApplyIdAndBeforeStatus(Map<String, Object> map) {
+       
+        return payemntApplyApprovalDao.selectOneByPayApplyIdAndBeforeStatus(map);
+    }
+
+    @Override
+    public int insert(TPaymentApplyApproval tp) {
+        return 0;
+    }
+
+    @Override
+    public int insertSelective(TPaymentApplyApproval tp) {
+        return payemntApplyApprovalDao.insertSelective(tp);
+    }
+
+    @Override
+    public int updateByPrimaryKeySelective(TPaymentApplyApproval tp) {
+        return 0;
+    }
+
+    @Override
+    public int updateByPrimaryKey(TPaymentApplyApproval tp) {
+        return 0;
+    }
+
+    @Override
+    public int update(TPaymentApplyApproval tp) {
+        return 0;
+    }
+
+    @Override
+    public int updateSelectiveMap(Map<String, Object> map) {
+        return payemntApplyApprovalDao.updateSelectiveMap(map);
+    }
+
+    @Override
+    public List<Map<String, Object>> queryPaymentApplyCurr(Map<String, Object> reqMap) {
+        return payemntApplyApprovalDao.queryPaymentApplyCurr(reqMap);
+    }
+
+    @Override
+    public Long countPaymentApplyCurr(Map<String, Object> reqMap) {
+        return payemntApplyApprovalDao.countPaymentApplyCurr(reqMap);
+    }
+    
+    @Override
+    public List<Map<String, Object>> queryPaymentApplyFinished(Map<String, Object> reqMap) {
+        return payemntApplyApprovalDao.queryPaymentApplyFinished(reqMap);
+    }
+
+    @Override
+    public Long countPaymentApplyFinished(Map<String, Object> reqMap) {
+        return payemntApplyApprovalDao.countPaymentApplyFinished(reqMap);
+    }
+
+}

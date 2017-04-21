@@ -1,0 +1,6 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+	<div title="工商信息" style="padding:20px;">
+	泡杯茶，静等~~
+	</div>

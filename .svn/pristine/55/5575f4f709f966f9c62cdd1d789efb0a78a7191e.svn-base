@@ -1,0 +1,233 @@
+package com.hrbb.loan.pos.dao.entity;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+
+public class TPaymentApplyTmp implements Serializable{
+    
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6407383067190770941L;
+
+	private String payApplyId;
+
+    private String contNo;
+
+    private String custId;
+
+    private String posCustId;
+
+    private BigDecimal payApplyAmt;
+
+    private String payApplyTerm;
+
+    private BigDecimal payApplyInterest;
+
+    private String returnType;
+
+    private String accNo;
+
+    private Date expectedDate;
+
+    private Date expectedEndDate;
+
+    private String applyMemo;
+
+    private Date applyDate;
+
+    private String status;
+
+    private String merchantNo;
+
+    private String merchantDesp;
+
+    private Date createDate;
+
+    private Date modifiedDate;
+
+    private String payChannel;
+
+    private String operId;
+
+    private Date lastApproveDate;
+
+    private String receiptFlag;
+
+    public String getPayApplyId() {
+        return payApplyId;
+    }
+
+    public void setPayApplyId(String payApplyId) {
+        this.payApplyId = payApplyId == null ? null : payApplyId.trim();
+    }
+
+    public String getContNo() {
+        return contNo;
+    }
+
+    public void setContNo(String contNo) {
+        this.contNo = contNo == null ? null : contNo.trim();
+    }
+
+    public String getCustId() {
+        return custId;
+    }
+
+    public void setCustId(String custId) {
+        this.custId = custId == null ? null : custId.trim();
+    }
+
+    public String getPosCustId() {
+        return posCustId;
+    }
+
+    public void setPosCustId(String posCustId) {
+        this.posCustId = posCustId == null ? null : posCustId.trim();
+    }
+
+    public BigDecimal getPayApplyAmt() {
+        return payApplyAmt;
+    }
+
+    public void setPayApplyAmt(BigDecimal payApplyAmt) {
+        this.payApplyAmt = payApplyAmt;
+    }
+
+    public String getPayApplyTerm() {
+        return payApplyTerm;
+    }
+
+    public void setPayApplyTerm(String payApplyTerm) {
+        this.payApplyTerm = payApplyTerm == null ? null : payApplyTerm.trim();
+    }
+
+    public BigDecimal getPayApplyInterest() {
+        return payApplyInterest;
+    }
+
+    public void setPayApplyInterest(BigDecimal payApplyInterest) {
+        this.payApplyInterest = payApplyInterest;
+    }
+
+    public String getReturnType() {
+        return returnType;
+    }
+
+    public void setReturnType(String returnType) {
+        this.returnType = returnType == null ? null : returnType.trim();
+    }
+
+    public String getAccNo() {
+        return accNo;
+    }
+
+    public void setAccNo(String accNo) {
+        this.accNo = accNo == null ? null : accNo.trim();
+    }
+
+    public Date getExpectedDate() {
+        return expectedDate;
+    }
+
+    public void setExpectedDate(Date expectedDate) {
+        this.expectedDate = expectedDate;
+    }
+
+    public Date getExpectedEndDate() {
+        return expectedEndDate;
+    }
+
+    public void setExpectedEndDate(Date expectedEndDate) {
+        this.expectedEndDate = expectedEndDate;
+    }
+
+    public String getApplyMemo() {
+        return applyMemo;
+    }
+
+    public void setApplyMemo(String applyMemo) {
+        this.applyMemo = applyMemo == null ? null : applyMemo.trim();
+    }
+
+    public Date getApplyDate() {
+        return applyDate;
+    }
+
+    public void setApplyDate(Date applyDate) {
+        this.applyDate = applyDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status == null ? null : status.trim();
+    }
+
+    public String getMerchantNo() {
+        return merchantNo;
+    }
+
+    public void setMerchantNo(String merchantNo) {
+        this.merchantNo = merchantNo == null ? null : merchantNo.trim();
+    }
+
+    public String getMerchantDesp() {
+        return merchantDesp;
+    }
+
+    public void setMerchantDesp(String merchantDesp) {
+        this.merchantDesp = merchantDesp == null ? null : merchantDesp.trim();
+    }
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    public Date getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(Date modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
+
+    public String getPayChannel() {
+        return payChannel;
+    }
+
+    public void setPayChannel(String payChannel) {
+        this.payChannel = payChannel == null ? null : payChannel.trim();
+    }
+
+    public String getOperId() {
+        return operId;
+    }
+
+    public void setOperId(String operId) {
+        this.operId = operId == null ? null : operId.trim();
+    }
+
+    public Date getLastApproveDate() {
+        return lastApproveDate;
+    }
+
+    public void setLastApproveDate(Date lastApproveDate) {
+        this.lastApproveDate = lastApproveDate;
+    }
+
+    public String getReceiptFlag() {
+        return receiptFlag;
+    }
+
+    public void setReceiptFlag(String receiptFlag) {
+        this.receiptFlag = receiptFlag == null ? null : receiptFlag.trim();
+    }
+}

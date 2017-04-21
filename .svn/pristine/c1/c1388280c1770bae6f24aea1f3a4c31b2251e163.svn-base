@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TAICPunishBreakInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TAICPunishBreakInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="posCustId" property="posCustId" jdbcType="VARCHAR" />
+    <result column="orderNo" property="orderNo" jdbcType="VARCHAR" />
+    <result column="caseCode" property="caseCode" jdbcType="VARCHAR" />
+    <result column="iNameClean" property="iNameClean" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="sexyClean" property="sexyClean" jdbcType="VARCHAR" />
+    <result column="ageClean" property="ageClean" jdbcType="VARCHAR" />
+    <result column="cardNum" property="cardNum" jdbcType="VARCHAR" />
+    <result column="ysFzd" property="ysFzd" jdbcType="VARCHAR" />
+    <result column="businessEntity" property="businessEntity" jdbcType="VARCHAR" />
+    <result column="regDateClean" property="regDateClean" jdbcType="VARCHAR" />
+    <result column="publishDateClean" property="publishDateClean" jdbcType="VARCHAR" />
+    <result column="courtName" property="courtName" jdbcType="VARCHAR" />
+    <result column="areaNameClean" property="areaNameClean" jdbcType="VARCHAR" />
+    <result column="gistId" property="gistId" jdbcType="VARCHAR" />
+    <result column="gistUnit" property="gistUnit" jdbcType="VARCHAR" />
+    <result column="duty" property="duty" jdbcType="VARCHAR" />
+    <result column="disruptTypeName" property="disruptTypeName" jdbcType="VARCHAR" />
+    <result column="performance" property="performance" jdbcType="VARCHAR" />
+    <result column="performedPart" property="performedPart" jdbcType="VARCHAR" />
+    <result column="unperformPart" property="unperformPart" jdbcType="VARCHAR" />
+    <result column="focusNumber" property="focusNumber" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, posCustId, orderNo, caseCode, iNameClean, type, sexyClean, ageClean, cardNum, 
+    ysFzd, businessEntity, regDateClean, publishDateClean, courtName, areaNameClean, 
+    gistId, gistUnit, duty, disruptTypeName, performance, performedPart, unperformPart, 
+    focusNumber, exitDate
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_punish_break_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectBySelectiveMap" resultType="Map" parameterType="Map">
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_punish_break_info
+    where orderNo = #{orderNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_aic_punish_break_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TAICPunishBreakInfo" >
+    insert into t_aic_punish_break_info (id, posCustId, orderNo, 
+      caseCode, iNameClean, type, 
+      sexyClean, ageClean, cardNum, 
+      ysFzd, businessEntity, regDateClean, 
+      publishDateClean, courtName, areaNameClean, 
+      gistId, gistUnit, duty, 
+      disruptTypeName, performance, performedPart, 
+      unperformPart, focusNumber)
+    values (#{id,jdbcType=INTEGER}, #{posCustId,jdbcType=VARCHAR}, #{orderNo,jdbcType=VARCHAR}, 
+      #{caseCode,jdbcType=VARCHAR}, #{iNameClean,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
+      #{sexyClean,jdbcType=VARCHAR}, #{ageClean,jdbcType=VARCHAR}, #{cardNum,jdbcType=VARCHAR}, 
+      #{ysFzd,jdbcType=VARCHAR}, #{businessEntity,jdbcType=VARCHAR}, #{regDateClean,jdbcType=VARCHAR}, 
+      #{publishDateClean,jdbcType=VARCHAR}, #{courtName,jdbcType=VARCHAR}, #{areaNameClean,jdbcType=VARCHAR}, 
+      #{gistId,jdbcType=VARCHAR}, #{gistUnit,jdbcType=VARCHAR}, #{duty,jdbcType=VARCHAR}, 
+      #{disruptTypeName,jdbcType=VARCHAR}, #{performance,jdbcType=VARCHAR}, #{performedPart,jdbcType=VARCHAR}, 
+      #{unperformPart,jdbcType=VARCHAR}, #{focusNumber,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICPunishBreakInfo" >
+    insert into t_aic_punish_break_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="orderNo != null" >
+        orderNo,
+      </if>
+      <if test="caseCode != null" >
+        caseCode,
+      </if>
+      <if test="iNameClean != null" >
+        iNameClean,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="sexyClean != null" >
+        sexyClean,
+      </if>
+      <if test="ageClean != null" >
+        ageClean,
+      </if>
+      <if test="cardNum != null" >
+        cardNum,
+      </if>
+      <if test="ysFzd != null" >
+        ysFzd,
+      </if>
+      <if test="businessEntity != null" >
+        businessEntity,
+      </if>
+      <if test="regDateClean != null" >
+        regDateClean,
+      </if>
+      <if test="publishDateClean != null" >
+        publishDateClean,
+      </if>
+      <if test="courtName != null" >
+        courtName,
+      </if>
+      <if test="areaNameClean != null" >
+        areaNameClean,
+      </if>
+      <if test="gistId != null" >
+        gistId,
+      </if>
+      <if test="gistUnit != null" >
+        gistUnit,
+      </if>
+      <if test="duty != null" >
+        duty,
+      </if>
+      <if test="disruptTypeName != null" >
+        disruptTypeName,
+      </if>
+      <if test="performance != null" >
+        performance,
+      </if>
+      <if test="performedPart != null" >
+        performedPart,
+      </if>
+      <if test="unperformPart != null" >
+        unperformPart,
+      </if>
+      <if test="focusNumber != null" >
+        focusNumber,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="caseCode != null" >
+        #{caseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="iNameClean != null" >
+        #{iNameClean,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="sexyClean != null" >
+        #{sexyClean,jdbcType=VARCHAR},
+      </if>
+      <if test="ageClean != null" >
+        #{ageClean,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNum != null" >
+        #{cardNum,jdbcType=VARCHAR},
+      </if>
+      <if test="ysFzd != null" >
+        #{ysFzd,jdbcType=VARCHAR},
+      </if>
+      <if test="businessEntity != null" >
+        #{businessEntity,jdbcType=VARCHAR},
+      </if>
+      <if test="regDateClean != null" >
+        #{regDateClean,jdbcType=VARCHAR},
+      </if>
+      <if test="publishDateClean != null" >
+        #{publishDateClean,jdbcType=VARCHAR},
+      </if>
+      <if test="courtName != null" >
+        #{courtName,jdbcType=VARCHAR},
+      </if>
+      <if test="areaNameClean != null" >
+        #{areaNameClean,jdbcType=VARCHAR},
+      </if>
+      <if test="gistId != null" >
+        #{gistId,jdbcType=VARCHAR},
+      </if>
+      <if test="gistUnit != null" >
+        #{gistUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="duty != null" >
+        #{duty,jdbcType=VARCHAR},
+      </if>
+      <if test="disruptTypeName != null" >
+        #{disruptTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="performance != null" >
+        #{performance,jdbcType=VARCHAR},
+      </if>
+      <if test="performedPart != null" >
+        #{performedPart,jdbcType=VARCHAR},
+      </if>
+      <if test="unperformPart != null" >
+        #{unperformPart,jdbcType=VARCHAR},
+      </if>
+      <if test="focusNumber != null" >
+        #{focusNumber,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="Map" >
+    insert into t_aic_punish_break_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="orderNo != null" >
+        orderNo,
+      </if>
+      <if test="caseCode != null" >
+        caseCode,
+      </if>
+      <if test="iNameClean != null" >
+        iNameClean,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="sexyClean != null" >
+        sexyClean,
+      </if>
+      <if test="ageClean != null" >
+        ageClean,
+      </if>
+      <if test="cardNum != null" >
+        cardNum,
+      </if>
+      <if test="ysFzd != null" >
+        ysFzd,
+      </if>
+      <if test="businessEntity != null" >
+        businessEntity,
+      </if>
+      <if test="regDateClean != null" >
+        regDateClean,
+      </if>
+      <if test="publishDateClean != null" >
+        publishDateClean,
+      </if>
+      <if test="courtName != null" >
+        courtName,
+      </if>
+      <if test="areaNameClean != null" >
+        areaNameClean,
+      </if>
+      <if test="gistId != null" >
+        gistId,
+      </if>
+      <if test="gistUnit != null" >
+        gistUnit,
+      </if>
+      <if test="duty != null" >
+        duty,
+      </if>
+      <if test="disruptTypeName != null" >
+        disruptTypeName,
+      </if>
+      <if test="performance != null" >
+        performance,
+      </if>
+      <if test="performedPart != null" >
+        performedPart,
+      </if>
+      <if test="unperformPart != null" >
+        unperformPart,
+      </if>
+      <if test="focusNumber != null" >
+        focusNumber,
+      </if>
+      <if test="exitDate != null">
+      	exitDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="caseCode != null" >
+        #{caseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="iNameClean != null" >
+        #{iNameClean,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="sexyClean != null" >
+        #{sexyClean,jdbcType=VARCHAR},
+      </if>
+      <if test="ageClean != null" >
+        #{ageClean,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNum != null" >
+        #{cardNum,jdbcType=VARCHAR},
+      </if>
+      <if test="ysFzd != null" >
+        #{ysFzd,jdbcType=VARCHAR},
+      </if>
+      <if test="businessEntity != null" >
+        #{businessEntity,jdbcType=VARCHAR},
+      </if>
+      <if test="regDateClean != null" >
+        #{regDateClean,jdbcType=VARCHAR},
+      </if>
+      <if test="publishDateClean != null" >
+        #{publishDateClean,jdbcType=VARCHAR},
+      </if>
+      <if test="courtName != null" >
+        #{courtName,jdbcType=VARCHAR},
+      </if>
+      <if test="areaNameClean != null" >
+        #{areaNameClean,jdbcType=VARCHAR},
+      </if>
+      <if test="gistId != null" >
+        #{gistId,jdbcType=VARCHAR},
+      </if>
+      <if test="gistUnit != null" >
+        #{gistUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="duty != null" >
+        #{duty,jdbcType=VARCHAR},
+      </if>
+      <if test="disruptTypeName != null" >
+        #{disruptTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="performance != null" >
+        #{performance,jdbcType=VARCHAR},
+      </if>
+      <if test="performedPart != null" >
+        #{performedPart,jdbcType=VARCHAR},
+      </if>
+      <if test="unperformPart != null" >
+        #{unperformPart,jdbcType=VARCHAR},
+      </if>
+      <if test="focusNumber != null" >
+        #{focusNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="exitDate != null">
+      	#{exitDate},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICPunishBreakInfo" >
+    update t_aic_punish_break_info
+    <set >
+      <if test="posCustId != null" >
+        posCustId = #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        orderNo = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="caseCode != null" >
+        caseCode = #{caseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="iNameClean != null" >
+        iNameClean = #{iNameClean,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="sexyClean != null" >
+        sexyClean = #{sexyClean,jdbcType=VARCHAR},
+      </if>
+      <if test="ageClean != null" >
+        ageClean = #{ageClean,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNum != null" >
+        cardNum = #{cardNum,jdbcType=VARCHAR},
+      </if>
+      <if test="ysFzd != null" >
+        ysFzd = #{ysFzd,jdbcType=VARCHAR},
+      </if>
+      <if test="businessEntity != null" >
+        businessEntity = #{businessEntity,jdbcType=VARCHAR},
+      </if>
+      <if test="regDateClean != null" >
+        regDateClean = #{regDateClean,jdbcType=VARCHAR},
+      </if>
+      <if test="publishDateClean != null" >
+        publishDateClean = #{publishDateClean,jdbcType=VARCHAR},
+      </if>
+      <if test="courtName != null" >
+        courtName = #{courtName,jdbcType=VARCHAR},
+      </if>
+      <if test="areaNameClean != null" >
+        areaNameClean = #{areaNameClean,jdbcType=VARCHAR},
+      </if>
+      <if test="gistId != null" >
+        gistId = #{gistId,jdbcType=VARCHAR},
+      </if>
+      <if test="gistUnit != null" >
+        gistUnit = #{gistUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="duty != null" >
+        duty = #{duty,jdbcType=VARCHAR},
+      </if>
+      <if test="disruptTypeName != null" >
+        disruptTypeName = #{disruptTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="performance != null" >
+        performance = #{performance,jdbcType=VARCHAR},
+      </if>
+      <if test="performedPart != null" >
+        performedPart = #{performedPart,jdbcType=VARCHAR},
+      </if>
+      <if test="unperformPart != null" >
+        unperformPart = #{unperformPart,jdbcType=VARCHAR},
+      </if>
+      <if test="focusNumber != null" >
+        focusNumber = #{focusNumber,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TAICPunishBreakInfo" >
+    update t_aic_punish_break_info
+    set posCustId = #{posCustId,jdbcType=VARCHAR},
+      orderNo = #{orderNo,jdbcType=VARCHAR},
+      caseCode = #{caseCode,jdbcType=VARCHAR},
+      iNameClean = #{iNameClean,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR},
+      sexyClean = #{sexyClean,jdbcType=VARCHAR},
+      ageClean = #{ageClean,jdbcType=VARCHAR},
+      cardNum = #{cardNum,jdbcType=VARCHAR},
+      ysFzd = #{ysFzd,jdbcType=VARCHAR},
+      businessEntity = #{businessEntity,jdbcType=VARCHAR},
+      regDateClean = #{regDateClean,jdbcType=VARCHAR},
+      publishDateClean = #{publishDateClean,jdbcType=VARCHAR},
+      courtName = #{courtName,jdbcType=VARCHAR},
+      areaNameClean = #{areaNameClean,jdbcType=VARCHAR},
+      gistId = #{gistId,jdbcType=VARCHAR},
+      gistUnit = #{gistUnit,jdbcType=VARCHAR},
+      duty = #{duty,jdbcType=VARCHAR},
+      disruptTypeName = #{disruptTypeName,jdbcType=VARCHAR},
+      performance = #{performance,jdbcType=VARCHAR},
+      performedPart = #{performedPart,jdbcType=VARCHAR},
+      unperformPart = #{unperformPart,jdbcType=VARCHAR},
+      focusNumber = #{focusNumber,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

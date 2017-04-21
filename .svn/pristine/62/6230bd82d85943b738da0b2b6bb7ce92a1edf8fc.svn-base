@@ -1,0 +1,139 @@
+package com.hrbb.loan.imgdata.validate;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+
+import com.hrbb.sh.framework.ftp.HttpClient;
+import com.hrbb.sh.framework.ftp.ParamReqBean;
+import com.hrbb.sh.framework.ftp.ParamResBean;
+
+
+public class ImageValidate {
+	private static Logger logger = Logger.getLogger(ImageValidate.class);
+	private List<String> fileList;
+	private Map<String, String> dataMap;
+	private String marrSign;
+	
+	/**
+	 * 检查影像件资料是否欠缺
+	 * @param loanId
+	 * @return
+	 */
+	public Map<String,String> checkImage(String loanId, String instNo, String marrSign){
+		this.dataMap = new HashMap<String, String>();
+		ParamReqBean paramReqBean = new ParamReqBean();
+		this.fileList = new ArrayList<String>();
+		this.marrSign = marrSign;
+		paramReqBean.setApplyNo(loanId);	//流水号
+		paramReqBean.setVersion("1.0.0");	//版本号
+		paramReqBean.setBizType("0001");	//业务类型
+		paramReqBean.setTransType("0002");	//交易类型
+		paramReqBean.setKeyValue("LocalSubFolderNameDef",loanId);	//流水号
+		paramReqBean.setKeyValue("InstNo", instNo);	//机构类型
+		ParamResBean paramResBean = HttpClient.send(paramReqBean);
+		if (null==paramResBean.getFileNames()||paramResBean.getFileNames().length==0) {
+			logger.error("获取文件名列表失败，资料尚未下载");
+			dataMap.put("RespCode", "001");
+			dataMap.put("RespMsg", "获取文件名列表失败，资料尚未下载");
+			return dataMap;
+		}
+		String [] fileNames = paramResBean.getFileNames();
+		for (int i = 0; i < fileNames.length; i++) {
+			String imgCode = fileNames[i].substring(fileNames[i].length()-11, fileNames[i].length()-7);
+			fileList.add(imgCode);
+		}
+		validateImg(fileList);
+		return dataMap;
+	}
+	
+	/**
+	 * 影像件类型校验
+	 * @param fileList
+	 * @return
+	 */
+	private void validateImg(List<String> fileList){
+		StringBuffer sBuffer = new StringBuffer();
+		StringBuffer mBuffer = new StringBuffer();
+		if (!fileList.contains("0101")) {
+			sBuffer.append("0101");
+			mBuffer.append("申请表未上传");
+		}
+		if (!fileList.contains("0102")) {
+			if (sBuffer.length()!=0) {
+				sBuffer.append("|");
+				mBuffer.append(",");
+			}
+			sBuffer.append("0102");
+			mBuffer.append("申请人身份证正面未上传");
+		}
+		if (!fileList.contains("0103")) {
+			if (sBuffer.length()!=0) {
+				sBuffer.append("|");
+				mBuffer.append(",");
+			}
+			sBuffer.append("0103");
+			mBuffer.append("申请人身份证反面未上传");
+		}
+		if (!fileList.contains("0107")) {
+			if (sBuffer.length()!=0) {
+				sBuffer.append("|");
+				mBuffer.append(",");
+			}
+			sBuffer.append("0107");
+			mBuffer.append("营业执照未上传");
+		}
+		if (!fileList.contains("0108")) {
+			if (sBuffer.length()!=0) {
+				sBuffer.append("|");
+				mBuffer.append(",");
+			}
+			sBuffer.append("0108");
+			mBuffer.append("营业场所门口照片未上传");
+		}
+		if (!fileList.contains("0109")) {
+			if (sBuffer.length()!=0) {
+				sBuffer.append("|");
+				mBuffer.append(",");
+			}
+			sBuffer.append("0109");
+			mBuffer.append("营业场所门内照片未上传");
+		}
+		if ("20".equals(marrSign)) {
+			if (!fileList.contains("0104")) {
+				if (sBuffer.length()!=0) {
+					sBuffer.append("|");
+					mBuffer.append(",");
+				}
+				sBuffer.append("0104");
+				mBuffer.append("配偶身份证正面照片未上传");
+			}
+			if (!fileList.contains("0105")) {
+				if (sBuffer.length()!=0) {
+					sBuffer.append("|");
+					mBuffer.append(",");
+				}
+				sBuffer.append("0105");
+				mBuffer.append("配偶身份证照片反面未上传");
+			}
+			if (!fileList.contains("0106")) {
+				if (sBuffer.length()!=0) {
+					sBuffer.append("|");
+					mBuffer.append(",");
+				}
+				sBuffer.append("0106");
+				mBuffer.append("结婚证照片未上传");
+			}
+		}
+		if (sBuffer.length()==0) {
+			dataMap.put("RespCode", "000");
+			dataMap.put("RespMsg", "影像资料符合标准");
+		} else {
+			dataMap.put("RespCode", sBuffer.toString());
+			dataMap.put("RespMsg", mBuffer.toString());
+		}
+	}
+}

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TBdExecutorMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TBdExecutor" >
+    <id column="menberId" property="menberId" jdbcType="INTEGER" />
+    <result column="menberName" property="menberName" jdbcType="VARCHAR" />
+    <result column="certNo" property="certNo" jdbcType="VARCHAR" />
+    <result column="birthDate" property="birthDate" jdbcType="DATE" />
+    <result column="sex" property="sex" jdbcType="VARCHAR" />
+    <result column="contactNo" property="contactNo" jdbcType="VARCHAR" />
+    <result column="belongOrg" property="belongOrg" jdbcType="INTEGER" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="active" property="active" jdbcType="CHAR" />
+    <result column="modifyTime" property="modifyTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    menberId, menberName, certNo, birthDate, sex, contactNo, belongOrg, email, address, 
+    remark, active, modifyTime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_bd_executor
+    where menberId = #{menberId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_bd_executor
+    where menberId = #{menberId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TBdExecutor" >
+    insert into t_bd_executor (menberId, menberName, certNo, 
+      birthDate, sex, contactNo, 
+      belongOrg, email, address, 
+      remark, active, modifyTime
+      )
+    values (#{menberId,jdbcType=INTEGER}, #{menberName,jdbcType=VARCHAR}, #{certNo,jdbcType=VARCHAR}, 
+      #{birthDate,jdbcType=DATE}, #{sex,jdbcType=VARCHAR}, #{contactNo,jdbcType=VARCHAR}, 
+      #{belongOrg,jdbcType=INTEGER}, #{email,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR}, #{active,jdbcType=CHAR}, #{modifyTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TBdExecutor" >
+    insert into t_bd_executor
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="menberId != null" >
+        menberId,
+      </if>
+      <if test="menberName != null" >
+        menberName,
+      </if>
+      <if test="certNo != null" >
+        certNo,
+      </if>
+      <if test="birthDate != null" >
+        birthDate,
+      </if>
+      <if test="sex != null" >
+        sex,
+      </if>
+      <if test="contactNo != null" >
+        contactNo,
+      </if>
+      <if test="belongOrg != null" >
+        belongOrg,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="active != null" >
+        active,
+      </if>
+      <if test="modifyTime != null" >
+        modifyTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="menberId != null" >
+        #{menberId,jdbcType=INTEGER},
+      </if>
+      <if test="menberName != null" >
+        #{menberName,jdbcType=VARCHAR},
+      </if>
+      <if test="certNo != null" >
+        #{certNo,jdbcType=VARCHAR},
+      </if>
+      <if test="birthDate != null" >
+        #{birthDate,jdbcType=DATE},
+      </if>
+      <if test="sex != null" >
+        #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="contactNo != null" >
+        #{contactNo,jdbcType=VARCHAR},
+      </if>
+      <if test="belongOrg != null" >
+        #{belongOrg,jdbcType=INTEGER},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="active != null" >
+        #{active,jdbcType=CHAR},
+      </if>
+      <if test="modifyTime != null" >
+        #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TBdExecutor" >
+    update t_bd_executor
+    <set >
+      <if test="menberName != null" >
+        menberName = #{menberName,jdbcType=VARCHAR},
+      </if>
+      <if test="certNo != null" >
+        certNo = #{certNo,jdbcType=VARCHAR},
+      </if>
+      <if test="birthDate != null" >
+        birthDate = #{birthDate,jdbcType=DATE},
+      </if>
+      <if test="sex != null" >
+        sex = #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="contactNo != null" >
+        contactNo = #{contactNo,jdbcType=VARCHAR},
+      </if>
+      <if test="belongOrg != null" >
+        belongOrg = #{belongOrg,jdbcType=INTEGER},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="active != null" >
+        active = #{active,jdbcType=CHAR},
+      </if>
+      <if test="modifyTime != null" >
+        modifyTime = #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where menberId = #{menberId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TBdExecutor" >
+    update t_bd_executor
+    set menberName = #{menberName,jdbcType=VARCHAR},
+      certNo = #{certNo,jdbcType=VARCHAR},
+      birthDate = #{birthDate,jdbcType=DATE},
+      sex = #{sex,jdbcType=VARCHAR},
+      contactNo = #{contactNo,jdbcType=VARCHAR},
+      belongOrg = #{belongOrg,jdbcType=INTEGER},
+      email = #{email,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      active = #{active,jdbcType=CHAR},
+      modifyTime = #{modifyTime,jdbcType=TIMESTAMP}
+    where menberId = #{menberId,jdbcType=INTEGER}
+  </update>
+  <select id="selectListBySelective" resultMap="BaseResultMap" parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from t_bd_executor
+		where 1=1
+		AND belongOrg = #{belongOrg}
+		<if test="startPage != null">
+			LIMIT #{startPage}, #{limit}
+		</if>
+	</select>
+
+	<select id="countListBySelective" resultType="Long" parameterType="map">
+		select count(*)
+		from t_bd_executor
+		where 1=1
+		AND belongOrg = #{belongOrg}
+	</select>
+  
+</mapper>

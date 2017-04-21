@@ -1,0 +1,523 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRiskCheckResultMapper" >
+  <resultMap id="BaseresultMap" type="com.hrbb.loan.pos.dao.entity.TRiskCheckResult" >
+    <id column="loanId" property="loanId" jdbcType="VARCHAR" />
+    <result column="result01" property="result01" jdbcType="VARCHAR" />
+    <result column="result02" property="result02" jdbcType="VARCHAR" />
+    <result column="result03" property="result03" jdbcType="VARCHAR" />
+    <result column="result04" property="result04" jdbcType="VARCHAR" />
+    <result column="result05" property="result05" jdbcType="VARCHAR" />
+    <result column="result06" property="result06" jdbcType="VARCHAR" />
+    <result column="result07" property="result07" jdbcType="VARCHAR" />
+    <result column="result08" property="result08" jdbcType="DECIMAL" />
+    <result column="result09" property="result09" jdbcType="DECIMAL" />
+    <result column="result10" property="result10" jdbcType="VARCHAR" />
+    <result column="result11" property="result11" jdbcType="CHAR" />
+    <result column="result12" property="result12" jdbcType="INTEGER" />
+    <result column="result13" property="result13" jdbcType="VARCHAR" />
+    <result column="result14" property="result14" jdbcType="CHAR" />
+    <result column="result15" property="result15" jdbcType="DECIMAL" />
+    <result column="result16" property="result16" jdbcType="DECIMAL" />
+    <result column="result17" property="result17" jdbcType="DECIMAL" />
+    <result column="result18" property="result18" jdbcType="DECIMAL" />
+    <result column="result19" property="result19" jdbcType="DECIMAL" />
+    <result column="result20" property="result20" jdbcType="DECIMAL" />
+    <result column="result21" property="result21" jdbcType="DECIMAL" />
+    <result column="result22" property="result22" jdbcType="DECIMAL" />
+    <result column="result23" property="result23" jdbcType="DECIMAL" />
+    <result column="result24" property="result24" jdbcType="DECIMAL" />
+    <result column="result25" property="result25" jdbcType="DECIMAL" />
+    <result column="result26" property="result26" jdbcType="INTEGER" />
+    <result column="result27" property="result27" jdbcType="VARCHAR" />
+    <result column="result28" property="result28" jdbcType="DECIMAL" />
+    <result column="result29" property="result29" jdbcType="VARCHAR" />
+    <result column="result30" property="result30" jdbcType="VARCHAR" />
+    <result column="result31" property="result31" jdbcType="VARCHAR" />
+    <result column="result32" property="result32" jdbcType="VARCHAR" />
+    <result column="result33" property="result33" jdbcType="VARCHAR" />
+    <result column="result34" property="result34" jdbcType="DECIMAL" />
+    <result column="result35" property="result35" jdbcType="DECIMAL" />
+    <result column="result36" property="result36" jdbcType="DECIMAL" />
+    <result column="result37" property="result37" jdbcType="INTEGER" />
+    <result column="result38" property="result38" jdbcType="DECIMAL" />
+    <result column="result39" property="result39" jdbcType="INTEGER" />
+    <result column="result40" property="result40" jdbcType="DECIMAL" />
+    <result column="result41" property="result41" jdbcType="DECIMAL" />
+    <result column="result42" property="result42" jdbcType="DECIMAL" />
+    <result column="version" property="version" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    loanId, result01, result02, result03, result04, result05, result06, result07, result08, 
+    result09, result10, result11, result12, result13, result14, result15, result16, result17, 
+    result18, result19, result20, result21, result22, result23, result24, result25, result26, 
+    result27, result28, result29, result30, result31, result32, result33, result34, result35,
+    result36, result37, result38, result39, result40, result41, result42
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseresultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_risk_check_result
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_risk_check_result
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TRiskCheckResult" >
+    insert into t_risk_check_result (loanId, result01, result02, 
+      result03, result04, result05, 
+      result06, result07, result08, 
+      result09, result10, result11, 
+      result12, result13, result14, 
+      result15, result16, result17, 
+      result18, result19, result20, 
+      result21, result22, result23, 
+      result24, result25, result26, 
+      result27, result28, result29, 
+      result30, result31, result32, 
+      result33, result34, result35,
+      result36, result37, result38, 
+      result39, result40, result41, 
+      result42)
+    values (#{loanId,jdbcType=VARCHAR}, #{result01,jdbcType=VARCHAR}, #{result02,jdbcType=VARCHAR}, 
+      #{result03,jdbcType=VARCHAR}, #{result04,jdbcType=VARCHAR}, #{result05,jdbcType=VARCHAR}, 
+      #{result06,jdbcType=VARCHAR}, #{result07,jdbcType=VARCHAR}, #{result08,jdbcType=DECIMAL}, 
+      #{result09,jdbcType=DECIMAL}, #{result10,jdbcType=VARCHAR}, #{result11,jdbcType=CHAR}, 
+      #{result12,jdbcType=INTEGER}, #{result13,jdbcType=VARCHAR}, #{result14,jdbcType=CHAR}, 
+      #{result15,jdbcType=DECIMAL}, #{result16,jdbcType=DECIMAL}, #{result17,jdbcType=DECIMAL}, 
+      #{result18,jdbcType=DECIMAL}, #{result19,jdbcType=DECIMAL}, #{result20,jdbcType=DECIMAL}, 
+      #{result21,jdbcType=DECIMAL}, #{result22,jdbcType=DECIMAL}, #{result23,jdbcType=DECIMAL}, 
+      #{result24,jdbcType=DECIMAL}, #{result25,jdbcType=DECIMAL}, #{result26,jdbcType=INTEGER}, 
+      #{result27,jdbcType=VARCHAR}, #{result28,jdbcType=DECIMAL}, #{result29,jdbcType=VARCHAR}, 
+      #{result30,jdbcType=VARCHAR}, #{result31,jdbcType=VARCHAR}, #{result32,jdbcType=VARCHAR}, 
+      #{result33,jdbcType=VARCHAR}, #{result34,jdbcType=DECIMAL}, #{result35,jdbcType=DECIMAL}, 
+      #{result36,jdbcType=DECIMAL}, #{result37,jdbcType=INTEGER}, #{result38,jdbcType=DECIMAL}, 
+      #{result39,jdbcType=INTEGER}, #{result40,jdbcType=DECIMAL}, #{result41,jdbcType=DECIMAL}, 
+      #{result42,jdbcType=DECIMAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TRiskCheckResult" >
+    insert into t_risk_check_result
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="loanId != null" >
+        loanId,
+      </if>
+      <if test="result01 != null" >
+        result01,
+      </if>
+      <if test="result02 != null" >
+        result02,
+      </if>
+      <if test="result03 != null" >
+        result03,
+      </if>
+      <if test="result04 != null" >
+        result04,
+      </if>
+      <if test="result05 != null" >
+        result05,
+      </if>
+      <if test="result06 != null" >
+        result06,
+      </if>
+      <if test="result07 != null" >
+        result07,
+      </if>
+      <if test="result08 != null" >
+        result08,
+      </if>
+      <if test="result09 != null" >
+        result09,
+      </if>
+      <if test="result10 != null" >
+        result10,
+      </if>
+      <if test="result11 != null" >
+        result11,
+      </if>
+      <if test="result12 != null" >
+        result12,
+      </if>
+      <if test="result13 != null" >
+        result13,
+      </if>
+      <if test="result14 != null" >
+        result14,
+      </if>
+      <if test="result15 != null" >
+        result15,
+      </if>
+      <if test="result16 != null" >
+        result16,
+      </if>
+      <if test="result17 != null" >
+        result17,
+      </if>
+      <if test="result18 != null" >
+        result18,
+      </if>
+      <if test="result19 != null" >
+        result19,
+      </if>
+      <if test="result20 != null" >
+        result20,
+      </if>
+      <if test="result21 != null" >
+        result21,
+      </if>
+      <if test="result22 != null" >
+        result22,
+      </if>
+      <if test="result23 != null" >
+        result23,
+      </if>
+      <if test="result24 != null" >
+        result24,
+      </if>
+      <if test="result25 != null" >
+        result25,
+      </if>
+      <if test="result26 != null" >
+        result26,
+      </if>
+      <if test="result27 != null" >
+        result27,
+      </if>
+      <if test="result28 != null" >
+        result28,
+      </if>
+      <if test="result29 != null" >
+        result29,
+      </if>
+      <if test="result30 != null" >
+        result30,
+      </if>
+      <if test="result31 != null" >
+        result31,
+      </if>
+      <if test="result32 != null" >
+        result32,
+      </if>
+      <if test="result33 != null" >
+        result33,
+      </if>
+      <if test="result34 != null" >
+        result34,
+      </if>
+      <if test="result35 != null" >
+        result35,
+      </if>
+      <if test="result36 != null" >
+        result36,
+      </if>
+      <if test="result37 != null" >
+        result37,
+      </if>
+      <if test="result38 != null" >
+        result38,
+      </if>
+      <if test="result39 != null" >
+        result39,
+      </if>
+      <if test="result40 != null" >
+        result40,
+      </if>
+      <if test="result41 != null" >
+        result41,
+      </if>
+      <if test="result42 != null" >
+        result42,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="loanId != null" >
+        #{loanId,jdbcType=VARCHAR},
+      </if>
+      <if test="result01 != null" >
+        #{result01,jdbcType=VARCHAR},
+      </if>
+      <if test="result02 != null" >
+        #{result02,jdbcType=VARCHAR},
+      </if>
+      <if test="result03 != null" >
+        #{result03,jdbcType=VARCHAR},
+      </if>
+      <if test="result04 != null" >
+        #{result04,jdbcType=VARCHAR},
+      </if>
+      <if test="result05 != null" >
+        #{result05,jdbcType=VARCHAR},
+      </if>
+      <if test="result06 != null" >
+        #{result06,jdbcType=VARCHAR},
+      </if>
+      <if test="result07 != null" >
+        #{result07,jdbcType=VARCHAR},
+      </if>
+      <if test="result08 != null" >
+        #{result08,jdbcType=DECIMAL},
+      </if>
+      <if test="result09 != null" >
+        #{result09,jdbcType=DECIMAL},
+      </if>
+      <if test="result10 != null" >
+        #{result10,jdbcType=VARCHAR},
+      </if>
+      <if test="result11 != null" >
+        #{result11,jdbcType=CHAR},
+      </if>
+      <if test="result12 != null" >
+        #{result12,jdbcType=INTEGER},
+      </if>
+      <if test="result13 != null" >
+        #{result13,jdbcType=VARCHAR},
+      </if>
+      <if test="result14 != null" >
+        #{result14,jdbcType=CHAR},
+      </if>
+      <if test="result15 != null" >
+        #{result15,jdbcType=DECIMAL},
+      </if>
+      <if test="result16 != null" >
+        #{result16,jdbcType=DECIMAL},
+      </if>
+      <if test="result17 != null" >
+        #{result17,jdbcType=DECIMAL},
+      </if>
+      <if test="result18 != null" >
+        #{result18,jdbcType=DECIMAL},
+      </if>
+      <if test="result19 != null" >
+        #{result19,jdbcType=DECIMAL},
+      </if>
+      <if test="result20 != null" >
+        #{result20,jdbcType=DECIMAL},
+      </if>
+      <if test="result21 != null" >
+        #{result21,jdbcType=DECIMAL},
+      </if>
+      <if test="result22 != null" >
+        #{result22,jdbcType=DECIMAL},
+      </if>
+      <if test="result23 != null" >
+        #{result23,jdbcType=DECIMAL},
+      </if>
+      <if test="result24 != null" >
+        #{result24,jdbcType=DECIMAL},
+      </if>
+      <if test="result25 != null" >
+        #{result25,jdbcType=DECIMAL},
+      </if>
+      <if test="result26 != null" >
+        #{result26,jdbcType=INTEGER},
+      </if>
+      <if test="result27 != null" >
+        #{result27,jdbcType=VARCHAR},
+      </if>
+      <if test="result28 != null" >
+        #{result28,jdbcType=DECIMAL},
+      </if>
+      <if test="result29 != null" >
+        #{result29,jdbcType=VARCHAR},
+      </if>
+      <if test="result30 != null" >
+        #{result30,jdbcType=VARCHAR},
+      </if>
+      <if test="result31 != null" >
+        #{result31,jdbcType=VARCHAR},
+      </if>
+      <if test="result32 != null" >
+        #{result32,jdbcType=VARCHAR},
+      </if>
+      <if test="result33 != null" >
+        #{result33,jdbcType=VARCHAR},
+      </if>
+      <if test="result34 != null" >
+        #{result34,jdbcType=DECIMAL},
+      </if>
+      <if test="result35 != null" >
+        #{result35,jdbcType=DECIMAL},
+      </if>
+      <if test="result36 != null" >
+        #{result36,jdbcType=DECIMAL},
+      </if>
+      <if test="result37 != null" >
+        #{result37,jdbcType=INTEGER},
+      </if>
+      <if test="result38 != null" >
+        #{result38,jdbcType=DECIMAL},
+      </if>
+      <if test="result39 != null" >
+        #{result39,jdbcType=INTEGER},
+      </if>
+      <if test="result40 != null" >
+        #{result40,jdbcType=DECIMAL},
+      </if>
+      <if test="result41 != null" >
+        #{result41,jdbcType=DECIMAL},
+      </if>
+      <if test="result42 != null" >
+        #{result42,jdbcType=DECIMAL},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TRiskCheckResult" >
+    update t_risk_check_result
+    <set >
+      <if test="result01 != null" >
+        result01 = #{result01,jdbcType=VARCHAR},
+      </if>
+      <if test="result02 != null" >
+        result02 = #{result02,jdbcType=VARCHAR},
+      </if>
+      <if test="result03 != null" >
+        result03 = #{result03,jdbcType=VARCHAR},
+      </if>
+      <if test="result04 != null" >
+        result04 = #{result04,jdbcType=VARCHAR},
+      </if>
+      <if test="result05 != null" >
+        result05 = #{result05,jdbcType=VARCHAR},
+      </if>
+      <if test="result06 != null" >
+        result06 = #{result06,jdbcType=VARCHAR},
+      </if>
+      <if test="result07 != null" >
+        result07 = #{result07,jdbcType=VARCHAR},
+      </if>
+      <if test="result08 != null" >
+        result08 = #{result08,jdbcType=DECIMAL},
+      </if>
+      <if test="result09 != null" >
+        result09 = #{result09,jdbcType=DECIMAL},
+      </if>
+      <if test="result10 != null" >
+        result10 = #{result10,jdbcType=VARCHAR},
+      </if>
+      <if test="result11 != null" >
+        result11 = #{result11,jdbcType=CHAR},
+      </if>
+      <if test="result12 != null" >
+        result12 = #{result12,jdbcType=INTEGER},
+      </if>
+      <if test="result13 != null" >
+        result13 = #{result13,jdbcType=VARCHAR},
+      </if>
+      <if test="result14 != null" >
+        result14 = #{result14,jdbcType=CHAR},
+      </if>
+      <if test="result15 != null" >
+        result15 = #{result15,jdbcType=DECIMAL},
+      </if>
+      <if test="result16 != null" >
+        result16 = #{result16,jdbcType=DECIMAL},
+      </if>
+      <if test="result17 != null" >
+        result17 = #{result17,jdbcType=DECIMAL},
+      </if>
+      <if test="result18 != null" >
+        result18 = #{result18,jdbcType=DECIMAL},
+      </if>
+      <if test="result19 != null" >
+        result19 = #{result19,jdbcType=DECIMAL},
+      </if>
+      <if test="result20 != null" >
+        result20 = #{result20,jdbcType=DECIMAL},
+      </if>
+      <if test="result21 != null" >
+        result21 = #{result21,jdbcType=DECIMAL},
+      </if>
+      <if test="result22 != null" >
+        result22 = #{result22,jdbcType=DECIMAL},
+      </if>
+      <if test="result23 != null" >
+        result23 = #{result23,jdbcType=DECIMAL},
+      </if>
+      <if test="result24 != null" >
+        result24 = #{result24,jdbcType=DECIMAL},
+      </if>
+      <if test="result25 != null" >
+        result25 = #{result25,jdbcType=DECIMAL},
+      </if>
+      <if test="result26 != null" >
+        result26 = #{result26,jdbcType=INTEGER},
+      </if>
+      <if test="result27 != null" >
+        result27 = #{result27,jdbcType=VARCHAR},
+      </if>
+      <if test="result28 != null" >
+        result28 = #{result28,jdbcType=DECIMAL},
+      </if>
+      <if test="result29 != null" >
+        result29 = #{result29,jdbcType=VARCHAR},
+      </if>
+      <if test="result30 != null" >
+        result30 = #{result30,jdbcType=VARCHAR},
+      </if>
+      <if test="result31 != null" >
+        result31 = #{result31,jdbcType=VARCHAR},
+      </if>
+      <if test="result32 != null" >
+        result32 = #{result32,jdbcType=VARCHAR},
+      </if>
+      <if test="result33 != null" >
+        result33 = #{result33,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TRiskCheckResult" >
+    update t_risk_check_result
+    set result01 = #{result01,jdbcType=VARCHAR},
+      result02 = #{result02,jdbcType=VARCHAR},
+      result03 = #{result03,jdbcType=VARCHAR},
+      result04 = #{result04,jdbcType=VARCHAR},
+      result05 = #{result05,jdbcType=VARCHAR},
+      result06 = #{result06,jdbcType=VARCHAR},
+      result07 = #{result07,jdbcType=VARCHAR},
+      result08 = #{result08,jdbcType=DECIMAL},
+      result09 = #{result09,jdbcType=DECIMAL},
+      result10 = #{result10,jdbcType=VARCHAR},
+      result11 = #{result11,jdbcType=CHAR},
+      result12 = #{result12,jdbcType=INTEGER},
+      result13 = #{result13,jdbcType=VARCHAR},
+      result14 = #{result14,jdbcType=CHAR},
+      result15 = #{result15,jdbcType=DECIMAL},
+      result16 = #{result16,jdbcType=DECIMAL},
+      result17 = #{result17,jdbcType=DECIMAL},
+      result18 = #{result18,jdbcType=DECIMAL},
+      result19 = #{result19,jdbcType=DECIMAL},
+      result20 = #{result20,jdbcType=DECIMAL},
+      result21 = #{result21,jdbcType=DECIMAL},
+      result22 = #{result22,jdbcType=DECIMAL},
+      result23 = #{result23,jdbcType=DECIMAL},
+      result24 = #{result24,jdbcType=DECIMAL},
+      result25 = #{result25,jdbcType=DECIMAL},
+      result26 = #{result26,jdbcType=INTEGER},
+      result27 = #{result27,jdbcType=VARCHAR},
+      result28 = #{result28,jdbcType=DECIMAL},
+      result29 = #{result29,jdbcType=VARCHAR},
+      result30 = #{result30,jdbcType=VARCHAR},
+      result31 = #{result31,jdbcType=VARCHAR},
+      result32 = #{result32,jdbcType=VARCHAR},
+      result33 = #{result33,jdbcType=VARCHAR}
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectSelective" resultMap="BaseresultMap" parameterType="java.lang.String" >
+    select loanId, result01, result02, result03, result04, result05, result06, result07, result08, 
+		    result09, result10, result11, result12, result13, result14, result15, result16, result17, 
+		    result18, result19, result20, result21, result22, result23, result24, result25, result26, 
+		    result27, result28, result29, result30, result31, result32, result33,
+		    result34, result35, result36, result37, result38, result39, result40, result41, result42
+    from t_risk_check_result r
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </select>
+
+</mapper>

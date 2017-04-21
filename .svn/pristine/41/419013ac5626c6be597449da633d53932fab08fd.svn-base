@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TChannelMapperDictionaryMapper">
+	<resultMap id="BaseResultMap"
+		type="com.hrbb.loan.pos.dao.entity.TChannelMapperDictionary">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="type" property="type" jdbcType="VARCHAR" />
+		<result column="channel" property="channel" jdbcType="VARCHAR" />
+		<result column="innerCode" property="innerCode" jdbcType="VARCHAR" />
+		<result column="outerCode" property="outerCode" jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, type, channel, innerCode, outerCode, description
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_channel_mapper_dictionary
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from t_channel_mapper_dictionary
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert"
+		parameterType="com.hrbb.loan.pos.dao.entity.TChannelMapperDictionary">
+		insert into t_channel_mapper_dictionary (id, type, channel,
+		innerCode, outerCode, description
+		)
+		values (#{id,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR},
+		#{channel,jdbcType=VARCHAR},
+		#{innerCode,jdbcType=VARCHAR}, #{outerCode,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective"
+		parameterType="com.hrbb.loan.pos.dao.entity.TChannelMapperDictionary">
+		insert into t_channel_mapper_dictionary
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="type != null">
+				type,
+			</if>
+			<if test="channel != null">
+				channel,
+			</if>
+			<if test="innerCode != null">
+				innerCode,
+			</if>
+			<if test="outerCode != null">
+				outerCode,
+			</if>
+			<if test="description != null">
+				description,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="type != null">
+				#{type,jdbcType=VARCHAR},
+			</if>
+			<if test="channel != null">
+				#{channel,jdbcType=VARCHAR},
+			</if>
+			<if test="innerCode != null">
+				#{innerCode,jdbcType=VARCHAR},
+			</if>
+			<if test="outerCode != null">
+				#{outerCode,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				#{description,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective"
+		parameterType="com.hrbb.loan.pos.dao.entity.TChannelMapperDictionary">
+		update t_channel_mapper_dictionary
+		<set>
+			<if test="type != null">
+				type = #{type,jdbcType=VARCHAR},
+			</if>
+			<if test="channel != null">
+				channel = #{channel,jdbcType=VARCHAR},
+			</if>
+			<if test="innerCode != null">
+				innerCode = #{innerCode,jdbcType=VARCHAR},
+			</if>
+			<if test="outerCode != null">
+				outerCode = #{outerCode,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				description = #{description,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey"
+		parameterType="com.hrbb.loan.pos.dao.entity.TChannelMapperDictionary">
+		update t_channel_mapper_dictionary
+		set type = #{type,jdbcType=VARCHAR},
+		channel = #{channel,jdbcType=VARCHAR},
+		innerCode = #{innerCode,jdbcType=VARCHAR},
+		outerCode = #{outerCode,jdbcType=VARCHAR},
+		description = #{description,jdbcType=VARCHAR}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+
+	<select id="selectMap" resultType="map" parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from t_channel_mapper_dictionary
+		where 1=1
+		<if test="type != null">
+			AND type = #{type}
+		</if>
+		<if test="channel != null">
+			AND channel = #{channel}
+		</if>
+		<if test="innerCode != null">
+			AND innerCode = #{innerCode}
+		</if>
+		<if test="outerCode != null">
+			AND outerCode = #{outerCode}
+		</if>
+		<if test="description != null">
+			AND description = #{description}
+		</if>
+	</select>
+</mapper>

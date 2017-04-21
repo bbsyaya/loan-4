@@ -1,0 +1,34 @@
+<!-- 基金赎回非绑定银行卡17 -->
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:fram="http://framework.facade.common.transcore.pinganfu.com/">
+	<soapenv:Header />
+	<soapenv:Body>
+		<fram:execProxyPayoff>
+			<arg0>
+				<bankCardInfo>
+					<accountName>林子轩</accountName>
+					<bankId>1043</bankId>
+					<bankName>平安银行</bankName>
+					<cardCode>PAB</cardCode>
+					<cardNumber>12121212121212121212121</cardNumber>
+				</bankCardInfo>
+				<busiChannel>M</busiChannel>
+				<busiCode>10</busiCode>
+				<ccy>CNY</ccy>
+				<customerId>2000010000000002</customerId> <!--  03 -->
+				<customerType>C</customerType>
+				<dcFlag>D</dcFlag>
+				<orderNo>${orderNo}</orderNo>
+				<productCode>100020010000</productCode>
+				<toCredentialType>2</toCredentialType>
+				<toCustomerId>1000010000026540</toCustomerId>
+				<toCustomerName>xly</toCustomerName>
+				<transAmt>10000000</transAmt>
+				<transDesc>1111</transDesc>
+				<transFactAmt>10000000</transFactAmt>
+				<transType>17</transType>
+				<extFeilds>{a:1,b:2}</extFeilds>
+			</arg0>
+		</fram:execProxyPayoff>
+	</soapenv:Body>
+</soapenv:Envelope>

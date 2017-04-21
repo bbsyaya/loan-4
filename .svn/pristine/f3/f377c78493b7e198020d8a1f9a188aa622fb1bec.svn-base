@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="pubtrandefMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.pubtrandef" >
+    <result column="batchno" property="batchno" jdbcType="CHAR" />
+    <result column="seqno" property="seqno" jdbcType="INTEGER" />
+    <result column="trandate" property="trandate" jdbcType="CHAR" />
+    <result column="sysdate" property="sysdate" jdbcType="CHAR" />
+    <result column="serseqno" property="serseqno" jdbcType="INTEGER" />
+    <result column="dbrc" property="dbrc" jdbcType="CHAR" />
+    <result column="dbaccount" property="dbaccount" jdbcType="CHAR" />
+    <result column="cbrc" property="cbrc" jdbcType="CHAR" />
+    <result column="craccount" property="craccount" jdbcType="CHAR" />
+    <result column="amt" property="amt" jdbcType="DECIMAL" />
+    <result column="keyword" property="keyword" jdbcType="CHAR" />
+    <result column="channelid" property="channelid" jdbcType="CHAR" />
+    <result column="statcode" property="statcode" jdbcType="CHAR" />
+    <result column="clsprdcode" property="clsprdcode" jdbcType="CHAR" />
+    <result column="memocode" property="memocode" jdbcType="CHAR" />
+    <result column="infocode" property="infocode" jdbcType="CHAR" />
+    <result column="cdname" property="cdname" jdbcType="CHAR" />
+    <result column="description" property="description" jdbcType="CHAR" />
+    <result column="stat" property="stat" jdbcType="CHAR" />
+    <result column="errmsg" property="errmsg" jdbcType="CHAR" />
+    <result column="memo1" property="memo1" jdbcType="CHAR" />
+    <result column="memo2" property="memo2" jdbcType="CHAR" />
+    <result column="amt1" property="amt1" jdbcType="DECIMAL" />
+    <result column="amt2" property="amt2" jdbcType="DECIMAL" />
+  </resultMap>
+  <select id="getCDCImportListInfo" resultType="Map">
+ SELECT a.*,b.* from pubtrandef a,pubtranext b WHERE a.batchno=b.batchno and a.memocode=b.memocode and a.keyword=b.keyword
+  </select>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.pubtrandef" >
+    insert into pubtrandef (batchno, seqno, trandate, 
+      sysdate, serseqno, dbrc, 
+      dbaccount, cbrc, craccount, 
+      amt, keyword, channelid, 
+      statcode, clsprdcode, memocode, 
+      infocode, cdname, description, 
+      stat, errmsg, memo1, memo2, 
+      amt1, amt2)
+    values (#{batchno,jdbcType=CHAR}, #{seqno,jdbcType=INTEGER}, #{trandate,jdbcType=CHAR}, 
+      #{sysdate,jdbcType=CHAR}, #{serseqno,jdbcType=INTEGER}, #{dbrc,jdbcType=CHAR}, 
+      #{dbaccount,jdbcType=CHAR}, #{cbrc,jdbcType=CHAR}, #{craccount,jdbcType=CHAR}, 
+      #{amt,jdbcType=DECIMAL}, #{keyword,jdbcType=CHAR}, #{channelid,jdbcType=CHAR}, 
+      #{statcode,jdbcType=CHAR}, #{clsprdcode,jdbcType=CHAR}, #{memocode,jdbcType=CHAR}, 
+      #{infocode,jdbcType=CHAR}, #{cdname,jdbcType=CHAR}, #{description,jdbcType=CHAR}, 
+      #{stat,jdbcType=CHAR}, #{errmsg,jdbcType=CHAR}, #{memo1,jdbcType=CHAR}, #{memo2,jdbcType=CHAR}, 
+      #{amt1,jdbcType=DECIMAL}, #{amt2,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.pubtrandef" >
+    insert into pubtrandef
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="batchno != null" >
+        batchno,
+      </if>
+      <if test="seqno != null" >
+        seqno,
+      </if>
+      <if test="trandate != null" >
+        trandate,
+      </if>
+      <if test="sysdate != null" >
+        sysdate,
+      </if>
+      <if test="serseqno != null" >
+        serseqno,
+      </if>
+      <if test="dbrc != null" >
+        dbrc,
+      </if>
+      <if test="dbaccount != null" >
+        dbaccount,
+      </if>
+      <if test="cbrc != null" >
+        cbrc,
+      </if>
+      <if test="craccount != null" >
+        craccount,
+      </if>
+      <if test="amt != null" >
+        amt,
+      </if>
+      <if test="keyword != null" >
+        keyword,
+      </if>
+      <if test="channelid != null" >
+        channelid,
+      </if>
+      <if test="statcode != null" >
+        statcode,
+      </if>
+      <if test="clsprdcode != null" >
+        clsprdcode,
+      </if>
+      <if test="memocode != null" >
+        memocode,
+      </if>
+      <if test="infocode != null" >
+        infocode,
+      </if>
+      <if test="cdname != null" >
+        cdname,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="stat != null" >
+        stat,
+      </if>
+      <if test="errmsg != null" >
+        errmsg,
+      </if>
+      <if test="memo1 != null" >
+        memo1,
+      </if>
+      <if test="memo2 != null" >
+        memo2,
+      </if>
+      <if test="amt1 != null" >
+        amt1,
+      </if>
+      <if test="amt2 != null" >
+        amt2,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="batchno != null" >
+        #{batchno,jdbcType=CHAR},
+      </if>
+      <if test="seqno != null" >
+        #{seqno,jdbcType=INTEGER},
+      </if>
+      <if test="trandate != null" >
+        #{trandate,jdbcType=CHAR},
+      </if>
+      <if test="sysdate != null" >
+        #{sysdate,jdbcType=CHAR},
+      </if>
+      <if test="serseqno != null" >
+        #{serseqno,jdbcType=INTEGER},
+      </if>
+      <if test="dbrc != null" >
+        #{dbrc,jdbcType=CHAR},
+      </if>
+      <if test="dbaccount != null" >
+        #{dbaccount,jdbcType=CHAR},
+      </if>
+      <if test="cbrc != null" >
+        #{cbrc,jdbcType=CHAR},
+      </if>
+      <if test="craccount != null" >
+        #{craccount,jdbcType=CHAR},
+      </if>
+      <if test="amt != null" >
+        #{amt,jdbcType=DECIMAL},
+      </if>
+      <if test="keyword != null" >
+        #{keyword,jdbcType=CHAR},
+      </if>
+      <if test="channelid != null" >
+        #{channelid,jdbcType=CHAR},
+      </if>
+      <if test="statcode != null" >
+        #{statcode,jdbcType=CHAR},
+      </if>
+      <if test="clsprdcode != null" >
+        #{clsprdcode,jdbcType=CHAR},
+      </if>
+      <if test="memocode != null" >
+        #{memocode,jdbcType=CHAR},
+      </if>
+      <if test="infocode != null" >
+        #{infocode,jdbcType=CHAR},
+      </if>
+      <if test="cdname != null" >
+        #{cdname,jdbcType=CHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=CHAR},
+      </if>
+      <if test="stat != null" >
+        #{stat,jdbcType=CHAR},
+      </if>
+      <if test="errmsg != null" >
+        #{errmsg,jdbcType=CHAR},
+      </if>
+      <if test="memo1 != null" >
+        #{memo1,jdbcType=CHAR},
+      </if>
+      <if test="memo2 != null" >
+        #{memo2,jdbcType=CHAR},
+      </if>
+      <if test="amt1 != null" >
+        #{amt1,jdbcType=DECIMAL},
+      </if>
+      <if test="amt2 != null" >
+        #{amt2,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+</mapper>

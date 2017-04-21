@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TActivityDimInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TActivityDimInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="dimenSql" property="dimenSql" jdbcType="VARCHAR" />
+    <result column="dimName" property="dimName" jdbcType="VARCHAR" />
+    <result column="dimParamType" property="dimParamType" jdbcType="VARCHAR"/>
+    <result column="actFlag" property="actFlag"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, dimenSql, dimName, IF(actFlag='1', '失效', '有效') as actFlag, dimParamType
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_activity_dim_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectSelective" resultMap="BaseResultMap" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_activity_dim_info
+   where 1=1
+   <if test="actFlag != null">
+   	AND actFlag = #{actFlag}
+   </if>
+   <if test="id != null">
+   	AND id = #{id}
+   </if>
+   <if test="dimNameLike != null">
+   	 AND dimName like #{dimNameLike}
+   </if>
+   ORDER BY actFlag
+   <if test="limit != null">
+   	limit #{startPage}, #{limit}
+   </if>
+  </select>
+  
+  <select id="countSelective" resultType="String" parameterType="Map">
+  	select count(*)
+  	from t_activity_dim_info
+   where 1=1
+   <if test="actFlag != null">
+   	AND actFlag = #{actFlag}
+   </if>
+   <if test="id != null">
+   	AND id = #{id}
+   </if>
+   <if test="dimNameLike != null">
+   	 AND dimName like #{dimNameLike}
+   </if>
+   ORDER BY actFlag
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_activity_dim_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TActivityDimInfo" >
+    insert into t_activity_dim_info (id, dimenSql, dimName
+      )
+    values (#{id,jdbcType=INTEGER}, #{dimenSql,jdbcType=VARCHAR}, #{dimName,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TActivityDimInfo" >
+    insert into t_activity_dim_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="dimenSql != null" >
+        dimenSql,
+      </if>
+      <if test="dimName != null" >
+        dimName,
+      </if>
+      <if test="actFlag != null">
+      	actFlag,
+      </if>
+      <if test="dimParamType != null">
+      	dimParamType,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="dimenSql != null" >
+        #{dimenSql,jdbcType=VARCHAR},
+      </if>
+      <if test="dimName != null" >
+        #{dimName,jdbcType=VARCHAR},
+      </if>
+      <if test="actFlag != null">
+      	#{actFlag},
+      </if>
+      <if test="dimParamType != null">
+      	#{dimParamType},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TActivityDimInfo" >
+    update t_activity_dim_info
+    <set >
+      <if test="dimenSql != null" >
+        dimenSql = #{dimenSql,jdbcType=VARCHAR},
+      </if>
+      <if test="dimName != null" >
+        dimName = #{dimName,jdbcType=VARCHAR},
+      </if>
+      <if test="actFlag != null">
+      	actFlag = #{actFlag},
+      </if>
+      <if test="dimParamType != null">
+      	dimParamType = #{dimParamType},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TActivityDimInfo" >
+    update t_activity_dim_info
+    set dimenSql = #{dimenSql,jdbcType=VARCHAR},
+      dimName = #{dimName,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

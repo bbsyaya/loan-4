@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="THistoryPaybackAccountMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.THistoryPaybackAccount" >
+    <id column="innerRunningId" property="innerRunningId" jdbcType="VARCHAR" />
+    <result column="custId" property="custId" jdbcType="VARCHAR" />
+    <result column="paybackAccount" property="paybackAccount" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    innerRunningId, custId, paybackAccount
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_history_payback_account
+    where innerRunningId = #{innerRunningId,jdbcType=VARCHAR}
+  </select>
+  <select id="getHistroyAccountNumber" resultType="int" parameterType="Map" >
+    select COUNT(*)
+    from t_history_payback_account
+    where custId = #{custId,jdbcType=VARCHAR} 
+    and paybackAccount= #{#{custId,jdbcType=VARCHAR} ,jdbcType=VARCHAR} 
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_history_payback_account
+    where innerRunningId = #{innerRunningId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.THistoryPaybackAccount" >
+    insert into t_history_payback_account (innerRunningId, custId, paybackAccount
+      )
+    values (#{innerRunningId,jdbcType=VARCHAR}, #{custId,jdbcType=VARCHAR}, #{paybackAccount,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.THistoryPaybackAccount" >
+    insert into t_history_payback_account
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="innerRunningId != null" >
+        innerRunningId,
+      </if>
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="paybackAccount != null" >
+        paybackAccount,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="innerRunningId != null" >
+        #{innerRunningId,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackAccount != null" >
+        #{paybackAccount,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.THistoryPaybackAccount" >
+    update t_history_payback_account
+    <set >
+      <if test="custId != null" >
+        custId = #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackAccount != null" >
+        paybackAccount = #{paybackAccount,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where innerRunningId = #{innerRunningId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.THistoryPaybackAccount" >
+    update t_history_payback_account
+    set custId = #{custId,jdbcType=VARCHAR},
+      paybackAccount = #{paybackAccount,jdbcType=VARCHAR}
+    where innerRunningId = #{innerRunningId,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,1001 @@
+package com.hrbb.loan.controller;
+
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.acct.facade.MadeLoanProcessBizHession;
+import com.hrbb.loan.acct.facade.bean.BankNoReq;
+import com.hrbb.loan.acct.facade.bean.BankNoRes;
+import com.hrbb.loan.acct.facade.bean.BankNoSubVo;
+import com.hrbb.loan.acct.facade.bean.BusiPropQueryReq;
+import com.hrbb.loan.acct.facade.bean.BusiPropQueryRes;
+import com.hrbb.loan.acct.facade.bean.CalcRamtReq;
+import com.hrbb.loan.acct.facade.bean.CalcRamtRes;
+import com.hrbb.loan.acct.facade.bean.MadeLoanLoanLedgerBean;
+import com.hrbb.loan.constants.PaymentApplyConstants;
+import com.hrbb.loan.controller.helper.ControllerHelper;
+import com.hrbb.loan.pos.biz.backstage.inter.CreditReportBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.ICallingTaskBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.ILoanPosCreditApplyBackStageBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.IMadeLoanAcctBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.IPaymentApplyApprovalBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.IPaymentApplyBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.IPaymentApplyCheckBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.IReceiptManageBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosContractManagementBiz;
+import com.hrbb.loan.pos.dao.TMessageDao;
+import com.hrbb.loan.pos.dao.entity.TContractManagement;
+import com.hrbb.loan.pos.dao.entity.TPaymentApply;
+import com.hrbb.loan.pos.dao.entity.TPaymentApplyApproval;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+import com.hrbb.loan.pos.service.IGenericConfigService;
+import com.hrbb.loan.pos.service.LoanPosCreditApplyService;
+import com.hrbb.loan.pos.service.LoanPosCustomerService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.IdUtil;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.loan.pos.util.constants.ReviewNoteConstants;
+import com.hrbb.loan.web.security.entity.User;
+import com.hrbb.sh.framework.domain.CreditInvestigateRequest;
+
+/**
+ * 用款审查审批
+ * 
+ * @author jianQing
+ * @version $Id: PaymentReviewController.java, v 0.1 2015年4月22日 下午6:58:57 jianQing Exp $
+ */
+@Controller
+@RequestMapping("/paymentReview")
+public class PaymentReviewController {
+    
+    private Logger logger = LoggerFactory.getLogger(PaymentReviewController.class);
+    
+    /** 用款申请 */
+    @Autowired
+    private IPaymentApplyBiz paymentApplyBiz;
+    
+    /** 用款审批 */
+    @Autowired
+    private IPaymentApplyApprovalBiz paymentApplyApprovalBiz;
+    
+    /** 协议管理 */
+    @Autowired
+    private LoanPosContractManagementBiz loanPosContractManagementBiz;
+    
+    @Autowired
+    private LoanPosCreditApplyService loanPosCreditApplyService;
+    
+    /** 借据管理 */
+    @Autowired
+    private IReceiptManageBiz receiprManageBiz;
+    
+    /** 客户管理    */
+    @Autowired
+    private LoanPosCustomerService loanPosCustomerService;
+    
+    @Autowired
+    private ILoanPosCreditApplyBackStageBiz loanPosCreditApplyBackStageBiz;
+    
+    @Autowired
+    private IGenericConfigService genericConfigService;
+    
+    @Autowired
+    private IPaymentApplyCheckBiz paymentApplyCheckBiz;
+    
+    /** 核算接口*/
+    @Resource(name="madeLoanProcessBizHession")
+    MadeLoanProcessBizHession madeLoanProcessBizHession;
+    
+    @Autowired
+    IMadeLoanAcctBiz madeLoanAcctBiz;
+    
+    /** 消息推送Dao*/
+    @Autowired
+    private TMessageDao tMessageDao;
+    
+    /** 外呼任务*/
+    @Autowired
+    private ICallingTaskBiz ctBiz;
+    
+    @Autowired
+	@Qualifier("creditReportBiz")
+	private CreditReportBiz creditReportBiz;
+    
+    /**
+     * 用款审核中查询征信报告
+     */
+    @RequestMapping("/queryCreditReportForReview")
+    public ModelAndView queryCreditReportForReview(@RequestParam(value = "custName", required = false)String custName,
+    		@RequestParam(value = "paperId", required = false)String paperId, 
+    		@RequestParam(value = "confirmFlag", required = false)Integer confirmFlag,
+    		@RequestParam(value = "contNo", required = false)String contNo,
+    		PrintWriter out){
+    	// 检查查询日期是否大于20天
+    			logger.debug("confirmFlag=" + confirmFlag.intValue());
+    			if (confirmFlag.intValue() == 0) {
+    				int result = creditReportBiz.checkCreditReport(paperId);
+    				logger.debug("查询结果result=" + result);
+    				// 询问是否要查询,或征信报告不完整
+    				if (result == ReviewNoteConstants.CREDIT_REPORT_RESULT_VALUE_0
+    						|| result == ReviewNoteConstants.CREDIT_REPORT_RESULT_VALUE_2
+    						|| result == ReviewNoteConstants.CREDIT_REPORT_RESULT_VALUE_5) {
+    					out.print(result);
+    					// 直接查询
+    				} else {
+    					// 下载征信报告
+    					String msg = getCreditReportForPayment(paperId, custName, contNo);
+    					out.print(msg);
+    					logger.debug("下载征信报告结果msg=" + msg);
+    				}
+    				// 查询
+    			} else {
+    				// 下载征信报告
+    				String msg = getCreditReportForPayment(paperId, custName, contNo);
+    				out.print(msg);
+    				logger.debug("下载征信报告结果msg=" + msg);
+    			}
+    			return null;
+    }
+    
+    private String getCreditReportForPayment(String paperId, String custName, String contNo){
+    	CreditInvestigateRequest request = new CreditInvestigateRequest();
+    	// 用户名外部传入
+    	request.setCustNme(custName);
+    	// 身份证号码外部传入
+    	request.setCustId(paperId);
+    	//查询借据表中是否有该合同对应的记录
+    	//要执行状态成功的记录
+    	List<TReceiptInfo> resList = receiprManageBiz.queryReceiptByContNo(contNo, "20");
+    	if(resList != null && !resList.isEmpty()){
+    		//有借据则是贷后管理
+    		request.setQryWay("01I");
+    	}else{
+    		//没有借据则是贷款审批
+    		request.setQryWay("02I");
+    	}
+    	Map<String, Object> creditInvestigateMap = Maps.newHashMap();
+    	creditInvestigateMap.put("creditInvestigateRequest", request);
+		// 获取征信报告
+		Map<String, Object> rezultMap = loanPosCreditApplyBackStageBiz
+				.creditInvestigate(creditInvestigateMap);
+
+		return rezultMap.get("respMsg").toString();
+    }
+    
+    /**
+     * 当前工作
+     * 
+     * @param pageSize
+     * @param pageNo
+     * @param request
+     * @param out
+     * @return
+     */
+    @RequestMapping("/queryPaymentApplyCurr")
+    public ModelAndView queryPaymentApplyCurr(
+        @RequestParam(value = "rows", required = false) Integer pageSize,
+        @RequestParam(value = "page", required = false) Integer pageNo,
+        HttpServletRequest request, PrintWriter out) {
+        //当前操作人
+        User user = (User) request.getSession().getAttribute("USER");
+        
+        Map<String, Object> reqMap = Maps.newHashMap();
+        //合同编号
+        if (!StringUtils.isEmpty(request
+                .getParameter(PaymentApplyConstants.CONTNO_LIKE))) {
+            reqMap.put(PaymentApplyConstants.CONTNO_LIKE, ControllerHelper
+                    .getLikeString(request
+                            .getParameter(PaymentApplyConstants.CONTNO_LIKE)));
+        }
+        //商户名称
+        if (!StringUtils.isEmpty(request
+                .getParameter(PaymentApplyConstants.POS_CUST_NAME_LIKE))) {
+            reqMap.put(PaymentApplyConstants.POS_CUST_NAME_LIKE, ControllerHelper
+                    .getLikeString(request
+                            .getParameter(PaymentApplyConstants.POS_CUST_NAME_LIKE)));
+        }
+        //客户名称
+        if(!StringUtils.isEmpty(request
+                .getParameter(PaymentApplyConstants.CUST_NAME_LIKE))){
+            reqMap.put(PaymentApplyConstants.CUST_NAME_LIKE, ControllerHelper
+                .getLikeString(request.getParameter(PaymentApplyConstants.CUST_NAME_LIKE)));
+        
+        //证件号码
+        if(!StringUtils.isEmpty(request
+                .getParameter(PaymentApplyConstants.PAPER_ID_LIKE))){
+            reqMap.put(PaymentApplyConstants.PAPER_ID_LIKE, ControllerHelper
+                .getLikeString(request.getParameter(PaymentApplyConstants.PAPER_ID_LIKE)));}
+        }
+        if(null != user){
+            reqMap.put("approvalName", user.getUserName());
+        }
+        reqMap.put("startPage", (pageNo - 1) * pageSize);
+        reqMap.put("limit", pageSize);
+        List<Map<String, Object>> lists = paymentApplyApprovalBiz.queryPaymentApplyCurr(reqMap);
+        JSONObject aaJson = new JSONObject();
+        if(lists!=null && lists.size()>0){
+            Map<String,Object> map = lists.get(lists.size()-1);
+            lists.remove(lists.size()-1);
+            aaJson.put("rows", lists);
+            aaJson.put("total", map.get("total"));
+            out.write(aaJson.toJSONString());  
+        }else{
+            aaJson.put("rows", lists);
+            aaJson.put("total", 0);
+            out.write(aaJson.toJSONString());  
+        }
+        return null;
+    }
+    
+    /**
+     * 已完成工作
+     * 
+     * @param pageSize
+     * @param pageNo
+     * @param request
+     * @param out
+     * @return
+     */
+    @RequestMapping("/queryPaymentApplyFinished")
+    public ModelAndView queryPaymentApplyFinished(
+        @RequestParam(value = "rows", required = false) Integer pageSize,
+        @RequestParam(value = "page", required = false) Integer pageNo,
+        HttpServletRequest request, PrintWriter out) {
+        //当前操作人
+        User user = (User) request.getSession().getAttribute("USER");
+        
+        Map<String, Object> reqMap = Maps.newHashMap();
+        //合同编号
+        if (!StringUtils.isEmpty(request
+                .getParameter(PaymentApplyConstants.CONTNO_LIKE))) {
+            reqMap.put(PaymentApplyConstants.CONTNO_LIKE, ControllerHelper
+                    .getLikeString(request
+                            .getParameter(PaymentApplyConstants.CONTNO_LIKE)));
+        }
+        //商户名称
+        if (!StringUtils.isEmpty(request
+                .getParameter(PaymentApplyConstants.POS_CUST_NAME_LIKE))) {
+            reqMap.put(PaymentApplyConstants.POS_CUST_NAME_LIKE, ControllerHelper
+                    .getLikeString(request
+                            .getParameter(PaymentApplyConstants.POS_CUST_NAME_LIKE)));
+        }
+        //客户名称
+        if(!StringUtils.isEmpty(request
+                .getParameter(PaymentApplyConstants.CUST_NAME_LIKE))){
+            reqMap.put(PaymentApplyConstants.CUST_NAME_LIKE, ControllerHelper
+                .getLikeString(request.getParameter(PaymentApplyConstants.CUST_NAME_LIKE)));
+        
+        //证件号码
+        if(!StringUtils.isEmpty(request
+                .getParameter(PaymentApplyConstants.PAPER_ID_LIKE))){
+            reqMap.put(PaymentApplyConstants.PAPER_ID_LIKE, ControllerHelper
+                .getLikeString(request.getParameter(PaymentApplyConstants.PAPER_ID_LIKE)));}
+        }
+        if(null != user){
+            reqMap.put("approvalName", user.getUserName());
+        }
+        reqMap.put("startPage", (pageNo - 1) * pageSize);
+        reqMap.put("limit", pageSize);
+        List<Map<String, Object>> lists = paymentApplyApprovalBiz.queryPaymentApplyFinished(reqMap);
+        JSONObject aaJson = new JSONObject();
+        if(lists!=null && lists.size()>0){
+            Map<String,Object> map = lists.get(lists.size()-1);
+            lists.remove(lists.size()-1);
+            aaJson.put("rows", lists);
+            aaJson.put("total", map.get("total"));
+            out.write(aaJson.toJSONString());  
+        }else{
+            aaJson.put("rows", lists);
+            aaJson.put("total", 0);
+            out.write(aaJson.toJSONString());  
+        }
+        return null;
+    }
+    
+    /**
+     * 任务认领
+     * 
+     * @param payApplyIds
+     * @param status
+     * @param out
+     * @param request
+     * @return
+     */
+    @RequestMapping("/claim")
+    public ModelAndView claim(
+            @RequestParam(value = "payApplyIds", required = false) String payApplyIds,
+            @RequestParam(value = "statuss", required = false) String statuss,
+            PrintWriter out, HttpServletRequest request) {
+
+        StringBuilder sb = new StringBuilder();
+        // 当前操作员
+        User user = (User) request.getSession().getAttribute("USER");
+        //解析payApplyIds
+        String[] payApplyIdArray = payApplyIds.split(",");
+        String[] statusArray = statuss.split(",");
+        String payApplyId = "";
+        String status = "";
+        Map<String,Object> map = Maps.newHashMap();
+        for (int i = 0; i < payApplyIdArray.length; i++) {
+            payApplyId = payApplyIdArray[i];
+            status = statusArray[i];
+            map.put("payApplyId", payApplyId);
+            map.put("status", status);
+            TPaymentApplyApproval tpa = paymentApplyApprovalBiz.selectOneByPayApplyIdAndBeforeStatus(map);
+            if (tpa != null) {
+                logger.debug("该条用款申请已被认领");
+                sb.append("\n该条用款申请已被" + tpa.getApprovalName() + "认领");
+
+            }else {
+            	Date currDate = new Date();
+	            TPaymentApplyApproval tp = new TPaymentApplyApproval();
+	            tp.setPayApplyId(payApplyId);
+	            tp.setPaymentStatusBefore(status);
+	            tp.setApprovalName(user.getUserName());
+	            tp.setApprovalStartTime(currDate);
+	            
+	            //add 初始化用款审核日期
+	            TPaymentApply paymentApply = paymentApplyBiz.queryPaymentApplyById(payApplyId);
+	            Date expectedDate = paymentApply.getExpectedDate();
+	            if(expectedDate==null || expectedDate.compareTo(currDate)>0){
+	            	tp.setApprBeginDate(currDate);
+	            }else{
+	            	tp.setApprBeginDate(expectedDate);
+	            }
+	            //计算到期日
+        		String temp = DateUtil.getRelativeDate(tp.getApprBeginDate(), 0, Integer.parseInt(paymentApply.getPayApplyTerm()), -1);
+        		try {
+        			Date actualEndDate = DateUtil.parse2Date(temp, DateUtil.HRRB_SHORT_DATETIME_FORMAT);
+        			if(paymentApply.getReturnType()!=null || paymentApply.getReturnType().equals("90")){	//利随本清到期日跳过节假日
+        				String workingDate = genericConfigService.getNextWorkingDate(actualEndDate);
+        				actualEndDate = DateUtil.parse2Date(workingDate, DateUtil.HRRB_SHORT_DATETIME_FORMAT);
+        			}
+        			tp.setApprEndDate(actualEndDate);
+    			} catch (ParseException e) {
+    				e.printStackTrace();
+    				logger.error("期望用款到期日转换失败!",e);
+    			}
+        		
+	            //插入用款审批,先判断任务是否被领取,如果被领取,则不管，如果未被领取，则领取
+                int result = paymentApplyApprovalBiz.insertSelective(tp);
+                if (result > 0) {
+                    sb.append("\n认领成功！");
+                }
+            }
+        }
+        out.print(sb.toString());
+        return null;
+    }
+    
+    
+    /**
+     * 保存签署意见
+     * 
+     * @param payApplyId
+     * @param payApplyAmt
+     * @param payApplyTerm
+     * @param expectedDate
+     * @param approvalStatus
+     * @param approvalContent
+     * @param out
+     * @return
+     */
+    @RequestMapping("/savePaymentSign")
+    public ModelAndView savePaymentSign(@RequestParam(value="payApplyId",required = false)String payApplyId,
+                                        @RequestParam(value="apprBeginDate",required = false)String apprBeginDate,
+                                        @RequestParam(value="apprEndDate",required = false)String apprEndDate,
+                                        @RequestParam(value="approvalStatus",required = false)String approvalStatus,
+                                        @RequestParam(value="approvalContent",required = false)String approvalContent,
+                                        @RequestParam(value="cnapsBankId",required = false)String cnapsBankId,
+                                        @RequestParam(value="cnapsBankName",required = false)String cnapsBankName,
+                                        @RequestParam(value="graceDays",required = false)int graceDays,
+                                        @RequestParam(value="scheduleTimes",required = false)int scheduleTimes,
+                                        PrintWriter out){
+        try {
+            TPaymentApply paymentApply = paymentApplyBiz.queryPaymentApplyById(payApplyId);
+            
+            Map<String,Object> reqMap2 = Maps.newHashMap();
+            reqMap2.put("payApplyId", payApplyId);
+            reqMap2.put("paymentStatusBefore", paymentApply.getStatus());
+            reqMap2.put("approvalStatus", approvalStatus);
+            reqMap2.put("approvalContent", approvalContent);
+            reqMap2.put("apprBeginDate", apprBeginDate);
+            reqMap2.put("apprEndDate", apprEndDate);
+            reqMap2.put("graceDays", graceDays);
+            reqMap2.put("scheduleTimes", scheduleTimes);
+            
+            Map<String,Object> bankReqMap = Maps.newHashMap();
+            logger.debug("更新bankaccno_info表" + cnapsBankId+"/"+cnapsBankName);
+            //更新t_bankaccno_info
+            bankReqMap.put("bankAccno", paymentApply.getAccNo());
+            bankReqMap.put("cdtbranchid", cnapsBankId);
+            bankReqMap.put("ptcptnm", cnapsBankName);
+            
+            int status = paymentApplyBiz.savePaymentSign(reqMap2,bankReqMap);
+            switch(status){
+            	case 0:
+            		out.print("审核意见保存失败");
+            		break;
+            	case -1:
+            		out.print("审核意见保存失败");
+            		break;
+            	default:
+            		out.print("审核意见保存成功");
+            }
+//            out.print("保存成功");
+        } catch (Exception e) {
+            logger.error("放款审批结果保存异常", e);
+            out.print("系统异常，保存失败");
+        }
+        return null;
+    }
+    
+    /**
+     * 提交签署意见
+     * 
+     * @param payApplyId
+     * @param apprBeginDate
+     * @param apprEndDate
+     * @param approvalStatus
+     * @param approvalContent
+     * @param cnapsBankId
+     * @param cnapsBankName
+     * @param response
+     * @param out
+     * @return
+     */
+    @RequestMapping("/submitPaymentSign")
+    public ModelAndView submitPaymentSign(@RequestParam(value="payApplyId",required = true)String payApplyId,
+							    		@RequestParam(value="apprBeginDate",required = true)String apprBeginDate,
+							            @RequestParam(value="apprEndDate",required = true)String apprEndDate,
+                                        @RequestParam(value="approvalStatus",required = true)String approvalStatus,
+                                        @RequestParam(value="approvalContent",required = true)String approvalContent,
+                                        @RequestParam(value="cnapsBankId",required = true)String cnapsBankId,
+                                        @RequestParam(value="cnapsBankName",required = true)String cnapsBankName,
+                                        @RequestParam(value="graceDays",required = false)int graceDays,
+                                        @RequestParam(value="scheduleTimes",required = false)int scheduleTimes,
+                                        HttpServletResponse response, PrintWriter out){
+    	// firefox下的正常提示
+    	response.setContentType("text/html;charset=UTF-8");
+    			
+    	Map<String,String> result = Maps.newHashMap();
+    	if(payApplyId==null || payApplyId.trim().length()==0){
+    		result.put("resultCode", "ERR001");
+    		result.put("resultMsg", "申请编号不允许为空");
+    		out.print(JSONObject.toJSON(result));
+    		return null;
+    	}
+    	if(apprBeginDate==null || apprBeginDate.trim().length()==0){
+    		result.put("resultCode", "ERR001");
+    		result.put("resultMsg", "审核用款起始日期不能为空");
+    		out.print(JSONObject.toJSON(result));
+    		return null;
+    	}
+    	if(apprEndDate==null || apprEndDate.trim().length()==0){
+    		result.put("resultCode", "ERR001");
+    		result.put("resultMsg", "审核用款到期日期不能为空");
+    		out.print(JSONObject.toJSON(result));
+    		return null;
+    	}
+    	if(approvalStatus==null || approvalStatus.trim().length()==0){
+    		result.put("resultCode", "ERR001");
+    		result.put("resultMsg", "审核用款结论不能为空");
+    		out.print(JSONObject.toJSON(result));
+    		return null;
+    	}
+    	if(!approvalStatus.matches("(1|2)")){
+    		result.put("resultCode", "ERR002");
+    		result.put("resultMsg", "用款审核结论非法");
+    		out.print(JSONObject.toJSON(result));
+    		return null;
+    	}
+    	if(approvalContent==null || approvalContent.trim().length()==0){
+    		result.put("resultCode", "ERR001");
+    		result.put("resultMsg", "审核意见不能为空");
+    		out.print(JSONObject.toJSON(result));
+    		return null;
+    	}
+    	if(cnapsBankId==null || cnapsBankId.trim().length()==0){
+    		result.put("resultCode", "ERR001");
+    		result.put("resultMsg", "行号不允许为空");
+    		out.print(JSONObject.toJSON(result));
+    		return null;
+    	}
+    	Date beginDate = null;
+    	Date endDate = null;
+    	try {
+			beginDate = DateUtil.parse2Date(apprBeginDate, DateUtil.HRRB_SHORT_DATETIME_FORMAT);
+			endDate = DateUtil.parse2Date(apprEndDate, DateUtil.HRRB_SHORT_DATETIME_FORMAT);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			logger.error("日期转换失败!Err:"+beginDate+"/"+endDate,e);
+			result.put("resultCode", "ERR003");
+    		result.put("resultMsg", "日期格式非法");
+    		out.print(JSONObject.toJSON(result));
+    		return null;
+		}
+    	
+    	
+    	TPaymentApply paymentApply = paymentApplyBiz.queryPaymentApplyById(payApplyId);
+    	Map<String,Object> reqAppr = Maps.newHashMap();
+    	reqAppr.put("payApplyId", payApplyId);
+    	reqAppr.put("paymentStatusBefore", paymentApply.getStatus());
+    	reqAppr.put("approvalStatus", approvalStatus);
+    	reqAppr.put("approvalContent", approvalContent);
+    	reqAppr.put("apprBeginDate", beginDate);
+    	reqAppr.put("apprEndDate", endDate);
+    	reqAppr.put("graceDays", graceDays);
+    	reqAppr.put("scheduleTimes", scheduleTimes);
+        
+        Map<String,Object> bankReqMap = Maps.newHashMap();
+        //更新t_bankaccno_info
+        if(cnapsBankId==null || cnapsBankId.trim().length()==0 || cnapsBankId.equalsIgnoreCase("NULL")){
+        	logger.warn("用款申请["+payApplyId+"]联行号为空.");
+        }else{
+        	bankReqMap.put("cdtbranchid", cnapsBankId);
+        }
+        if(cnapsBankName==null || cnapsBankName.trim().length()==0 || cnapsBankName.equalsIgnoreCase("NULL")){
+        	logger.warn("用款申请["+payApplyId+"]联行名为空.");
+        }else{
+        	bankReqMap.put("ptcptnm", cnapsBankName);
+        }
+        if(bankReqMap.size()>0){
+        	bankReqMap.put("bankAccno", paymentApply.getAccNo());
+        }
+        
+        String nextPhase = "";
+        if("1".equals(approvalStatus)){
+        	nextPhase = "90";
+        }else if("2".equals(approvalStatus)){
+        	nextPhase = "92";
+        }
+        boolean exe = paymentApplyApprovalBiz.commitNextPhase(nextPhase, reqAppr, bankReqMap, paymentApply);
+        if(exe){
+        	result.put("resultCode", "SUCCESS");
+     		result.put("resultMsg", "用款审核提交成功");
+        }else{
+        	 result.put("resultCode", "ERR999");
+     		result.put("resultMsg", "用款审核提交失败");
+        }
+		out.print(JSONObject.toJSON(result));
+        
+        return null;
+    }
+    
+   
+    /**
+     * 生成借据
+     * 
+     * @param payApplyId
+     * @param out
+     * @return
+     */
+    @RequestMapping("/generateReceiptController")
+    public ModelAndView generateReceiptController(@RequestParam(value="payApplyId",required=false)String payApplyId,PrintWriter out){
+        TPaymentApply paymentApply = new TPaymentApply();
+        if(!StringUtil.isEmpty(payApplyId)){
+            paymentApply = paymentApplyBiz.queryPaymentApplyById(payApplyId);
+            if(null != paymentApply){
+                if("1".equals(paymentApply.getReceiptFlag())){
+                    logger.info("借据已存在");
+                    out.print("借据已存在");
+                    return null;
+                }
+                try {
+                    TReceiptInfo receipt =  generateReceipt(payApplyId, paymentApply.getPayApplyAmt().toString(), paymentApply.getPayApplyTerm(),DateUtil.getDateToString3(paymentApply.getExpectedDate()), DateUtil.getDateToString3(paymentApply.getExpectedEndDate()), paymentApply);
+                    if(receipt!=null){
+                        Map<String,Object> reqflag = Maps.newHashMap();
+                        reqflag.put("payApplyId", payApplyId);
+                        reqflag.put("receiptFlag", 1);
+                        paymentApplyBiz.updatePaymentApply(reqflag);
+                        logger.info("人工借据生成成功");
+                        out.print("人工借据生成成功");
+                    }else{
+                        logger.info("人工借据生成失败");
+                        out.print("人工借据生成失败");
+                    }
+                } catch (Exception e) {
+                    logger.error("人工借据生成异常", e);
+                    out.print("人工借据生成异常");
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * 放款执行
+     * 
+     * @param out
+     * @param paymentApply
+     * @param receipt
+     */
+    @RequestMapping("/madeLoanExecute")
+    private ModelAndView madeLoanExecute(@RequestParam(value="payApplyId",required=false)String payApplyId,
+    		@RequestParam(value="payChannel",required=false)String payChannel,
+    		PrintWriter out) {
+        try {
+            //TPaymentApply paymentApply = new TPaymentApply();
+            TReceiptInfo receipt = new TReceiptInfo();
+            if(!StringUtil.isEmpty(payApplyId)){
+                //paymentApply = paymentApplyBiz.queryPaymentApplyById(payApplyId);
+                receipt = receiprManageBiz.selectReceiptOne(payApplyId);
+                if("20".equals(receipt.getLoanExecuteStatus()) || "10".equals(receipt.getLoanExecuteStatus())){
+                    JSONObject json = new JSONObject();
+                    json.put("resCode", "999");
+                    json.put("resMessage","放款指令已经执行成功，不能重复执行.");
+                    out.print(json.toJSONString());
+                    return null;
+                }else{
+                	Map<String,Object> reqRec = Maps.newHashMap();
+                	//如果不是审核当日放款，更新借据到期日  add by Lin,Zhaolin
+                	String beginDateStr = DateUtil.formatDate(receipt.getBeginDate());
+                	if(beginDateStr.compareTo(DateUtil.getToday()) != 0){
+	                	Date issueDate = new Date();
+	                	Date maturity = DateUtil.getDatePattern3(DateUtil.getRelativeDate(issueDate, 0, Integer.parseInt(receipt.getPayApplyTerm()), -1));
+	            		//利随本清实际到期日（跳过工作日）
+	                	Date workingDate = null;
+	                	if(receipt.getPaybackWay()!=null && receipt.getPaybackWay().equals("90")){
+	                		workingDate = genericConfigService.getWorkingDate(maturity);
+	                	}else{
+	                		workingDate = maturity;
+	                	}
+	                	
+	                	logger.debug("借据["+receipt.getReceiptId()+"]的发放日期与审核通过日期不一致，更新为当期日期: beginDate="+DateUtil.formatDate(issueDate,DateUtil.HRRB_SHORT_DATETIME_FORMAT)+" |endDate="+DateUtil.formatDate(workingDate,DateUtil.HRRB_SHORT_DATETIME_FORMAT));
+	                	reqRec.put("beginDate", issueDate);
+	                	reqRec.put("endDate", workingDate);
+	                	//renew 当前对象
+	                	receipt.setBeginDate(issueDate);
+	                	receipt.setEndDate(workingDate);
+                	}
+                	receipt.setPayChannel(payChannel);		//renew 当前对象
+                	reqRec.put("payChannel", payChannel);	//增加支付通道
+                	reqRec.put("receiptId", receipt.getReceiptId());
+                	receiprManageBiz.updateReceiptInfo(reqRec);
+                	//add end
+                	
+                    //放款
+                    Map<String,Object> map = madeLoanAcctBiz.sendMadeLoanCommend(receipt);		//放款针对借据
+                    JSONObject json = new JSONObject();
+                    if(map.get("resCode").equals("000000")){
+                        json.put("resCode", "000");
+                        json.put("resMessage","支付指令发送成功");
+                    }else{
+                        json.put("resCode", "999");
+                        json.put("resMessage","支付指令发送失败");
+                    }
+                    out.print(json.toJSONString());
+                    return null;
+                }
+            }else{
+                JSONObject json = new JSONObject();
+                json.put("resCode", "999");
+                json.put("resMessage","系统异常,用款编号不存在");
+                out.print(json.toJSONString());
+                return null;
+            }
+        } catch (Exception e) {
+            logger.error("系统异常,放款失败", e);
+            JSONObject json = new JSONObject();
+            json.put("resCode", "999");
+            json.put("resMessage","系统异常,支付指令发送失败");
+            out.print(json.toJSONString());
+            return null;
+        }
+    }
+   
+    /**
+     * 生成借据
+     * 
+     * @param payApplyId 用款申请编号
+     * @param payApplyAmt 用款金额
+     * @param payApplyTerm 用款期限
+     * @param expectedDate 期望用款日
+     * @param paymentApply 用款对象
+     * @throws ParseException 
+     */
+    private TReceiptInfo generateReceipt(String payApplyId, String payApplyAmt, String payApplyTerm,
+                                 String expectedDate, String expectedEndDate, TPaymentApply paymentApply) throws ParseException {
+        //查询协议信息
+        TContractManagement contract = loanPosContractManagementBiz.getContractByContNo(paymentApply.getContNo());
+        if(null != contract){
+            //借据对象
+            TReceiptInfo receipt = new TReceiptInfo();
+            //借据编号
+            receipt.setReceiptId(IdUtil.getReceiptId());
+            //用款编号
+            receipt.setPayApplyId(payApplyId);
+            //协议编号
+            receipt.setContNo(paymentApply.getContNo());
+            //客户编号
+            receipt.setCustId(paymentApply.getCustId());
+            //商户编号
+            receipt.setPosCustId(paymentApply.getPosCustId());
+            //客户名称
+            receipt.setCustName(contract.getCustName());
+            //商户名称
+            receipt.setPosCustName(contract.getPosCustName());
+            //用款金额
+            receipt.setPayApplyAmt(new BigDecimal(payApplyAmt));
+            //用款期限
+            receipt.setPayApplyTerm(payApplyTerm);
+            //起息日
+            receipt.setBeginDate(paymentApply.getExpectedDate());
+            //结算日
+            if(!StringUtil.isEmpty(expectedDate)){
+                Date endDate;
+                try {
+                    endDate = DateUtil.getDatePattern3(expectedEndDate);
+                    receipt.setEndDate(endDate);
+                } catch (Exception e) {
+                    logger.error("日期格式转换异常 ", e);
+                }
+            }
+            //用款利率
+            receipt.setLoanInterest(paymentApply.getPayApplyInterest());
+            //还款方式
+            receipt.setPaybackWay(contract.getPaybackMethod());
+            //贷款偿还方式
+            receipt.setLoanPaybackWay(contract.getRepayMethod());
+            receipt.setLoanUsage(paymentApply.getApply_memo());
+            //还款账号
+            receipt.setPayAccount(contract.getAcceptAccount());
+            //开户账号
+            receipt.setAccountOpenBank(contract.getAccountOpenBank());
+            //分行
+            receipt.setAccountBranchBank(contract.getAccountBranchBank());
+            //支行
+            receipt.setAccountSubBranchBank(contract.getAccountSubBranchBank());
+            //支付渠道
+            receipt.setPayChannel(paymentApply.getPayChannel());
+            //放款执行状态
+            receipt.setLoanExecuteStatus("00");
+            //借据入库，初始放款执行状态00--待发送指令
+            int num = receiprManageBiz.generateReceiptInfo(receipt);
+            if(num>0){
+                logger.debug("借据生成成功");
+                return receipt;
+            }else{
+                logger.error("借据生成异常");
+                return null;    
+            }     
+        }
+        return null;
+    }
+    
+    /**
+     * 调用核算系统获取workDate
+     * @return
+     */
+    public Date getAcctWorkDate(){
+        Calendar c = Calendar.getInstance();
+        int hour = c.get(Calendar.HOUR_OF_DAY);
+        int minute = c.get(Calendar.MINUTE);
+        BusiPropQueryReq busiPropQueryReq = new BusiPropQueryReq();
+        busiPropQueryReq.setName("workDate");
+        BusiPropQueryRes busiPropQueryRes = madeLoanProcessBizHession.queryBusiProperties(busiPropQueryReq);
+        Date workDate = busiPropQueryRes.getWorkDate();
+        c.setTime(workDate);
+        if(hour >= 16 && minute >= 30) {
+            c.add(Calendar.DATE, 1);
+        }
+        return c.getTime();
+    }
+    
+    /**
+     * 试算
+     * 
+     * @param contract
+     * @return
+     */
+    public CalcRamtRes calcRamtWithBean(TContractManagement contract,TReceiptInfo receipt){
+        CalcRamtRes res = new CalcRamtRes();
+        CalcRamtReq req = new CalcRamtReq();
+        req.setLoanAcNo("loanAcNo");
+        req.setAheakind("1");//还款类型
+        req.setSsubsamt(receipt.getPayApplyAmt().doubleValue());//应放金额
+        req.setWorkDate(receipt.getEndDate());//下次还款日
+        MadeLoanLoanLedgerBean bean = new MadeLoanLoanLedgerBean();
+        bean.setInterestRate(receipt.getLoanInterest()); //贷款利率
+        bean.setaBal(receipt.getPayApplyAmt());//正常本金
+        bean.setBeginDate(receipt.getBeginDate());
+        bean.setLastInteDate(receipt.getBeginDate());//
+        bean.setRepayMethod(receipt.getPaybackWay());//还款方式
+        bean.setProdId(contract.getProdId());
+        req.setBean(bean);
+        res = madeLoanProcessBizHession.calcRamtWithBean(req);
+        return res;
+    }
+    
+    /**
+     * 查询行号
+     * 
+     * @param bkcd 参与机构的行号
+     * 
+     * @param bkctgycd 行别代码
+     * @param citycd 所在城市代码
+     * @param ptcptnm 出票银行/参与机构名称
+     * @param qrybegin 起始页码
+     * @param pagenum 每页条数
+     * @return
+     */
+    @RequestMapping("/queryBankNameNo")
+    public ModelAndView queryBankNameNo(@RequestParam(value="bkcd",required = false)String bkcd,
+                                     @RequestParam(value="bkctgycd",required = false)String bkctgycd,
+                                     @RequestParam(value="citycd",required = false)String citycd,
+                                     @RequestParam(value="ptcptnm",required = false)String ptcptnm,
+                                     @RequestParam(value="qrybegin",required=false)String qrybegin,
+                                     @RequestParam(value="pagenum",required = false)String pagenum,
+                                     PrintWriter out){
+        logger.info("ptcptnm:"+ptcptnm);
+        Set<String> bankInfoSet;
+        try {
+            bankInfoSet = getBankNoSubList(ptcptnm);
+            JSONObject json = new JSONObject();
+            json.put("bankInfoSet", bankInfoSet);
+            logger.info("json:"+json.toJSONString());
+            out.print(json.toJSONString());
+        } catch (Exception e) {
+            logger.error("查询行号异常", e);
+        }
+        return null;
+    }
+
+    /**
+     * 查询行号
+     * 
+     * @param ptcptnm
+     * @return
+     */
+    private Set<String> getBankNoSubList(String ptcptnm) throws Exception{
+        BankNoRes res = new BankNoRes();
+        BankNoReq req = new BankNoReq();
+        req.setPtcptnm(ptcptnm);
+        req.setPagenum("40");
+        res = madeLoanProcessBizHession.queryBankNameNo(req);
+        List<BankNoSubVo> bankNoSubVos= res.getBankNoSubList();
+        Set<String> bankInfoSet = new HashSet<String>();
+        String bankInfo = "";
+        for (BankNoSubVo bankNoSubVo : bankNoSubVos) {
+            bankInfo = bankNoSubVo.getBkcd()+":"+bankNoSubVo.getPtcptnm();
+            bankInfoSet.add(bankInfo);
+        }
+        
+        logger.info("查询支行列表:"+bankNoSubVos);
+        return bankInfoSet;
+    } 
+    
+    
+    /**
+     * 校验征信报告合法性
+     * 
+     * @param paperId 身份证号
+     * @param out 
+     * @return
+     */
+    @RequestMapping("/checkCreditReport")
+    public ModelAndView checkCreditReport(@RequestParam(value="paperId",required=false)String paperId,PrintWriter out){
+        logger.debug("待校验征信报告的身份证号为：" + paperId);
+        Map<String,Object> respMap = Maps.newHashMap();
+        if(StringUtil.isEmpty(paperId)){
+            respMap.put("respCode", 9);
+            respMap.put("respMsg", "身份证为空，查询失败");
+            out.print(JSONObject.toJSONString(respMap));
+            return null;
+        }
+        
+        try {
+            int result = paymentApplyCheckBiz.checkCreditReport(paperId);
+            switch(result){
+                case 0:
+                    respMap.put("respCode", 0);
+                    respMap.put("respMsg", "征信报告正常");
+                    break;
+                case 1:
+                    respMap.put("respCode", 1);
+                    respMap.put("respMsg", "征信报告不存在，请先获取征信报告");
+                    break;
+                case 2:
+                    respMap.put("respCode", 2);
+                    respMap.put("respMsg", "征信报告不完整，请重新获取征信报告");
+                    break;
+                case 3:
+                    respMap.put("respCode", 3);
+                    respMap.put("respMsg", "征信报告时间有误，请重新获取征信报告");
+                    break;
+                case 4:
+                    respMap.put("respCode", 4);
+                    respMap.put("respMsg", "征信报告查询时间超过20天，请重新获取征信报告");
+                    break;
+                case 5:
+                    respMap.put("respCode", 5);
+                    respMap.put("respMsg", "申请人姓名与征信报告不一致，请重新获取征信报告");
+                    break;
+                default:
+                    respMap.put("respCode", 6);
+                    respMap.put("respMsg", "征信报告查询异常，请从新获取征信报告");
+                    break;
+            }
+            out.print(JSONObject.toJSONString(respMap));
+            return null;
+        } catch (Exception e) {
+            logger.error("征信报告校验异常", e);
+            respMap.put("respCode", 10);
+            respMap.put("respMsg", "系统错误，征信报告校验异常，请重新获取征信报告");
+            out.print(JSONObject.toJSONString(respMap));
+            return null;
+        }
+    }
+    
+    /**
+     * 
+     * 
+     * @param srcpath
+     * @return
+     */
+    @RequestMapping("/directAccess")
+    public ModelAndView directAccess(@RequestParam(value="payApplyId",required=false)String payApplyId,
+                                     @RequestParam(value="srcpath",required=false)String srcpath,HttpServletRequest request){
+        //当前操作人
+        User user = (User) request.getSession().getAttribute("USER");
+        
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("payApplyId",payApplyId);
+        mav.addObject("userName", user.getUserName());
+        mav.addObject("currDate", DateUtil.getCurrentTimePattern3());
+        mav.setViewName(srcpath);
+        return mav;
+    }
+    
+    /**
+     * 任务回池
+     * 
+     * @param payApplyId
+     * @param backPoolReason
+     * @param userName
+     * @param out
+     * @return
+     */
+    @RequestMapping("/submitTaskBackPool")
+    public ModelAndView submitTaskBackPool(@RequestParam(value="payApplyId",required=false)String payApplyId,
+                                           @RequestParam(value="backPoolReason",required=false)String backPoolReason,
+                                           @RequestParam(value="userName",required=false)String userName,
+                                           PrintWriter out){
+     boolean success;
+    try {
+        success = paymentApplyApprovalBiz.submitTaskBackPool(payApplyId, backPoolReason, userName);
+        if(success){
+            out.print("回池成功");
+        }else{
+            out.print("回池失败");
+        }
+    } catch (Exception e) {
+        logger.error("", e);
+        out.print("回池失败");
+    }
+     return null;
+    }
+}

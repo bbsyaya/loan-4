@@ -1,0 +1,12 @@
+package com.hrbb.loan.sale.biz.inter;
+
+import com.hrbb.loan.pos.dao.entity.TLoanUser;
+
+/**
+ * 贷款和用户对照关系
+ * @author litengfeng
+ * @version $Id: ILoanUserBiz.java, v 0.1 2015年5月13日 下午5:35:22 litengfeng Exp $
+ */
+public interface ILoanUserBiz {
+    public int addLoanUser(TLoanUser loanUser);
+}

@@ -1,0 +1,132 @@
+package com.hrbb.loan.pos.dao.entity;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+
+public class TBankSerialnoInfo implements Serializable{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 2224989207220418353L;
+
+	private String serialNo;
+
+    private String loanId;
+
+    private String custId;
+
+    private String custName;
+
+    private String bankName;
+
+    private String bankAccno;
+
+    private String currMonth;
+
+    private String currMonthIn;
+
+    private String currMonthOut;
+
+    private BigDecimal currSeaInterestAmt;
+
+    private String regPersonId;
+
+    private Date regDate;
+
+    public String getSerialNo() {
+        return serialNo;
+    }
+
+    public void setSerialNo(String serialNo) {
+        this.serialNo = serialNo == null ? null : serialNo.trim();
+    }
+
+    public String getLoanId() {
+        return loanId;
+    }
+
+    public void setLoanId(String loanId) {
+        this.loanId = loanId == null ? null : loanId.trim();
+    }
+
+    public String getCustId() {
+        return custId;
+    }
+
+    public void setCustId(String custId) {
+        this.custId = custId == null ? null : custId.trim();
+    }
+
+    public String getCustName() {
+        return custName;
+    }
+
+    public void setCustName(String custName) {
+        this.custName = custName == null ? null : custName.trim();
+    }
+
+    public String getBankName() {
+        return bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName == null ? null : bankName.trim();
+    }
+
+    public String getBankAccno() {
+        return bankAccno;
+    }
+
+    public void setBankAccno(String bankAccno) {
+        this.bankAccno = bankAccno == null ? null : bankAccno.trim();
+    }
+
+    public String getCurrMonth() {
+        return currMonth;
+    }
+
+    public void setCurrMonth(String currMonth) {
+        this.currMonth = currMonth == null ? null : currMonth.trim();
+    }
+
+    public String getCurrMonthIn() {
+        return currMonthIn;
+    }
+
+    public void setCurrMonthIn(String currMonthIn) {
+        this.currMonthIn = currMonthIn == null ? null : currMonthIn.trim();
+    }
+
+    public String getCurrMonthOut() {
+        return currMonthOut;
+    }
+
+    public void setCurrMonthOut(String currMonthOut) {
+        this.currMonthOut = currMonthOut == null ? null : currMonthOut.trim();
+    }
+
+    public BigDecimal getCurrSeaInterestAmt() {
+        return currSeaInterestAmt;
+    }
+
+    public void setCurrSeaInterestAmt(BigDecimal currSeaInterestAmt) {
+        this.currSeaInterestAmt = currSeaInterestAmt;
+    }
+
+    public String getRegPersonId() {
+        return regPersonId;
+    }
+
+    public void setRegPersonId(String regPersonId) {
+        this.regPersonId = regPersonId == null ? null : regPersonId.trim();
+    }
+
+    public Date getRegDate() {
+        return regDate;
+    }
+
+    public void setRegDate(Date regDate) {
+        this.regDate = regDate;
+    }
+}

@@ -1,0 +1,809 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TPaymentApplyMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TPaymentApply" >
+    <id column="payApplyId" property="payApplyId" jdbcType="VARCHAR" />
+    <result column="contNo" property="contNo" jdbcType="VARCHAR" />
+    <result column="custId" property="custId" jdbcType="VARCHAR" />
+    <result column="posCustId" property="posCustId" jdbcType="VARCHAR" />
+    <result column="payApplyAmt" property="payApplyAmt" jdbcType="DECIMAL" />
+    <result column="payApplyTerm" property="payApplyTerm" jdbcType="VARCHAR" />
+    <result column="payApplyInterest" property="payApplyInterest" jdbcType="DECIMAL" />
+    <result column="payChannel" property="payChannel" jdbcType="VARCHAR"/>
+    <result column="returnType" property="returnType" jdbcType="VARCHAR" />
+    <result column="accNo" property="accNo" jdbcType="VARCHAR" />
+    <result column="expectedDate" property="expectedDate" jdbcType="TIMESTAMP" />
+    <result column="expectedEndDate" property="expectedEndDate" jdbcType="TIMESTAMP" />
+    <result column="applyMemo" property="apply_memo" jdbcType="VARCHAR" />
+    <result column="applyDate" property="applyDate" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="merchantNo" property="merchantNo" jdbcType="VARCHAR" />
+    <result column="merchantDesp" property="merchantDesp" jdbcType="VARCHAR" />
+    <result column="createDate" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="modifiedDate" property="modifiedDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    payApplyId, contNo, custId, posCustId, payApplyAmt, payApplyTerm, payApplyInterest, payChannel, returnType, accNo, 
+    expectedDate, expectedEndDate, applyMemo, applyDate, status, merchantNo, merchantDesp, createDate, 
+    modifiedDate,receiptFlag
+  </sql>
+   <sql id="Base_Column_List1" >
+    a.payApplyId, a.contNo, a.custId, a.posCustId, a.payApplyAmt, a.payApplyTerm, a.payApplyInterest, a.payChannel, a.returnType, a.accNo, 
+    a.expectedDate, a.expectedEndDate, a.applyMemo, a.applyDate, a.status, a.merchantNo, a.merchantDesp, a.createDate, 
+    a.modifiedDate,a.receiptFlag
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_payment_apply
+    where payApplyId = #{payApplyId,jdbcType=VARCHAR}
+  </select>
+  <select id="getPaymentApplyInfocontno" resultType="java.math.BigDecimal" parameterType="java.lang.String" >
+    select sum(payApplyAmt)
+    from t_payment_apply
+    where ((status="00" or status="10" or status="80") and contNo = #{contNo,jdbcType=VARCHAR})
+    or ((status = "90" or status = "91") and payApplyId in (select payApplyId from t_receipt_info where loanExecuteStatus != "20" and contNo = #{contNo,jdbcType=VARCHAR}))
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_payment_apply
+    where payApplyId = #{payApplyId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TPaymentApply" >
+    insert into t_payment_apply (payApplyId, contNo, custId, 
+      posCustId, payApplyAmt, payApplyTerm, payApplyInterest,payChannel,
+      returnType, accNo, expectedDate,expectedEndDate, 
+      apply_memo, applyDate, status, 
+      merchantNo, merchantDesp, createDate, 
+      modifiedDate)
+    values (#{payApplyId,jdbcType=VARCHAR}, #{contNo,jdbcType=VARCHAR}, #{custId,jdbcType=VARCHAR}, 
+      #{posCustId,jdbcType=VARCHAR}, #{payApplyAmt,jdbcType=DECIMAL}, #{payApplyTerm,jdbcType=VARCHAR}, #{payApplyInterest,jdbcType=DECIMAL},#{payChannel,jdbcType=VARCHAR},
+      #{returnType,jdbcType=VARCHAR}, #{accNo,jdbcType=VARCHAR}, #{expectedDate,jdbcType=TIMESTAMP}, #{expectedEndDate,jdbcType=TIMESTAMP},
+      #{apply_memo,jdbcType=VARCHAR}, #{applyDate,jdbcType=TIMESTAMP}, #{status,jdbcType=VARCHAR}, 
+      #{merchantNo,jdbcType=VARCHAR}, #{merchantDesp,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, 
+      #{modifiedDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TPaymentApply" >
+    insert into t_payment_apply
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="payApplyId != null" >
+        payApplyId,
+      </if>
+      <if test="contNo != null" >
+        contNo,
+      </if>
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="payApplyAmt != null" >
+        payApplyAmt,
+      </if>
+      <if test="payApplyTerm != null" >
+        payApplyTerm,
+      </if>
+      <if test="payApplyInterest != null">
+      	payApplyInterest,    
+      </if>
+      <if test="payChannel != null">
+        payChannel,  
+      </if>
+      <if test="returnType != null" >
+        returnType,
+      </if>
+      <if test="accNo != null" >
+        accNo,
+      </if>
+      <if test="expectedDate != null" >
+        expectedDate,
+      </if>
+      <if test="expectedEndDate != null">
+      	expectedEndDate,
+      </if>
+      <if test="apply_memo != null" >
+        apply_memo,
+      </if>
+      <if test="applyDate != null" >
+        applyDate,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="merchantNo != null" >
+        merchantNo,
+      </if>
+      <if test="merchantDesp != null" >
+        merchantDesp,
+      </if>
+      <if test="createDate != null" >
+        createDate,
+      </if>
+      <if test="modifiedDate != null" >
+        modifiedDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="payApplyId != null" >
+        #{payApplyId,jdbcType=VARCHAR},
+      </if>
+      <if test="contNo != null" >
+        #{contNo,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="payApplyAmt != null" >
+        #{payApplyAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="payApplyTerm != null" >
+        #{payApplyTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="payApplyInterest != null">
+        #{payApplyInterest,jdbcType=DECIMAL},
+      </if>
+      <if test="payChannel != null">
+        #{payChannel,jdbcType=VARCHAR},  
+      </if>
+      <if test="returnType != null" >
+        #{returnType,jdbcType=VARCHAR},
+      </if>
+      <if test="accNo != null" >
+        #{accNo,jdbcType=VARCHAR},
+      </if>
+      <if test="expectedDate != null" >
+        #{expectedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expectedEndDate != null">
+        #{expectedEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="apply_memo != null" >
+        #{apply_memo,jdbcType=VARCHAR},
+      </if>
+      <if test="applyDate != null" >
+        #{applyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantNo != null" >
+        #{merchantNo,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantDesp != null" >
+        #{merchantDesp,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifiedDate != null" >
+        #{modifiedDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="map" >
+    insert into t_payment_apply
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="payApplyId != null" >
+        payApplyId,
+      </if>
+      <if test="contNo != null" >
+        contNo,
+      </if>
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="payApplyAmt != null" >
+        payApplyAmt,
+      </if>
+      <if test="payApplyTerm != null" >
+        payApplyTerm,
+      </if>
+      <if test="payApplyInterest !=null">
+        payApplyInterest,
+      </if>
+      <if test="payChannel != null"> 
+        payChannel,
+      </if>
+      <if test="returnType != null" >
+        returnType,
+      </if>
+      <if test="accNo != null" >
+        accNo,
+      </if>
+      <if test="expectedDate != null" >
+        expectedDate,
+      </if>
+      <if test="expectedEndDate != null">
+        expectedEndDate,  
+      </if>
+      <if test="applyMemo != null" >
+        applyMemo,
+      </if>
+      <if test="applyDate != null" >
+        applyDate,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="merchantNo != null" >
+        merchantNo,
+      </if>
+      <if test="merchantDesp != null" >
+        merchantDesp,
+      </if>
+      <if test="createDate != null" >
+        createDate,
+      </if>
+      <if test="modifiedDate != null" >
+        modifiedDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="payApplyId != null" >
+        #{payApplyId,jdbcType=VARCHAR},
+      </if>
+      <if test="contNo != null" >
+        #{contNo,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="payApplyAmt != null" >
+        #{payApplyAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="payApplyTerm != null" >
+        #{payApplyTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="payApplyInterest != null">
+        #{payApplyInterest,jdbcType=DECIMAL},
+      </if>
+      <if test="payChannel != null">
+        #{payChannel,jdbcType=VARCHAR},  
+      </if>
+      <if test="returnType != null" >
+        #{returnType,jdbcType=VARCHAR},
+      </if>
+      <if test="accNo != null" >
+        #{accNo,jdbcType=VARCHAR},
+      </if>
+      <if test="expectedDate != null" >
+        #{expectedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expectedEndDate != null">
+      	#{expectedEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="applyMemo != null" >
+        #{applyMemo,jdbcType=VARCHAR},
+      </if>
+      <if test="applyDate != null" >
+        #{applyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantNo != null" >
+        #{merchantNo,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantDesp != null" >
+        #{merchantDesp,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifiedDate != null" >
+        #{modifiedDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TPaymentApply" >
+    update t_payment_apply
+    <set >
+      <if test="contNo != null" >
+        contNo = #{contNo,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        custId = #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustId != null" >
+        posCustId = #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="payApplyAmt != null" >
+        payApplyAmt = #{payApplyAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="payApplyTerm != null" >
+        payApplyTerm = #{payApplyTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="payApplyInterest != null">
+        payApplyInterest = #{payApplyInterest,jdbcType=DECIMAL},  
+      </if>
+      <if test="payChannel != null">
+        #{payChannel,jdbcType=VARCHAR},  
+      </if>
+      <if test="returnType != null" >
+        returnType = #{returnType,jdbcType=VARCHAR},
+      </if>
+      <if test="accNo != null" >
+        accNo = #{accNo,jdbcType=VARCHAR},
+      </if>
+      <if test="expectedDate != null" >
+        expectedDate = #{expectedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expectedEndDate != null">
+        expectedEndDate = #{expectedEndDate,jdbcType=TIMESTAMP},  
+      </if>
+      <if test="apply_memo != null" >
+        apply_memo = #{apply_memo,jdbcType=VARCHAR},
+      </if>
+      <if test="applyDate != null" >
+        applyDate = #{applyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantNo != null" >
+        merchantNo = #{merchantNo,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantDesp != null" >
+        merchantDesp = #{merchantDesp,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        createDate = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifiedDate != null" >
+        modifiedDate = #{modifiedDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where payApplyId = #{payApplyId,jdbcType=VARCHAR}
+  </update>
+  
+  <update id="updateSelectiveMap" parameterType="map" >
+    update t_payment_apply
+    <set >
+      <if test="contNo != null" >
+        contNo = #{contNo,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        custId = #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustId != null" >
+        posCustId = #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="payApplyAmt != null" >
+        payApplyAmt = #{payApplyAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="payApplyTerm != null" >
+        payApplyTerm = #{payApplyTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="payApplyInterest != null">
+        payApplyInterest = #{payApplyInterest,jdbcType=DECIMAL},
+      </if>
+      <if test="payChannel != null">
+        #{payChannel,jdbcType=VARCHAR},  
+      </if>
+      <if test="returnType != null" >
+        returnType = #{returnType,jdbcType=VARCHAR},
+      </if>
+      <if test="accNo != null" >
+        accNo = #{accNo,jdbcType=VARCHAR},
+      </if>
+      <if test="expectedDate != null" >
+        expectedDate = #{expectedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expectedEndDate != null">
+        expectedEndDate = #{expectedEndDate,jdbcType=TIMESTAMP},  
+      </if>
+      <if test="applyMemo != null" >
+        applyMemo = #{applyMemo,jdbcType=VARCHAR},
+      </if>
+      <if test="applyDate != null" >
+        applyDate = #{applyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantNo != null" >
+        merchantNo = #{merchantNo,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantDesp != null" >
+        merchantDesp = #{merchantDesp,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        createDate = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifiedDate != null" >
+        modifiedDate = #{modifiedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="receiptFlag != null">
+        receiptFlag = #{receiptFlag,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where payApplyId = #{payApplyId,jdbcType=VARCHAR}
+  </update>
+  
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TPaymentApply" >
+    update t_payment_apply
+    set contNo = #{contNo,jdbcType=VARCHAR},
+      custId = #{custId,jdbcType=VARCHAR},
+      posCustId = #{posCustId,jdbcType=VARCHAR},
+      payApplyAmt = #{payApplyAmt,jdbcType=DECIMAL},
+      payApplyTerm = #{payApplyTerm,jdbcType=VARCHAR},
+      payApplyInterest = #{payApplyInterest,jdbcType=DECIMAL},
+      payChannel = #{payChannel,jdbcType=VARCHAR},  
+      returnType = #{returnType,jdbcType=VARCHAR},
+      accNo = #{accNo,jdbcType=VARCHAR},
+      expectedDate = #{expectedDate,jdbcType=TIMESTAMP},
+      expectedEndDate = #{expectedEndDate,jdbcType=TIMESTAMP},
+      apply_memo = #{apply_memo,jdbcType=VARCHAR},
+      applyDate = #{applyDate,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=VARCHAR},
+      merchantNo = #{merchantNo,jdbcType=VARCHAR},
+      merchantDesp = #{merchantDesp,jdbcType=VARCHAR},
+      createDate = #{createDate,jdbcType=TIMESTAMP},
+      modifiedDate = #{modifiedDate,jdbcType=TIMESTAMP}
+    where payApplyId = #{payApplyId,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="countPaymentApplyNum" parameterType="Map" resultType="Long">
+  	select count(*) from t_receipt_info d,  t_payment_apply a, t_channel_poscust_info b, t_credit_apply_info c where a.posCustId = b.posCustId and 
+  	d.payApplyId = a.payApplyId and
+  	1=1 
+  	<if test="stdmerno != null">
+  		AND b.channelPosCustId = #{stdmerno}
+  	</if>
+  	<if test="channel != null">
+  		AND b.channel = #{channel}
+  	</if>
+  	<if test="stdshno != null">
+  		AND c.stdshno = #{stdshno}
+  	</if>
+  </select>
+  
+  <select id="queryByStdmerno" parameterType="Map" resultType="Map">
+  		SELECT  a.custId custid, b.custName, b.paperKind paperkind, b.paperId paperid, d.loanId loanid, d.contNo contno, 
+a.payApplyId listid, a.`status` liststat, DATE_FORMAT(a.expectedDate,'%Y%m%d') begindate, DATE_FORMAT(a.expectedEndDate,'%Y%m%d') enddate,
+d.contTotalAmt tcapi, c.loanTotalBalance bal, c.loanExecuteStatus, (c.innerOwnedInterest+c.outterOwnedInterest) overinte,
+c.loanInterest interate,a.returnType retukind, c.overdueBalance, e.stdshno, e.stdmerno from t_payment_apply a LEFT JOIN t_customer_info b on a.custId = b.custId LEFT JOIN 
+t_receipt_info c on a.payApplyId = c.payApplyId LEFT JOIN t_contract_info d on a.contNo = d.contNo LEFT JOIN t_credit_apply_info e on d.loanId = e.loanId
+WHERE 1=1
+<if test="stdmerno != null">
+	AND e.stdmerno = #{stdmerno}
+</if>
+<if test="channel != null">
+	AND e.channel = #{channel}
+</if>
+<if test="stdshno != null">
+	AND e.stdshno = #{stdshno}
+</if>
+<if test="contNo != null">
+	AND d.contNo = #{contNo}
+</if>
+<if test="payApplyId != null">
+	AND a.payApplyId = #{payApplyId}
+</if>
+<if test="custId != null">
+	AND a.custId = #{custId}
+</if>
+	LIMIT #{startPage}, #{pageSize}
+  </select>
+  <select id="queryPaymentApply" parameterType="Map" resultType="Map">
+ 	 select d.custName,c.paperId,d.posCustName,d.channel , 
+  <include refid="Base_Column_List1"/>
+  	from t_payment_apply a,t_customer_info c , t_contract_info d where a.custId = c.custId and a.contNo = d.contNo
+ 	 AND 1=1
+  <if test="searchContNoLike != null">
+  		AND a.contNo like #{searchContNoLike}
+  </if>
+  <if test="searchPosCustNameLike != null">
+  		AND d.posCustName like #{searchPosCustNameLike}
+  </if>
+  <if test="searchCustNameLike != null">
+  		AND d.custName like #{searchCustNameLike}
+  </if>
+  <if test="searchPaperIdLike != null">
+ 	 	AND c.paperId like #{searchPaperIdLike}
+  </if>
+  <if test="status !=null">
+  	<if test="status == 10">
+  		AND a.status in (10,80)
+  	</if>
+  	<if test="status == 90">
+  		AND a.status in (90,91)
+  	</if>
+  	<if test="status !=10 and status !=90">
+  		AND a.status = #{status}
+  	</if>
+  </if>
+  		order by a.applyDate desc
+  		LIMIT #{startPage}, #{pageSize}
+  </select>
+  
+   <select id="countPaymentApply" parameterType="Map" resultType="Long">
+ 	 select count(*)
+  	 from t_payment_apply a,t_customer_info c , t_contract_info d where a.custId = c.custId and a.contNo = d.contNo
+ 	 AND 1=1
+  <if test="searchContNoLike != null">
+  		AND a.contNo like #{searchContNoLike}
+  </if>
+  <if test="searchPosCustNameLike != null">
+  		AND d.posCustName like #{searchPosCustNameLike}
+  </if>
+  <if test="searchCustNameLike != null">
+  		AND d.custName like #{searchCustNameLike}
+  </if>
+  <if test="searchPaperIdLike != null">
+ 	 	AND c.paperId like #{searchPaperIdLike}
+  </if>
+  <if test="status !=null">
+  	<if test="status == 10">
+  		AND a.status in (10,80)
+  	</if>
+  	<if test="status == 90">
+  		AND a.status in (90,91)
+  	</if>
+  	<if test="status !=10 and status !=90">
+  		AND a.status = #{status}
+  	</if>
+  </if>
+  </select>
+  <select id="queryPaymentApply90" parameterType="Map" resultType="Map">
+ 	 select d.custName,c.paperId,d.posCustName,d.channel , e.loanExecuteStatus ,
+  <include refid="Base_Column_List1"/>
+  	from t_payment_apply a,t_customer_info c , t_contract_info d, t_receipt_info e where a.custId = c.custId and a.contNo = d.contNo and a.payApplyId = e.payApplyId 
+ 	 AND 1=1
+  <if test="searchContNoLike != null">
+  		AND a.contNo like #{searchContNoLike}
+  </if>
+  <if test="searchPosCustNameLike != null">
+  		AND d.posCustName like #{searchPosCustNameLike}
+  </if>
+  <if test="searchCustNameLike != null">
+  		AND d.custName like #{searchCustNameLike}
+  </if>
+  <if test="searchPaperIdLike != null">
+ 	 	AND c.paperId like #{searchPaperIdLike}
+  </if>
+  <if test="excuteStatus != null and excuteStatus == 0">
+        AND e.loanExecuteStatus in (00,10,19,29)
+  </if>
+  <if test="excuteStatus != null and excuteStatus == 1">
+        AND e.loanExecuteStatus = 20 
+  </if>
+  <if test="contNo != null">
+  		AND e.contNo = contNo
+  </if>
+  <if test="status !=null">
+  	<if test="status == 10">
+  		AND a.status in (10,80)
+  	</if>
+  	<if test="status == 90">
+  		AND a.status in (90,91)
+  	</if>
+  	<if test="status !=10 and status !=90">
+  		AND a.status = #{status}
+  	</if>
+  </if>
+  		LIMIT #{startPage}, #{pageSize}
+  </select>
+  
+   <select id="countPaymentApply90" parameterType="Map" resultType="Long">
+ 	 select count(*)
+  	 from t_payment_apply a,t_customer_info c , t_contract_info d , t_receipt_info e where a.custId = c.custId and a.contNo = d.contNo and a.payApplyId = e.payApplyId  
+ 	 AND 1=1
+   <if test="searchContNoLike != null">
+  		AND a.contNo like #{searchContNoLike}
+  </if>
+  <if test="searchPosCustNameLike != null">
+  		AND d.posCustName like #{searchPosCustNameLike}
+  </if>
+  <if test="searchCustNameLike != null">
+  		AND d.custName like #{searchCustNameLike}
+  </if>
+  <if test="searchPaperIdLike != null">
+ 	 	AND c.paperId like #{searchPaperIdLike}
+  </if>
+  <if test="excuteStatus != null and excuteStatus == 0">
+        AND e.loanExecuteStatus in (00,10,19,29)
+  </if>
+  <if test="excuteStatus != null and excuteStatus == 1">
+        AND e.loanExecuteStatus = 20 
+  </if>
+  <if test="status !=null">
+  	<if test="status == 10">
+  		AND a.status in (10,80)
+  	</if>
+  	<if test="status == 90">
+  		AND a.status in (90,91)
+  	</if>
+  	<if test="status !=10 and status !=90">
+  		AND a.status = #{status}
+  	</if>
+  </if>
+  </select>
+  
+    <select id="queryAvailablePaymentApply" parameterType="Map" resultType="Map">
+     select x.* from 
+     (select d.custName,c.paperId,d.posCustName,d.channel ,
+  <include refid="Base_Column_List1"/>
+     from t_payment_apply a,t_customer_info c , t_contract_info d where a.custId = c.custId and a.contNo = d.contNo  AND 1=1 
+  <if test="contNoLike != null">
+  		AND a.contNo like #{contNoLike}
+  </if>
+  <if test="posCustNameLike != null">
+  		AND d.posCustName like #{posCustNameLike}
+  </if>
+  <if test="custNameLike != null">
+  		AND d.custName like #{custNameLike}
+  </if>
+  <if test="paperIdLike != null">
+ 	 	AND c.paperId like #{paperIdLike}
+  </if>
+  <if test="status !=null">
+  	<if test="status == 10">
+  		AND a.status in (10,80)
+  	</if>
+  	<if test="status == 90">
+  		AND a.status in (90,91)
+  	</if>
+  	<if test="status !=10 and status !=90">
+  		AND a.status = #{status}
+  	</if>
+  </if>
+   ) x LEFT JOIN t_payment_apply_approval y on x.payApplyId = y.payApplyId where y.approvalStartTime is NULL LIMIT #{startPage}, #{pageSize}
+  </select>
+  
+   <select id="countAvailablePaymentApply" parameterType="Map" resultType="Long">
+ 	 select count(*) from 
+     (select d.custName,c.paperId,d.posCustName,d.channel,a.payApplyId  
+  	 from t_payment_apply a,t_customer_info c , t_contract_info d where a.custId = c.custId and a.contNo = d.contNo  AND 1=1 
+  <if test="contNoLike != null">
+  		AND a.contNo like #{contNoLike}
+  </if>
+  <if test="posCustNameLike != null">
+  		AND d.posCustName like #{posCustNameLike}
+  </if>
+  <if test="custNameLike != null">
+  		AND d.custName like #{custNameLike}
+  </if>
+  <if test="paperIdLike != null">
+ 	 	AND c.paperId like #{paperIdLike}
+  </if>
+  <if test="status !=null">
+  	<if test="status == 10">
+  		AND a.status in (10,80)
+  	</if>
+  	<if test="status == 90">
+  		AND a.status in (90,91)
+  	</if>
+  	<if test="status !=10 and status !=90">
+  		AND a.status = #{status}
+  	</if>
+  </if>
+   ) x LEFT JOIN t_payment_apply_approval y on x.payApplyId = y.payApplyId where y.approvalStartTime is NULL
+  </select>
+   
+  <select id="queryPaymentApplyByPayApplyId" parameterType="Map" resultType="Map">
+ 	 select d.custName,c.paperId,d.posCustName,d.channel,d.accountOpenBank,d.accountBranchBank,d.accountSubBranchBank,
+  <include refid="Base_Column_List1"/>
+  	from t_payment_apply a, t_customer_info c , t_contract_info d where a.custId = c.custId and a.contNo = d.contNo
+ 	 AND 1=1
+  	<if test="payApplyId != null">
+  		AND a.payApplyId = #{payApplyId}
+  	</if>
+  </select>
+  
+  
+  <select id="selectPaymentByZzApp" resultType="Map" parameterType="Map">
+    select tci.repayMethod returnkind2, tpa.custId as custid, tcusi.custName as custname, tcusi.paperKind as paperkind, tcusi.paperId as paperid,
+    tci.loanId as loanid, tpa.contNo as contno, tci.cnContNo as cncontno, tpa.payApplyId as payapplyid, date_format(tri.beginDate,'%Y%m%d') as begindate,
+    date_format(tri.endDate,'%Y%m%d') as enddate, tri.payApplyAmt as tcapi, tri.loanTotalBalance as bal, tri.innerOwnedInterest + tri.outterOwnedInterest as overinte,tri.loanExecuteStatus,
+    tri.loanInterest as interate, tcai.returnKind as retukind, tri.overdueBalance > 0 as acflag, tri.clearStatus as payoffflag, tri.payAccount as repayaccno, tpa.status as liststat,
+ tpaa.approvalContent as refusereason
+    from      t_payment_apply tpa 
+    left join t_customer_info     tcusi on tpa.custId = tcusi.custId
+    left join t_contract_info	  tci on tpa.contno = tci.contno
+    left join t_receipt_info	  tri on tpa.payApplyId = tri.payApplyId
+    left join t_credit_apply_info tcai  on tci.loanId = tcai.loanId
+    left join t_payment_apply_approval	tpaa  on tpaa.payApplyId = tpa.payApplyId
+    where tcai.deleteFlag = '0' and tcai.channel ='ZZ' and (tcai.inChannelKind = '01' or tcai.inChannelKind = '05') and tcai.prodId = '1001020306'
+    <if test="paperId != null">
+    	and tcusi.paperId = #{paperId}
+    </if>
+    <if test="paperKind != null">
+    	and tcusi.paperKind = #{paperKind}
+    </if>
+    <if test="custId != null">
+    	and tcusi.custId = #{custId}
+    </if>
+    <if test="custName != null">
+    	and tcusi.custName = #{custName}
+    </if>
+    <if test="loanId != null">
+    	and tci.loanId = #{loanId}
+    </if>
+    <if test="contNo != null">
+    	and tci.contNo = #{contNo}
+    </if>
+    <if test="cnContNo != null">
+    	and tci.cnContNo = #{cnContNo}
+    </if>
+    <if test="payApplyId != null">
+    	and tpa.payApplyId = #{payApplyId}
+    </if>
+    <if test="beginDate != null">
+    	and tri.beginDate >= #{beginDate,jdbcType=TIMESTAMP}
+    </if>
+    <if test="endDate != null">
+    	<![CDATA[ and tri.beginDate <= #{endDate,jdbcType=TIMESTAMP} ]]>
+    </if>
+    order by tri.beginDate desc
+  </select>
+  <select id="selectPaymentBySlApp" resultType="Map" parameterType="Map">
+    select tpa.custId as custid, tcusi.custName as custname, tcusi.paperKind as paperkind, tcusi.paperId as paperid,
+    tci.loanId as loanid, tpa.contNo as contno, tci.cnContNo as cncontno, tpa.payApplyId as payapplyid, date_format(tri.beginDate,'%Y%m%d%H%m%s') as begindate,
+    date_format(tri.endDate,'%Y%m%d%H%m%s') as enddate, tri.payApplyAmt as tcapi, tri.loanTotalBalance as bal, tri.loanExecuteStatus, tri.innerOwnedInterest + tri.outterOwnedInterest as overinte,
+    tri.loanInterest as interate, tcai.returnKind as retukind, tri.overdueBalance > 0 as acflag, tri.clearStatus as payoffflag, tri.payAccount as repayaccno, tpa.status as paymentStatus
+    from      t_payment_apply tpa 
+    left join t_customer_info     tcusi on tpa.custId = tcusi.custId
+    left join t_contract_info	  tci on tpa.contno = tci.contno
+    left join t_receipt_info	  tri on tpa.payApplyId = tri.payApplyId
+    left join t_credit_apply_info tcai  on tci.loanId = tcai.loanId
+    where tcai.deleteFlag = '0' and tcai.channel ='SL' and tcai.inChannelKind = '01' and tcai.prodId = '1001020351'
+    <if test="paperId != null">
+    	and tcusi.paperId = #{paperId}
+    </if>
+    <if test="paperKind != null">
+    	and tcusi.paperKind = #{paperKind}
+    </if>
+    <if test="custId != null">
+    	and tcusi.custId = #{custId}
+    </if>
+    <if test="custName != null">
+    	and tcusi.custName = #{custName}
+    </if>
+    <if test="loanId != null">
+    	and tci.loanId = #{loanId}
+    </if>
+    <if test="contNo != null">
+    	and tci.contNo = #{contNo}
+    </if>
+    <if test="cnContNo != null">
+    	and tci.cnContNo = #{cnContNo}
+    </if>
+    <if test="payApplyId != null">
+    	and tpa.payApplyId = #{payApplyId}
+    </if>
+    <if test="beginDate != null">
+    	and tri.beginDate >= #{beginDate,jdbcType=TIMESTAMP}
+    </if>
+    <if test="endDate != null">
+    	<![CDATA[ and tri.beginDate <= #{endDate,jdbcType=TIMESTAMP} ]]>
+    </if>
+    order by tri.beginDate desc
+  </select>
+  <select id="selectRecordInfoLending" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_payment_apply
+    where date_format(createDate,'%Y-%m-%d') = CURDATE()
+  </select>
+  <select id="selectRecordInfoCommission" resultMap="BaseResultMap">
+    select date_format(pa.createDate,'%Y%m%d') createDate,pa.posCustId,pa.custId,cst.custName,pa.accNo,cst.paperId,pa.contNo,pa.payApplyAmt,cp.channelPosCustId
+    from t_payment_apply pa
+    left join t_contract_info c on c.contNo = pa.contNo
+    left join t_credit_apply_info ca on ca.loanId = c.loanId
+    left join t_channel_poscust_info cp on cp.posCustId = ca.posCustId and cp.channel = ca.channel
+    left join t_customer_info cst on cst.custId = pa.custId
+    order by pa.createDate
+  </select>
+</mapper>

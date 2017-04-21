@@ -1,0 +1,110 @@
+package com.hrbb.loan.spi.TC;
+
+import java.util.Date;
+import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.ftp.client.param.ParamReqBean;
+import com.hrbb.loan.ftp.client.param.ParamResBean;
+import com.hrbb.loan.ftp.client.utils.HttpClient;
+import com.hrbb.loan.pos.dao.entity.TContractManagement;
+import com.hrbb.loan.pos.service.LoanPosContractManagementService;
+import com.hrbb.loan.spiconstants.ContractHServiceBackConstants;
+import com.hrbb.loan.spiconstants.CreditApplyHServiceConstants;
+import com.hrbb.loan.spiconstants.HServiceReturnCode;
+import com.hrbb.sh.framework.HRequest;
+import com.hrbb.sh.framework.HResponse;
+import com.hrbb.sh.framework.HService;
+import com.hrbb.sh.framework.HServiceException;
+
+/**
+ * 电子协议回传
+ * 
+ * @author cjq
+ * @version $Id: TCContractBackHserviceImpl.java, v 0.1 2015年5月29日 下午2:35:36 cjq Exp $
+ */
+@Service("tcContractBack")
+public class TCContractBackHserviceImpl implements HService {
+    
+	private final Logger logger = LoggerFactory.getLogger(TCContractBackHserviceImpl.class);
+	@Value("#{systemInfo[url]}")
+	private String URL;
+	@Autowired
+	private LoanPosContractManagementService loanPosContractManagementService;
+
+	@Override
+	public HResponse serve(HRequest request) throws HServiceException {
+		logger.debug("executing TCContractBackHserviceImpl...");
+		HResponse response = new HResponse();
+		Map<String, Object> propMap = request.getProperties();
+		String loanId = (String) propMap.get("loanid");
+		String imageFilePackageName = (String) propMap
+				.get("imagefilepackagename");
+		logger.info("申请编号为："+loanId);
+		logger.info("映像文件包名为："+imageFilePackageName);
+		TContractManagement cont = loanPosContractManagementService.getContractInfoByLoanId(loanId);
+		if (cont == null) {
+			logger.error("电子协议回传失败");
+			response.setRespCode(HServiceReturnCode.POS_CONTRACT_BACK_ERROR.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.POS_CONTRACT_BACK_ERROR
+						.getReturnMessage());
+			response.setRespTime(new Date());
+			return getBlankHResponse(response);
+		}
+		String contNo = cont.getContNo();
+		logger.info("合同信息为："+cont);
+		logger.info("合同编号为"+contNo);
+		ParamReqBean bean = new ParamReqBean();
+		bean.setVersion(CreditApplyHServiceConstants.ftp_version);
+		bean.setBizType(CreditApplyHServiceConstants.ftp_biztype);
+		bean.setTransType(CreditApplyHServiceConstants.ftp_transtype);
+		bean.setKeyValue(CreditApplyHServiceConstants.ftp_map_key_instno,
+				ContractHServiceBackConstants.ftp_instno_tc);
+		bean.setKeyValue(CreditApplyHServiceConstants.ftp_map_key_prefix,
+				ContractHServiceBackConstants.ftp_prefix_cnt);
+		bean.setKeyValue(
+				CreditApplyHServiceConstants.ftp_map_key_remotefilename,
+				imageFilePackageName);
+		bean.setKeyValue(
+				CreditApplyHServiceConstants.ftp_map_key_LocalSubFolderNameDef,
+				loanId);
+		bean.setKeyValue(CreditApplyHServiceConstants.custid, cont.getCustId());
+
+		bean.setKeyValue(CreditApplyHServiceConstants.ftp_map_key_url,
+				URL + CreditApplyHServiceConstants.contract_map_key_returnUrl+"?ctNo="+contNo);
+		// ftp处理
+		ParamResBean resBean = HttpClient.send(bean);
+		String respCode = resBean.getRespCode();
+		if (logger.isDebugEnabled()) {
+			logger.debug(String.format("ftp respCode=%s", respCode));
+			logger.debug("ftp respMsg=" + resBean.getRespMsg());
+		}
+		response.setRespCode(respCode);
+		response.setRespMessage(resBean.getRespMsg());
+		response.setRespTime(new Date());
+		return response;
+	
+	}
+
+	/**
+	 * 不符合条件时，返回渠道信息
+	 * 
+	 * @param response
+	 * @return
+	 */
+	private HResponse getBlankHResponse(HResponse response){
+		Map<String, Object> respMap = Maps.newHashMap();
+		respMap.put("loanid", "");
+		respMap.put("imagefilepackagename", "");
+		respMap.put("signdate", "");
+		respMap.put("enddate", "");
+		respMap.put("contno", "");
+		response.setProperties(respMap);
+		return response;
+	}
+}

@@ -1,0 +1,46 @@
+/**
+ * 
+ */
+package com.hrbb.loan.pos.service;
+
+import java.util.Date;
+import java.util.List;
+
+import com.hrbb.loan.pos.dao.entity.TRepaymentPlan;
+
+/**
+ * <p>Title: TRepaymentPlanService.java </p>
+ * <p>Description:  </p>
+ * <p>Copyright: Copyright (C) 2015 Hrbb Ltd. Co.</p> 
+ *     
+ * @author linzhaolin@hrbb.com.cn
+ * @version 
+ * @date 2015年7月30日
+ *
+ * logs: 1. 
+ */
+public interface TRepaymentPlanService {
+	
+	public int insertSelective(TRepaymentPlan record);
+	
+	int insert(TRepaymentPlan record);
+	
+	int updateSelective(TRepaymentPlan record);
+	
+	/**
+	 * 获取最近一期的还款计划
+	 * 
+	 * @param receiptId
+	 * @return
+	 */
+	public TRepaymentPlan getRecentlyPlan(String receiptId);
+	/**
+	 * 获取一笔借据下的整个还款计划表
+	 * @param receiptId
+	 * @return
+	 */
+	public List<TRepaymentPlan> getAllPlan(String receiptId);
+	
+	public List<TRepaymentPlan> getAllPlan(String receiptId,Date dateFrom);
+	
+}

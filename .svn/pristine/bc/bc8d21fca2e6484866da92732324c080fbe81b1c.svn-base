@@ -1,0 +1,64 @@
+package com.hrbb.loan.pos.biz.bean.pay;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.hrbb.loan.pay.constants.PayChannel;
+import com.hrbb.loan.pos.biz.bean.pay.constant.PayTypeEnum;
+import com.hrbb.loan.pos.biz.bean.pay.impl.ACCTPayServiceImpl;
+import com.hrbb.loan.pos.biz.bean.pay.impl.ThirdPayServiceImpl;
+import com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+
+/**
+ * 支付工厂类
+ * 
+ * @author cjq
+ * @version $Id: ThirdPayServiceFactory.java, v 0.1 2015年8月12日 下午6:41:43 cjq Exp $
+ */
+public class PayServiceFactory {
+
+    private static Logger logger = LoggerFactory.getLogger(PayServiceFactory.class);
+
+    /**
+     * 
+     * @param type 支付类型 
+     * @param object
+     * @return
+     */
+    public static IPayService getThirdPayService(String type, Object object) {
+        //如果type类型为null，返回
+        if (type == null) {
+            logger.info("参数为空");
+            return null;
+        }
+        IPayService service = null;
+        if (PayTypeEnum.PAY.getPayTypeCode().equals(type)) { //代付
+            if (object instanceof TReceiptInfo) {
+                TReceiptInfo receipt = (TReceiptInfo) object;
+                if ("9".equals(receipt.getPayChannel())) {
+                    // TODO 支付通道策略,目前只接易极付
+                    service = new ThirdPayServiceImpl(receipt, PayChannel.YJRPAY.getValue());
+                    return service;
+                } else {//0小额 1大额 2超级网银
+                    service = new ACCTPayServiceImpl(receipt); //核算
+                    return service;
+                }
+            }
+        } else if (PayTypeEnum.REPAY.getPayTypeCode().equals(type)) {
+            if (object instanceof TPaybackApplyInfo) { //代收
+                TPaybackApplyInfo paybackApply = (TPaybackApplyInfo) object;
+                if ("02".equals(paybackApply.getLoanPaybackWay())) {
+                    //TODO 代扣通道策略
+                    service = new ThirdPayServiceImpl(paybackApply, PayChannel.YJRPAY.getValue());
+                    //service = new ThirdPayServiceImpl(paybackApply, PayChannel.CPCN.getValue());
+                    return service;
+                }
+            }
+        } else {
+            return null;
+        }
+        return null;
+    }
+
+}

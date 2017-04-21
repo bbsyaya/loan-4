@@ -1,0 +1,85 @@
+package com.hrbb.loan.pos.biz.backstage.inter;
+
+import java.text.ParseException;
+import java.util.List;
+import java.util.Map;
+
+import com.hrbb.loan.pos.dao.entity.TPaymentApply;
+import com.hrbb.loan.pos.dao.entity.TPaymentApplyApproval;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+
+/**
+ * 用款审核
+ * 
+ * @author jianQing
+ * @version $Id: IPaymentApplyApprovalBiz.java, v 0.1 2015年4月26日 上午10:32:46 jianQing Exp $
+ */
+public interface IPaymentApplyApprovalBiz {
+    /**
+     * 当前工作
+     * 
+     * @param reqMap
+     * @return
+     */
+    List<Map<String, Object>> queryPaymentApplyCurr(Map<String,Object> reqMap);
+    
+    /**
+     * 已完成工作
+     * @param reqMap
+     * @return
+     */
+    List<Map<String, Object>> queryPaymentApplyFinished(Map<String, Object> reqMap);
+    
+     /**
+     * 查询用款审批记录
+     * 
+     * @param payApplyId
+     * @param status
+     * @return
+     */
+    TPaymentApplyApproval selectOneByPayApplyIdAndBeforeStatus(Map<String, Object> map);
+   
+    /**
+     * 新增用款审批
+     * 
+     * @param tp
+     * @return
+     */
+    int insertSelective(TPaymentApplyApproval tp);
+    
+    /**
+     * 更新用款审批
+     * 
+     * @param map
+     * @return
+     */
+    int updatePaymentApplyApproval(Map<String,Object> map);
+
+    /**
+     * 用款审批通过，生成借据
+     * 
+     * @param payApplyId
+     * @param payApplyAmt
+     * @param payApplyTerm
+     * @param expectedDate
+     * @param expectedEndDate
+     * @param reqMap1
+     * @param reqMap2
+     * @param paymentApply
+     * @return
+     * @throws ParseException
+     */
+    TReceiptInfo generateReceipt(String payApplyId, String payApplyAmt, String payApplyTerm, String expectedDate, String expectedEndDate, 
+                                 Map<String, Object> reqMap1, Map<String, Object> reqMap2, TPaymentApply paymentApply, String bankInfo, String bankNameInfo) throws ParseException ;
+
+    /**
+     * 更新用款表和用款审核表
+     * 
+     * @param reqMap1
+     * @param reqMap2
+     */
+    void updatePaymentStatus(Map<String, Object> reqMap1, Map<String, Object> reqMap2);
+    
+    
+    
+}

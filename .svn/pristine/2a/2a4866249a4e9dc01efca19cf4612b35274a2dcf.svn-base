@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hrbb.loan.web.security.entity.User">
+                  
+    <resultMap type="com.hrbb.loan.web.security.entity.User" id="userResult">	
+        <result column="userId" property="userId"  jdbcType="INTEGER"/>
+		<result column="userName" property="userName"/>
+		<result column="password" property="password"/>
+        <result column="loginName" property="loginName"/>
+		<result column="cellphone" property="cellphone"/>
+		<result column="email" property="email"/>
+		<result column="tel" property="tel"/>
+        <result column="loginType" property="loginType" jdbcType="CHAR"/>
+		<result column="loginDate" property="loginDate"/>
+		<result column="locked" property="locked" jdbcType="CHAR"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		userId, userName,password,loginName,cellphone,email,tel,loginType,loginDate,locked
+	</sql>	
+	<sql id="Base_Where_Clause">
+		<where>
+			<trim prefixOverrides="and">
+				<if test="userId != null"> and userId = #{userId}</if>
+				<if test="userName != null">and userName = #{userName}</if>
+				<if test="password != null">and password = #{password}</if>
+				<if test="loginName != null">and loginName = #{loginName}</if>
+				<if test="cellphone != null">and cellphone = #{cellphone}</if>
+				<if test="tel != null">and tel = #{tel}</if>
+				<if test="loginType != null">and loginType = #{loginType}</if>
+				<if test="loginDate != null">and loginDate = #{loginDate}</if>
+				
+				<!-- 模糊查询 -->
+				<if test="userNameLike != null">and userName like CONCAT("%",#{userNameLike},"%")</if>
+				<if test="cellphoneLike != null">and cellphone like CONCAT("%",#{cellphoneLike},"%")</if>
+			</trim>
+		</where>
+		<if test="sorting != null">order by ${sorting}</if>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</sql>
+	<insert id="insert">
+		insert into t_user_login(userId, loginName, userName,password, cellphone, email, tel, loginType, loginDate) 
+		 values(nextVal('t_user_login.userId'),#{loginName},#{userName},#{password},#{cellphone}, #{email}, #{tel}, #{loginType}, now())
+	</insert>
+	
+	<update id="updateByIdSelective" parameterType="com.hrbb.loan.web.security.entity.User">
+		update t_user_login
+		<set> 
+		   <if test="password!=null">password = #{password},</if>
+		   <if test="loginName!=null">loginName = #{loginName},</if>
+		   <if test="password != null">password = #{password},</if>
+		   <if test="email!=null">email = #{email},</if>
+		   <if test="tel!=null">tel = #{tel},</if>
+		   <if test="cellphone!=null">cellphone = #{cellphone},</if>
+		   <if test="loginType!=null">loginType = #{loginType},</if>
+		</set>
+		where userId = #{userId}
+	</update>
+	<update id="updateById" parameterType="com.hrbb.loan.web.security.entity.User">
+		update t_user_login
+		<set> 
+		   <if test="password!=null">password = #{password},</if>
+		   <if test="loginName!=null">loginName = #{loginName},</if>
+		   <if test="password != null">password = #{password},</if>
+		   <if test="email!=null">email = #{email},</if>
+		   <if test="tel!=null">tel = #{tel},</if>
+		   <if test="cellphone!=null">cellphone = #{cellphone},</if>
+		   <if test="loginType!=null">loginType = #{loginType},</if>
+		</set>
+		where userId = #{userId}
+	</update>	
+	<delete id="delete" parameterType="java.util.Map">
+		delete from t_user_login
+		<include refid="Base_Where_Clause" />
+	</delete>
+	<!-- 根据ID删除 -->
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from t_user_login
+		where userId = #{userId}
+	</delete>
+	<select id="selectById" resultMap="userResult" parameterType="java.lang.Integer">
+		select 
+		<include refid="Base_Column_List" />
+		from t_user_login
+		where userId = #{userId}
+	</select>
+	
+	<select id="selectByName" resultMap="userResult">
+		select 
+		<include refid="Base_Column_List" />
+		from t_user_login
+		where userName = #{userName}
+	</select> 
+
+	<select id="selectByCellphone" resultMap="userResult">
+		select 
+		<include refid="Base_Column_List" />
+		from t_user_login
+		where cellphone = #{cellphone}
+	</select> 
+		
+	<select id="select" resultMap="userResult" parameterType="java.util.Map">
+		select 
+		<include refid="Base_Column_List" />
+		from t_user_login
+		<include refid="Base_Where_Clause" />
+	</select>
+	<select id="selectCount" resultType="java.lang.Long" parameterType="java.util.Map">
+		select count(userId)
+		from t_user_login
+		<include refid="Base_Where_Clause" />
+	</select>	
+	<update id="lockById" parameterType="java.lang.Integer">
+		update t_user_login set locked = '1' where userId = #{userId}
+	</update>	
+	<update id="unlockById" parameterType="java.lang.Integer">
+		update t_user_login set locked = '0' where userId = #{userId}
+	</update>	
+	<insert id="insertUserRole">
+		insert into t_user_role(userId, roleId) 
+		 values(#{userId}, #{roleId})
+	</insert>
+	<delete id="deleteUserRole">
+		delete from t_user_role
+		<where>
+			<trim prefixOverrides="and">
+				<if test="userId != 0"> and userId = #{userId}</if>
+				<if test="roleId != 0">and roleId = #{roleId}</if>
+			</trim>
+		</where>
+	</delete>
+	<select id="selectUsersByPrivilegeName" resultType="map" parameterType="String">
+		select userName, loginName from t_user_login t1, t_user_role t2, t_role_privilege t3, t_privilege t4 
+		where t1.userId = t2.userId and t2.roleId = t3.roleId and t3.privilegeId = t4.privilegeId 
+		and t1.locked = '0' and t4.privilegeName = #{privilegeName, jdbcType=VARCHAR} 
+	</select>
+</mapper>

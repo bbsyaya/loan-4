@@ -1,0 +1,29 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+	<soap:Body>
+		<ns2:checkInAndPayWithPayType
+			xmlns:ns2="http://framework.facade.common.transcore.pinganfu.com/">
+			<arg0>  <!--农村支付-授权码取现 -->
+				<busiChannel>P</busiChannel>
+				<customerId>1000010000026540</customerId> 
+				<customerName>快捷收单</customerName>
+				<dcFlag>C</dcFlag>
+				<extFeilds>{"mobile":"15000956051"}</extFeilds>
+				<orderNo>${orderNo}</orderNo>
+				<paymentMode>134217728</paymentMode> <!-- 00-22全部的是 8388607  -->
+				<productCode>100040010000</productCode>
+				<registerFlag>0</registerFlag>
+				<subLedgerFlag>0</subLedgerFlag>
+				<toCustomerId>1000010000000734</toCustomerId> 
+				<tranDetails>
+					<currencyCode>CNY</currencyCode>
+					<payAcctId>1001</payAcctId>
+					<payAmt>2200000</payAmt>
+					<payType>27</payType>
+				</tranDetails>
+				<transAmt>2200000</transAmt>
+				<transFactAmt>2200000</transFactAmt>
+				<transType>62</transType>
+			</arg0>
+		</ns2:checkInAndPayWithPayType>
+	</soap:Body>
+</soap:Envelope>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+						http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+						http://www.springframework.org/schema/context 
+						http://www.springframework.org/schema/context/spring-context-3.2.xsd
+						http://www.springframework.org/schema/aop 
+						http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+						http://www.springframework.org/schema/tx 
+						http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+						http://www.springframework.org/schema/util 
+						http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<context:component-scan base-package="com.hrbb.loan.pos.service.impl,com.hrbb.loan.sale.service.impl" />
+	<!--<context:component-scan base-package="com.jiutong"/> -->
+	<bean name="txManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- AOP配置事物 -->
+	<tx:advice id="transactionAdvice" transaction-manager="txManager">
+		<tx:attributes>
+			<tx:method name="query*"  propagation="REQUIRED" />
+			<tx:method name="delete*" propagation="REQUIRED" />
+			<tx:method name="update*" propagation="REQUIRED" />
+			<tx:method name="insert*" propagation="REQUIRED" />
+			<tx:method name="get*" propagation="REQUIRED" />
+			<tx:method name="create*" propagation="REQUIRED"/>
+			<tx:method name="creditApply*" propagation="REQUIRED"/>
+			<tx:method name="creditInvestigate*" propagation="REQUIRED"/>
+			<tx:method name="*" propagation="REQUIRED" />
+		</tx:attributes>
+	</tx:advice>
+
+	<!-- 配置AOP切面 -->
+	<aop:config>
+		<aop:pointcut id="transactionPointcut"
+			expression="execution(* com.hrbb.loan.pos.service.*.*(..))"/>
+		<aop:pointcut id="transactionPointcut2"
+			expression="execution(* com.hrbb.loan.pos.biz.backstage.inter.*.*(..))"/>
+		<aop:advisor pointcut-ref="transactionPointcut"
+			advice-ref="transactionAdvice" />
+			<aop:advisor pointcut-ref="transactionPointcut2"
+			advice-ref="transactionAdvice" />
+	</aop:config>
+	
+	
+	
+	
+</beans>

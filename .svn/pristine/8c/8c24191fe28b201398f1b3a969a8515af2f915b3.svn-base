@@ -1,0 +1,34 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.service.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.hrbb.loan.pos.dao.TPDFParamDao;
+import com.hrbb.loan.pos.dao.entity.TPDFParam;
+import com.hrbb.loan.pos.service.PdfService;
+
+/**
+ * @author yida
+ * @date 2015年11月10日 下午3:00:15
+ */
+
+@Service("pdfService")
+public class PdfServiceImpl implements PdfService {
+
+    @Autowired
+    private TPDFParamDao pdfParamDao; 
+    
+    public int insert(TPDFParam pdfParam) {
+        return pdfParamDao.insertSelective(pdfParam);
+    }
+
+    public TPDFParam selectByContNo(String contNo) {
+        return pdfParamDao.selectByPrimaryKey(contNo);
+    }
+
+}

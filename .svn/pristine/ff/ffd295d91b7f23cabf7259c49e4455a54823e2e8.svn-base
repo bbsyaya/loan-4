@@ -1,0 +1,291 @@
+package com.hrbb.loan.ftp.client.param;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+
+import com.alibaba.fastjson.JSON;
+import com.hrbb.loan.ftp.client.utils.StringUtils;
+
+/**
+ * 应答处理.   
+ * 
+ * @author xiongshaogang
+ * @version $Id: ParamResBean.java, v 0.1 2015年3月21日 下午3:21:15 xiongshaogang Exp $
+ */
+public class ParamResBean implements Serializable{
+    private static final long serialVersionUID = 1L;
+    
+    private Map<String, Object> dataMap = new HashMap<String, Object>();
+
+    public void setKeyValue(String key, String value) {
+        dataMap.put(key, StringUtils.toEmpty(value));
+    }
+
+    /**
+     * 批量添加参数KEY对应的数据
+     * 
+     * @param map
+     * @return
+     */
+    public void putAll(Map map) {
+        if (map != null && map.size() > 0) {
+            Iterator iterator = map.keySet().iterator();
+            while (iterator.hasNext()) {
+                String key = (String) iterator.next();
+                dataMap.put(key, map.get(key));
+            }
+        }
+    }
+
+    public void putAll(Map map, Set removeKey) {
+        if (map != null && map.size() > 0) {
+            Iterator iterator = map.keySet().iterator();
+            while (iterator.hasNext()) {
+                String key = (String) iterator.next();
+                if (removeKey != null && removeKey.contains(key)) {
+                    continue;
+                }
+                dataMap.put(key, map.get(key));
+            }
+        }
+    }
+
+    public void remove(String key) {
+        dataMap.remove(key);
+    }
+
+    public String getValueByKey(String key) {
+        return (String) dataMap.get(key);
+    }
+    
+    /**
+     * @return 消息版本号
+     */
+    public String getVersion() {
+        return getValueByKey("Version");
+    }
+
+    /**
+     * @param version
+     *            消息版本号
+     */
+    public void setVersion(String version) {
+        dataMap.put("Version", version);
+    }
+    
+    public void setUUID(String uuid) {
+        dataMap.put("UUID", uuid);
+    }
+    
+    public String getUUID() {
+        return getValueByKey("UUID");
+    }
+
+    /**
+     * @return 业务类型
+     */
+    public String getBizType() {
+        return getValueByKey("BizType");
+    }
+
+    /**
+     * @param busiType
+     *            业务类型
+     */
+    public void setBizType(String bizType) {
+        dataMap.put("BizType", bizType);
+    }
+
+    /**
+     * @return 交易类型
+     */
+    public String getTransType() {
+        return getValueByKey("TransType");
+    }
+
+    /**
+     * @param transType
+     *            交易类型
+     */
+    public void setTransType(String transType) {
+        dataMap.put("TransType", transType);
+    }
+    
+    public void setCustId(String custId) {
+        dataMap.put("CustId", custId);
+    }
+    
+    public String getCustId() {
+        return getValueByKey("CustId");
+    }
+    
+    public void setApplyNo(String applyNo) {
+        dataMap.put("ApplyNo", applyNo);
+    }
+    
+    public String getApplyNo() {
+        return getValueByKey("ApplyNo");
+    }
+    
+    public void setRespCode(String respCode) {
+        setKeyValue("RespCode", respCode);
+    }
+    
+    public String getRespCode() {
+        return getValueByKey("RespCode");
+    }
+    
+    public void setRespMsg(String respMsg) {
+        setKeyValue("RespMsg", respMsg);
+    }
+    
+    public String getRespMsg() {
+        return getValueByKey("RespMsg");
+    }
+    
+    public Map getDataMap() {
+        return dataMap;
+    }
+    
+    public String[] getFileNames() {
+        if (getValueByKey("FileNames") != null) {
+            return getValueByKey("FileNames").split("[|]", -1);
+        }
+        return null;
+    }
+    
+    public String[] getFilePaths(){
+        if (getValueByKey("FilePaths") != null) {
+            return getValueByKey("FilePaths").split("[|]",-1);
+        }
+        return null;
+    }
+    
+    public String[] getTextPaths(){
+        if (getValueByKey("TextPaths") != null) {
+            return getValueByKey("TextPaths").split("[|]",-1);
+        }
+        return null;
+    }
+
+    /**
+     * 转换成字符串
+     * 
+     * @return
+     */
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        for (Iterator iterator = dataMap.keySet().iterator(); iterator.hasNext();) {
+            String key = (String) iterator.next();
+            sb.append(key).append("=[").append(dataMap.get(key)).append("];");
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 转换成参数列表
+     * 
+     * @return
+     */
+    public List toParamList() {
+        List paramList = new ArrayList();
+        for (Iterator iterator = dataMap.keySet().iterator(); iterator.hasNext();) {
+            String key = (String) iterator.next();
+            ParamKeyBean bean = new ParamKeyBean();
+            bean.setKey(key);
+            bean.setValue(StringUtils.toEmpty((String) dataMap.get(key)));
+            paramList.add(bean);
+        }
+        return paramList;
+    }
+    
+    public void parseJson(String json) {
+        dataMap = JSON.parseObject(json, Map.class);
+    }
+    
+    public String toJsonStr() {
+        return JSON.toJSONString(dataMap);
+    }
+    
+    public String toURLParam() {
+        return getURLParam(dataMap, false, null);
+    }
+    
+    public String getURLParam(Map map, boolean isSort, Set removeKey) {
+        StringBuffer param = new StringBuffer();
+        List msgList = new ArrayList();
+        for (Iterator it = map.keySet().iterator(); it.hasNext();) {
+            String key = (String) it.next();
+            String value = (String) map.get(key);
+            if (removeKey != null && removeKey.contains(key)) {
+                continue;
+            }
+            msgList.add(key + "=" + StringUtils.toEmpty(value));
+        }
+
+        if (isSort) {
+            // 排序
+            Collections.sort(msgList);
+        }
+
+        for (int i = 0; i < msgList.size(); i++) {
+            String msg = (String) msgList.get(i);
+            if (i > 0) {
+                param.append("&");
+            }
+            param.append(msg);
+        }
+
+        return param.toString();
+    }
+    
+    public void parseResponse(String msg) {
+        int beginIndex = 0;
+        int endIndex = 0;
+        while (true) {
+            // 解析参数名
+            endIndex = msg.indexOf("=", beginIndex);
+            String key = null;
+            String value = null;
+            if (endIndex > beginIndex) {
+                key = msg.substring(beginIndex, endIndex);
+            } else {
+                break;
+            }
+            // 解析参数值
+            beginIndex = endIndex + 1;
+            endIndex = msg.indexOf("&", beginIndex);
+            if (endIndex >= beginIndex) {
+                value = msg.substring(beginIndex, endIndex);
+                this.setKeyValue(key, value);
+                // 移动游标
+                beginIndex = endIndex + 1;
+            } else {
+                value = msg.substring(beginIndex);
+                this.setKeyValue(key, value);
+                break;
+            }
+        }
+    }
+    
+    public static void main(String[] args) {
+        ParamReqBean bean = new ParamReqBean();
+        bean.setCustId("123435353");
+        bean.setBizType("001");
+        bean.setApplyNo("325235252532323232323");
+        System.out.println(bean.toJsonStr());
+        ParamResBean resBean = new ParamResBean();
+        resBean.parseJson(bean.toJsonStr());
+        System.out.println(resBean.getDataMap());
+        System.out.println(resBean.toURLParam());
+    }
+}

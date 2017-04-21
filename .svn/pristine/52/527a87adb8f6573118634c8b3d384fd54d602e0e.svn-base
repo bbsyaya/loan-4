@@ -1,0 +1,752 @@
+package com.hrbb.loan.controller;
+
+import java.io.File;
+import java.io.PrintWriter;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
+
+import jodd.util.StringUtil;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.biz.backstage.inter.ILoanPosBusinessCodeBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.impl.reader.BDRowReader;
+import com.hrbb.loan.pos.dao.entity.TBdExecutor;
+import com.hrbb.loan.pos.dao.entity.TBdInstitution;
+import com.hrbb.loan.pos.dao.entity.TBdRegion;
+import com.hrbb.loan.pos.service.BDManagementService;
+import com.hrbb.loan.pos.util.ListUtil;
+import com.hrbb.loan.pos.util.excel.ExcelReaderUtil;
+
+/**
+ * 展业机构管理
+ * 
+ * @author cjq
+ * @version $Id: BDManagementController.java, v 0.1 2015年9月10日 下午2:21:11 cjq Exp $
+ */
+@Controller
+@RequestMapping("/bdManagement")
+public class BDManagementController {
+
+    private Logger                  logger = LoggerFactory.getLogger(BDManagementController.class);
+
+    @Autowired
+    private BDManagementService     bdManagementService;
+
+    @Autowired
+    private ILoanPosBusinessCodeBiz loanPosBusinessCodeBiz;
+    
+    
+    private List<Map<String, Object>> provinceList;
+    
+    
+    @PostConstruct
+    public void loadDictionary() {
+        provinceList = loanPosBusinessCodeBiz.getProvinceCityOrDic("__0000");
+    }
+    
+    
+
+    /**
+     * 展业机构列表
+     * 
+     * @param pageSize
+     * @param pageNo
+     * @param request
+     * @param out
+     * @return
+     */
+    @RequestMapping("/queryBDInstitution")
+    public ModelAndView queryBDInstitution(@RequestParam(value = "rows", required = false) Integer pageSize,
+                                           @RequestParam(value = "page", required = false) Integer pageNo,
+                                           HttpServletRequest request, PrintWriter out) {
+        Map<String, Object> reqMap = Maps.newHashMap();
+        reqMap.put("startPage", (pageNo - 1) * pageSize);
+        reqMap.put("limit", pageSize);
+        List<TBdInstitution> lists = bdManagementService.queryTbdInstitutions(reqMap);
+        long total = bdManagementService.countTbdInstitutions(reqMap);
+        JSONObject json = new JSONObject();
+        if (null != lists && lists.size() > 0) {
+            json.put("total", total);
+            json.put("rows", lists);
+        } else {
+            json.put("total", 0);
+            json.put("rows", lists);
+        }
+        out.write(json.toJSONString());
+        return null;
+    }
+
+    /**
+     * 展业人员类列表
+     * 
+     * @param pageSize
+     * @param pageNo
+     * @param belongOrg
+     * @param request
+     * @param out
+     * @return
+     */
+    @RequestMapping("/queryBDExecutor")
+    public ModelAndView queryBDExecutor(@RequestParam(value = "rows", required = false) Integer pageSize,
+                                        @RequestParam(value = "page", required = false) Integer pageNo,
+                                        HttpServletRequest request, PrintWriter out) {
+        JSONObject json = new JSONObject();
+        Map<String, Object> reqMap = Maps.newHashMap();
+        if (StringUtil.isNotEmpty(request.getParameter("belongOrg"))) {
+            reqMap.put("belongOrg", request.getParameter("belongOrg"));
+        }
+        if(StringUtil.isNotEmpty(request.getParameter("menberName"))){
+            reqMap.put("menberName", request.getParameter("menberName"));
+        }
+        if(StringUtil.isNotEmpty(request.getParameter("certNo"))){
+            reqMap.put("certNo", request.getParameter("certNo"));
+        }
+        reqMap.put("startPage", (pageNo - 1) * pageSize);
+        reqMap.put("limit", pageSize);
+        List<TBdExecutor> lists = bdManagementService.queryBDExecutors(reqMap);
+        long total = bdManagementService.countTbdExecutors(reqMap);
+        if (null != lists && lists.size() > 0) {
+            json.put("total", total);
+            json.put("rows", lists);
+        } else {
+            json.put("total", 0);
+            json.put("rows", lists);
+        }
+        out.write(json.toJSONString());
+        return null;
+    }
+
+    /**
+     * 新增机构窗口
+     * 
+     * @return
+     */
+    @RequestMapping("/openAddInstitutionWindow")
+    public ModelAndView openAddInstitutionWindow() {
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("oprFlag", "0");//0代表新增
+        mav.setViewName("bdManagement/detailInstitutionInfo");
+        return mav;
+    }
+
+    /**
+     * 新增机构
+     * 
+     * @param request
+     * @param out
+     * @return
+     */
+    @RequestMapping(value="/addInstitutionWindow",method=RequestMethod.POST)
+    public ModelAndView addInstitutionWindow(HttpServletRequest request, PrintWriter out) {
+        Map<String,Object> reqMap = Maps.newHashMap();
+        if(StringUtil.isNotEmpty((String)request.getParameter("orgName"))){
+            reqMap.put("orgName", (String)request.getParameter("orgName"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("licenseNo"))){
+            reqMap.put("licenseNo", (String)request.getParameter("licenseNo"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("alias"))){
+            reqMap.put("alias", (String)request.getParameter("alias"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("nameLR"))){
+            reqMap.put("nameLR", (String)request.getParameter("nameLR"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("phoneNoLR"))){
+            reqMap.put("phoneNoLR", (String)request.getParameter("phoneNoLR"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("certNoLR"))){
+            reqMap.put("certNoLR", (String)request.getParameter("certNoLR"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("regAddress"))){
+            reqMap.put("regAddress", (String)request.getParameter("regAddress"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("remark"))){
+            reqMap.put("remark", (String)request.getParameter("remark"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("manager"))){
+            reqMap.put("manager", (String)request.getParameter("manager"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("active"))){
+            reqMap.put("active", (String)request.getParameter("active"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("email"))){
+            reqMap.put("email",(String)request.getParameter("email"));
+        }
+        try {
+            if(bdManagementService.selectByBelongOrgName((String)reqMap.get("orgName")) != null){
+                out.print("该机构已存在");
+                return null;
+            }else{
+                int result = bdManagementService.saveInstitution(reqMap);
+                if(result>0){
+                    logger.info("展业机构新增成功,参数为[{}]",reqMap);
+                    out.print("新增成功");
+                    //更新机构所属下的人员归属
+                    TBdInstitution institution = bdManagementService.selectByBelongOrgName((String)reqMap.get("alias"));
+                    if(institution != null){
+                        bdManagementService.modifyExecutorByBelongOrgName(institution.getAlias(), institution.getOrgId());
+                    }
+                }else{
+                    logger.info("展业机构新增失败,参数为[{}]",reqMap);
+                    out.print("系统异常，新增机构失败");
+                }
+            }
+            return null;
+        } catch (Exception e) {
+            logger.error("新增机构失败", e);
+            out.print("系统异常，新增机构失败");
+            return null;
+        }
+    }
+
+    /**
+     * 修改机构窗口
+     * 
+     * @param orgId
+     * @return
+     */
+    @RequestMapping("/openModifyInstitutionWindow")
+    public ModelAndView openModifyAddInstitutionWindow(@RequestParam(value = "orgId", required = false) Integer orgId) {
+        ModelAndView mav = new ModelAndView();
+        if(orgId == null){
+            logger.info("机构号为空");
+            mav.addObject("oprFlag", "1");//1代表修改
+            mav.setViewName("bdManagement/detailInstitutionInfo");
+            return mav;
+        }
+        //查询展业机构
+        TBdInstitution institution = bdManagementService.selectByBelongOrg(orgId);
+        mav.addObject("institution",institution);
+        mav.addObject("oprFlag", "1");//1代表修改
+        mav.setViewName("bdManagement/detailInstitutionInfo");
+        return mav;
+    }
+
+    /**
+     * 修改机构
+     * 
+     * @param request
+     * @param out
+     * @return
+     */
+    @RequestMapping(value="/modifyInstitutionWindow",method=RequestMethod.POST)
+    public ModelAndView modifyInstitutionWindow(HttpServletRequest request, PrintWriter out) {
+        Map<String,Object> reqMap = Maps.newHashMap();
+        if(StringUtil.isNotEmpty((String)request.getParameter("orgId"))){
+            reqMap.put("orgId", Integer.parseInt((String)request.getParameter("orgId")));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("orgName"))){
+            reqMap.put("orgName", (String)request.getParameter("orgName"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("licenseNo"))){
+            reqMap.put("licenseNo", (String)request.getParameter("licenseNo"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("alias"))){
+            reqMap.put("alias", (String)request.getParameter("alias"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("nameLR"))){
+            reqMap.put("nameLR", (String)request.getParameter("nameLR"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("phoneNoLR"))){
+            reqMap.put("phoneNoLR", (String)request.getParameter("phoneNoLR"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("certNoLR"))){
+            reqMap.put("certNoLR", (String)request.getParameter("certNoLR"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("regAddress"))){
+            reqMap.put("regAddress", (String)request.getParameter("regAddress"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("remark"))){
+            reqMap.put("remark", (String)request.getParameter("remark"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("manager"))){
+            reqMap.put("manager", (String)request.getParameter("manager"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("active"))){
+            reqMap.put("active", (String)request.getParameter("active"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("email"))){
+            reqMap.put("email", (String)request.getParameter("email"));
+        }
+        try {
+            int result = bdManagementService.modifyInstitution(reqMap);
+            if(result>0){
+                logger.info("展业机构修改成功,参数为[{}]",reqMap);
+                out.print("修改成功");
+            }else{
+                logger.info("展业机构修改失败,参数为[{}]",reqMap);
+                out.print("系统异常，修改机构失败");
+            }
+        } catch (Exception e) {
+            logger.error("修改机构失败", e);
+            out.print("系统异常，修改机构失败");
+        }
+        return null;
+    }
+
+    /**
+     * 删除
+     * 
+     * @param orgId
+     * @param out
+     * @return
+     */
+    @RequestMapping(value="/deleteInstitution",method=RequestMethod.POST)
+    public ModelAndView deleteInstitution(@RequestParam(value="orgId",required=false)String orgId,PrintWriter out){
+        Map<String,Object> reqMap = Maps.newHashMap();
+        try {
+            if(StringUtil.isNotEmpty(orgId)){
+                reqMap.put("orgId", Integer.parseInt(orgId));
+            }
+            reqMap.put("active", "N");
+            int flag = bdManagementService.modifyInstitution(reqMap);
+            if(flag>0){
+                out.print("删除成功");
+                return null;
+            }else{
+                out.print("删除失败");
+                return null;
+            }
+        } catch (NumberFormatException e) {
+            logger.error("系统异常", e);
+            out.print("删除失败");
+            return null;
+        }
+    }
+    
+    /**
+     * 激活
+     * 
+     * @param orgId
+     * @param out
+     * @return
+     */
+    @RequestMapping(value="/activeInstitution",method=RequestMethod.POST)
+    public ModelAndView activeInstitution(@RequestParam(value="orgId",required=false)String orgId,PrintWriter out){
+        Map<String,Object> reqMap = Maps.newHashMap();
+        try {
+            if(StringUtil.isNotEmpty(orgId)){
+                reqMap.put("orgId", Integer.parseInt(orgId));
+            }
+            reqMap.put("active", "Y");
+            int flag = bdManagementService.modifyInstitution(reqMap);
+            if(flag>0){
+                out.print("激活成功");
+                return null;
+            }else{
+                out.print("激活失败");
+                return null;
+            }
+        } catch (NumberFormatException e) {
+            logger.error("系统异常", e);
+            out.print("激活失败");
+            return null;
+        }
+    }
+    
+    /**
+     * 
+     * @param belongOrg
+     * @return
+     */
+    @RequestMapping("/bdExecutorWindow")
+    public ModelAndView bdExecutorWindow(@RequestParam(value = "belongOrg", required = false) String belongOrg) {
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("belongOrg", belongOrg);
+        mav.setViewName("bdManagement/bdExecutorListNav");
+        return mav;
+    }
+    
+    /**
+     * 新增人员窗口
+     * 
+     * @return
+     */
+    @RequestMapping("/openAddExecutorWindow")
+    public ModelAndView openAddExecutorWindow() {
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("oprFlagExecutor", "0");//0代表新增
+        List<TBdInstitution> institutions = bdManagementService.queryTbdInstitutions();
+        mav.addObject("institutions", institutions);
+        mav.setViewName("bdManagement/detailExecutorInfo");
+        return mav;
+    }
+    
+    /**
+     * 修改人员窗口
+     * 
+     * @return
+     */
+    @RequestMapping("/openModifyExecutorWindow")
+    public ModelAndView openModifyExecutorWindow(@RequestParam(value="menberId",required=true)Integer menberId) {
+        ModelAndView mav = new ModelAndView();
+        if(menberId == null){
+            logger.info("展业人员编号为空");
+            mav.addObject("oprFlag", "1");//1代表修改
+            mav.setViewName("bdManagement/detailExecutorInfo");
+            return mav;
+        }
+        List<TBdInstitution> institutions = bdManagementService.queryTbdInstitutions();
+        mav.addObject("institutions", institutions);
+        //查询展业机构
+        TBdExecutor executor = bdManagementService.selectByMenberId(menberId);
+        mav.addObject("executor",executor);
+        mav.addObject("oprFlagExecutor", "1");//1代表修改
+        mav.setViewName("bdManagement/detailExecutorInfo");
+        return mav;
+    }
+    
+    /**
+     * 新增展业人员
+     * 
+     * @return
+     */
+    @RequestMapping("/addExecutorWindow")
+    public ModelAndView addExecutorWindow(HttpServletRequest request, PrintWriter out) {
+        Map<String,Object> reqMap = Maps.newHashMap();
+        if(StringUtil.isNotEmpty((String)request.getParameter("menberName"))){
+            reqMap.put("menberName", (String)request.getParameter("menberName"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("certNo"))){
+            reqMap.put("certNo", (String)request.getParameter("certNo"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("birthDate"))){
+            reqMap.put("birthDate", (String)request.getParameter("birthDate"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("sex"))){
+            reqMap.put("sex", (String)request.getParameter("sex"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("contactNo"))){
+            reqMap.put("contactNo", (String)request.getParameter("contactNo"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("belongOrg"))){
+            reqMap.put("belongOrg", (String)request.getParameter("belongOrg"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("email"))){
+            reqMap.put("email", (String)request.getParameter("email"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("address"))){
+            reqMap.put("address", (String)request.getParameter("address"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("remark"))){
+            reqMap.put("remark", (String)request.getParameter("remark"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("active"))){
+            reqMap.put("active", (String)request.getParameter("active"));
+        }
+        try{
+            int flag = bdManagementService.saveExecutor(reqMap);
+            if(flag>0){
+                logger.info("新增展业人员成功");
+                out.print("新增成功");
+                return null;
+            }else{
+                logger.info("新增展业人员失败");
+                out.print("新增失败");
+                return null;
+            }
+        }catch(Exception e){
+            logger.info("新增展业人员异常");
+            out.print("新增失败");
+            return null;
+        }
+    }
+    
+    /**
+     * 修改展业人员
+     * 
+     * @return
+     */
+    @RequestMapping("/modifyExecutorWindow")
+    public ModelAndView modifyExecutorWindow(HttpServletRequest request, PrintWriter out) {
+        Map<String,Object> reqMap = Maps.newHashMap();
+        if(StringUtil.isNotEmpty((String)request.getParameter("menberId"))){
+            reqMap.put("menberId", (String)request.getParameter("menberId"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("menberName"))){
+            reqMap.put("menberName", (String)request.getParameter("menberName"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("certNo"))){
+            reqMap.put("certNo", (String)request.getParameter("certNo"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("birthDate"))){
+            reqMap.put("birthDate", (String)request.getParameter("birthDate"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("sex"))){
+            reqMap.put("sex", (String)request.getParameter("sex"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("contactNo"))){
+            reqMap.put("contactNo", (String)request.getParameter("contactNo"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("belongOrg"))){
+            reqMap.put("belongOrg", (String)request.getParameter("belongOrg"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("email"))){
+            reqMap.put("email", (String)request.getParameter("email"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("address"))){
+            reqMap.put("address", (String)request.getParameter("address"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("remark"))){
+            reqMap.put("remark", (String)request.getParameter("remark"));
+        }
+        if(StringUtil.isNotEmpty((String)request.getParameter("active"))){
+            reqMap.put("active", (String)request.getParameter("active"));
+        }
+        try{
+            int flag = bdManagementService.modifyExector(reqMap);
+            if(flag>0){
+                logger.info("修改展业人员成功");
+                out.print("修改成功");
+                return null;
+            }else{
+                logger.info("修改展业人员失败");
+                out.print("修改失败");
+                return null;
+            }
+        }catch(Exception e){
+            logger.info("修改展业人员异常");
+            out.print("修改失败");
+            return null;
+        }
+    }
+    
+    /**
+     * excel批量导入窗口
+     * 
+     * @return
+     */
+    @RequestMapping("/excelImportWindow")
+    public ModelAndView excelImportWindow(){
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("bdManagement/excelImport");
+        return mav;
+    }
+    /**
+     *  
+     * excel批量导入
+     * 
+     * @param multipartFile
+     * @return
+     */
+    @RequestMapping(value = "/confirm")
+    public ModelAndView confirm(@RequestParam(value="excelImportBatch",required=true)MultipartFile[] multipartFile,
+                                PrintWriter out){
+        if(multipartFile.length<=0){
+            out.print("文件不能为空");
+            return null;
+        }
+        JSONObject json = new JSONObject();
+        String fileName = multipartFile[0].getOriginalFilename();
+        File file = new File(fileName);
+        try {
+            multipartFile[0].transferTo(file);
+            List<Map<String,Object>> insertList = Lists.newArrayList();
+            BDRowReader reader = new BDRowReader();
+            reader.addHandleList(insertList);
+            reader.addService(bdManagementService);
+            ExcelReaderUtil.readExcel(reader, file.getAbsolutePath());
+
+            if (ListUtil.isNotEmpty(insertList)) {
+                for (Map<String,Object> insertMap : insertList) {
+                    //构建对象
+                    TBdExecutor executor = new TBdExecutor();
+                    executor.setBelongOrgName((String)insertMap.get("belongOrgName"));
+                    executor.setMenberName((String)insertMap.get("menberName"));
+                    executor.setCertNo((String)insertMap.get("certNo"));
+                    executor.setContactNo((String)insertMap.get("contactNo"));
+                    executor.setEmail((String)insertMap.get("email"));
+                    executor.setAddress((String)insertMap.get("address"));
+                    executor.setActive("Y");
+                    bdManagementService.importExcelExecutor(executor);
+                }
+                insertList.clear();
+            }
+            json.put("resultCode", "000");
+            json.put("resultMsg", "导入成功");
+            out.write(json.toJSONString());
+            return null;
+        } catch (Exception e) {
+            logger.error("excel解析异常", e);
+            json.put("resultCode", "999");
+            json.put("resultMsg", "系统异常，导入失败");
+            out.write(json.toJSONString());
+        }finally{
+            if (file.exists()) {
+                file.delete();
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * 打开展业区域管理
+     * 
+     * @param request
+     * @param out
+     * @return
+     */
+    @RequestMapping(value="/openRegionWindow")
+    public ModelAndView openRegionWindow(@RequestParam(value = "orgId", required = true) Integer orgId) {
+        ModelAndView mav = new ModelAndView();
+        
+        mav.addObject("province", provinceList);
+        mav.addObject("orgId", orgId);
+        mav.setViewName("bdManagement/regionManage");
+        return mav;
+    }
+        
+    
+    /**
+     * 展业区域配置列表
+     * 
+     * @param pageSize
+     * @param pageNo
+     * @param request
+     * @param out
+     * @return
+     */
+    @RequestMapping("/queryRegionConfig")
+    public ModelAndView queryRegionConfig(@RequestParam(value = "rows", required = false) Integer pageSize,
+                                           @RequestParam(value = "page", required = false) Integer pageNo,
+                                           @RequestParam(value = "orgId", required = true) Integer orgId,
+                                           HttpServletRequest request, PrintWriter out) {
+        Map<String, Object> reqMap = Maps.newHashMap();
+        reqMap.put("startPage", (pageNo - 1) * pageSize);
+        reqMap.put("limit", pageSize);
+        reqMap.put("orgId", orgId);
+        List<TBdRegion> lists = bdManagementService.queryTBdRegion(reqMap);
+        for(TBdRegion r:lists){
+            List<Map<String, Object>> objList;
+            objList = loanPosBusinessCodeBiz.getProvinceCityOrDic(r.getRegion());
+            String regionName = (String) objList.get(0).get("itemName");
+            r.setRegionName(regionName);
+            if("1".equals(r.getStatus())){
+                r.setInclude("包含");
+            }else{
+                r.setInclude("不包含");
+            }
+            
+        }
+        Long total = bdManagementService.countRegion(reqMap);
+        JSONObject json = new JSONObject();
+        if (null != lists && lists.size() > 0) {
+            json.put("total", total);
+            json.put("rows", lists);
+        } else {
+            json.put("total", 0);
+            json.put("rows", lists);
+        }
+        out.write(json.toJSONString());
+        return null;
+    }
+    
+    /**
+     * 增加展业区域配置
+     */
+    @RequestMapping("/addRegionConfig")
+    public ModelAndView addRegionConfig(@RequestParam(value = "include", required = true) String include,
+                                        @RequestParam(value = "regionNo", required = true) String regionNo,
+                                        @RequestParam(value = "orgId", required = true) Integer orgId,
+                                        HttpServletRequest request, PrintWriter out){
+        
+        TBdRegion tBdRegion = new TBdRegion();
+        tBdRegion.setOrgId(orgId);
+        tBdRegion.setRegion(regionNo);
+        tBdRegion.setStatus(include);
+        tBdRegion.setCreateTime(new Date());
+        tBdRegion.setUpdateTime(new Date());
+        Integer rst = null;
+        try {
+            rst = bdManagementService.saveRegion(tBdRegion);
+            if(rst>0){
+                out.print("展业区域配置成功！");
+                return null;
+            }else{
+                out.print("展业区域配置失败！");
+                return null;
+            }
+        } catch (Exception e) {
+            logger.error("展业区域配置失败，参数为[{}]", tBdRegion);
+            out.print("展业区域配置失败！");
+            return null;
+        }
+    }
+    
+    /**
+     * 删除展业区域配置
+     */
+    @RequestMapping("/delRegionConfig")
+    public ModelAndView delRegionConfig(
+                         @RequestParam(value = "region", required = true) String region,
+                         @RequestParam(value = "orgId", required = true) Integer orgId,
+                         HttpServletRequest request, PrintWriter out){
+        Map<String, Object> reqMap = Maps.newHashMap();
+        reqMap.put("region", region);
+        reqMap.put("orgId", orgId);
+        Integer rst = null;
+        try {
+            rst = bdManagementService.delRegion(reqMap);
+            if(rst>0){
+                out.print("展业区域删除成功！");
+                return null;
+            }else{
+                out.print("展业区域删除失败！");
+                return null;
+            }
+        } catch (Exception e) {
+            logger.error("展业区域删除失败，参数为[{}]", reqMap);
+            out.print("展业区域删除失败！");
+            return null;
+        }
+    }
+    
+    /**
+     * 激活展业人员
+     * 
+     * @return
+     */
+    @RequestMapping("activeExecutor")
+    public ModelAndView activeExecutor(@RequestParam(value="menberId",required=true) Integer menberId,PrintWriter out){
+        int flag = bdManagementService.activeExector(menberId);
+        if(flag>0){
+            out.print("激活成功");
+        }else{
+            out.print("激活失败");
+        }
+        return null;
+        
+    }
+    /**
+     * 删除展业人员
+     * 
+     * @return
+     */
+    @RequestMapping("deleteExecutor")
+    public ModelAndView deleteExecutor(@RequestParam(value="menberId",required=true) Integer menberId,PrintWriter out){
+        int flag = bdManagementService.deleteExector(menberId);
+        if(flag>0){
+            out.print("删除成功");
+        }else{
+            out.print("删除失败");
+        }
+        return null;
+        
+    }
+}

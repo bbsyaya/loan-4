@@ -1,0 +1,57 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.hrbb.loan.pos.dao.TMessageDao;
+import com.hrbb.loan.pos.dao.TMessageHistDao;
+import com.hrbb.loan.pos.dao.entity.TMessage;
+import com.hrbb.loan.pos.dao.entity.TMessageHist;
+import com.hrbb.loan.pos.service.LoanPosMessageService;
+
+/**
+ * 
+ * @author byp
+ * @version $Id: LoanPosMessageService.java, v 0.1 2015年3月17日 下午3:29:44 byp Exp $
+ */
+@Service("loanPosMessageService")
+public class LoanPosMessageServiceImpl implements LoanPosMessageService {
+    
+    @Autowired
+    private TMessageDao tMessageDao;
+    
+    @Autowired
+    private TMessageHistDao tMessageHistDao;
+    
+    public int deleteById(Integer id) {
+        return tMessageDao.deleteById(id);
+    }
+
+    @Override
+    public int insert(TMessage record) {
+        return tMessageDao.insert(record);
+    }
+    
+    public List<TMessage> selectAll() {
+        return tMessageDao.selectAll();
+    }
+
+	@Override
+	public void insertMessageHist(TMessageHist record) {
+		tMessageHistDao.insertMessageHist(record);
+		
+	}
+	
+	public List<TMessage> selectByMap(Map map) {
+        return tMessageDao.selectByMap(map);
+    }
+
+}

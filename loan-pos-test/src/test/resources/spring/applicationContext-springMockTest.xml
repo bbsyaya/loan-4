@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    	http://www.springframework.org/schema/jdbc
+    	http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+    	http://www.springframework.org/schema/aop 
+   		http://www.springframework.org/schema/aop/spring-aop-3.0.xsd" >
+    	
+    
+    <!-- 
+    <jdbc:initialize-database data-source="dataSource">
+    	<jdbc:script location="classpath:test.sql"/>
+    </jdbc:initialize-database>
+     -->
+    
+    <bean class="test.com.pinganfu.transcore.mock.DataSourceMock" />
+    
+    
+    <!--  PrepayCardQueryClientMock ,FinexchangeoutClientMock 没有实现Mock返回值-->	
+ 	
+  	<bean class="test.com.pinganfu.transcore.mock.cip.AccountQueryServiceClientMock" />
+  	<bean class="test.com.pinganfu.transcore.mock.cip.FastPayClientMock" />
+  	<bean class="test.com.pinganfu.transcore.mock.cip.BankCardClientMock"/>
+  	<bean class="test.com.pinganfu.transcore.mock.cip.PrepayCardQueryClientMock"/>  
+  	
+  	<bean class="test.com.pinganfu.transcore.mock.PayEngineClientMock"/>
+  	<bean class="test.com.pinganfu.transcore.mock.PayEngineRevocationClientMock"/>
+
+  	<bean class="test.com.pinganfu.transcore.mock.MarketClientMock" />
+  	<bean class="test.com.pinganfu.transcore.mock.MarketCouponUseRecClientMock" />
+  	
+  	<bean class="test.com.pinganfu.transcore.mock.AcctQryAcctClientMock"/>
+  	<bean class="test.com.pinganfu.transcore.mock.AcctQueryClientMock"/>
+  	
+	<bean class="test.com.pinganfu.transcore.mock.FeeBillingClientMock" />
+ 	<bean class="test.com.pinganfu.transcore.mock.RiskCheckClientMock" />  	
+  	<bean class="test.com.pinganfu.transcore.mock.BusinessClientMock" />
+  	<bean class="test.com.pinganfu.transcore.mock.MBPClientMock"/>
+  	<bean class="test.com.pinganfu.transcore.mock.FinexchangeoutClientMock"/>
+  	<bean class="test.com.pinganfu.transcore.mock.PayDecisionClientMock"/>  
+  	
+</beans>
+
+

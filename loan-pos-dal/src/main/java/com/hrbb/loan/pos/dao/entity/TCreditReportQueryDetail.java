@@ -1,0 +1,145 @@
+package com.hrbb.loan.pos.dao.entity;
+
+import java.io.Serializable;
+
+public class TCreditReportQueryDetail implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4695316256514126972L;
+
+	private String serialNo;
+
+	private String reportNo;
+
+	private String queryDate;
+
+	private String querier;
+
+	private String reason;
+
+	private int countSerialNo;
+
+	// 相差天数
+	private int days;
+
+	private int count;
+
+	private String queryId;
+
+	/**
+	 * Getter method for property <tt>queryId</tt>.
+	 * 
+	 * @return property value of queryId
+	 */
+	public String getQueryId() {
+		return queryId;
+	}
+
+	/**
+	 * Setter method for property <tt>queryId</tt>.
+	 * 
+	 * @param queryId
+	 *            value to be assigned to property queryId
+	 */
+	public void setQueryId(String queryId) {
+		this.queryId = queryId;
+	}
+
+	/**
+	 * Getter method for property <tt>count</tt>.
+	 * 
+	 * @return property value of count
+	 */
+	public int getCount() {
+		return count;
+	}
+
+	/**
+	 * Setter method for property <tt>count</tt>.
+	 * 
+	 * @param count
+	 *            value to be assigned to property count
+	 */
+	public void setCount(int count) {
+		this.count = count;
+	}
+
+	/**
+	 * Getter method for property <tt>days</tt>.
+	 * 
+	 * @return property value of days
+	 */
+	public int getDays() {
+		return days;
+	}
+
+	/**
+	 * Setter method for property <tt>days</tt>.
+	 * 
+	 * @param days
+	 *            value to be assigned to property days
+	 */
+	public void setDays(int days) {
+		this.days = days;
+	}
+
+	/**
+	 * Getter method for property <tt>countSerialNo</tt>.
+	 * 
+	 * @return property value of countSerialNo
+	 */
+	public int getCountSerialNo() {
+		return countSerialNo;
+	}
+
+	/**
+	 * Setter method for property <tt>countSerialNo</tt>.
+	 * 
+	 * @param countSerialNo
+	 *            value to be assigned to property countSerialNo
+	 */
+	public void setCountSerialNo(int countSerialNo) {
+		this.countSerialNo = countSerialNo;
+	}
+
+	public String getSerialNo() {
+		return serialNo;
+	}
+
+	public void setSerialNo(String serialNo) {
+		this.serialNo = serialNo == null ? null : serialNo.trim();
+	}
+
+	public String getReportNo() {
+		return reportNo;
+	}
+
+	public void setReportNo(String reportNo) {
+		this.reportNo = reportNo == null ? null : reportNo.trim();
+	}
+
+	public String getQueryDate() {
+		return queryDate;
+	}
+
+	public void setQueryDate(String queryDate) {
+		this.queryDate = queryDate == null ? null : queryDate.trim();
+	}
+
+	public String getQuerier() {
+		return querier;
+	}
+
+	public void setQuerier(String querier) {
+		this.querier = querier == null ? null : querier.trim();
+	}
+
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason == null ? null : reason.trim();
+	}
+}

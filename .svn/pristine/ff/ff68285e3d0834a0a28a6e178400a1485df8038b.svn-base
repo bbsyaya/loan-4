@@ -1,0 +1,116 @@
+package com.hrbb.loan.controller;
+
+import java.io.PrintWriter;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import jodd.util.StringUtil;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.biz.backstage.inter.ILoanPosBusinessCodeBiz;
+import com.hrbb.loan.pos.dao.entity.TBdExecutor;
+import com.hrbb.loan.pos.dao.entity.TBdInstitution;
+import com.hrbb.loan.pos.service.BDManagementService;
+
+/**
+ * 展业机构管理
+ * 
+ * @author cjq
+ * @version $Id: BDManagementController.java, v 0.1 2015年9月10日 下午2:21:11 cjq Exp $
+ */
+@Controller
+@RequestMapping("/bdManagement")
+public class BDManagementController {
+    
+    private Logger logger = LoggerFactory.getLogger(BDManagementController.class);
+    
+    @Autowired
+    private BDManagementService bdManagementService;
+    
+    @Autowired
+    private ILoanPosBusinessCodeBiz loanPosBusinessCodeBiz;
+    
+    /**
+     * 展业机构列表
+     * 
+     * @param pageSize
+     * @param pageNo
+     * @param request
+     * @param out
+     * @return
+     */
+    @RequestMapping("/queryBDInstitution")
+    public ModelAndView queryBDInstitution( @RequestParam(value = "rows", required = false) Integer pageSize,
+                                            @RequestParam(value = "page", required = false) Integer pageNo, 
+                                            HttpServletRequest request,PrintWriter out){
+        Map<String,Object> reqMap = Maps.newHashMap();
+        reqMap.put("startPage", (pageNo - 1) * pageSize);
+        reqMap.put("limit", pageSize);
+        List<TBdInstitution> lists = bdManagementService.queryTbdInstitutions(reqMap);
+        long total = bdManagementService.countTbdInstitutions(reqMap);
+        JSONObject json = new JSONObject();
+        if(null != lists && lists.size()>0){
+            json.put("total", total);
+            json.put("rows", lists);
+        }else{
+            json.put("total", 0);
+            json.put("rows", lists);
+        }
+        out.write(json.toJSONString());
+        return null;
+    }
+    
+    /**
+     * 展业人员类列表
+     * 
+     * @param pageSize
+     * @param pageNo
+     * @param belongOrg
+     * @param request
+     * @param out
+     * @return
+     */
+    @RequestMapping("/queryBDExecutor")
+    public ModelAndView queryBDExecutor( @RequestParam(value = "rows", required = false) Integer pageSize,
+                                         @RequestParam(value = "page", required = false) Integer pageNo, 
+                                         @RequestParam(value="belongOrg",required=false)String belongOrg,
+                                         HttpServletRequest request,PrintWriter out){
+        JSONObject json = new JSONObject();
+        Map<String,Object> reqMap = Maps.newHashMap();
+        if(StringUtil.isNotEmpty(belongOrg)){
+            reqMap.put("belongOrg", belongOrg);
+        }
+        reqMap.put("startPage", (pageNo - 1) * pageSize);
+        reqMap.put("limit", pageSize);
+        List<TBdExecutor> lists = bdManagementService.queryBDExecutors(reqMap);
+        long total = bdManagementService.countTbdExecutors(reqMap);
+        if(null != lists && lists.size()>0){
+            json.put("total", total);
+            json.put("rows", lists);
+        }else{
+            json.put("total", 0);
+            json.put("rows", lists);
+        }
+        out.write(json.toJSONString());
+        return null;
+    }
+    
+    @RequestMapping("/bdExecutorWindow")
+    public ModelAndView bdExecutorWindow(@RequestParam(value="belongOrg",required=false)String belongOrg){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("belongOrg",belongOrg);
+        mav.setViewName("bdManagement/bdExecutorNav");
+        return mav;
+    }
+}

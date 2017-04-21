@@ -1,0 +1,16 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:fram="http://framework.facade.common.transcore.pinganfu.com/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <fram:execOfflineRevPay>
+         <arg0>
+            <extFeilds>{"aaa":"bb"}</extFeilds>
+            <orderNo>${orderNo}</orderNo>
+            <payType>11</payType>
+            <transAmt>100000000</transAmt>
+            <transFactAmt>100000000</transFactAmt>
+            <transId>${transId}</transId>
+            <transType>48</transType>
+         </arg0>
+      </fram:execOfflineRevPay>
+   </soapenv:Body>
+</soapenv:Envelope>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCfgChannelAccountMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCfgChannelAccount" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="channel" property="channel" jdbcType="VARCHAR" />
+    <result column="accountPayBack" property="accountPayBack" jdbcType="VARCHAR" />
+    <result column="accountIssue" property="accountIssue" jdbcType="VARCHAR" />
+    <result column="createDate" property="createDate" jdbcType="DATE" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="expiredDate" property="expiredDate" jdbcType="DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, channel, accountPayBack, accountIssue, createDate, status, expiredDate
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_cfg_channel_accounts
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_cfg_channel_accounts
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCfgChannelAccount" >
+    insert into t_cfg_channel_accounts (id, channel, accountPayBack, 
+      accountIssue, createDate, status, 
+      expiredDate)
+    values (#{id,jdbcType=INTEGER}, #{channel,jdbcType=VARCHAR}, #{accountPayBack,jdbcType=VARCHAR}, 
+      #{accountIssue,jdbcType=VARCHAR}, #{createDate,jdbcType=DATE}, #{status,jdbcType=VARCHAR}, 
+      #{expiredDate,jdbcType=DATE})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCfgChannelAccount" >
+    insert into t_cfg_channel_accounts
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="channel != null" >
+        channel,
+      </if>
+      <if test="accountPayBack != null" >
+        accountPayBack,
+      </if>
+      <if test="accountIssue != null" >
+        accountIssue,
+      </if>
+      <if test="createDate != null" >
+        createDate,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="expiredDate != null" >
+        expiredDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="channel != null" >
+        #{channel,jdbcType=VARCHAR},
+      </if>
+      <if test="accountPayBack != null" >
+        #{accountPayBack,jdbcType=VARCHAR},
+      </if>
+      <if test="accountIssue != null" >
+        #{accountIssue,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=DATE},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="expiredDate != null" >
+        #{expiredDate,jdbcType=DATE},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCfgChannelAccount" >
+    update t_cfg_channel_accounts
+    <set >
+      <if test="channel != null" >
+        channel = #{channel,jdbcType=VARCHAR},
+      </if>
+      <if test="accountPayBack != null" >
+        accountPayBack = #{accountPayBack,jdbcType=VARCHAR},
+      </if>
+      <if test="accountIssue != null" >
+        accountIssue = #{accountIssue,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        createDate = #{createDate,jdbcType=DATE},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="expiredDate != null" >
+        expiredDate = #{expiredDate,jdbcType=DATE},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCfgChannelAccount" >
+    update t_cfg_channel_accounts
+    set channel = #{channel,jdbcType=VARCHAR},
+      accountPayBack = #{accountPayBack,jdbcType=VARCHAR},
+      accountIssue = #{accountIssue,jdbcType=VARCHAR},
+      createDate = #{createDate,jdbcType=DATE},
+      status = #{status,jdbcType=VARCHAR},
+      expiredDate = #{expiredDate,jdbcType=DATE}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="getEffectAccount"  resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from t_cfg_channel_accounts
+	where status = '1' 
+  </select>
+  
+  <select id="getChannelAccount"  resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from t_cfg_channel_accounts
+	where status = '1' 
+	and channel=#{channel,jdbcType=VARCHAR}
+	limit 0,1
+  </select>
+</mapper>

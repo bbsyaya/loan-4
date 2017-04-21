@@ -1,0 +1,5 @@
+mq.broker.url=tcp://10.1.5.227:61616
+mq.username=
+mq.password=
+mq.queue.college.pay=mq.queue.pos.pay
+mq.queue.college.collect=mq.queue.pos.collect

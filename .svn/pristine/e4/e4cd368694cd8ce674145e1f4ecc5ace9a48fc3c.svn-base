@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TAICFrinvInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TAICFrinvInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="posCustId" property="posCustId" jdbcType="VARCHAR" />
+    <result column="orderNo" property="orderNo" jdbcType="VARCHAR" />
+    <result column="entName" property="entName" jdbcType="VARCHAR" />
+    <result column="regNo" property="regNo" jdbcType="VARCHAR" />
+    <result column="entType" property="entType" jdbcType="VARCHAR" />
+    <result column="regCap" property="regCap" jdbcType="VARCHAR" />
+    <result column="entStatus" property="entStatus" jdbcType="VARCHAR" />
+    <result column="regOrg" property="regOrg" jdbcType="VARCHAR" />
+    <result column="subConAm" property="subConAm" jdbcType="VARCHAR" />
+    <result column="currency" property="currency" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, posCustId, orderNo, entName, regNo, entType, regCap, entStatus, regOrg, subConAm, name, regCapCur, canDate, revDate, funDedRatio, esDate
+    currency
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_frinv_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+   <select id="selectBySelectiveMap" resultType="Map" parameterType="Map">
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_frinv_info
+    where orderNo = #{orderNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_aic_frinv_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TAICFrinvInfo" >
+    insert into t_aic_frinv_info (id, posCustId, orderNo, 
+      entName, regNo, entType, 
+      regCap, entStatus, regOrg, 
+      subConAm, currency)
+    values (#{id,jdbcType=INTEGER}, #{posCustId,jdbcType=VARCHAR}, #{orderNo,jdbcType=VARCHAR}, 
+      #{entName,jdbcType=VARCHAR}, #{regNo,jdbcType=VARCHAR}, #{entType,jdbcType=VARCHAR}, 
+      #{regCap,jdbcType=VARCHAR}, #{entStatus,jdbcType=VARCHAR}, #{regOrg,jdbcType=VARCHAR}, 
+      #{subConAm,jdbcType=VARCHAR}, #{currency,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICFrinvInfo" >
+    insert into t_aic_frinv_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="orderNo != null" >
+        orderNo,
+      </if>
+      <if test="entName != null" >
+        entName,
+      </if>
+      <if test="regNo != null" >
+        regNo,
+      </if>
+      <if test="entType != null" >
+        entType,
+      </if>
+      <if test="regCap != null" >
+        regCap,
+      </if>
+      <if test="entStatus != null" >
+        entStatus,
+      </if>
+      <if test="regOrg != null" >
+        regOrg,
+      </if>
+      <if test="subConAm != null" >
+        subConAm,
+      </if>
+      <if test="currency != null" >
+        currency,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="entName != null" >
+        #{entName,jdbcType=VARCHAR},
+      </if>
+      <if test="regNo != null" >
+        #{regNo,jdbcType=VARCHAR},
+      </if>
+      <if test="entType != null" >
+        #{entType,jdbcType=VARCHAR},
+      </if>
+      <if test="regCap != null" >
+        #{regCap,jdbcType=VARCHAR},
+      </if>
+      <if test="entStatus != null" >
+        #{entStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="regOrg != null" >
+        #{regOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="subConAm != null" >
+        #{subConAm,jdbcType=VARCHAR},
+      </if>
+      <if test="currency != null" >
+        #{currency,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="Map" >
+    insert into t_aic_frinv_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="orderNo != null" >
+        orderNo,
+      </if>
+      <if test="entName != null" >
+        entName,
+      </if>
+      <if test="regNo != null" >
+        regNo,
+      </if>
+      <if test="entType != null" >
+        entType,
+      </if>
+      <if test="regCap != null" >
+        regCap,
+      </if>
+      <if test="entStatus != null" >
+        entStatus,
+      </if>
+      <if test="regOrg != null" >
+        regOrg,
+      </if>
+      <if test="subConAm != null" >
+        subConAm,
+      </if>
+      <if test="currency != null" >
+        currency,
+      </if>
+      <if test="name != null">
+      	name,
+      </if>
+      <if test="regCapCur != null">
+      	regCapCur,
+      </if>
+      <if test="canDate != null">
+      	canDate,
+      </if>
+      <if test="revDate != null">
+      	revDate,
+      </if>
+      <if test="funDedRatio != null">
+      	funDedRatio,
+      </if>
+      <if test="esDate != null">
+      	esDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="entName != null" >
+        #{entName,jdbcType=VARCHAR},
+      </if>
+      <if test="regNo != null" >
+        #{regNo,jdbcType=VARCHAR},
+      </if>
+      <if test="entType != null" >
+        #{entType,jdbcType=VARCHAR},
+      </if>
+      <if test="regCap != null" >
+        #{regCap,jdbcType=VARCHAR},
+      </if>
+      <if test="entStatus != null" >
+        #{entStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="regOrg != null" >
+        #{regOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="subConAm != null" >
+        #{subConAm,jdbcType=VARCHAR},
+      </if>
+      <if test="currency != null" >
+        #{currency,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+      	#{name},
+      </if>
+      <if test="regCapCur != null">
+      	#{regCapCur},
+      </if>
+      <if test="canDate != null">
+      	#{canDate},
+      </if>
+      <if test="revDate != null">
+      	#{revDate},
+      </if>
+      <if test="funDedRatio != null">
+      	#{funDedRatio},
+      </if>
+      <if test="esDate != null">
+      	#{esDate},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICFrinvInfo" >
+    update t_aic_frinv_info
+    <set >
+      <if test="posCustId != null" >
+        posCustId = #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        orderNo = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="entName != null" >
+        entName = #{entName,jdbcType=VARCHAR},
+      </if>
+      <if test="regNo != null" >
+        regNo = #{regNo,jdbcType=VARCHAR},
+      </if>
+      <if test="entType != null" >
+        entType = #{entType,jdbcType=VARCHAR},
+      </if>
+      <if test="regCap != null" >
+        regCap = #{regCap,jdbcType=VARCHAR},
+      </if>
+      <if test="entStatus != null" >
+        entStatus = #{entStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="regOrg != null" >
+        regOrg = #{regOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="subConAm != null" >
+        subConAm = #{subConAm,jdbcType=VARCHAR},
+      </if>
+      <if test="currency != null" >
+        currency = #{currency,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TAICFrinvInfo" >
+    update t_aic_frinv_info
+    set posCustId = #{posCustId,jdbcType=VARCHAR},
+      orderNo = #{orderNo,jdbcType=VARCHAR},
+      entName = #{entName,jdbcType=VARCHAR},
+      regNo = #{regNo,jdbcType=VARCHAR},
+      entType = #{entType,jdbcType=VARCHAR},
+      regCap = #{regCap,jdbcType=VARCHAR},
+      entStatus = #{entStatus,jdbcType=VARCHAR},
+      regOrg = #{regOrg,jdbcType=VARCHAR},
+      subConAm = #{subConAm,jdbcType=VARCHAR},
+      currency = #{currency,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

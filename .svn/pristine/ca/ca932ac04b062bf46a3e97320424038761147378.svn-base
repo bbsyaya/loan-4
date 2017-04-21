@@ -1,0 +1,17 @@
+package com.hrbb.loan.quartz;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.hrbb.loan.pos.biz.backstage.inter.ISendMessageBiz;
+
+@Component("sendMessageTask")
+public class SendMessageTask {
+	
+	@Autowired
+	private ISendMessageBiz sendMessageBiz;
+	
+	public void execute(){
+		sendMessageBiz.sendMessage();
+	}
+}

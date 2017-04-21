@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditReportAssetMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditReportAsset" >
+    <id column="serialNo" property="serialNo" jdbcType="VARCHAR" />
+    <result column="reportNo" property="reportNo" jdbcType="VARCHAR" />
+    <result column="orgName" property="orgName" jdbcType="VARCHAR" />
+    <result column="receiveDate" property="receiveDate" jdbcType="VARCHAR" />
+    <result column="receiveAmt" property="receiveAmt" jdbcType="DECIMAL" />
+    <result column="latestRepayDate" property="latestRepayDate" jdbcType="VARCHAR" />
+    <result column="balance" property="balance" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    serialNo, reportNo, orgName, receiveDate, receiveAmt, latestRepayDate, balance
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_report_asset
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_credit_report_asset
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportAsset" >
+    insert into t_credit_report_asset (serialNo, reportNo, orgName, 
+      receiveDate, receiveAmt, latestRepayDate, 
+      balance)
+    values (#{serialNo,jdbcType=VARCHAR}, #{reportNo,jdbcType=VARCHAR}, #{orgName,jdbcType=VARCHAR}, 
+      #{receiveDate,jdbcType=VARCHAR}, #{receiveAmt,jdbcType=DECIMAL}, #{latestRepayDate,jdbcType=VARCHAR}, 
+      #{balance,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportAsset" >
+    insert into t_credit_report_asset
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="orgName != null" >
+        orgName,
+      </if>
+      <if test="receiveDate != null" >
+        receiveDate,
+      </if>
+      <if test="receiveAmt != null" >
+        receiveAmt,
+      </if>
+      <if test="latestRepayDate != null" >
+        latestRepayDate,
+      </if>
+      <if test="balance != null" >
+        balance,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="orgName != null" >
+        #{orgName,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveDate != null" >
+        #{receiveDate,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveAmt != null" >
+        #{receiveAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="latestRepayDate != null" >
+        #{latestRepayDate,jdbcType=VARCHAR},
+      </if>
+      <if test="balance != null" >
+        #{balance,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <insert id="insertSelectiveMap" parameterType="Map" >
+    insert into t_credit_report_asset
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="orgName != null" >
+        orgName,
+      </if>
+      <if test="receiveDate != null" >
+        receiveDate,
+      </if>
+      <if test="receiveAmt != null" >
+        receiveAmt,
+      </if>
+      <if test="latestRepayDate != null" >
+        latestRepayDate,
+      </if>
+      <if test="balance != null" >
+        balance,
+      </if>
+       <if test="queryId != null">
+      	queryId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="orgName != null" >
+        #{orgName,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveDate != null" >
+        #{receiveDate,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveAmt != null" >
+        #{receiveAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="latestRepayDate != null" >
+        #{latestRepayDate,jdbcType=VARCHAR},
+      </if>
+      <if test="balance != null" >
+        #{balance,jdbcType=DECIMAL},
+      </if>
+       <if test="queryId != null">
+      	#{queryId}
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportAsset" >
+    update t_credit_report_asset
+    <set >
+      <if test="reportNo != null" >
+        reportNo = #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="orgName != null" >
+        orgName = #{orgName,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveDate != null" >
+        receiveDate = #{receiveDate,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveAmt != null" >
+        receiveAmt = #{receiveAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="latestRepayDate != null" >
+        latestRepayDate = #{latestRepayDate,jdbcType=VARCHAR},
+      </if>
+      <if test="balance != null" >
+        balance = #{balance,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportAsset" >
+    update t_credit_report_asset
+    set reportNo = #{reportNo,jdbcType=VARCHAR},
+      orgName = #{orgName,jdbcType=VARCHAR},
+      receiveDate = #{receiveDate,jdbcType=VARCHAR},
+      receiveAmt = #{receiveAmt,jdbcType=DECIMAL},
+      latestRepayDate = #{latestRepayDate,jdbcType=VARCHAR},
+      balance = #{balance,jdbcType=DECIMAL}
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

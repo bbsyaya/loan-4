@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TActivityTypeInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TActivityTypeInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="activityName" property="activityName" jdbcType="VARCHAR" />
+    <result column="activityType" property="activityType" jdbcType="VARCHAR" />
+    <result column="activityCnName" property="activityCnName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, activityName, activityType, activityCnName
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_activity_type_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  
+  <select id="selectSelective" resultMap="BaseResultMap" parameterType="Map">
+    select 
+    <include refid="Base_Column_List" />
+    from t_activity_type_info
+    where 1=1
+    <if test="activityName != null">
+    	AND activityName = #{activityName}
+    </if>
+    <if test="activityType != null">
+    	AND activityType = #{activityType}
+    </if>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_activity_type_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TActivityTypeInfo" >
+    insert into t_activity_type_info (id, activityName, activityType, 
+      activityCnName)
+    values (#{id,jdbcType=INTEGER}, #{activityName,jdbcType=VARCHAR}, #{activityType,jdbcType=VARCHAR}, 
+      #{activityCnName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TActivityTypeInfo" >
+    insert into t_activity_type_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="activityName != null" >
+        activityName,
+      </if>
+      <if test="activityType != null" >
+        activityType,
+      </if>
+      <if test="activityCnName != null" >
+        activityCnName,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="activityName != null" >
+        #{activityName,jdbcType=VARCHAR},
+      </if>
+      <if test="activityType != null" >
+        #{activityType,jdbcType=VARCHAR},
+      </if>
+      <if test="activityCnName != null" >
+        #{activityCnName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TActivityTypeInfo" >
+    update t_activity_type_info
+    <set >
+      <if test="activityName != null" >
+        activityName = #{activityName,jdbcType=VARCHAR},
+      </if>
+      <if test="activityType != null" >
+        activityType = #{activityType,jdbcType=VARCHAR},
+      </if>
+      <if test="activityCnName != null" >
+        activityCnName = #{activityCnName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TActivityTypeInfo" >
+    update t_activity_type_info
+    set activityName = #{activityName,jdbcType=VARCHAR},
+      activityType = #{activityType,jdbcType=VARCHAR},
+      activityCnName = #{activityCnName,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

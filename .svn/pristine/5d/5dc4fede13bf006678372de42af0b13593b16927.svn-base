@@ -1,0 +1,78 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+
+/**
+ * 
+ * @author marco
+ * @version $Id: TReceiptInfoService.java, v 0.1 2015-4-24 下午3:54:19 marco Exp $
+ */
+public interface ReceiptInfoService {
+    List<TReceiptInfo> selectRecordInfoHB16();
+    
+    List<TReceiptInfo> selectRecordInfoHB18();
+    
+    List<TReceiptInfo> selectRecordInfoHB19();
+    
+    /**
+     * 通过用款编号查询借据
+     * 
+     * @param payApplyId
+     * @return
+     */
+    TReceiptInfo selectReceiptOne(String payApplyId);
+    
+    /**
+     * 插入借据
+     * 
+     * @param receipt
+     * @return
+     */
+    int insertReceiptInfo(TReceiptInfo receipt);
+    
+    /**
+     * 计算贷款总余额之和
+     * 
+     * @param contNo
+     * @return
+     */
+    String sumLoanTotalBalance(String contNo);
+
+    /**
+     * 更新拮据表
+     * 
+     * @param receipt
+     */
+    int updateReceiptInfo(Map<String, Object> reqMap);
+
+    /**
+     * 主键查询
+     * 
+     * @param receiptId
+     * @return
+     */
+    TReceiptInfo selectReceiptByPrimary(String receiptId);
+
+    /**
+     * 获取放款指令发送成功的借据列表
+     * 
+     * @param reqMap
+     * @return
+     */
+    List<TReceiptInfo> getReceiptList10();
+
+    /**
+	 * 根据放款序号获取借据
+	 * @param exeSeq
+	 * @return
+	 */
+	public TReceiptInfo selectByExeSeq(String exeSeq);
+}

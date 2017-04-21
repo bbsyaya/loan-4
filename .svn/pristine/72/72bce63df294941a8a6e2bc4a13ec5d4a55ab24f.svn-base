@@ -1,0 +1,19 @@
+package com.hrbb.loan.pos.factory.thirdPayChannel.inter;
+
+import java.util.Map;
+
+/**
+ * 第三方支付处理接口
+ * 
+ * @author cjq
+ * @since 2015-08-06
+ * @version $Id: PayChannelFactory.java, v 0.1 2015年8月6日 下午12:59:41 cjq Exp $
+ */
+public interface IThirdPayment {
+    
+    Map<String, Object> pay(Map<String, Object> payMap) throws Exception;
+
+    Map<String, Object> collection(Map<String, Object> collectionMap) throws Exception;
+
+    Map<String, Object> QueryOrder(Map<String, Object> queryOrderMap) throws Exception;
+}

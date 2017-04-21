@@ -1,0 +1,373 @@
+package com.hrbb.loan.controller;
+
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.constants.CreditApplyConstants;
+import com.hrbb.loan.controller.helper.ControllerHelper;
+import com.hrbb.loan.pos.biz.backstage.inter.ApproveResultBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.ICallingTaskBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.ILoanPosBusinessCodeBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.ILoanPosCreditApplyBackStageBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.IPaymentApplyBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosContractManagementBiz;
+import com.hrbb.loan.pos.dao.entity.TCallingTask;
+import com.hrbb.loan.pos.dao.entity.TContractManagement;
+import com.hrbb.loan.pos.dao.entity.TCustomer;
+import com.hrbb.loan.pos.dao.entity.TPaymentApply;
+import com.hrbb.loan.pos.service.LoanPosCustomerService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.loan.pos.util.constants.BusinessDictionaryConstants;
+import com.hrbb.loan.pos.util.constants.ReviewNoteConstants;
+import com.hrbb.loan.web.security.entity.User;
+
+/**
+ * 
+ * @author zhaolulun
+ * @version Id 
+ *
+ */
+@Controller
+@RequestMapping("/callingTaskForReview")
+public class CallingTaskController {
+
+	@Autowired
+	@Qualifier("iCallingTaskBiz")
+	private ICallingTaskBiz biz;
+	@Autowired
+	private ILoanPosBusinessCodeBiz loanPosBusinessCodeBiz;
+	@Autowired
+    private ILoanPosCreditApplyBackStageBiz loanPosCreditApplyBackStageBiz;
+	
+    @Autowired
+    private ApproveResultBiz arBiz ;
+    
+	@Autowired
+	private IPaymentApplyBiz paymentApplyBiz;
+	
+	@Autowired
+	private LoanPosCustomerService loanPosCustomerService;
+	
+    @Autowired
+    private LoanPosContractManagementBiz loanPosContractManagementBiz;
+    
+	private List<Map<String, Object>> channelDictionary;
+    
+    private List<Map<String, Object>> posTypeDictionary;
+    
+    private List<Map<String, Object>> provinceList;
+
+    private List<Map<String, Object>> paperList;
+    
+    private List<Map<String, Object>> currSignList;
+    
+    private List<Map<String, Object>> returnKindList;
+    
+    private List<Map<String, Object>> sexList;
+    
+    private List<Map<String, Object>> maritalList;
+    
+    private List<Map<String, Object>> eduList;
+    
+    private List<Map<String, Object>> relList;
+    
+    private List<Map<String, Object>> cities;
+    
+    private List<Map<String, Object>> divisions;
+    
+    private List<Map<String, Object>> bankNoList;
+    
+    private List<Map<String, Object>> implTypeList;
+    
+    private List<Map<String, Object>> repayMethodList;
+    
+    private List<Map<String, Object>> paymentApplyList;
+    
+    private List<Map<String, Object>> loanPurposeList;
+    
+    private List<Map<String, Object>> contactFlags;
+    
+    private List<Map<String, Object>> callingTypeList;
+    
+    private List<Map<String, Object>> HrrbIndustTypeList;
+	
+	@PostConstruct
+    public void loadDictionary(){
+        channelDictionary = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.BizChannel);
+        posTypeDictionary = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.POSType);
+        loanPurposeList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.Purpose);
+        provinceList = loanPosBusinessCodeBiz.getProvinceCityOrDic("__0000");
+        Map<String, Object> reqMap = Maps.newHashMap();
+        reqMap.put("codeNo", BusinessDictionaryConstants.AdminDivision);        
+        reqMap.put(CreditApplyConstants.ITEMN_NO_LIKE, "____00");
+        reqMap.put(CreditApplyConstants.ITEM_NO_NOT_LIKE, "__0000");
+        cities = loanPosBusinessCodeBiz.getSeletiveMap(reqMap);
+        reqMap = Maps.newHashMap();
+        reqMap.put("codeNo", BusinessDictionaryConstants.AdminDivision);       
+        reqMap.put(CreditApplyConstants.ITEMN_NO_LIKE, "______");
+        reqMap.put(CreditApplyConstants.ITEM_NO_NOT_LIKE, "__0000");
+        reqMap.put(CreditApplyConstants.ITEM_NO_NOT_LIKE_2, "____00");
+        divisions = loanPosBusinessCodeBiz.getSeletiveMap(reqMap);
+        paperList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.CertType);
+        currSignList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.Currency);
+        returnKindList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.AccrualType);
+        sexList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.Sex);
+        maritalList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.Marital);
+        eduList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.Education);
+        relList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.Relationship);
+        bankNoList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.BankNo);
+        implTypeList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.ImplType);
+        repayMethodList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.RepayMethod);
+        paymentApplyList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.IssueApplyStatus);
+        contactFlags = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.CONTACT_ADDRESS);
+        callingTypeList = loanPosBusinessCodeBiz.getItemNames(BusinessDictionaryConstants.CallingType);
+        HrrbIndustTypeList = loanPosBusinessCodeBiz.getItemNames("HrrbIndustType");
+    }
+	
+	@RequestMapping("/queryCallingTaskForReview")
+	public ModelAndView queryCallingTaskForReview(
+			@RequestParam(value = "rows", required = false) Integer pageSize,
+			@RequestParam(value = "page", required = false) Integer pageNo,
+			HttpServletRequest request, PrintWriter out){
+		
+		Map<String, Object> reqMap = Maps.newHashMap();
+
+		if (!StringUtils.isEmpty(request.getParameter("custName"))) {
+			reqMap.put("custName", ControllerHelper.getLikeString(request.getParameter("custName")));
+		}
+		if (!StringUtils.isEmpty(request.getParameter("posCustName"))) {
+			reqMap.put("posCustName", ControllerHelper.getLikeString(request.getParameter("posCustName")));
+		}
+		if (!StringUtils.isEmpty(request.getParameter("callingType"))) {
+			System.out.println(request.getParameter("callingType"));
+			reqMap.put("callingType", Integer.parseInt(request.getParameter("callingType")));
+		}
+		
+		User user = (User) request.getSession().getAttribute("USER");
+		if (user!=null) {
+			reqMap.put("claimerId", user.getUserName());
+		}else {
+			reqMap.put("claimerId", null);
+		}
+		String opflag = request.getParameter("opflag");
+		if (opflag.equals("3")) {
+			reqMap.put("claimerId", null);
+		}else{
+			reqMap.put("opflag", request.getParameter("opflag"));
+		}
+		
+		
+		reqMap.put("startPage", (pageNo - 1) * pageSize);
+		reqMap.put("limit", pageSize);
+		
+		List<Map<String, Object>> list = biz.selectSelective(reqMap);
+		
+		JSONObject aajson = new JSONObject();
+		aajson.put("rows", list);
+//		aajson.put("size", list.size());
+		long total = biz.selectSelectiveForReviewCount(reqMap);
+		aajson.put("total", total);
+		out.write(aajson.toJSONString());
+		return null;
+	}
+	@RequestMapping("/queryCallingTaskByTaskNo")
+	public ModelAndView queryCallingTaskByTaskNoForReview(
+			@RequestParam(value = "taskNo", required = false) String taskNo,@RequestParam(value="direct2Path",required=false)String direct2Path
+			,@RequestParam(value = "relaBizPhase", required = false) String relaBizPhase){
+	    ModelAndView mav = new ModelAndView();
+	    
+    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    	Map<String, Object> map = Maps.newHashMap();
+    	TCallingTask task = biz.selectOne(taskNo);
+    	map.put("callingType", task.getCallingType());
+    	map.put("callingTypeName", loanPosBusinessCodeBiz.getItemNameByNo("CallingType", task.getCallingType()));
+    	map.put("relaBizPhase", task.getRelaBizPhase());
+    	map.put("relaBizPhaseName", loanPosBusinessCodeBiz.getItemNameByNo("BizPhase", task.getRelaBizPhase()));
+    	map.put("claimerName", task.getClaimerName());
+    	map.put("relaBizNo", task.getRelaBizNo());
+    	map.put("generateTime", sdf.format(task.getGenerateTime()));
+    	map.put("info", task.getInfo());
+    	
+    	List<Map<String, String>> dateList = DateUtil.getOverNumMonths(CreditApplyConstants.monthNum);
+    	mav.addObject("overMonths", dateList);
+    	mav.addObject("province", provinceList);
+    	mav.addObject("bizChannel", channelDictionary);
+    	mav.addObject("paperList", paperList);
+    	mav.addObject("returnKindList", returnKindList);
+    	mav.addObject("currSignList", currSignList);
+    	mav.addObject("sexList", sexList);
+    	mav.addObject("maritalList", maritalList);
+    	mav.addObject("eduList", eduList);
+    	mav.addObject("relList", relList);
+    	mav.addObject("cities", cities);
+    	mav.addObject("divisions", divisions);
+    	mav.addObject("bankNoList", bankNoList);
+    	mav.addObject("implTypeList", implTypeList);
+    	mav.addObject("repayMethodList", repayMethodList);
+    	mav.addObject("contactFlags", contactFlags);
+    	mav.addObject("HrrbIndustTypeList", HrrbIndustTypeList);
+    	
+	    //申请阶段
+	    if (ReviewNoteConstants.CALLING_TASK_RELABIZPHASE_APP.equals(relaBizPhase)){
+	    	
+	    	String loanId = task.getRelaBizNo();		
+	    	if(StringUtils.isNotBlank(loanId)){
+	    		List<Map<String, Object>> resList = loanPosCreditApplyBackStageBiz.getCreditApplyDetail(loanId);
+	    		
+	    		if(resList!=null && resList.size()>0){
+	    			//--------追加地址中的市和县一级代码名称,0业务申请信息;1客户信息;3商户信息;4银行账户信息;2亲属信息
+	    			Object residentCity = resList.get(1).get("residentCity");
+	    			if(residentCity!=null) resList.get(1).put("residentCityName", getItemValue(cities,residentCity.toString()));
+	    			Object residentDivision = resList.get(1).get("residentDivision");
+	    			if(residentDivision!=null) resList.get(1).put("residentDivisionName", getItemValue(divisions,residentDivision.toString()));
+	    			
+	    			Object posCustCity = resList.get(3).get("posCustCity");
+	    			if(posCustCity!=null) resList.get(3).put("posCustCityName", getItemValue(cities,posCustCity.toString()));
+	    			Object posCustDivision = resList.get(3).get("operAddrCode");
+	    			if(posCustDivision!=null) resList.get(3).put("posCustDivisionName", getItemValue(divisions,posCustDivision.toString()));
+	    			//--------商户行业分类代码转换
+	    			Object industryTypeId = resList.get(3).get("industryTypeId");
+	    			if(industryTypeId!=null) {
+	    				String itemName = loanPosBusinessCodeBiz.getItemNameByNo(BusinessDictionaryConstants.IndustryType,(String)industryTypeId);
+	    				if(itemName!=null && itemName.trim().length()>0){
+	    					resList.get(3).put("industryTypeName", "["+industryTypeId+"] "+itemName);
+	    				}
+	    			}
+	    		}
+	    		Object applyDetail = JSON.toJSON(resList);
+	    		mav.addObject("applyDetail", applyDetail); 
+	    	}
+	    	//批复阶段
+	    }else if (ReviewNoteConstants.CALLING_TASK_RELABIZPHASE_APR.equals(relaBizPhase)){
+	    	String approveId = task.getRelaBizNo();	
+			// 获得申请审批表中的批准信息
+	    	Map<String, Object> approve= arBiz.getApproveMap(approveId);
+	    	if(approve.get("approveDate")!=null){
+	    		approve.put("approveDateStr",DateUtil.getDateToString3((Date)approve.get("approveDate")));
+			}
+			Object approveInfo = JSON.toJSON(approve);
+			mav.addObject("approveInfo", approveInfo);
+	    	//用款阶段
+	    }else if (ReviewNoteConstants.CALLING_TASK_RELABIZPHASE_ISS.equals(relaBizPhase)){
+	    	String payApplyId = task.getRelaBizNo();	
+	    	TPaymentApply paymentApply = new TPaymentApply();
+	        TContractManagement contractManagement = new TContractManagement();
+	        String channelName = "";
+	        String paybackMethodName = "";
+	        String expectedEndDate = "";
+	        String openBankName = "";
+	        if(!StringUtil.isEmpty(payApplyId)){
+	            paymentApply = paymentApplyBiz.queryPaymentApplyById(payApplyId);
+	            //根据期望用款日计算用款结束日
+	            Date expectedDate = paymentApply.getExpectedDate();
+	            if(expectedDate != null){
+	                expectedEndDate = DateUtil.getRelativeDate(expectedDate, 0, Integer.parseInt(paymentApply.getPayApplyTerm()), 0);
+	            }
+	        }
+	        String contNo = paymentApply.getContNo();
+	        if(!StringUtil.isEmpty(contNo)){
+	            // 协议信息
+	            contractManagement = loanPosContractManagementBiz.getContractByContNo(contNo);
+	            contractManagement.getChannel();
+	            channelName = loanPosBusinessCodeBiz.getItemNameByNo("BizChannel", contractManagement.getChannel());
+	            paybackMethodName = loanPosBusinessCodeBiz.getItemNameByNo("AccrualType", contractManagement.getPaybackMethod());
+	            openBankName = loanPosBusinessCodeBiz.getItemNameByNo("BankNo", contractManagement.getAccountOpenBank());
+	        }
+	        TCustomer customer = new TCustomer();
+	        if(!StringUtil.isEmpty(contractManagement.getCustId())){
+	        	customer = loanPosCustomerService.getCustumerInfoById(contractManagement.getCustId());
+	        }
+	        mav.addObject("channelName",channelName);
+	        mav.addObject("paybackMethodName",paybackMethodName);
+	        mav.addObject("expectedEndDate",expectedEndDate);
+	        mav.addObject("openBankName",openBankName);
+	        mav.addObject("contract", contractManagement);
+	        mav.addObject("paymentApply",paymentApply);
+	        mav.addObject("customer",customer);
+	    }else{
+	    	//其他业务阶段暂时没有功能
+	    }
+	    mav.addObject("taskObj", map);
+	    mav.setViewName(direct2Path);		
+		return mav;
+	}
+
+	@RequestMapping("/updateCallingTaskClimer")
+	public ModelAndView updateCallingTaskClimer(
+			@RequestParam(value = "taskNoes", required = false) String taskNo,
+			HttpServletRequest request,
+			PrintWriter out){
+		Map<String, Object> reqMap = Maps.newHashMap();
+		User user = (User) request.getSession().getAttribute("USER");
+		reqMap.put("claimerId", user.getUserName());
+		reqMap.put("claimerName", user.getLoginName());
+		reqMap.put("taskNo", taskNo);
+		reqMap.put("claimTime", DateUtil.getCurrentTimePatterna());
+		boolean isUpdate = false;
+		if (taskNo!=null) {
+			isUpdate = biz.updateTaskClaimer(reqMap);
+		}
+		out.print(JSON.toJSON(isUpdate));
+		return null;
+	}
+	@RequestMapping("/clearCallingTaskClimer")
+	public void clearCallingTaskClimer(
+			@RequestParam(value = "taskNo", required = false) String taskNo,
+			HttpServletRequest request,
+			PrintWriter out){
+		Map<String, Object> reqMap = Maps.newHashMap();
+		reqMap.put("claimerId", null);
+		reqMap.put("claimerName", null);
+		reqMap.put("taskNo", taskNo);
+		reqMap.put("claimTime", null);
+		boolean isUpdate = false;
+		if (taskNo!=null) {
+			isUpdate = biz.updateTaskClaimer(reqMap);
+		}
+		out.print(JSON.toJSON(isUpdate));
+	}
+	@RequestMapping("/completeCallingTaskClimer")
+	public void completeCallingTaskClimer(
+			@RequestParam(value = "taskNo", required = false) String taskNo,
+			HttpServletRequest request,
+			PrintWriter out){
+		Map<String, Object> reqMap = Maps.newHashMap();
+		reqMap.put("callingTime", DateUtil.getCurrentTimePatterna());
+		reqMap.put("taskNo", taskNo);
+		reqMap.put("dealInfo",request.getParameter("dealInfo"));
+		boolean isUpdate = false;
+		if (taskNo!=null) {
+			isUpdate = biz.updateGenerateTime(reqMap);
+		}
+		out.print(JSON.toJSON(isUpdate));
+	}
+	
+	
+	   private Object getItemValue(List<Map<String,Object>> clib, String itemNo){
+	        for(Map<String,Object> r:clib){
+	            if(r.get("itemNo").equals(itemNo)){
+	                return r.get("itemName");
+	            }
+	        }
+	        return null;
+	    }
+	
+}

@@ -1,0 +1,7 @@
+package com.hrbb.loan.pos.dao;
+
+import com.hrbb.loan.pos.dao.entity.TUpsBillcardstatQueryInfo;
+
+public interface TUpsBillcardstatQueryInfoDao {
+    int insert(TUpsBillcardstatQueryInfo tUpsBillcardstatQueryInfo);
+}

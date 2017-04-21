@@ -1,0 +1,173 @@
+/**
+ * 
+ */
+package com.hrbb.loan.pos.biz.bean;
+
+import java.util.List;
+import java.util.Map;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.acct.facade.common.constants.AcctRetConstants;
+import com.hrbb.loan.acct.facade2.MadeLoanProcessBizSimpleFacade;
+import com.hrbb.loan.acct.facade2.bean.MadeLoanAheadPrepaymentSimpleReq;
+import com.hrbb.loan.acct.facade2.bean.MadeLoanAheadPrepaymentSimpleRes;
+import com.hrbb.loan.pos.dao.entity.TCfgChannelAccount;
+import com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+import com.hrbb.loan.pos.dao.entity.TransactionLog;
+import com.hrbb.loan.pos.entity.SpringBeans;
+import com.hrbb.loan.pos.service.IGenericConfigService;
+import com.hrbb.loan.pos.service.LoanPosContractManagementService;
+import com.hrbb.loan.pos.service.RepaymentApplyService;
+import com.hrbb.sh.framework.HServiceException;
+
+/**
+ * <p>Title: RepaymentExecForm.java </p>
+ * <p>Description: 还款表单 </p>
+ * <p>Copyright: Copyright (C) 2015 Hrbb Ltd. Co.</p> 
+ *     
+ * @author linzhaolin@hrbb.com.cn
+ * @version 
+ * @date 2015年7月27日
+ *
+ * logs: 1. 
+ */
+public class RepaymentExecForm extends AbsInternalService {
+	
+	public static final String ZERO = "0";
+	
+	/*日志记录对象*/
+	private TransactionLog txlog ;
+	
+	private TReceiptInfo receipt;
+	
+	private Map<String,Object> contract;
+	
+	private TCfgChannelAccount channelAccount;	//内部核算账号
+	
+	private IGenericConfigService genericConfigService;
+	
+	private TPaybackApplyInfo repayApply;
+	
+	private boolean isPrepayment = false;		//提前还款
+	
+	private boolean isInstalment = false;		//分期付款
+	
+	public RepaymentExecForm(TPaybackApplyInfo paybackApply,TReceiptInfo receipt){
+		this(paybackApply,receipt,false);
+	}
+	
+	public RepaymentExecForm(TPaybackApplyInfo paybackApply,TReceiptInfo receipt,/*TRepaymentPlan repayPlan*/boolean isPrepayment){
+		this.repayApply = paybackApply;
+		this.receipt = receipt;
+		this.isPrepayment = isPrepayment;
+	}
+	
+
+	@Override
+	public boolean initService() throws HServiceException {
+		if(repayApply == null){
+			logger.error("还款申请对象为空!");
+			return false;
+		}
+		
+		/*spring bean initialize*/
+		genericConfigService = (IGenericConfigService)SpringBeans.getBean("genericConfigService");
+		
+		txlog = new TransactionLog(repayApply.getReceiptId());
+		
+		/*3. 合同信息*/
+		Map<String, Object> reqMap = Maps.newHashMap();
+		LoanPosContractManagementService loanPosContractManagementService = (LoanPosContractManagementService)SpringBeans.getBean("loanPosContractManagementService");
+		reqMap = Maps.newHashMap();
+		reqMap.put("contNo", receipt.getContNo());
+		List<Map<String, Object>> contList = loanPosContractManagementService.selectSelectiveMap(reqMap);
+		if(contList==null || contList.size()==0){
+			logger.error("还款申请对应的合同["+receipt.getContNo() + "]不存在.");
+			return false;
+		}
+		contract = contList.get(0);
+		
+		/*获取还款账户信息*/
+		RepaymentApplyService repaymentApplyService = (RepaymentApplyService)SpringBeans.getBean("repaymentApplyService");
+		String repayChannel = "";
+		String repayMethod = (String)contract.get("repayMethod");		//贷款偿还方式
+		if(repayMethod!=null && repayMethod.equals("02")){		//代扣选用指定账户
+			repayChannel = "DK";
+		}else{
+			repayChannel = (String)contract.get("channel");			//进件渠道
+		}
+		channelAccount = repaymentApplyService.getChannelAccount(repayChannel);
+		
+		String paybackMethod = (String)contract.get("paybackMethod");
+		isInstalment = (paybackMethod!=null && paybackMethod.equals("90"))?false:true;
+		
+		return true;
+	}
+
+	@Override
+	public boolean processService() throws HServiceException {
+		MadeLoanAheadPrepaymentSimpleReq request = new MadeLoanAheadPrepaymentSimpleReq();
+		request.setLoanAcNo(receipt.getLoanAcNo());
+		request.setBusiType(isPrepayment?"10":"00");		//业务类型 - 00还正常；10：提前结清； 
+		/*根据还款方式确认*/
+		request.setCompdayKind(isInstalment?"0":"1");		//计息方式： 0-按整期算（分期型）；1-按实际天数算（白条型）
+		request.setCompcapiKind("0");	//计息本金取值方式  0:按余额计算  1:按提前归还本金计算。（学生贷：分期型，提前还清当期；学生贷、POS贷提前结清）
+		request.setSterm(String.valueOf(receipt.getScheduleTimes()));	//当前期次
+		//应还日期 
+		request.setSdate(receipt.getEndDate());
+		/**/
+		request.setScapi(String.valueOf(repayApply.getPaybackAmount()));		//应还本金 
+		request.setSinte(String.valueOf(repayApply.getPaybackInterest()));		//应还利息  
+		request.setRcapi(String.valueOf(repayApply.getPaybackAmount()));	//实还本金
+		request.setRinte(String.valueOf(repayApply.getPaybackInterest()));	//实还利息
+		
+		request.setRetuType("2");		//提前还款约定   2:不调整分期还款额
+		request.setAheaKind(isPrepayment?"1":(isInstalment?"4":"2"));		//提前还款类型  1:还本付息; 2:提前结清; 4:提前结清当期
+		
+		request.setSubsacno(channelAccount.getAccountIssue());
+		
+		request.setOperId("680199");
+		request.setChargeId("6801");
+		request.setCheckId("6801");
+		
+		try{
+			MadeLoanProcessBizSimpleFacade madeLoanProcessBizHession = (MadeLoanProcessBizSimpleFacade)SpringBeans.getBean("madeLoanProcessBizSimpleFacadeHession");
+			MadeLoanAheadPrepaymentSimpleRes resBean = madeLoanProcessBizHession.addListPrepayment(request);
+			/*日志记录对象*/
+	    	txlog.setTransObject(request, resBean);
+			
+			if(resBean!=null && resBean.getRespCode().equals(AcctRetConstants.SUCCESS.getValue())){
+				rspResult.put("prepaymentListId", resBean.getListId());
+			}else{
+				logger.warn("借据["+repayApply.getReceiptId()+"]还款申请失败!Err="+resBean.getMemo());
+				return false;
+			}
+			return true;
+		}catch(Exception e){
+			e.fillInStackTrace();
+			e.printStackTrace();
+			logger.warn("借据["+repayApply.getReceiptId()+"]还款申请失败!");
+			/*日志记录对象*/
+			txlog.setTransObject(request, e.getMessage());
+			txlog.setStatus(TransactionLog.核心交易状态_失败);
+		}finally{
+			/*记录交易日志*/
+			txlog.setRspTime();
+	        genericConfigService.insertTransactionLog(txlog);
+		}
+		
+		return false;
+	}
+
+	@Override
+	public boolean processService(String fileName, byte[] bytes)
+			throws HServiceException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+}
+
+
+

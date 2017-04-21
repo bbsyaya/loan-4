@@ -1,0 +1,14 @@
+package com.hrbb.loan.pos.service;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 
+ * @author cjq
+ * @since 2015-08-06
+ * @version $Id: ChannelMapperDictionaryService.java, v 0.1 2015年8月6日 下午2:30:55 cjq Exp $
+ */
+public interface ChannelMapperDictionaryService {
+    List<Map<String, Object>> getCode(Map<String, Object> reqMap);
+}

@@ -1,0 +1,61 @@
+package com.hrbb.loan.pos.biz.backstage.inter.impl;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.biz.backstage.inter.IExpiredApprove;
+import com.hrbb.loan.pos.service.LoanPosCreditApplyAprvService;
+import com.hrbb.loan.pos.service.bean.ExpiredMessage;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.ListUtil;
+
+@Component("expiredApprove")
+public class ExpiredApproveImpl implements IExpiredApprove {
+	
+	private Logger logger = LoggerFactory.getLogger(ExpiredApproveImpl.class);
+	
+	
+	@Autowired
+	private LoanPosCreditApplyAprvService loanPosCreditApplyAprvService;
+
+	@Override
+	public void expiredApprove() {
+		try{
+			//修改所有失效的批复状态
+			Map<String, Object> reqMap = Maps.newHashMap();
+			reqMap.put("expiryDate", new Date());
+			Calendar cal = Calendar.getInstance();
+			cal.add(Calendar.DATE, -7);
+			reqMap.put("expiredDate", cal.getTime());
+			loanPosCreditApplyAprvService.updateExpiredRecord(reqMap);
+			//查出所有失效的记录
+			Map<String, Object> selectMap = Maps.newHashMap();
+			selectMap.put("searchApproveStatus", "09");
+			List<Map<String, Object>> resList = loanPosCreditApplyAprvService.getExpiredRecord(selectMap);
+			if(ListUtil.isNotEmpty(resList)){
+				loanPosCreditApplyAprvService.updateBatch(resList);
+				for(Map<String, Object> map : resList){
+					map.put("messageType", "11");
+					ExpiredMessage expiredMessage = new ExpiredMessage();
+					expiredMessage.setExpiredDate(DateUtil.getCurrentTimePattern3());
+					expiredMessage.setExpiredReason("审批结果逾期自动失效");
+					map.put("messageInfo", expiredMessage.toString());
+				}
+				//批量插入
+				loanPosCreditApplyAprvService.insertExpiredMessageBatch(resList);
+		}
+		
+	}catch (Exception e) {
+		logger.error("轮询失效批复异常:" + e.getMessage());
+	}
+	}
+
+}

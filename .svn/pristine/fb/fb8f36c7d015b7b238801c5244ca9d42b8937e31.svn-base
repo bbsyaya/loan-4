@@ -1,0 +1,20 @@
+package com.hrbb.test;
+
+import org.junit.Test;
+
+import com.hrbb.loan.ftp.client.utils.http.HttpConnection;
+
+/**
+ * 平板推送.
+ * 
+ * @author xiongshaogang
+ * @version $Id: PadPush.java, v 0.1 2015年6月11日 下午2:44:13 xiongshaogang Exp $
+ */
+public class PadPush extends UnitTest {
+
+    @Test
+    public void padPush() {
+        HttpConnection http = new HttpConnection("http://10.1.5.225:12080/hrbcb-zyjd-bankadmin/jdtask/add.action", 30);
+        http.sendMsg("retukind=90&familypaperid=430703199504208058&duedilitaskno=&bankid=&sexsign=9&interate=null&duedilistaffid=&dealscope=&tel=021-52142125&contactaddrflag=02&paperkind=01&mobilephone=13918037097&residentdetail=今年&posorg=88&loanid=LO2015061111520978235264425400&residentRegion=310101&relatel=&busiyear=9&regicode=&childnum=&operid=system&qqno=&familypaperkind=01&preappmaxcred=500000.00&paperid=320324198504193714&imagefilepackagename=&custname=徐永锋&industrytypeid=99&marrsign=20&operaddrdetail=2212级&operaddrRegion=110102&apptcapi=500000.00&weixinno=&preapptterm=12&familycustname=龙哥&email=&matemobilephone=15021682336&otherhousenum=0&relakind=&duedilifinishdate=&poscustname=太快了&educsign=40&duedilino=&begindate=20150611115210&relacustname=&localhousenum=0&bankaccno=3286521458625554288&relamobilephone=", "UTF-8");
+    }
+}

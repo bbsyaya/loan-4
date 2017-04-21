@@ -1,0 +1,145 @@
+package com.hrbb.loan.thread;
+
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.hessian.inter.IAICHessianService;
+import com.hrbb.loan.hessian.inter.IBankCardCheckHessianService;
+import com.hrbb.loan.hessian.inter.IPoliceHessianService;
+import com.hrbb.loan.pos.biz.backstage.inter.ILoanPosCreditApplyBackStageBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.ILoanPosCreditApplyCheckRegBiz;
+import com.hrbb.loan.pos.service.LoanPosCreditApplyService;
+
+/**
+ * 外部接口调用线程
+ * 
+ * @author cjq
+ * @version $Id: OuterInterfaceProcessThread.java, v 0.1 2015年6月3日 下午2:39:45 cjq Exp $
+ */
+@Scope("prototype")
+@Component("outerInterfaceProcessThread")
+public class OuterInterfaceProcessThread implements Runnable {
+    
+    private Logger logger = LoggerFactory.getLogger(OuterInterfaceProcessThread.class);
+
+    @Autowired
+    private ILoanPosCreditApplyBackStageBiz iLoanPosCreditApplyBackStageBiz; 
+    
+    @Autowired
+    private LoanPosCreditApplyService loanPosCreditApplyService; 
+    
+    @Autowired
+    private ILoanPosCreditApplyCheckRegBiz loanPosCreditApplyCheckRegBiz; // 业务校验和业务准入规则
+    
+    @Autowired
+    private IAICHessianService aicHessianService; //工商接口
+    
+    @Autowired
+    private IPoliceHessianService iPoliceHessianService; // 公安接口
+    
+    @Autowired
+    private IBankCardCheckHessianService iBankCardCheckService; // 账户验真
+    
+    private Map<String, Object> reqMap; // 请求参数
+    
+    private Map<String, String> bankCheckMap; // 易极付账户验真查询参数
+    
+    private Map<String, String> aicCheckMap; // 工商查询参数
+    
+    private Map<String, String> policeMap; // 公安查询参数
+   
+    @Override
+    public void run() {
+        // 渠道
+        String channel = (String)reqMap.get("channel");
+        // 业务编号
+        String loanId = (String)reqMap.get("loanId");
+        // 检验业务准入规则
+        try{
+            Map<String, Object> result = loanPosCreditApplyCheckRegBiz.creditApplyCheck(loanId);
+            logger.debug("准入性校验结果为:" + result.get("checkMessage"));
+        }catch(Exception e){
+            logger.error("准入性校验异常:" + e.getMessage());
+        }
+        logger.debug(loanId + "准入性校验通过,开始调用账户验真接口");
+        // 账户验真
+        try{
+            Map<String, String> resultMap = iBankCardCheckService.bankCardCheck(bankCheckMap);
+            logger.debug("返回结果为:" + resultMap);
+        }catch(Exception e){
+            logger.error("账户验真发生异常",e.getMessage());
+        }
+        logger.debug("账户验真完成，接下来调用工商接口");
+        // 工商
+        try{
+            Map<String, String> resultMap = aicHessianService.getCustAICInfo(aicCheckMap);
+            logger.debug("调用工商结果为:" + resultMap);
+        }catch(Exception e){
+            logger.error(loanId + "调用工商异常" + e.getMessage());
+        }
+        // 公安
+        try{
+            Map<String,String> resultMap = iPoliceHessianService.getCustPoliceInfo(policeMap);
+            logger.debug("调用公安结果为:" + resultMap);
+        }catch(Exception e){
+            logger.equals(loanId+"调用公安异常" + e.getMessage());
+        }
+        
+        if("UM".equals(channel)){
+            boolean uploadImg = iLoanPosCreditApplyBackStageBiz.getUmImg(reqMap);
+            if(!uploadImg){
+                Map<String, Object> statusMap = Maps.newHashMap();
+                statusMap.put("loanId", reqMap.get("loanid"));
+                statusMap.put("applyStatus", "10");
+                loanPosCreditApplyService.updateApplyStatus(statusMap);
+            }           
+        }
+    }
+    
+    public IAICHessianService getAicHessianService() {
+        return aicHessianService;
+    }
+
+    public void setAicHessianService(IAICHessianService aicHessianService) {
+        this.aicHessianService = aicHessianService;
+    }
+
+    public Map<String, String> getBankCheckMap() {
+        return bankCheckMap;
+    }
+
+    public void setBankCheckMap(Map<String, String> bankCheckMap) {
+        this.bankCheckMap = bankCheckMap;
+    }
+
+    public Map<String, String> getAicCheckMap() {
+        return aicCheckMap;
+    }
+
+    public void setAicCheckMap(Map<String, String> aicCheckMap) {
+        this.aicCheckMap = aicCheckMap;
+    }
+
+    public Map<String, Object> getReqMap() {
+        return reqMap;
+    }
+
+    public void setReqMap(Map<String, Object> reqMap) {
+        this.reqMap = reqMap;
+    }
+
+    public Map<String, String> getPoliceMap() {
+        return policeMap;
+    }
+
+    public void setPoliceMap(Map<String, String> policeMap) {
+        this.policeMap = policeMap;
+    }
+
+}

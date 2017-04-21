@@ -1,0 +1,453 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.biz.expressions.mult;
+
+import java.math.BigDecimal;
+
+import com.hrbb.loan.pos.biz.expressions.bean.ScoreBureauBean;
+import com.hrbb.loan.pos.dao.entity.TCreditReportIndicator;
+import com.hrbb.loan.pos.dao.entity.TRiskCheckCalcIndex;
+import com.hrbb.loan.pos.dao.entity.TRiskCheckModelIndex;
+import com.hrbb.loan.pos.biz.constants.RiskCheckConstants;
+import com.hrbb.loan.pos.util.MathUtils;
+
+/**
+ * 1.2.2.2 信用记录评分测算
+ * 
+ * @author XLY
+ * @version $Id: CreditFormula.java, v 0.1 2015-3-10 上午10:12:47 XLY Exp $
+ */
+public class CreditFormula {
+
+	public static final BigDecimal SB1_1;
+	public static final BigDecimal SB1_2;
+
+	public static final BigDecimal SB2_1;
+	public static final BigDecimal SB2_2;
+
+	public static final BigDecimal SB3_1;
+
+	public static final BigDecimal SB4_1;
+	public static final BigDecimal SB4_2;
+
+	public static final BigDecimal SB5_1;
+	public static final BigDecimal SB5_2;
+
+	public static final BigDecimal SB6_1;
+	public static final BigDecimal SB6_2;
+
+	public static final BigDecimal SB7_1;
+
+	public static final BigDecimal SB8_1;
+
+	public static final BigDecimal SB9_1;
+	public static final BigDecimal SB9_2;
+	public static final BigDecimal SB9_3;
+
+	public static final BigDecimal SB10_1;
+	public static final BigDecimal SB10_2;
+	public static final BigDecimal SB10_3;
+
+	public static final BigDecimal SB11_1;
+	public static final BigDecimal SB11_2;
+	public static final BigDecimal SB11_3;
+
+	public static final BigDecimal SB12_1;
+	public static final BigDecimal SB12_2;
+	public static final BigDecimal SB12_3;
+
+	public static final BigDecimal SB13_1;
+	public static final BigDecimal SB13_2;
+	public static final BigDecimal SB13_3;
+
+	public static final BigDecimal SB14_1;
+	public static final BigDecimal SB14_2;
+	public static final BigDecimal SB14_3;
+
+	public static final BigDecimal SB15_1;
+	public static final BigDecimal SB15_2;
+	public static final BigDecimal SB15_3;
+
+	public static final BigDecimal SB16_1;
+	public static final BigDecimal SB16_2;
+	public static final BigDecimal SB16_3;
+
+	public static final BigDecimal SB17_1;
+	public static final BigDecimal SB17_2;
+	public static final BigDecimal SB17_3;
+
+	static {
+		SB1_1 = new BigDecimal(90);
+		SB1_2 = new BigDecimal(30);
+
+		SB2_1 = new BigDecimal(81);
+		SB2_2 = new BigDecimal(27);
+
+		SB3_1 = new BigDecimal(2);
+
+		SB4_1 = new BigDecimal(390000);
+		SB4_2 = new BigDecimal(130000);
+
+		SB5_1 = new BigDecimal(300000);
+		SB5_2 = new BigDecimal(100000);
+
+		SB6_1 = new BigDecimal(300000);
+		SB6_2 = new BigDecimal(100000);
+		SB7_1 = new BigDecimal(3);
+		SB8_1 = new BigDecimal(3);
+		SB9_1 = new BigDecimal(3);
+		SB9_2 = new BigDecimal(2400);
+		SB9_3 = new BigDecimal(800);
+		SB10_1 = new BigDecimal(3);
+		SB10_2 = new BigDecimal(15000);
+		SB10_3 = new BigDecimal(5000);
+
+		SB11_1 = new BigDecimal(18);
+		SB11_2 = new BigDecimal(6);
+		SB11_3 = new BigDecimal(3);
+		SB12_1 = new BigDecimal(12);
+		SB12_2 = new BigDecimal(4);
+		SB12_3 = new BigDecimal(3);
+		SB13_1 = new BigDecimal(3);
+		SB13_2 = new BigDecimal(0.21);
+		SB13_3 = new BigDecimal(0.07);
+		SB14_1 = new BigDecimal(3);
+		SB14_2 = new BigDecimal(0.15);
+		SB14_3 = new BigDecimal(0.05);
+		SB15_1 = new BigDecimal(5);
+		SB15_2 = new BigDecimal(0.9);
+		SB15_3 = new BigDecimal(0.18);
+		SB16_1 = new BigDecimal(3);
+		SB16_2 = new BigDecimal(9);
+		SB16_3 = new BigDecimal(3);
+		SB17_1 = new BigDecimal(3);
+		SB17_2 = new BigDecimal(0.75);
+		SB17_3 = new BigDecimal(0.25);
+	}
+
+	/**
+	 * 
+	 * 
+	 * @param mb
+	 * @param cr
+	 * @return
+	 */
+	public static ScoreBureauBean computer(TRiskCheckModelIndex mb,
+			TCreditReportIndicator cr, TRiskCheckCalcIndex calcIndexBean) {
+		ScoreBureauBean sbb = new ScoreBureauBean();
+
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex01())) {
+			if (mb.getModelIndex04() == null) {
+				sbb.setSb1(BigDecimal.ZERO);
+			} else {
+				sbb.setSb1(formulaSB1(mb.getModelIndex04()));
+			}
+		} else {
+			sbb.setSb1(BigDecimal.ZERO);
+		}
+
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex02())) {
+			sbb.setSb2(formulaSB2(mb.getModelIndex05()));
+		} else {
+			sbb.setSb2(BigDecimal.ZERO);
+		}
+
+		sbb.setSb3(formulaSB3(new BigDecimal(cr.getCR027())));
+
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex02())) {
+			sbb.setSb4(formulaSB4(cr.getCR057()));
+		} else {
+			sbb.setSb4(BigDecimal.ZERO);
+		}
+
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex01())) {
+			sbb.setSb5(formulaSB5(cr.getCR062()));
+		} else {
+			sbb.setSb5(BigDecimal.ZERO);
+		}
+
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex01())) {
+			sbb.setSb6(formulaSB6(cr.getCR063()));
+		} else {
+			sbb.setSb6(BigDecimal.ZERO);
+		}
+
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex02())) {
+			sbb.setSb7(formulaSB7(new BigDecimal(cr.getCR043())));
+		} else {
+			sbb.setSb7(BigDecimal.ZERO);
+		}
+
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex01())) {
+			sbb.setSb8(formulaSB8(new BigDecimal(cr.getCR039())));
+		} else {
+			sbb.setSb8(BigDecimal.ZERO);
+		}
+
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex02())) {
+			sbb.setSb9(formulaSB9(cr.getCR042()));
+		} else {
+			sbb.setSb9(BigDecimal.ZERO);
+		}
+
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex01())) {
+			sbb.setSb10(formulaSB10(cr.getCR038()));
+		} else {
+			sbb.setSb10(BigDecimal.ZERO);
+		}
+
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex02())) {
+			sbb.setSb11(formulaSB11(mb.getModelIndex10()));
+		} else {
+			sbb.setSb11(BigDecimal.ZERO);
+		}
+
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex01())) {
+			sbb.setSb12(formulaSB12(mb.getModelIndex11()));
+		} else {
+			sbb.setSb12(BigDecimal.ZERO);
+		}
+
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex02())) {
+			sbb.setSb13(formulaSB13(mb.getModelIndex12()));
+		} else {
+			sbb.setSb13(BigDecimal.ZERO);
+		}
+
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex01())) {
+			sbb.setSb14(formulaSB14(mb.getModelIndex13()));
+		} else {
+			sbb.setSb14(BigDecimal.ZERO);
+		}
+
+		if (RiskCheckConstants.Y.equals(calcIndexBean.getCalcIndex02())) {
+			sbb.setSb15(formulaSB15(mb.getModelIndex14()));
+		} else {
+			sbb.setSb15(BigDecimal.ZERO);
+		}
+		sbb.setSb16(formulaSB16(new BigDecimal(cr.getCR068())));
+		sbb.setSb17(formulaSB17(mb.getModelIndex15()));
+		sbb.setScoreBureau(sbb.getSb1().add(sbb.getSb2()).add(sbb.getSb3())
+				.add(sbb.getSb4()).add(sbb.getSb5()).add(sbb.getSb6())
+				.add(sbb.getSb7()).add(sbb.getSb8()).add(sbb.getSb9())
+				.add(sbb.getSb10()).add(sbb.getSb11()).add(sbb.getSb12())
+				.add(sbb.getSb13()).add(sbb.getSb14()).add(sbb.getSb15())
+				.add(sbb.getSb16()).add(sbb.getSb17()));
+		return sbb;
+	}
+
+	/**
+	 * 
+	 * MIN(90, Model_Index-04首笔贷款发放距今月份数)/30
+	 * 
+	 * @param firstCreditMonth
+	 *            Model_Index-04首笔贷款发放距今月份数
+	 * @return
+	 */
+	public static BigDecimal formulaSB1(BigDecimal firstCreditMonth) {
+		return MathUtils.div(MathUtils.getMin(SB1_1, firstCreditMonth), SB1_2);
+	}
+
+	/**
+	 * 
+	 * MIN(81, Model_Index-05首张信用卡发卡距今月份数)/27
+	 * 
+	 * @param firstCreditCardMonth
+	 *            Model_Index-05首张信用卡发卡距今月份数
+	 * @return
+	 */
+	public static BigDecimal formulaSB2(BigDecimal firstCreditCardMonth) {
+		return MathUtils.div(MathUtils.getMin(SB2_1, firstCreditCardMonth),
+				SB2_2);
+	}
+
+	/**
+	 * 
+	 * MIN(2,CR.住房贷款笔数)
+	 * 
+	 * @param houseLoanNum
+	 *            CR.住房贷款笔数
+	 * @return
+	 */
+	public static BigDecimal formulaSB3(BigDecimal houseLoanNum) {
+		return MathUtils.getMin(SB3_1, houseLoanNum);
+	}
+
+	/**
+	 * 
+	 * MIN(390000, CR.未销户贷记卡授信总额)/130000
+	 * 
+	 * @param creditExtension
+	 *            CR.未销户贷记卡授信总额
+	 * @return
+	 */
+	public static BigDecimal formulaSB4(BigDecimal creditExtension) {
+		return MathUtils.div(MathUtils.getMin(SB4_1, creditExtension), SB4_2);
+	}
+
+	/**
+	 * MIN(300000, CR.已结清信用无担保贷款总金额)/100000
+	 * 
+	 * @param settledCreditUnsecuredLoans
+	 *            CR.已结清信用无担保贷款总金额
+	 * @return
+	 */
+	public static BigDecimal formulaSB5(BigDecimal settledCreditUnsecuredLoans) {
+		return MathUtils.div(
+				MathUtils.getMin(SB5_1, settledCreditUnsecuredLoans), SB5_2);
+	}
+
+	/**
+	 * 
+	 * MIN(300000, CR.历史最高信用无担保贷款金额)/100000
+	 * 
+	 * @param hisCreditUnsecuredLoans
+	 *            CR.历史最高信用无担保贷款金额
+	 * @return
+	 */
+	public static BigDecimal formulaSB6(BigDecimal hisCreditUnsecuredLoans) {
+		return MathUtils.div(MathUtils.getMin(SB6_1, hisCreditUnsecuredLoans),
+				SB6_2);
+	}
+
+	/**
+	 * 
+	 * (3-MIN(3, CR.贷记卡逾期最长逾期月数))
+	 * 
+	 * @param creditPastDueMonth
+	 * @return
+	 */
+	public static BigDecimal formulaSB7(BigDecimal creditPastDueMonth) {
+		return SB7_1.subtract(MathUtils.getMin(SB7_1, creditPastDueMonth));
+	}
+
+	/**
+	 * 
+	 * (3-MIN(3, CR.未结清贷款机构数))
+	 * 
+	 * @param outStandingLoansOrgNum
+	 * @return
+	 */
+	public static BigDecimal formulaSB8(BigDecimal outStandingLoansOrgNum) {
+		return SB8_1.subtract(MathUtils.getMin(SB8_1, outStandingLoansOrgNum));
+	}
+
+	/**
+	 * 
+	 * (3-MIN(2400, CR.贷记卡逾期单月最高逾期总额)/800)
+	 * 
+	 * @param creditCardOverdueAmtOnMonth
+	 * @return
+	 */
+	public static BigDecimal formulaSB9(BigDecimal creditCardOverdueAmtOnMonth) {
+		BigDecimal num1 = MathUtils.getMin(creditCardOverdueAmtOnMonth, SB9_2);
+		BigDecimal num2 = MathUtils.div(num1, SB9_3);
+		return SB9_1.subtract(num2);
+	}
+
+	/**
+	 * 
+	 * (3-MIN(15000, CR.贷款逾期单月最高逾期总额)/5000)
+	 * 
+	 * @param creditOverdueAmtOnMonth
+	 * @return
+	 */
+	public static BigDecimal formulaSB10(BigDecimal creditOverdueAmtOnMonth) {
+		BigDecimal num1 = MathUtils.getMin(creditOverdueAmtOnMonth, SB10_2);
+		BigDecimal num2 = MathUtils.div(num1, SB10_3);
+		return SB10_1.subtract(num2);
+	}
+
+	/**
+	 * MIN(18, Model_Index-10信用卡最近逾期距今月份数)/6
+	 * 
+	 * @param modelIndex10
+	 * @return
+	 */
+	public static BigDecimal formulaSB11(BigDecimal modelIndex10) {
+		if (modelIndex10.compareTo(BigDecimal.ZERO) == 0) {
+			return SB11_3;
+		}
+		return MathUtils.div(MathUtils.getMin(SB11_1, modelIndex10), SB11_2);
+	}
+
+	/**
+	 * 
+	 * MIN(12, Model_Index-11贷款最近逾期距今月份数)/4
+	 * 
+	 * @param modeIndex11
+	 * @return
+	 */
+	public static BigDecimal formulaSB12(BigDecimal modelIndex11) {
+		if (modelIndex11.compareTo(BigDecimal.ZERO) == 0) {
+			return SB12_3;
+		}
+		return MathUtils.div(MathUtils.getMin(SB12_1, modelIndex11), SB12_2);
+	}
+
+	/**
+	 * 
+	 * (3-MIN(0.21, Model_Index-12贷记卡数逾期率)/0.07)
+	 * 
+	 * @param modeIndex12
+	 * @return
+	 */
+	public static BigDecimal formulaSB13(BigDecimal modeIndex12) {
+		BigDecimal num1 = MathUtils.getMin(modeIndex12, SB13_2);
+		BigDecimal num2 = MathUtils.div(num1, SB13_3);
+		return SB13_1.subtract(num2);
+	}
+
+	/**
+	 * 
+	 * (3-MIN(0.15, Model_Index-13贷款数逾期率)/0.05)
+	 * 
+	 * @param modeIndex12
+	 * @return
+	 */
+	public static BigDecimal formulaSB14(BigDecimal modeIndex13) {
+		BigDecimal num1 = MathUtils.getMin(modeIndex13, SB14_2);
+		BigDecimal num2 = MathUtils.div(num1, SB14_3);
+		return SB14_1.subtract(num2);
+	}
+
+	/**
+	 * 
+	 * (5-MIN(0.9, Model_Index-14贷记卡使用率)/0.18)
+	 * 
+	 * @param modeIndex12
+	 * @return
+	 */
+	public static BigDecimal formulaSB15(BigDecimal modeIndex14) {
+		BigDecimal num1 = MathUtils.getMin(modeIndex14, SB15_2);
+		BigDecimal num2 = MathUtils.div(num1, SB15_3);
+		return SB15_1.subtract(num2);
+	}
+
+	/**
+	 * 
+	 * 3-MIN(9,CR.近6个月查询次数)/3
+	 * 
+	 * @param halfYearCheckNum
+	 * @return
+	 */
+	public static BigDecimal formulaSB16(BigDecimal halfYearCheckNum) {
+		return SB16_1.subtract(MathUtils.div(
+				MathUtils.getMin(halfYearCheckNum, SB16_2), SB16_3));
+	}
+
+	/**
+	 * 
+	 * 3-MIN(0.75, Model_Index-15近6个月查询占比)/0.25
+	 * 
+	 * @param modelIndex15
+	 * @return
+	 */
+	public static BigDecimal formulaSB17(BigDecimal modelIndex15) {
+		return SB17_1.subtract(MathUtils.div(
+				MathUtils.getMin(modelIndex15, SB17_2), SB17_3));
+	}
+}

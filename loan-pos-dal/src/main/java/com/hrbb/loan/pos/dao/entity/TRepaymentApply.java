@@ -1,0 +1,146 @@
+package com.hrbb.loan.pos.dao.entity;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+
+public class TRepaymentApply implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6100292419398719304L;
+
+	private String repayApplyNo;
+
+	private Integer status;
+
+	private String type;
+
+	private String preType;
+
+	private BigDecimal applyAmt;
+
+	private String accNo;
+
+	private Date applyDate;
+
+	private String merchantNo;
+
+	private String custId;
+
+	private String contNo;
+
+	private String applyNo;
+
+	private Date createDate;
+
+	private Date modifiedDate;
+
+
+	public String getRepayApplyNo() {
+		return repayApplyNo;
+	}
+
+	public void setRepayApplyNo(String repayApplyNo) {
+		this.repayApplyNo = repayApplyNo;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getPreType() {
+		return preType;
+	}
+
+	public void setPreType(String preType) {
+		this.preType = preType;
+	}
+
+	public BigDecimal getApplyAmt() {
+		return applyAmt;
+	}
+
+	public void setApplyAmt(BigDecimal applyAmt) {
+		this.applyAmt = applyAmt;
+	}
+
+	public String getAccNo() {
+		return accNo;
+	}
+
+	public void setAccNo(String accNo) {
+		this.accNo = accNo;
+	}
+
+	public Date getApplyDate() {
+		return applyDate;
+	}
+
+	public void setApplyDate(Date applyDate) {
+		this.applyDate = applyDate;
+	}
+
+	public String getMerchantNo() {
+		return merchantNo;
+	}
+
+	public void setMerchantNo(String merchantNo) {
+		this.merchantNo = merchantNo;
+	}
+
+	public String getCustId() {
+		return custId;
+	}
+
+	public void setCustId(String custId) {
+		this.custId = custId;
+	}
+
+	public String getContNo() {
+		return contNo;
+	}
+
+	public void setContNo(String contNo) {
+		this.contNo = contNo;
+	}
+
+	public String getApplyNo() {
+		return applyNo;
+	}
+
+	public void setApplyNo(String applyNo) {
+		this.applyNo = applyNo;
+	}
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
+
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
+
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
+	
+	
+}

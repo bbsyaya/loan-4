@@ -1,0 +1,109 @@
+package com.hrbb.loan.hessian.impl;
+
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Maps;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.hrbb.loan.hessian.inter.IBankCardCheckHessianService;
+import com.hrbb.loan.pos.biz.backstage.inter.IPoliceAndAICConnectBiz;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.sh.framework.BankCardCheckService;
+import com.hrbb.sh.framework.domain.ups.UpsConfigBean;
+import com.hrbb.sh.framework.facade.ups.UpsDataApiFacade;
+import com.unionpaysmart.data.sdk.model.auth.request.AuthCardByPayRequest;
+import com.unionpaysmart.data.sdk.model.auth.response.AuthCardResponse;
+
+@Component("bankCardCheckHessianService")
+public class BankCardCheckHessianServiceImpl implements IBankCardCheckHessianService{
+	
+	
+	Logger logger = LoggerFactory.getLogger(BankCardCheckHessianServiceImpl.class);
+	
+	@Autowired
+	private IPoliceAndAICConnectBiz policeAndAICConnectBiz;
+	
+	@Value("#{systemInfo[bankCheckChannelFlag]}")
+    private String bankCheckChannelFlag;
+	
+	@Autowired
+	private UpsDataApiFacade upsDataApiFacade; 
+	
+	
+	@Autowired
+	private BankCardCheckService bankCardCheckService;
+	@Override
+	public Map<String, String> bankCardCheck(Map<String, String> reqMap) {
+		try{
+			//1代表用易极付账户验真
+			if("1".equals(bankCheckChannelFlag)){
+				String bankAccno = (String)reqMap.get("cardNo");
+				Map<String, String> resMap = Maps.newHashMap();
+				if(policeAndAICConnectBiz.hasBankCardCheck(bankAccno)){
+					logger.debug(bankAccno + "已做过账户验真");
+					resMap.put("respCode", "00");
+					resMap.put("respMsg", "账户验真成功");
+					return resMap;
+				}else{
+					String url = policeAndAICConnectBiz.getBankCardCheckUrl(reqMap);
+					if(StringUtil.isEmpty(url)){
+						
+						logger.error("账户验真路径为空");
+						resMap.put("respCode", "01");
+						resMap.put("respMsg", "账户验真失败");
+						return resMap;
+						
+					}else{
+						Gson gson = new Gson();
+						logger.debug("--调Hessian之前");
+						String resString = bankCardCheckService.checkBankCard(url);
+						logger.debug("返回结果为:" + resString);
+						logger.debug("--调Hessian之后");
+						if(StringUtil.isEmpty(resString)){
+							logger.error("账户验真返回为空");
+							resMap.put("respCode", "99");
+							resMap.put("respMsg", "账户验异常");
+							return resMap;
+						}
+						Map<String,Object> respMap = gson.fromJson(resString,new TypeToken<Map<String, Object>>() {}.getType());
+						Boolean success = (Boolean) respMap.get("success");
+						String resultMessage = (String) respMap.get("resultMessage");
+						return policeAndAICConnectBiz.updateBankAccnoStatus(resultMessage, success, bankAccno, null, bankCheckChannelFlag);
+					}
+				}
+			//银联智慧	
+			}else{
+				UpsConfigBean configBean = new UpsConfigBean();
+				configBean.setAccount("T810332");
+		        configBean.setPrivateKey("T810332");
+				AuthCardByPayRequest authCardByPay = new AuthCardByPayRequest();
+				authCardByPay.setCard(reqMap.get("cardNo"));
+				authCardByPay.setName(reqMap.get("cardName"));
+				AuthCardResponse response = upsDataApiFacade.callAuthCardByPay(authCardByPay, configBean);
+				Boolean success = true;
+				if(! "0000".equals(response.getResCode())){
+					success = false;
+				}
+				
+				return policeAndAICConnectBiz.updateBankAccnoStatus(response.getResMsg(), success, reqMap.get("cardNo"), null, bankCheckChannelFlag);
+			}
+			
+		}catch (Exception e){
+			logger.error("账户验证发生异常:" + e);
+			Map<String, String> resMap = Maps.newHashMap();
+			resMap.put("respCode", "99");
+			resMap.put("respMsg", "账户验真异常");
+			return resMap;
+		}
+	}
+	
+	
+				
+
+}

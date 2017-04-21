@@ -1,0 +1,29 @@
+<!-- 基金退款电子账户18 -->
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:fram="http://framework.facade.common.transcore.pinganfu.com/">
+	<soapenv:Header />
+	<soapenv:Body>
+		<fram:execProxyPayoff>
+			<arg0>
+				<bankCardInfo>
+				</bankCardInfo>
+				<busiChannel>M</busiChannel>
+				<busiCode>10</busiCode>
+				<ccy>CNY</ccy>
+				<customerId>1000010000026540</customerId>
+				<customerType>C</customerType>
+				<dcFlag>C</dcFlag>
+				<orderNo>${orderNo}</orderNo>
+				<productCode>100020010000</productCode>
+				<bindBankId>88</bindBankId>
+				<toCredentialType>1</toCredentialType>
+				<toCustomerId>2000010000000002</toCustomerId> <!-- 03 -->
+				<toCustomerName>xly</toCustomerName>
+				<transAmt>10000000</transAmt>
+				<transDesc>1111</transDesc>
+				<transFactAmt>10000000</transFactAmt>
+				<transType>18</transType>
+			</arg0>
+		</fram:execProxyPayoff>
+	</soapenv:Body>
+</soapenv:Envelope> 

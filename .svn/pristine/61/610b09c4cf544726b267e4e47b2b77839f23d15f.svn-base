@@ -1,0 +1,187 @@
+package com.hrbb.loan.pos.util;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 文件工具类
+ * 
+ * @author jianQing
+ * @version $Id: FileUtil.java, v 0.1 2015年4月22日 上午10:19:20 jianQing Exp $
+ */
+public class FileUtil {
+
+	// 同步文件-字段分隔符
+	public final static String SYNFILE_PATH_PREFIX = "//";
+	public final static String SYNFILE_COLUMN_APPEND_PREFIX = "|+|";
+	public final static String SYNFILE_NEWLINE_PREFIX = "\n";
+	// 字符集
+	public final static String CHARSET_UTF_8 = "UTF-8";
+	// 文件类型
+	public final static String FILETYPE_TXT = ".txt";
+	public final static String FILETYPE_DAT = ".dat";
+	public final static String FILETYPE_PDF = ".pdf";
+
+	private List<Map<String, Object>> bizFileTypeList = null;
+
+	public void setBizFileTypeList(List<Map<String, Object>> bizFileTypeList) {
+		this.bizFileTypeList = bizFileTypeList;
+	}
+
+	/**
+	 * 创建文件路径
+	 * 
+	 * @param path
+	 */
+	public static boolean createDirectory(String pathStr) {
+		Path path = FileSystems.getDefault().getPath(pathStr);
+		// 判断路径存在
+		if (!Files.exists(path)) {
+			try {
+				Files.createDirectories(path);
+			} catch (IOException e) {
+				// LOG.error(e.toString());
+				return false;
+			}
+		}
+		// LOG.debug("路径存在");
+		return true;
+	}
+
+	/**
+	 * 检查文件是否存在
+	 * 
+	 * @param path
+	 */
+	public static boolean checkFileExist(String filePath) {
+		Path path = FileSystems.getDefault().getPath(filePath);
+		// 判断文件存在
+		return Files.exists(path);
+	}
+
+	/**
+	 * 创建文件
+	 * 
+	 * @param file
+	 */
+	public static boolean createFile(String pathStr) {
+		Path path = FileSystems.getDefault().getPath(pathStr);
+		try {
+			Files.createFile(path);
+			// LOG.info("创建文件成功path=" + path);
+		} catch (IOException e) {
+			// LOG.error("创建文件失败！");
+			// LOG.error("path=" + path);
+			// LOG.error(e.toString());
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * 写文件
+	 * 
+	 * @param file
+	 */
+	public static boolean writeFile(String pathStr, String info, String charset) {
+		Path path = FileSystems.getDefault().getPath(pathStr);
+		// 设置文件的编码格式
+		Charset cs = Charset.forName(charset);
+		// 写文件
+		try {
+			BufferedWriter writer = Files.newBufferedWriter(path, cs);
+			writer.write(info);
+			writer.flush();
+			// LOG.info("写文件成功");
+		} catch (IOException e) {
+			// LOG.error("读写文件失败！");
+			// LOG.error("path=" + path);
+			// LOG.error(e.toString());
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * 删除文件
+	 * 
+	 * @param file
+	 */
+	public static void deleteFileByOne(File file) {
+		if (file.exists()) { // 判断文件是否存在
+			file.delete();
+		} 
+	}
+
+	/**
+	 * 删除文件
+	 * 
+	 * @param file
+	 */
+	public void deleteFile(File file) {
+		if (file.exists()) { // 判断文件是否存在
+			if (file.isFile()) { // 判断是否是文件
+				file.delete(); // delete()方法 你应该知道 是删除的意思;
+			} else if (file.isDirectory()) { // 否则如果它是一个目录
+				File files[] = file.listFiles(); // 声明目录下所有的文件 files[];
+				for (int i = 0; i < files.length; i++) { // 遍历目录下所有的文件
+					this.deleteFile(files[i]); // 把每个文件 用这个方法进行迭代
+				}
+			}
+			file.delete();
+		}
+	}
+
+	public static void main(String[] args) {
+		// String file =
+		// "C:\\loan-pos-synchrofile\\synchrofile\\20150427\\HB16_201502222427.dat";
+		// System.out.println(checkFileExist(file));
+		// FileUtil fileUtil = new FileUtil();
+		// File f = new File(
+		// "D:\\workspace\\.metadata\\.plugins\\org.eclipse.wst.server.core\\tmp0\\wtpwebapps\\loan-pos-web\\LO2015042210080199325047800200");
+		// fileUtil.deleteFile(f);
+	}
+
+	public File[] renameFile(File[] fileArray) throws Exception {
+		List<File> fileList = new ArrayList<File>();
+		for (File file : fileArray) {
+			if (file.getName().endsWith(FILETYPE_PDF)) {
+				fileList.add(file);
+				continue;
+			} else {
+				String fileName = file.getName();
+				String fileNo = fileName.substring(
+						fileName.lastIndexOf("_") - 4,
+						fileName.lastIndexOf("_"));
+				String destFileName = getDestFileName(fileNo);
+				String destFileUrl = file.getParent() + "/" + destFileName
+						+ fileName.substring(fileName.lastIndexOf("_"));
+				File destFile = new File(destFileUrl);
+				file.renameTo(destFile);
+				fileList.add(destFile);
+			}
+		}
+
+		return fileList.toArray(new File[fileList.size()]);
+	}
+
+	public String getDestFileName(String itemNo) {
+		String fileName = "";
+		for (Map<String, Object> map : bizFileTypeList) {
+			if (itemNo.equals((String) map.get("itemNo"))) {
+				fileName = (String) map.get("itemName");
+				break;
+			}
+		}
+		return fileName;
+	}
+
+}

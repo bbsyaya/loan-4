@@ -1,0 +1,104 @@
+package com.hrbb.loan.pos.util;
+
+import java.security.NoSuchAlgorithmException;
+
+import org.apache.commons.lang3.StringUtils;
+
+/**
+ *<h1>生成id</h1>
+ *@author Johnson Song
+ *@version Id: Id.java, v 1.0 2015-3-4 下午2:46:52 Johnson Song Exp
+ */
+public class IdUtil {
+	public static String getId(String prefix){
+		String id = prefix + DateUtil.getCurrentTimePattern5() + RandomUtil.getRandom(9);
+		id = StringUtils.rightPad(id, 30, "0");
+		return id;
+		
+	}
+	
+	/**
+	 * 兼顾数据回行的客户号长度(20bit)要求，调整客户号生成规则:C+yyyyMMddHHmmss+身份证后4位+校验位
+	 * @param paperId
+	 * @return
+	 */
+	public static String getCustId(String paperId){
+//		return "CU"+ DateUtil.getCurrentTimePattern5() + paperId +RandomUtil.getRandom(3);
+		
+		final int CUST_ID_LEN = 20;		//回行的客户号长度(20bit)要求
+		final String ID_PREFIX = "C";
+		String id = "";
+		
+		if(paperId==null || paperId.trim().length() != 18){
+			id = ID_PREFIX+ DateUtil.getCurrentTimePatterna() + RandomUtil.getRandom(4);
+			
+		}else{
+		
+			String baseId = ID_PREFIX + DateUtil.getCurrentTimePattern5();	//yyyyMMddHHmmssSSS
+			String showId = baseId.substring(0,baseId.length()-3);		//yyyyMMddHHmmss
+			String rmd = RandomUtil.getRandom(3);
+			String vCode = "";
+			try {
+				vCode = MessageDigest.getDigestAsUpperHexString("MD5", baseId+paperId+rmd).substring(0, 1);
+			} catch (NoSuchAlgorithmException e) {
+				e.printStackTrace();
+				vCode = RandomUtil.getRandom(1);
+			}
+			
+			id = showId + paperId.substring(14, 18)+vCode;
+		}
+		
+		return StringUtils.rightPad(id, CUST_ID_LEN, "0");
+	}
+	
+	public static void main(String[] args) {
+//		System.out.println(getId("LO").length());
+		System.out.println(getCustId(""));
+		System.out.println(getCustId("12345676543"));
+		System.out.println(getCustId("32010519770101205X"));
+		
+	}
+	
+	/**
+	 * 按照如下规则生成业务申请编号：日期(8位)+合作渠道(2位)+进件渠道(2位)+流水号(10位)
+	 * @param channel
+	 * @param implType
+	 * @return
+	 */
+	/*改用trigger生成
+	public static String getBizLoanId(String channel, String implType){
+		String bizId = DateUtil.getTodayDatePattern1()+channel+implType+DateUtil.getCurrentTimePattern8()+RandomUtil.getRandom(4);
+		return StringUtils.rightPad(bizId, 22, "0");
+	}
+	*/
+	
+	public static String getPaymentApplyId(){
+		return getId("PY");
+	}
+	
+	public static String getRepaymentApplyId(){
+		return getId("RP");
+	}	
+	
+	public static String getReceiptId(){
+	    return getId("RC");
+	}
+	
+	public static String getCreditInvestigateSeqNo(){
+		return "IFS"+DateUtil.getTodayDatePattern1()+StringUtils.leftPad(RandomUtil.getRandom(7), 9, "0");
+	}
+	/*
+	public static String getBizContractId(String channel, String implType){
+		return "SXXY"+DateUtil.getTodayDatePattern1()+channel+implType+DateUtil.getCurrentTimePattern8()+RandomUtil.getRandom(4);
+	}
+	*/
+	
+	public static String getBankCheckSeqNo(){
+		return DateUtil.getTodayDatePattern1() + StringUtils.leftPad(RandomUtil.getRandom(9), 9, "0");
+	}
+
+	public static String getCreditInId() {
+		return "POS"+ DateUtil.getCurrentTimePatterna() + RandomUtil.getRandom(3);
+	}
+}
+

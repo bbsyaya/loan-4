@@ -1,0 +1,201 @@
+package com.hrbb.loan.pos.dao.entity;
+
+import java.util.Date;
+
+public class TCallingTask {
+    private String taskNo;
+
+    private Date generateTime;
+
+    private String callingType;
+
+    private String claimerId;
+
+    private String claimerName;
+
+    private Date claimTime;
+
+    private Date callingTime;
+
+    private String relaBizNo;
+
+    private String relaBizPhase;
+    
+    private String dealInfo;
+    private String custId;
+    private String custName;
+    private String posCustId;
+    private String posCustName;
+    private String info;
+
+    /**
+	 * Getter method for property <tt>info</tt>.
+	 * 
+	 * @return property value of info
+	 */
+	public String getInfo() {
+		return info;
+	}
+
+	/**
+	 * Setter method for property <tt>info</tt>.
+	 * 
+	 * @param info value to be assigned to property info
+	 */
+	public void setInfo(String info) {
+		this.info = info;
+	}
+
+	/**
+	 * Getter method for property <tt>custId</tt>.
+	 * 
+	 * @return property value of custId
+	 */
+	public String getCustId() {
+		return custId;
+	}
+
+	/**
+	 * Setter method for property <tt>custId</tt>.
+	 * 
+	 * @param custId value to be assigned to property custId
+	 */
+	public void setCustId(String custId) {
+		this.custId = custId;
+	}
+
+	/**
+	 * Getter method for property <tt>custName</tt>.
+	 * 
+	 * @return property value of custName
+	 */
+	public String getCustName() {
+		return custName;
+	}
+
+	/**
+	 * Setter method for property <tt>custName</tt>.
+	 * 
+	 * @param custName value to be assigned to property custName
+	 */
+	public void setCustName(String custName) {
+		this.custName = custName;
+	}
+
+	/**
+	 * Getter method for property <tt>posCustId</tt>.
+	 * 
+	 * @return property value of posCustId
+	 */
+	public String getPosCustId() {
+		return posCustId;
+	}
+
+	/**
+	 * Setter method for property <tt>posCustId</tt>.
+	 * 
+	 * @param posCustId value to be assigned to property posCustId
+	 */
+	public void setPosCustId(String posCustId) {
+		this.posCustId = posCustId;
+	}
+
+	/**
+	 * Getter method for property <tt>posCustName</tt>.
+	 * 
+	 * @return property value of posCustName
+	 */
+	public String getPosCustName() {
+		return posCustName;
+	}
+
+	/**
+	 * Setter method for property <tt>posCustName</tt>.
+	 * 
+	 * @param posCustName value to be assigned to property posCustName
+	 */
+	public void setPosCustName(String posCustName) {
+		this.posCustName = posCustName;
+	}
+
+	public String getTaskNo() {
+        return taskNo;
+    }
+
+    public void setTaskNo(String taskNo) {
+        this.taskNo = taskNo == null ? null : taskNo.trim();
+    }
+
+    public Date getGenerateTime() {
+        return generateTime;
+    }
+
+    public void setGenerateTime(Date generateTime) {
+        this.generateTime = generateTime;
+    }
+
+    public String getCallingType() {
+        return callingType;
+    }
+
+    public void setCallingType(String callingType) {
+        this.callingType = callingType == null ? null : callingType.trim();
+    }
+
+    public String getClaimerId() {
+        return claimerId;
+    }
+
+    public void setClaimerId(String claimerId) {
+        this.claimerId = claimerId == null ? null : claimerId.trim();
+    }
+
+    public String getClaimerName() {
+        return claimerName;
+    }
+
+    public void setClaimerName(String claimerName) {
+        this.claimerName = claimerName == null ? null : claimerName.trim();
+    }
+
+    public Date getClaimTime() {
+        return claimTime;
+    }
+
+    public void setClaimTime(Date claimTime) {
+        this.claimTime = claimTime;
+    }
+
+    public Date getCallingTime() {
+        return callingTime;
+    }
+
+    public void setCallingTime(Date callingTime) {
+        this.callingTime = callingTime;
+    }
+
+    public String getRelaBizNo() {
+        return relaBizNo;
+    }
+
+    public void setRelaBizNo(String relaBizNo) {
+        this.relaBizNo = relaBizNo == null ? null : relaBizNo.trim();
+    }
+
+    public String getRelaBizPhase() {
+        return relaBizPhase;
+    }
+
+    public void setRelaBizPhase(String relaBizPhase) {
+        this.relaBizPhase = relaBizPhase == null ? null : relaBizPhase.trim();
+    }
+    
+
+    public String getDealInfo() {
+        return dealInfo;
+    }
+
+    public void setDealInfo(String dealInfo) {
+        this.dealInfo = dealInfo;
+    }
+}

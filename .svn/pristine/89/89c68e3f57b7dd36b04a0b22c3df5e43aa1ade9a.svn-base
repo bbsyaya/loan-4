@@ -1,0 +1,584 @@
+package com.hrbb.loan.pos.util;
+
+import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.time.DateUtils;
+
+/**
+ * Created by songyilin on 2014/8/27.
+ */
+public class DateUtil {
+	
+	public static final String HRRB_FULL_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
+	public static final String HRRB_LONG_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	public static final String HRRB_LONG_DATETIME_FORMAT_BRIEF = "yyyyMMddHHmmss";
+	public static final String HRRB_SHORT_DATETIME_FORMAT = "yyyy-MM-dd";
+	public static final String HRRB_SHORT_DATETIME_FORMAT_BRIEF = "yyyyMMdd";
+
+	public static SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMdd");
+	public static SimpleDateFormat yearPattern = new SimpleDateFormat("yyyy");
+	public static SimpleDateFormat sdf2 = new SimpleDateFormat("MM-dd HH:mm");
+	public static SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd");
+	public static SimpleDateFormat sdf4 = new SimpleDateFormat(
+			"yyyy-MM-dd HH:mm:ss");
+	public static SimpleDateFormat sdf5 = new SimpleDateFormat(
+			"yyyyMMddHHmmssSSS");
+	public static SimpleDateFormat sdf6 = new SimpleDateFormat("yyyy年MM月");
+	public static SimpleDateFormat sdf7 = new SimpleDateFormat("HH:mm:ss");
+	public static SimpleDateFormat sdf8 = new SimpleDateFormat("HHmmss");
+	public static SimpleDateFormat sdf9 = new SimpleDateFormat("yyyy/MM/dd");
+	public static SimpleDateFormat sdf10 = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+	public static SimpleDateFormat sdf11 = new SimpleDateFormat("yyyy-MM");
+	public static SimpleDateFormat sdfa = new SimpleDateFormat("yyyyMMddHHmmss");
+	public static SimpleDateFormat sdfb = new SimpleDateFormat("yyyy.MM.dd");
+	public static SimpleDateFormat sdfYearMonth = new SimpleDateFormat(
+			"yyyy/MM");
+	public static SimpleDateFormat sdfYearMonth2 = new SimpleDateFormat(
+			"yyyy.MM");
+	public static SimpleDateFormat sdfYearMonth3 = new SimpleDateFormat(
+			"yyyy-MM");
+	// 验证指定pattern的datetime是否为日期格式
+	public static boolean isDateTimeFormat(String datetime, String pattern) {
+	    try {
+            DateUtils.parseDate(datetime, pattern);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+	}
+	
+	public static String getCurrTimeSdf10(){
+		try{
+			Calendar cal = Calendar.getInstance();
+			return sdf10.format(cal.getTime());
+		}catch(Exception e){
+			return null;
+		}
+	}
+	
+	public static String getCurrentTimePattern7(){
+		Calendar cal = Calendar.getInstance();
+        return sdf7.format(cal.getTime());
+	}
+	
+	public static String getTodayDatePattern1() {
+		Calendar cal = Calendar.getInstance();
+		return sdf1.format(cal.getTime());
+	}
+	
+	public static String getCurrentTimePattern3() {
+        Calendar cal = Calendar.getInstance();
+        return sdf3.format(cal.getTime());
+    }
+
+	public static String getCurrentTimePattern5() {
+		Calendar cal = Calendar.getInstance();
+		return sdf5.format(cal.getTime());
+	}
+	
+	public static String getCurrentTimePattern8(){
+		Calendar cal = Calendar.getInstance();
+		return sdf8.format(cal.getTime());
+	}
+
+	public static String getCurrentTimePatterna() {
+		Calendar cal = Calendar.getInstance();
+		return sdfa.format(cal.getTime());
+	}
+
+	public static String getDatePattern2(long miliSecond) {
+		return sdf2.format(miliSecond);
+	}
+
+	public static String getDatePattern2(String miliSecond) {
+		return sdf2.format(Long.valueOf(miliSecond));
+	}
+
+	public static String getDatePattern1(Long miliSecond) {
+		return sdf1.format(miliSecond);
+	}
+
+	public static Date getStrToDate1(String str) throws ParseException {
+		return sdf1.parse(str);
+	}
+
+	public static String parDate(SimpleDateFormat insertDateFormat,
+			SimpleDateFormat outDateFormat, String time) throws Exception {
+		Date date = insertDateFormat.parse(time);
+		return outDateFormat.format(date);
+	}
+
+	public static String getDateToString3(Date date) {
+		return sdf3.format(date);
+	}
+
+	public static String getYesterDayPattern1() {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, -1);
+		return sdf1.format(cal.getTime());
+	}
+
+	public static String getTommorowDayPattern1() {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, 1);
+		return sdf1.format(cal.getTime());
+	}
+
+	public static String getSomeDateBefor(int day) {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, -day);
+		return sdf1.format(cal.getTime());
+	}
+	
+	public static Date getSomeDateBeforDate(int day){
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, -day);
+		return cal.getTime();
+	}
+
+	public static String getSomeDateAfter(int day) {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, day);
+		return sdf1.format(cal.getTime());
+	}
+
+	public static String getYear() {
+		Calendar cal = Calendar.getInstance();
+		return yearPattern.format(cal.getTime());
+	}
+
+	public static Long getTimeStamp(String dateString) throws Exception {
+		Date date = sdf1.parse(dateString);
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		return cal.getTimeInMillis();
+	}
+
+	public static Long getTimeStampPattern3(String dateString) throws Exception {
+		Date date = sdf3.parse(dateString);
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		return cal.getTimeInMillis();
+	}
+
+	public static Date getDatePattern3(String dateString) throws Exception {
+		Date date = sdf3.parse(dateString);
+		return date;
+	}
+	
+	public static Date getDatePatternA(String dateString) throws Exception {
+        Date date = sdfa.parse(dateString);
+        return date;
+    }
+
+	public static Long getTimeStampByMilliSecondBefore(Long milliSecond,
+			Integer date) throws Exception {
+		Date dateParse = sdf1.parse(getDatePattern1(milliSecond));
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(dateParse);
+		cal.add(Calendar.DATE, -date);
+		return cal.getTimeInMillis();
+
+	}
+
+	public static Long getTimeStampByMilliSecondAfter(Long milliSecond,
+			Integer date) throws Exception {
+		Date dateParse = sdf1.parse(getDatePattern1(milliSecond));
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(dateParse);
+		cal.add(Calendar.DATE, date);
+		return cal.getTimeInMillis();
+	}
+
+	public static List<Map<String, String>> getOverNumMonths(int monthNum) {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MONTH, -monthNum);
+		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+		for (int i = 0; i < monthNum; i++) {
+			cal.add(Calendar.MONTH, 1);
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("monthId", i + "");
+			map.put("month", sdf6.format(cal.getTime()));
+			list.add(map);
+		}
+		return list;
+	}
+
+	public static List<Map<String, String>> getDurOverNumMonths(int startMonth,
+			int endMonth, int monthNum) {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MONTH, -(monthNum - startMonth));
+		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+		for (int i = 0; i <= (endMonth - startMonth); i++) {
+			cal.add(Calendar.MONTH, 1);
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("month", sdf6.format(cal.getTime()));
+			list.add(map);
+		}
+		return list;
+
+	}
+
+	public static List<Map<String, String>> getOverNumMonths3(int monthNum) {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MONTH, -monthNum-1);
+		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+		for (int i = 0; i < monthNum; i++) {
+			cal.add(Calendar.MONTH, 1);
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("monthId", i + "");
+			map.put("month", sdfYearMonth3.format(cal.getTime()));
+			list.add(map);
+		}
+		return list;
+	}
+	
+	public static Date getDatePattern9(String dateString) throws Exception {
+		Date date = sdf9.parse(dateString);
+		return date;
+	}
+	
+	/**
+	 * 取得和当天日期相差的天数
+	 * 
+	 * @param date1
+	 * @return 天数
+	 */
+	public static Long getDateDiffFromToday(Date date1) {
+		return getDateDiffByDay(new Date(), date1);
+	}
+
+	/**
+	 * 取得2个日期相差的天数
+	 * 
+	 * @param date1
+	 * @param date2
+	 * @return 天数
+	 */
+	public static Long getDateDiffByDay(Date date1, Date date2) {
+		return (date1.getTime() - date2.getTime()) / (24 * 60 * 60 * 1000);
+	}
+
+	public static String getDateToStringYearMonth(Date date) {
+		return sdfYearMonth.format(date);
+	}
+	
+	public static Date getStrToDateYearMonth2(String str) throws ParseException {
+		return sdfYearMonth2.parse(str);
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @param mthNum
+	 * @return
+	 */
+	public static String getLastMthNumStr(int mthNum) {
+		Calendar cl = Calendar.getInstance();
+		cl.add(Calendar.MONTH, -mthNum);
+		cl.set(Calendar.DAY_OF_MONTH, 1);
+		return sdf3.format(cl.getTime());
+	}
+	
+	public static Date getStrToDateYearMonth(String str) throws ParseException {
+		return sdfYearMonth.parse(str);
+	}
+	
+	/**
+	 * 相差月份
+	 * 
+	 * @return
+	 */
+	public static int getDiffMonth(Date beginDate, Date endDate) {
+		Calendar calbegin = Calendar.getInstance();
+		Calendar calend = Calendar.getInstance();
+		calbegin.setTime(beginDate);
+		calend.setTime(endDate);
+		int m_begin = calbegin.get(Calendar.MONTH) + 1; // 获得开始日期月份
+		int m_end = calend.get(Calendar.MONTH) + 1;
+		// 获得结束日期月份
+		int checkmonth = m_end - m_begin
+				+ (calend.get(Calendar.YEAR) - calbegin.get(Calendar.YEAR))
+				* 12;
+		// 获得结束日期于开始的相差月份
+		return checkmonth;
+	}
+	
+	/**
+	 * 相差月份
+	 * 
+	 * @return
+	 */
+	public static BigDecimal getDiffMonthByDay(Date beginDate, Date endDate) {
+
+		long days = getDateDiffByDay(endDate, beginDate);
+		// 获得相差日期月份
+		BigDecimal checkmonth = (new BigDecimal(days)).divide(new BigDecimal(
+				30.5), 6, BigDecimal.ROUND_HALF_UP);
+		// 获得结束日期于开始的相差月份
+		return checkmonth;
+	}
+	
+	public static BigDecimal getAge(Date birthDay) {
+		Calendar cal = Calendar.getInstance();
+		if (cal.before(birthDay)) {
+			return BigDecimal.ZERO;
+		}
+
+		int yearNow = cal.get(Calendar.YEAR);
+		int monthNow = cal.get(Calendar.MONTH) + 1;// 注意此处，如果不加1的话计算结果是错误的
+		int dayOfMonthNow = cal.get(Calendar.DAY_OF_MONTH);
+		cal.setTime(birthDay);
+
+		int yearBirth = cal.get(Calendar.YEAR);
+		int monthBirth = cal.get(Calendar.MONTH);
+		int dayOfMonthBirth = cal.get(Calendar.DAY_OF_MONTH);
+
+		int age = yearNow - yearBirth;
+
+		if (monthNow <= monthBirth) {
+			if (monthNow == monthBirth) {
+				if (dayOfMonthNow < dayOfMonthBirth) {
+					age--;
+				} else {
+				}
+			} else {
+				age--;
+			}
+		} else {
+		}
+		return new BigDecimal(age);
+	}
+	/**
+	 * 通过年份取得岁数
+	 * 
+	 * @param birthDay
+	 * @return
+	 */
+	public static BigDecimal getAgeByYear(Date birthDay) {
+		Calendar cal = Calendar.getInstance();
+		if (cal.before(birthDay)) {
+			return BigDecimal.ZERO;
+		}
+		
+		int yearNow = cal.get(Calendar.YEAR);
+		
+		cal.setTime(birthDay);
+		int yearBirth = cal.get(Calendar.YEAR);
+		
+		int age = yearNow - yearBirth;
+
+		return new BigDecimal(age);
+	}
+	
+	
+	//add by Lin, Zhaolin
+	public static String getNowTime(String format) {
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		Calendar c = Calendar.getInstance();
+		c.setTime(new Date());
+		return sdf.format(c.getTime());
+	}
+	
+	/**
+     * 获取当前时间，精确到毫秒
+     * @author Lin,Zhaolin
+     * @return
+     */
+    public static String getNowTime() {
+    	return getNowTime(DateUtil.HRRB_LONG_DATETIME_FORMAT);
+    }
+    
+    public static String getToday(String sFormat) {
+//        SimpleDateFormat sdf = new SimpleDateFormat(sFormat);
+//        GregorianCalendar gc = new GregorianCalendar();
+//        gc.setTime(new Date());
+//        String s1 = sdf.format(gc.getTime());
+//        return s1;
+    	return formatDate(new Date(), sFormat);
+    }
+    
+    public static String getToday() {
+        return getToday(DateUtil.HRRB_SHORT_DATETIME_FORMAT);
+    }
+    
+    public static String getRelativeDate(java.util.Date date, int iYear, int iMonth, int iDate) {
+    	return getRelativeDate(date, iYear, iMonth, iDate,DateUtil.HRRB_SHORT_DATETIME_FORMAT);
+    }
+    
+    
+    /**
+     * 针对日期对象的日期推移计算，如昨天、上月等
+     *
+     * @param date
+     * @param iYear
+     * @param iMonth
+     * @param iDate
+     * @param format
+     * @return
+     */
+    public static String getRelativeDate(java.util.Date date, int iYear, int iMonth, int iDate, String format) {
+        SimpleDateFormat sdf = new SimpleDateFormat(format);            //定义格式
+        GregorianCalendar gc = new GregorianCalendar();            //
+        gc.setTime(date);           //设置时间
+
+        gc.add(Calendar.YEAR, iYear);               //算术求和
+        gc.add(Calendar.MONTH, iMonth);
+        gc.add(Calendar.DATE, iDate);
+
+        return sdf.format(gc.getTime());
+    }
+    
+    public static String getRelativeDate(String dateStr, int iYear, int iMonth, int iDate, String format) throws ParseException {
+    	Date date = parse2Date(dateStr, format);
+    	return getRelativeDate(date, iYear, iMonth, iDate);
+    }
+    
+    public static String getRelativeDate(String dateStr, int iYear, int iMonth, int iDate) throws ParseException {
+    	Date date = parse2Date(dateStr);
+    	return getRelativeDate(date, iYear, iMonth, iDate);
+    }
+    
+    public static String getYesterday(String format){
+    	return getRelativeDate(new Date(), 0, 0, -1, format);
+    }
+    
+    public static String getYesterday(){
+    	return getYesterday(DateUtil.HRRB_SHORT_DATETIME_FORMAT);
+    }
+    
+    public static String getMonthEnd(String baseDate) throws ParseException{
+    	return getMonthEnd(baseDate, DateUtil.HRRB_SHORT_DATETIME_FORMAT);
+    }
+    
+    /**
+     * 取指定日期所在月份的月末日期
+     * 
+     * @param baseDate
+     * @param foramt	目前只支持yyyy-MM-dd格式
+     * @return
+     * @throws ParseException 
+     */
+    private static String getMonthEnd(String baseDate, String format) throws ParseException{
+    	if (baseDate==null) return baseDate;
+    	
+    	String sDate = baseDate.substring(0,7)+"-01";
+    	
+    	return getRelativeDate(sDate,0,1,-1,format);
+    }
+    
+    public static Date parse2Date(String datestr, String format) throws ParseException{
+    	if (datestr==null) return null;
+    	Date date = new SimpleDateFormat(format).parse(datestr);
+    	return date;
+    }
+    
+    public static Date parse2Date(String datestr) throws ParseException{
+    	return parse2Date(datestr, DateUtil.HRRB_SHORT_DATETIME_FORMAT);
+    }
+    
+    public static String formatDate(Date date, String sFormat) {
+        SimpleDateFormat sdf = new SimpleDateFormat(sFormat);
+        GregorianCalendar gc = new GregorianCalendar();
+        gc.setTime(date);
+        String s1 = sdf.format(gc.getTime());
+        return s1;
+    }
+    
+    public static String formatDate(Calendar calendar, String sFormat) {
+        SimpleDateFormat sdf = new SimpleDateFormat(sFormat);
+        String s1 = sdf.format(calendar.getTime());
+        return s1;
+    }
+    
+    //-----add end 
+    
+	public static Date getDatePatternB(String dateString) throws Exception {
+		Date date = sdfb.parse(dateString);
+		return date;
+	}
+
+	public static String getDatePattern1(Date date) {
+		return sdf1.format(date);
+	}
+	
+	public static Object getDatePattern1(String dateString){
+		try{
+			Date date = sdf1.parse(dateString);
+			return date;
+		}catch(Exception e){
+			return null;
+		}
+	}
+	
+	//--add by maosheng
+	public static String getDatePattern2(Date date) {
+        return sdf9.format(date);
+    }
+
+	public static String getEarlyMonthPattern11(int i) {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MONTH, -i);
+		return sdf11.format(cal.getTime());
+	}
+	
+   /**
+    * 通过date获取时间
+    */
+   public void getTimeByDate(){
+        Date date = new Date();
+        DateFormat df1 = DateFormat.getDateInstance();//日期格式，精确到日
+        System.out.println(df1.format(date));
+        DateFormat df2 = DateFormat.getDateTimeInstance();//可以精确到时分秒
+        System.out.println(df2.format(date));
+        DateFormat df3 = DateFormat.getTimeInstance();//只显示出时分秒
+        System.out.println(df3.format(date));
+        DateFormat df4 = DateFormat.getDateTimeInstance(DateFormat.FULL,DateFormat.FULL); //显示日期，周，上下午，时间（精确到秒） 
+        System.out.println(df4.format(date));  
+        DateFormat df5 = DateFormat.getDateTimeInstance(DateFormat.LONG,DateFormat.LONG); //显示日期,上下午，时间（精确到秒） 
+        System.out.println(df5.format(date));
+        DateFormat df6 = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT); //显示日期，上下午,时间（精确到分） 
+        System.out.println(df6.format(date));
+        DateFormat df7 = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,DateFormat.MEDIUM); //显示日期，时间（精确到分）
+        System.out.println(df7.format(date));
+    }
+
+    /**
+     * 通过日历获取时间
+     */
+    public void getTimeByCalendar(){
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);//获取年份
+        int month=cal.get(Calendar.MONTH);//获取月份 
+        int day=cal.get(Calendar.DATE);//获取日 
+        int hour=cal.get(Calendar.HOUR);//小时 
+        int minute=cal.get(Calendar.MINUTE);//分            
+        int second=cal.get(Calendar.SECOND);//秒 
+        int WeekOfYear = cal.get(Calendar.DAY_OF_WEEK);//一周的第几天
+        System.out.println("现在的时间是：公元"+year+"年"+month+"月"+day+"日      "+hour+"时"+minute+"分"+second+"秒       星期"+WeekOfYear);
+    }
+    
+    /**
+     * date转calendar
+     * 
+     * @param date
+     * @return
+     */
+    public static Calendar getCalendarToDate(Date date){
+        Calendar c = Calendar.getInstance();
+        if(null != date){
+            c.setTime(date);
+        }
+        return c;
+    }
+}

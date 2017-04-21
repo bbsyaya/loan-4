@@ -1,0 +1,276 @@
+package com.hrbb.loan.pos.service.impl;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+
+import com.hrbb.loan.pos.dao.TCfgChannelAccountDao;
+import com.hrbb.loan.pos.dao.TPaymentApplyDao;
+import com.hrbb.loan.pos.dao.TReceiptInfoDao;
+import com.hrbb.loan.pos.dao.TRepaymentApplyDao;
+import com.hrbb.loan.pos.dao.entity.TCfgChannelAccount;
+import com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo;
+import com.hrbb.loan.pos.dao.entity.TPaymentApply;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+import com.hrbb.loan.pos.service.RepaymentApplyService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.IdUtil;
+import com.hrbb.loan.pos.util.StringUtil;
+
+@Service("repaymentApplyService")
+public class RepaymentApplyServiceImpl implements RepaymentApplyService {
+	Logger logger = LoggerFactory.getLogger(RepaymentApplyServiceImpl.class);
+	@Autowired
+	private TRepaymentApplyDao tRepaymentApplyDao;
+
+	@Autowired
+	private TPaymentApplyDao tPaymentApplyDao;
+	
+	@Autowired
+	private TReceiptInfoDao tReceiptInfoDao;
+	
+	@Autowired
+	private TCfgChannelAccountDao tCfgChannelAccountDao;
+
+	private static final String TYPE_AHEAD = "01";
+
+	private static final String TYPE_OVERDUE = "02";
+
+	private static final int STATUS_INIT = 10;
+
+	private TPaymentApply queryPaymentApplyNo(String paymentApplyNo)
+			throws Exception {
+		try {
+			TPaymentApply paymentApply = tPaymentApplyDao
+					.selectByPrimaryKey(paymentApplyNo);
+
+			if (paymentApply == null) {
+				throw new Exception(String.format("no listid %s existed",
+						paymentApplyNo));
+			}
+
+			return paymentApply;
+		} catch (Exception ex) {
+			throw new Exception(String.format("no listid %s existed",
+					paymentApplyNo), ex);
+		}
+	}
+
+	@Override
+	public String applyRepayment(Map<String, Object> request) throws Exception {
+		Assert.notNull(request, "doesn't allow empty request");
+
+		String paymentApplyNo = (String) request.get("listid");
+
+		String applyNo = "";
+		TPaymentApply paymentApply = null;
+		if (!StringUtils.isEmpty(paymentApplyNo)) {
+			paymentApply = queryPaymentApplyNo(paymentApplyNo);
+		} else {
+			throw new Exception("doesn't allow empty listid");
+		}
+
+		/**
+		 * new repayment validated
+		 */
+		String type = (String) request.get("retutype");
+		String amount = (String) request.get("sumamt");
+		//获取用款申请
+		String preType = (String) request.get("aheakind");
+		String accNo = (String) request.get("subsaccno");
+		String applyDateReq = (String) request.get("retudate");
+		String merchantNo = (String) request.get("stdmerno");
+		String contNo = (String) paymentApply.getContNo();
+		String custId = (String) paymentApply.getCustId();
+
+		Date applyDate = null;
+		try {
+			applyDate = DateUtil.getStrToDate1(applyDateReq);
+		} catch (Exception ex) {
+			throw new Exception(
+					String.format("invalid date format in field retudate : %s",
+							applyDateReq), ex);
+		}
+
+		if (!(!StringUtils.isEmpty(type) && (TYPE_AHEAD.equalsIgnoreCase(type) || TYPE_OVERDUE
+				.equalsIgnoreCase(type)))) {
+			throw new Exception(String.format(
+					"invalid retutype format in field retudate : %s", type));
+		}
+
+		BigDecimal applyAmt = null;
+
+		if (!StringUtils.isEmpty(amount)) {
+			try {
+				applyAmt = BigDecimal.valueOf(Double.valueOf(amount));
+			} catch (Exception ex) {
+				throw new Exception("invalid sumamt format");
+			}
+		} else {
+			throw new Exception("doesn't allow empty sumamt");
+		}
+
+		String repaymentNo = IdUtil.getRepaymentApplyId();
+
+		if (StringUtils.isEmpty(repaymentNo)) {
+			throw new Exception("failed to generate repaymentNo");
+		}
+
+		TPaybackApplyInfo tPaybackApplyInfo = new TPaybackApplyInfo();
+//		tPaybackApplyInfo.setRepayApplyNo(repaymentNo);
+//		tPaybackApplyInfo.setStatus(STATUS_INIT);
+//		tPaybackApplyInfo.setType(type);
+//		tPaybackApplyInfo.setPreType(preType);
+//		tPaybackApplyInfo.setApplyAmt(applyAmt);
+//		tPaybackApplyInfo.setAccNo(accNo);
+//		tPaybackApplyInfo.setApplyDate(applyDate);
+//		tPaybackApplyInfo.setMerchantNo(merchantNo);
+//		tPaybackApplyInfo.setApplyNo(applyNo);
+//		tPaybackApplyInfo.setContNo(contNo);
+//		tPaybackApplyInfo.setCustId(custId);
+		
+		tPaybackApplyInfo.setPaybackApplyId(repaymentNo);
+		tPaybackApplyInfo.setPaybackStatus(STATUS_INIT);
+		tPaybackApplyInfo.setType(type);
+		tPaybackApplyInfo.setAdvancedPaybackType(preType);
+//		tPaybackApplyInfo.setPaybackAmount(applyAmt);
+		tPaybackApplyInfo.setAccNo(accNo);
+		tPaybackApplyInfo.setPaybackApplyDate(applyDate);
+		tPaybackApplyInfo.setMerchantNo(merchantNo);
+		tPaybackApplyInfo.setPaybackRunningRecordId(applyNo);
+		tPaybackApplyInfo.setContNo(contNo);
+		tPaybackApplyInfo.setCustId(custId);
+		tPaybackApplyInfo.setPaybackAmount(request.get("capital") == null ? new BigDecimal(0) : new BigDecimal((String)request.get("capital")));
+		tPaybackApplyInfo.setPaybackTotalAmount(request.get("sumamt") == null ? new BigDecimal(0) : new BigDecimal((String)request.get("sumamt")));
+		tPaybackApplyInfo.setPaybackInterest(request.get("interest") == null ? new BigDecimal(0) : new BigDecimal((String)request.get("interest")));
+		
+		String receiptId = tReceiptInfoDao.getReceiptIdByPayApplyId(paymentApplyNo);
+		TReceiptInfo R = tReceiptInfoDao.selectByPrimaryKey(receiptId);
+		Date bd = R.getBeginDate();
+		long t1 = applyDate.getTime();
+		long t2 = bd.getTime();
+		long t3 = (t1-t2)/(1000*60*60*24);
+		if(t3<7){
+			throw new Exception("It is not allowed to payback the money in less than 7 days!");
+		}
+		if (StringUtil.isEmpty(receiptId)) {
+		    throw new Exception("failed to get receiptId !");
+        }
+		tPaybackApplyInfo.setReceiptId(receiptId);
+		
+        logger.info("还款申请信息为"+tPaybackApplyInfo);
+		try {
+			tRepaymentApplyDao.insert(tPaybackApplyInfo);
+		} catch (Exception ex) {
+			throw new Exception("failed to insert repayment record...", ex);
+		}
+		
+		return repaymentNo;
+	}
+
+    @Override
+    public List<Map<String, Object>> queryRepaymentListByZzApp(Map<String, Object> map) {
+        return tRepaymentApplyDao.selectListByZzApp(map);
+    }
+
+	@Override
+	public String paybackApply(Map<String, Object> request) throws Exception {
+		Assert.notNull(request, "doesn't allow empty request");
+
+		String paymentApplyNo = (String) request.get("issueid");
+
+		String applyNo = "";
+		TPaymentApply paymentApply = null;
+		if (!StringUtils.isEmpty(paymentApplyNo)) {
+			paymentApply = queryPaymentApplyNo(paymentApplyNo);
+		} else {
+			throw new Exception("doesn't allow empty listid");
+		}
+
+		/**
+		 * new repayment validated
+		 */
+		
+		String amount = (String) request.get("sumamt");
+		String preType = (String) request.get("aheakind");
+		String accNo = (String) request.get("subsaccno");
+		String applyDateReq = (String) request.get("retudate");
+		String stdrpno = (String) request.get("stdrpno");
+		String contNo = (String) paymentApply.getContNo();
+		String custId = (String) paymentApply.getCustId();
+
+		Date applyDate = null;
+		try {
+			applyDate = DateUtil.getStrToDate1(applyDateReq);
+		} catch (Exception ex) {
+			throw new Exception(
+					String.format("invalid date format in field retudate : %s",
+							applyDateReq), ex);
+		}
+
+		
+		BigDecimal applyAmt = null;
+
+		if (!StringUtils.isEmpty(amount)) {
+			try {
+				applyAmt = BigDecimal.valueOf(Double.valueOf(amount));
+			} catch (Exception ex) {
+				throw new Exception("invalid sumamt format");
+			}
+		} else {
+			throw new Exception("doesn't allow empty sumamt");
+		}
+
+		String repaymentNo = IdUtil.getRepaymentApplyId();
+
+		if (StringUtils.isEmpty(repaymentNo)) {
+			throw new Exception("failed to generate repaymentNo");
+		}
+
+		TPaybackApplyInfo tPaybackApplyInfo = new TPaybackApplyInfo();		
+		tPaybackApplyInfo.setPaybackApplyId(repaymentNo);
+		tPaybackApplyInfo.setPaybackStatus(STATUS_INIT);
+		tPaybackApplyInfo.setAdvancedPaybackType(preType);
+		tPaybackApplyInfo.setPaybackAmount(applyAmt);
+		tPaybackApplyInfo.setAccNo(accNo);
+		tPaybackApplyInfo.setPaybackApplyDate(applyDate);
+		tPaybackApplyInfo.setPaybackRunningRecordId(applyNo);
+		tPaybackApplyInfo.setContNo(contNo);
+		tPaybackApplyInfo.setCustId(custId);
+		String receiptId = tReceiptInfoDao.getReceiptIdByPayApplyId(paymentApplyNo);
+		TReceiptInfo R = tReceiptInfoDao.selectByPrimaryKey(receiptId);
+		Date bd = R.getBeginDate();
+		long t1 = applyDate.getTime();
+		long t2 = bd.getTime();
+		long t3 = (t1-t2)/(1000*60*60*24);
+		if(t3<7){
+			throw new Exception("It is not allowed to payback the money in less than 7 days!");
+		}
+		if (StringUtil.isEmpty(receiptId)) {
+		    throw new Exception("failed to get receiptId !");
+        }
+		tPaybackApplyInfo.setReceiptId(receiptId);
+		
+        logger.info("还款申请信息为"+tPaybackApplyInfo);
+		try {
+			tRepaymentApplyDao.insert(tPaybackApplyInfo);
+		} catch (Exception ex) {
+			throw new Exception("failed to insert repayment record...", ex);
+		}
+		
+		return repaymentNo;
+	}
+
+	@Override
+	public List<TCfgChannelAccount> getEffectAccount() {
+		return tCfgChannelAccountDao.getEffectAccount();
+	}
+}

@@ -1,0 +1,2 @@
+loan.pay.hessian.url=http://35.8.33.23:20212/loan-pay-web/hessian/pay.do
+loan.pay.httpinvoker.url=http://35.8.33.23:20212/loan-pay-web/httpinvoker/pay.do

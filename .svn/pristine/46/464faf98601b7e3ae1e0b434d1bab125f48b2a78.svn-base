@@ -1,0 +1,63 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.tools.main.synFile;
+
+import java.util.ResourceBundle;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.hrbb.loan.pos.tools.main.util.SynFileUploadUtil;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.FileUtil;
+
+/**
+ * 
+ * @author marco
+ * @version $Id: SynFileUpload.java, v 0.1 2015-4-28 下午2:52:13 marco Exp $
+ */
+public class SynFileStatisticsUpload {
+
+	private final static Logger LOG = LoggerFactory
+			.getLogger(SynFileStatisticsUpload.class);
+
+	public static ResourceBundle toolsInfo = ResourceBundle
+			.getBundle("toolsInfo");
+
+	/**
+	 * 创建文件，并上传
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		LOG.info("SynFileStatisticsUpload begin");
+		// 文件路径
+		String path = toolsInfo.getString(SynFileConstants.KEY_SYNCHROFILEPATH);
+		// 创建文件名
+		String today = DateUtil.getTodayDatePattern1();
+		// 文件名
+		String fileName = SynFileConstants.NO_STATISTICS
+				.concat(SynFileConstants.STRING_UNDERLINE).concat(today)
+				.concat(FileUtil.FILETYPE_XLSX);
+
+		// 创建文件
+		SynFileMakeExcel2007.makeSynFile(path, fileName);
+
+		// 判断文件是否存在
+		// 取得路径
+		String allPath = path + fileName;
+		// 取得路径
+		LOG.debug("文件路径和名称=" + allPath);
+		// 判断文件是否存在
+		if (FileUtil.checkFileExist(allPath)) {
+			LOG.debug("文件存在，准备上传。");
+			SynFileUploadUtil.uploadFile(allPath);
+		} else {
+			LOG.debug("文件不存在！");
+		}
+		LOG.info("SynFileStatisticsUpload end");
+	}
+}

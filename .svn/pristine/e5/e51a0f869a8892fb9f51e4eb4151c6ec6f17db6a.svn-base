@@ -1,0 +1,71 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.tools.main.util;
+
+import com.hrbb.loan.pos.tools.main.synFile.SynFileConstants;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.FileUtil;
+
+/**
+ * 
+ * @author marco
+ * @version $Id: SynFileUtil.java, v 0.1 2015-4-28 下午2:52:13 marco Exp $
+ */
+public class SynFileUtil {
+
+	/**
+	 * 统一取得文件名称
+	 * 
+	 * @param channel
+	 * @param no
+	 * @return
+	 */
+	public static String getSynFileName(String channel, int no) {
+		// 今天日期
+		String today = DateUtil.getTodayDatePattern1();
+		String synFileNo = null;
+		String fileName = null;
+		// 银商渠道
+		if (SynFileConstants.CHANNEL_CODE_UM.equals(channel)) {
+			switch (no) {
+			case 1:
+				synFileNo = "16";
+				break;
+			case 2:
+				synFileNo = "17";
+				break;
+			case 3:
+				synFileNo = "18";
+				break;
+			case 4:
+				synFileNo = "19";
+				break;
+			default:
+				return "";
+			}
+			fileName = "HB".concat(synFileNo);
+
+			// 银商以外渠道
+		} else {
+			switch (no) {
+			case 1:
+				synFileNo = "01";
+				break;
+			case 2:
+				synFileNo = "02";
+				break;
+			case 3:
+				synFileNo = "03";
+				break;
+			default:
+				return "";
+			}
+			fileName = channel.concat("B").concat(synFileNo);
+		}
+		return fileName.concat(SynFileConstants.STRING_UNDERLINE).concat(today)
+				.concat(FileUtil.FILETYPE_DAT);
+	}
+}

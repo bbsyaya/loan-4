@@ -1,0 +1,34 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:fram="http://framework.facade.common.transcore.pinganfu.com/">
+	<soapenv:Header />
+	<soapenv:Body>
+		<fram:execOfflinePay>
+			<arg0>
+				<clientIp>0</clientIp>
+				<clientSource>0</clientSource>
+				<facadeVersion>0</facadeVersion>
+				<busiChannel>W</busiChannel>
+				<ccy>CNY</ccy>
+				<customerId>9999999999999999</customerId>
+				<customerType>B</customerType>
+				<dcFlag>D</dcFlag>
+				<extFeilds>{sdf:dsd;sdfdd:dsf}</extFeilds>
+				<merchantNum>900000000010</merchantNum>
+				<orderNo>${orderNo}</orderNo>
+				<payType>05</payType>
+				<productCode>300010010000</productCode>
+				<registerFlag>0</registerFlag>
+				<subLedgerDetails>
+
+				</subLedgerDetails>
+				<subLedgerFlag>0</subLedgerFlag>
+				<toCustomerId>1000010000026540</toCustomerId> <!-- 00类型 -->
+				<toCustomerName>线下商户</toCustomerName>
+				<transAmt>1000000</transAmt>
+				<transExpiredTime>2016-01-02T00:00:00.000+08:00</transExpiredTime>
+				<transFactAmt>1000000</transFactAmt>
+				<transType>46</transType>
+			</arg0>
+		</fram:execOfflinePay>
+	</soapenv:Body>
+</soapenv:Envelope>

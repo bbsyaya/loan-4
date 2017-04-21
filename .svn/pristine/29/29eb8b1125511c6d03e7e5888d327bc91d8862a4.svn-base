@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TAICPunishedInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TAICPunishedInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="posCustId" property="posCustId" jdbcType="VARCHAR" />
+    <result column="orderNo" property="orderNo" jdbcType="VARCHAR" />
+    <result column="caseCode" property="caseCode" jdbcType="VARCHAR" />
+    <result column="iNameClean" property="iNameClean" jdbcType="VARCHAR" />
+    <result column="cardNumClean" property="cardNumClean" jdbcType="VARCHAR" />
+    <result column="sexyClean" property="sexyClean" jdbcType="VARCHAR" />
+    <result column="areaNameClean" property="areaNameClean" jdbcType="VARCHAR" />
+    <result column="ysFzd" property="ysFzd" jdbcType="VARCHAR" />
+    <result column="courtName" property="courtName" jdbcType="VARCHAR" />
+    <result column="regDateClean" property="regDateClean" jdbcType="VARCHAR" />
+    <result column="caseState" property="caseState" jdbcType="VARCHAR" />
+    <result column="execMoney" property="execMoney" jdbcType="VARCHAR" />
+    <result column="focusNumber" property="focusNumber" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, posCustId, orderNo, caseCode, iNameClean, cardNumClean, sexyClean, areaNameClean, 
+    ysFzd, courtName, regDateClean, caseState, execMoney, focusNumber
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_punished_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+   <select id="selectBySelectiveMap" resultType="Map" parameterType="Map">
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_punished_info
+    where orderNo = #{orderNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_aic_punished_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TAICPunishedInfo" >
+    insert into t_aic_punished_info (id, posCustId, orderNo, 
+      caseCode, iNameClean, cardNumClean, 
+      sexyClean, areaNameClean, ysFzd, 
+      courtName, regDateClean, caseState, 
+      execMoney, focusNumber)
+    values (#{id,jdbcType=INTEGER}, #{posCustId,jdbcType=VARCHAR}, #{orderNo,jdbcType=VARCHAR}, 
+      #{caseCode,jdbcType=VARCHAR}, #{iNameClean,jdbcType=VARCHAR}, #{cardNumClean,jdbcType=VARCHAR}, 
+      #{sexyClean,jdbcType=VARCHAR}, #{areaNameClean,jdbcType=VARCHAR}, #{ysFzd,jdbcType=VARCHAR}, 
+      #{courtName,jdbcType=VARCHAR}, #{regDateClean,jdbcType=VARCHAR}, #{caseState,jdbcType=VARCHAR}, 
+      #{execMoney,jdbcType=VARCHAR}, #{focusNumber,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICPunishedInfo" >
+    insert into t_aic_punished_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="orderNo != null" >
+        orderNo,
+      </if>
+      <if test="caseCode != null" >
+        caseCode,
+      </if>
+      <if test="iNameClean != null" >
+        iNameClean,
+      </if>
+      <if test="cardNumClean != null" >
+        cardNumClean,
+      </if>
+      <if test="sexyClean != null" >
+        sexyClean,
+      </if>
+      <if test="areaNameClean != null" >
+        areaNameClean,
+      </if>
+      <if test="ysFzd != null" >
+        ysFzd,
+      </if>
+      <if test="courtName != null" >
+        courtName,
+      </if>
+      <if test="regDateClean != null" >
+        regDateClean,
+      </if>
+      <if test="caseState != null" >
+        caseState,
+      </if>
+      <if test="execMoney != null" >
+        execMoney,
+      </if>
+      <if test="focusNumber != null" >
+        focusNumber,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="caseCode != null" >
+        #{caseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="iNameClean != null" >
+        #{iNameClean,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNumClean != null" >
+        #{cardNumClean,jdbcType=VARCHAR},
+      </if>
+      <if test="sexyClean != null" >
+        #{sexyClean,jdbcType=VARCHAR},
+      </if>
+      <if test="areaNameClean != null" >
+        #{areaNameClean,jdbcType=VARCHAR},
+      </if>
+      <if test="ysFzd != null" >
+        #{ysFzd,jdbcType=VARCHAR},
+      </if>
+      <if test="courtName != null" >
+        #{courtName,jdbcType=VARCHAR},
+      </if>
+      <if test="regDateClean != null" >
+        #{regDateClean,jdbcType=VARCHAR},
+      </if>
+      <if test="caseState != null" >
+        #{caseState,jdbcType=VARCHAR},
+      </if>
+      <if test="execMoney != null" >
+        #{execMoney,jdbcType=VARCHAR},
+      </if>
+      <if test="focusNumber != null" >
+        #{focusNumber,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="Map" >
+    insert into t_aic_punished_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="orderNo != null" >
+        orderNo,
+      </if>
+      <if test="caseCode != null" >
+        caseCode,
+      </if>
+      <if test="iNameClean != null" >
+        iNameClean,
+      </if>
+      <if test="cardNumClean != null" >
+        cardNumClean,
+      </if>
+      <if test="sexyClean != null" >
+        sexyClean,
+      </if>
+      <if test="areaNameClean != null" >
+        areaNameClean,
+      </if>
+      <if test="ysFzd != null" >
+        ysFzd,
+      </if>
+      <if test="courtName != null" >
+        courtName,
+      </if>
+      <if test="regDateClean != null" >
+        regDateClean,
+      </if>
+      <if test="caseState != null" >
+        caseState,
+      </if>
+      <if test="execMoney != null" >
+        execMoney,
+      </if>
+      <if test="focusNumber != null" >
+        focusNumber,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="caseCode != null" >
+        #{caseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="iNameClean != null" >
+        #{iNameClean,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNumClean != null" >
+        #{cardNumClean,jdbcType=VARCHAR},
+      </if>
+      <if test="sexyClean != null" >
+        #{sexyClean,jdbcType=VARCHAR},
+      </if>
+      <if test="areaNameClean != null" >
+        #{areaNameClean,jdbcType=VARCHAR},
+      </if>
+      <if test="ysFzd != null" >
+        #{ysFzd,jdbcType=VARCHAR},
+      </if>
+      <if test="courtName != null" >
+        #{courtName,jdbcType=VARCHAR},
+      </if>
+      <if test="regDateClean != null" >
+        #{regDateClean,jdbcType=VARCHAR},
+      </if>
+      <if test="caseState != null" >
+        #{caseState,jdbcType=VARCHAR},
+      </if>
+      <if test="execMoney != null" >
+        #{execMoney,jdbcType=VARCHAR},
+      </if>
+      <if test="focusNumber != null" >
+        #{focusNumber,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICPunishedInfo" >
+    update t_aic_punished_info
+    <set >
+      <if test="posCustId != null" >
+        posCustId = #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        orderNo = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="caseCode != null" >
+        caseCode = #{caseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="iNameClean != null" >
+        iNameClean = #{iNameClean,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNumClean != null" >
+        cardNumClean = #{cardNumClean,jdbcType=VARCHAR},
+      </if>
+      <if test="sexyClean != null" >
+        sexyClean = #{sexyClean,jdbcType=VARCHAR},
+      </if>
+      <if test="areaNameClean != null" >
+        areaNameClean = #{areaNameClean,jdbcType=VARCHAR},
+      </if>
+      <if test="ysFzd != null" >
+        ysFzd = #{ysFzd,jdbcType=VARCHAR},
+      </if>
+      <if test="courtName != null" >
+        courtName = #{courtName,jdbcType=VARCHAR},
+      </if>
+      <if test="regDateClean != null" >
+        regDateClean = #{regDateClean,jdbcType=VARCHAR},
+      </if>
+      <if test="caseState != null" >
+        caseState = #{caseState,jdbcType=VARCHAR},
+      </if>
+      <if test="execMoney != null" >
+        execMoney = #{execMoney,jdbcType=VARCHAR},
+      </if>
+      <if test="focusNumber != null" >
+        focusNumber = #{focusNumber,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TAICPunishedInfo" >
+    update t_aic_punished_info
+    set posCustId = #{posCustId,jdbcType=VARCHAR},
+      orderNo = #{orderNo,jdbcType=VARCHAR},
+      caseCode = #{caseCode,jdbcType=VARCHAR},
+      iNameClean = #{iNameClean,jdbcType=VARCHAR},
+      cardNumClean = #{cardNumClean,jdbcType=VARCHAR},
+      sexyClean = #{sexyClean,jdbcType=VARCHAR},
+      areaNameClean = #{areaNameClean,jdbcType=VARCHAR},
+      ysFzd = #{ysFzd,jdbcType=VARCHAR},
+      courtName = #{courtName,jdbcType=VARCHAR},
+      regDateClean = #{regDateClean,jdbcType=VARCHAR},
+      caseState = #{caseState,jdbcType=VARCHAR},
+      execMoney = #{execMoney,jdbcType=VARCHAR},
+      focusNumber = #{focusNumber,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

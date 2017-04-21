@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TFixLineInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TFixLineInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="telNum" property="telNum" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="VARCHAR" />
+    <result column="telInput" property="telInput" jdbcType="VARCHAR" />
+    <result column="nameInput" property="nameInput" jdbcType="VARCHAR" />
+    <result column="addressInput" property="addressInput" jdbcType="VARCHAR" />
+    <result column="uniqueNum" property="uniqueNum" jdbcType="VARCHAR" />
+    <result column="uniqueNumDesc" property="uniqueNumDesc" jdbcType="VARCHAR" />
+    <result column="areaCode" property="areaCode" jdbcType="VARCHAR" />
+    <result column="queryResult" property="queryResult" jdbcType="VARCHAR" />
+    <result column="queryType" property="queryType" jdbcType="VARCHAR" />
+    <result column="corpTel" property="corpTel" jdbcType="VARCHAR" />
+    <result column="corpName" property="corpName" jdbcType="VARCHAR" />
+    <result column="corpAddress" property="corpAddress" jdbcType="VARCHAR" />
+    <result column="created_at" property="created_at" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updated_at" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, telNum, name, address, version, telInput, nameInput, addressInput, uniqueNum, 
+    uniqueNumDesc, areaCode, queryResult, queryType, corpTel, corpName, corpAddress, 
+    created_at, updated_at
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_fixline_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+    <select id="selectByTelNum" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_fixline_info
+    where telNum = #{telNum} order by updated_at desc limit 1
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_fixline_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TFixLineInfo" >
+    insert into t_fixline_info (id, telNum, name, 
+      address, version, telInput, 
+      nameInput, addressInput, uniqueNum, 
+      uniqueNumDesc, areaCode, queryResult, 
+      queryType, corpTel, corpName, 
+      corpAddress, created_at, updated_at
+      )
+    values (#{id,jdbcType=INTEGER}, #{telNum,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{address,jdbcType=VARCHAR}, #{version,jdbcType=VARCHAR}, #{telInput,jdbcType=VARCHAR}, 
+      #{nameInput,jdbcType=VARCHAR}, #{addressInput,jdbcType=VARCHAR}, #{uniqueNum,jdbcType=VARCHAR}, 
+      #{uniqueNumDesc,jdbcType=VARCHAR}, #{areaCode,jdbcType=VARCHAR}, #{queryResult,jdbcType=VARCHAR}, 
+      #{queryType,jdbcType=VARCHAR}, #{corpTel,jdbcType=VARCHAR}, #{corpName,jdbcType=VARCHAR}, 
+      #{corpAddress,jdbcType=VARCHAR}, #{created_at,jdbcType=TIMESTAMP}, #{updated_at,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TFixLineInfo" >
+    insert into t_fixline_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="telNum != null" >
+        telNum,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+      <if test="telInput != null" >
+        telInput,
+      </if>
+      <if test="nameInput != null" >
+        nameInput,
+      </if>
+      <if test="addressInput != null" >
+        addressInput,
+      </if>
+      <if test="uniqueNum != null" >
+        uniqueNum,
+      </if>
+      <if test="uniqueNumDesc != null" >
+        uniqueNumDesc,
+      </if>
+      <if test="areaCode != null" >
+        areaCode,
+      </if>
+      <if test="queryResult != null" >
+        queryResult,
+      </if>
+      <if test="queryType != null" >
+        queryType,
+      </if>
+      <if test="corpTel != null" >
+        corpTel,
+      </if>
+      <if test="corpName != null" >
+        corpName,
+      </if>
+      <if test="corpAddress != null" >
+        corpAddress,
+      </if>
+      <if test="created_at != null" >
+        created_at,
+      </if>
+      <if test="updated_at != null" >
+        updated_at,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="telNum != null" >
+        #{telNum,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="telInput != null" >
+        #{telInput,jdbcType=VARCHAR},
+      </if>
+      <if test="nameInput != null" >
+        #{nameInput,jdbcType=VARCHAR},
+      </if>
+      <if test="addressInput != null" >
+        #{addressInput,jdbcType=VARCHAR},
+      </if>
+      <if test="uniqueNum != null" >
+        #{uniqueNum,jdbcType=VARCHAR},
+      </if>
+      <if test="uniqueNumDesc != null" >
+        #{uniqueNumDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="areaCode != null" >
+        #{areaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="queryResult != null" >
+        #{queryResult,jdbcType=VARCHAR},
+      </if>
+      <if test="queryType != null" >
+        #{queryType,jdbcType=VARCHAR},
+      </if>
+      <if test="corpTel != null" >
+        #{corpTel,jdbcType=VARCHAR},
+      </if>
+      <if test="corpName != null" >
+        #{corpName,jdbcType=VARCHAR},
+      </if>
+      <if test="corpAddress != null" >
+        #{corpAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="created_at != null" >
+        #{created_at,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updated_at != null" >
+        #{updated_at,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TFixLineInfo" >
+    update t_fixline_info
+    <set >
+      <if test="telNum != null" >
+        telNum = #{telNum,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        version = #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="telInput != null" >
+        telInput = #{telInput,jdbcType=VARCHAR},
+      </if>
+      <if test="nameInput != null" >
+        nameInput = #{nameInput,jdbcType=VARCHAR},
+      </if>
+      <if test="addressInput != null" >
+        addressInput = #{addressInput,jdbcType=VARCHAR},
+      </if>
+      <if test="uniqueNum != null" >
+        uniqueNum = #{uniqueNum,jdbcType=VARCHAR},
+      </if>
+      <if test="uniqueNumDesc != null" >
+        uniqueNumDesc = #{uniqueNumDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="areaCode != null" >
+        areaCode = #{areaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="queryResult != null" >
+        queryResult = #{queryResult,jdbcType=VARCHAR},
+      </if>
+      <if test="queryType != null" >
+        queryType = #{queryType,jdbcType=VARCHAR},
+      </if>
+      <if test="corpTel != null" >
+        corpTel = #{corpTel,jdbcType=VARCHAR},
+      </if>
+      <if test="corpName != null" >
+        corpName = #{corpName,jdbcType=VARCHAR},
+      </if>
+      <if test="corpAddress != null" >
+        corpAddress = #{corpAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="created_at != null" >
+        created_at = #{created_at,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updated_at != null" >
+        updated_at = #{updated_at,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByTelNumSelective" parameterType="com.hrbb.loan.pos.dao.entity.TFixLineInfo" >
+    update t_fixline_info
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        version = #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="telInput != null" >
+        telInput = #{telInput,jdbcType=VARCHAR},
+      </if>
+      <if test="nameInput != null" >
+        nameInput = #{nameInput,jdbcType=VARCHAR},
+      </if>
+      <if test="addressInput != null" >
+        addressInput = #{addressInput,jdbcType=VARCHAR},
+      </if>
+      <if test="uniqueNum != null" >
+        uniqueNum = #{uniqueNum,jdbcType=VARCHAR},
+      </if>
+      <if test="uniqueNumDesc != null" >
+        uniqueNumDesc = #{uniqueNumDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="areaCode != null" >
+        areaCode = #{areaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="queryResult != null" >
+        queryResult = #{queryResult,jdbcType=VARCHAR},
+      </if>
+      <if test="queryType != null" >
+        queryType = #{queryType,jdbcType=VARCHAR},
+      </if>
+      <if test="corpTel != null" >
+        corpTel = #{corpTel,jdbcType=VARCHAR},
+      </if>
+      <if test="corpName != null" >
+        corpName = #{corpName,jdbcType=VARCHAR},
+      </if>
+      <if test="corpAddress != null" >
+        corpAddress = #{corpAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="updated_at != null" >
+        updated_at = #{updated_at,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where telNum = #{telNum}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TFixLineInfo" >
+    update t_fixline_info
+    set telNum = #{telNum,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      version = #{version,jdbcType=VARCHAR},
+      telInput = #{telInput,jdbcType=VARCHAR},
+      nameInput = #{nameInput,jdbcType=VARCHAR},
+      addressInput = #{addressInput,jdbcType=VARCHAR},
+      uniqueNum = #{uniqueNum,jdbcType=VARCHAR},
+      uniqueNumDesc = #{uniqueNumDesc,jdbcType=VARCHAR},
+      areaCode = #{areaCode,jdbcType=VARCHAR},
+      queryResult = #{queryResult,jdbcType=VARCHAR},
+      queryType = #{queryType,jdbcType=VARCHAR},
+      corpTel = #{corpTel,jdbcType=VARCHAR},
+      corpName = #{corpName,jdbcType=VARCHAR},
+      corpAddress = #{corpAddress,jdbcType=VARCHAR},
+      created_at = #{created_at,jdbcType=TIMESTAMP},
+      updated_at = #{updated_at,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,156 @@
+package com.hrbb.loan.pos.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.hrbb.loan.pos.dao.entity.TBankAccnoInfo;
+import com.hrbb.loan.pos.dao.entity.TCreditApply;
+import com.hrbb.loan.pos.dao.entity.TPosSerialnoInfo;
+
+/**
+ *<h1>业务申请接口</h1>
+ *@author Johnson Song
+ *@version Id: CreditApplyService.java, v 1.0 2015-2-12 下午7:53:14 Johnson Song Exp
+ */
+public interface LoanPosCreditApplyService {
+	
+	public List<TCreditApply> getCreditApply(Map<String, Object> reqMap);
+	
+	public List<Map<String, Object>> getCreditApplyMap(Map<String, Object> reqMap);
+	
+	public int updateCreditApply(TCreditApply tCreditApply);
+	
+	public int updateCreditApplyMap(Map<String, Object> map);
+	
+	public int delCreditApply(String loanId);
+	
+	public int insertCreditApply(TCreditApply tCreditApply);
+	
+	public int insertCreditApplyMap(Map<String, Object> reqMap);
+	
+	public Long countCreditApply(Map<String, Object> reqMap);
+	
+	public int deleteBatch(List<String> loanIds);
+	
+	public Map<String, Object> getOneCreditApply(String loanId);
+	
+	public String selectLoanId(String stdshno, String channel);
+	
+	
+	///////////////////////////////////////////////////////
+	public List<Map<String, Object>> selectBankAccMap(Map<String, Object> reqMap);
+	
+	public Map<String, Object> selectOneBankAcc(String bankAccno);
+
+    public int updateBankAccByPrimaryKeySelectiveMap(Map<String, Object> reqMap);
+    
+    public int insertBankAccSelectiveMap(Map<String, Object> map);
+    
+    //////////////////////////////////////////////////////
+    
+    public List<Map<String, Object>> selectPosCustMap(Map<String, Object> reqMap);
+    
+    public Map<String, Object> selectOnePosCustMap(String posCustName);
+    
+    public Map<String, Object> selectOnePosCustMapById(String posCustId);
+
+    public int updatePosCustByPrimaryKeySelectiveMap(Map<String, Object> reqMap);
+    
+    public int insertPosCustSelectiveMap(Map<String, Object> map);
+    
+    //////////////////////////////////////////////////////////
+    public List<Map<String, Object>> selectPosSerialMap(Map<String, Object> reqMap);
+
+    public int updatePosSerialByPrimaryKeySelectiveMap(Map<String, Object> reqMap);
+    
+    public int insertPosSerialSelectiveMap(Map<String, Object> map);
+    
+    public int insertPosSerialSelectiveMapBatch(List<Map<String, Object>> insertList);
+    
+    ////////////////////////////////////////////////////////////
+    public List<Map<String, Object>> selectBankSerialMap(Map<String, Object> reqMap);
+    
+    public List<Map<String, Object>> selectMapByCurrMonth(Map<String, Object> reqMap);
+    
+    public int updateBankSerialMap(Map<String, Object> reqMap);
+    
+    public int insertBankSerialMap(Map<String, Object> reqMap);
+    
+	public TCreditApply queryCreditApply(String loanId);
+	
+	public String getCustIdbyStdshno(String stdshno);
+	
+	public String getLoanIdbyStdshno(String stdshno);
+    
+    public Long countBankSerialNum(Map<String, Object> reqMap);
+    
+    public Long countPosSerialNum(Map<String, Object> reqMap);
+    
+    /////////////////////////////channelposcust/////////////////////
+    
+    public List<Map<String, Object>> selectChannelPosCustSelectiveMap(Map<String, Object> reqMap);
+    
+    public void insertChannelPosCustSelectiveMap(Map<String, Object> reqMap);
+    
+    public  Map<String, Object> selectOneChannelPosCustSelectiveMap(Map<String, Object> reqMap);
+    
+    public Map<String, Object> selectOneChannelPosCustByEle(String channelPoscustId, String channel);
+
+	public String getCustIdbyPosCustId(String posCustId);
+
+	public String getLoanIdbyPosCustId(String posCustId);
+
+	public String getStdshnobyLoanId(String posCustId);
+    
+    public List<Map<String, Object>> queryChannelDetail(String stdshno, String stdmerno, String channel, Long startPage, Long long1);
+    
+    public List<Map<String, Object>> queryChannlDetailMap(Map<String, Object> reqMap);
+    
+    public Long countChannelDetail(String stdshno, String stdmerno, String channel);
+    
+    public Long countChannelDetailMap(Map<String, Object> reqMap);
+    
+	public List<Map<String, Object>> queryListByZzApp(Map<String, Object> queryMap);
+    //add by cjq 
+    /**
+     * 查询pos流水数量
+     * 
+     * @param loanId
+     * @return
+     */
+    public Long countPosSerials(String loanId);
+    
+    /**
+     * 删除pos流水
+     * @param loanId
+     * @return
+     */
+    public int deletePosSerial(String loanId);
+    //end by cjq
+
+    /**
+     * 查询倒数第二个
+     * 
+     * @return
+     */
+    public Map<String,Object> selectLastTh(String custId);
+    
+    public int updateApplyStatus(Map<String, Object> updateMap);
+    
+    //获取业务数据--导出excel时使用
+    public List<Map<String, Object>> getBizData(Map<String, Object> reqMap);
+    
+    public List<TPosSerialnoInfo> selectTPosByMap(Map<String, Object> reqMap);
+    
+    public TBankAccnoInfo selectByBankAccno(String bankAccno);
+    
+    public List<Map<String, Object>> getBankMapList(String channel, String bankName);
+	
+    /**
+     * 根据loanId查询银行卡号和持卡人姓名
+     * 
+     * @param loanId
+     * @return
+     */
+    public Map<String,Object> selectNameAndBankAccNoByLoanId(String loanId);
+}

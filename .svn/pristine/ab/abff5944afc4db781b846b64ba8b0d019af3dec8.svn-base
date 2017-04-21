@@ -1,0 +1,14 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:fram="http://framework.facade.common.transcore.pinganfu.com/">
+	<soapenv:Header />
+	<soapenv:Body>
+		<fram:revokeTransaction>
+         <arg0>
+            <transId>${transId}</transId>
+            <orderNo>${orderNo}</orderNo>
+            <busiChannel>W</busiChannel>
+            <subTransType>48</subTransType>
+         </arg0>
+      </fram:revokeTransaction>
+	</soapenv:Body>
+</soapenv:Envelope>

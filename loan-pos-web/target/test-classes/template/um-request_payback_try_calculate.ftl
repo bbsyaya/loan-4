@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="GBK" standalone="no"?>
+<UMSFX>
+<ReqHeader>
+<TransCode>HB10</TransCode>
+<ChannelId>0001</ChannelId>
+<SrcReqDate>20150424</SrcReqDate>
+<SrcReqTime>20150424</SrcReqTime>
+<SrcReqId>fdcf2bc3279c4fe186dd3e47ec377879</SrcReqId>
+<MAC>25d6be6b05370b23dd93dcad2c65cf4e</MAC>
+</ReqHeader>
+<ReqBody>
+<listid>PY2015042121054901930373624600</listid>
+<aheakind>2</aheakind>
+<rcapi/>
+<sumamt>200000</sumamt>
+<expectretudate/>
+<stdmerno>32898320450390494</stdmerno>
+</ReqBody>
+</UMSFX>

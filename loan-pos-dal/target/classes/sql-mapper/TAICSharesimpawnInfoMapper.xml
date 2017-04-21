@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TAICSharesimpawnInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TAICSharesimpawnInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="posCustId" property="posCustId" jdbcType="VARCHAR" />
+    <result column="orderNo" property="orderNo" jdbcType="VARCHAR" />
+    <result column="impOrg" property="impOrg" jdbcType="VARCHAR" />
+    <result column="impOrgType" property="impOrgType" jdbcType="VARCHAR" />
+    <result column="impAm" property="impAm" jdbcType="VARCHAR" />
+    <result column="impOnRecDate" property="impOnRecDate" jdbcType="VARCHAR" />
+    <result column="impExAeep" property="impExAeep" jdbcType="VARCHAR" />
+    <result column="impSanDate" property="impSanDate" jdbcType="VARCHAR" />
+    <result column="impTo" property="impTo" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, posCustId, orderNo, impOrg, impOrgType, impAm, impOnRecDate, impExAeep, impSanDate, 
+    impTo
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_sharesimpawn_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectSelective" resultType="Map" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_sharesimpawn_info
+    where 1=1
+    <if test="orderNo != null">
+    	AND orderNo = #{orderNo}
+    </if>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_aic_sharesimpawn_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TAICSharesimpawnInfo" >
+    insert into t_aic_sharesimpawn_info (id, posCustId, orderNo, 
+      impOrg, impOrgType, impAm, 
+      impOnRecDate, impExAeep, impSanDate, 
+      impTo)
+    values (#{id,jdbcType=INTEGER}, #{posCustId,jdbcType=VARCHAR}, #{orderNo,jdbcType=VARCHAR}, 
+      #{impOrg,jdbcType=VARCHAR}, #{impOrgType,jdbcType=VARCHAR}, #{impAm,jdbcType=VARCHAR}, 
+      #{impOnRecDate,jdbcType=VARCHAR}, #{impExAeep,jdbcType=VARCHAR}, #{impSanDate,jdbcType=VARCHAR}, 
+      #{impTo,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICSharesimpawnInfo" >
+    insert into t_aic_sharesimpawn_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="orderNo != null" >
+        orderNo,
+      </if>
+      <if test="impOrg != null" >
+        impOrg,
+      </if>
+      <if test="impOrgType != null" >
+        impOrgType,
+      </if>
+      <if test="impAm != null" >
+        impAm,
+      </if>
+      <if test="impOnRecDate != null" >
+        impOnRecDate,
+      </if>
+      <if test="impExAeep != null" >
+        impExAeep,
+      </if>
+      <if test="impSanDate != null" >
+        impSanDate,
+      </if>
+      <if test="impTo != null" >
+        impTo,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="impOrg != null" >
+        #{impOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="impOrgType != null" >
+        #{impOrgType,jdbcType=VARCHAR},
+      </if>
+      <if test="impAm != null" >
+        #{impAm,jdbcType=VARCHAR},
+      </if>
+      <if test="impOnRecDate != null" >
+        #{impOnRecDate,jdbcType=VARCHAR},
+      </if>
+      <if test="impExAeep != null" >
+        #{impExAeep,jdbcType=VARCHAR},
+      </if>
+      <if test="impSanDate != null" >
+        #{impSanDate,jdbcType=VARCHAR},
+      </if>
+      <if test="impTo != null" >
+        #{impTo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICSharesimpawnInfo" >
+    update t_aic_sharesimpawn_info
+    <set >
+      <if test="posCustId != null" >
+        posCustId = #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        orderNo = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="impOrg != null" >
+        impOrg = #{impOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="impOrgType != null" >
+        impOrgType = #{impOrgType,jdbcType=VARCHAR},
+      </if>
+      <if test="impAm != null" >
+        impAm = #{impAm,jdbcType=VARCHAR},
+      </if>
+      <if test="impOnRecDate != null" >
+        impOnRecDate = #{impOnRecDate,jdbcType=VARCHAR},
+      </if>
+      <if test="impExAeep != null" >
+        impExAeep = #{impExAeep,jdbcType=VARCHAR},
+      </if>
+      <if test="impSanDate != null" >
+        impSanDate = #{impSanDate,jdbcType=VARCHAR},
+      </if>
+      <if test="impTo != null" >
+        impTo = #{impTo,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TAICSharesimpawnInfo" >
+    update t_aic_sharesimpawn_info
+    set posCustId = #{posCustId,jdbcType=VARCHAR},
+      orderNo = #{orderNo,jdbcType=VARCHAR},
+      impOrg = #{impOrg,jdbcType=VARCHAR},
+      impOrgType = #{impOrgType,jdbcType=VARCHAR},
+      impAm = #{impAm,jdbcType=VARCHAR},
+      impOnRecDate = #{impOnRecDate,jdbcType=VARCHAR},
+      impExAeep = #{impExAeep,jdbcType=VARCHAR},
+      impSanDate = #{impSanDate,jdbcType=VARCHAR},
+      impTo = #{impTo,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditReportSpouseMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditReportSpouse" >
+    <id column="reportNo" property="reportNo" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="certType" property="certType" jdbcType="VARCHAR" />
+    <result column="certNo" property="certNo" jdbcType="VARCHAR" />
+    <result column="employer" property="employer" jdbcType="VARCHAR" />
+    <result column="phoneNo" property="phoneNo" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    reportNo, name, certType, certNo, employer, phoneNo
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_report_spouse
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_credit_report_spouse
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportSpouse" >
+    insert into t_credit_report_spouse (reportNo, name, certType, 
+      certNo, employer, phoneNo
+      )
+    values (#{reportNo,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{certType,jdbcType=VARCHAR}, 
+      #{certNo,jdbcType=VARCHAR}, #{employer,jdbcType=VARCHAR}, #{phoneNo,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportSpouse" >
+    insert into t_credit_report_spouse
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="certType != null" >
+        certType,
+      </if>
+      <if test="certNo != null" >
+        certNo,
+      </if>
+      <if test="employer != null" >
+        employer,
+      </if>
+      <if test="phoneNo != null" >
+        phoneNo,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="certType != null" >
+        #{certType,jdbcType=VARCHAR},
+      </if>
+      <if test="certNo != null" >
+        #{certNo,jdbcType=VARCHAR},
+      </if>
+      <if test="employer != null" >
+        #{employer,jdbcType=VARCHAR},
+      </if>
+      <if test="phoneNo != null" >
+        #{phoneNo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="Map" >
+    insert into t_credit_report_spouse
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="certType != null" >
+        certType,
+      </if>
+      <if test="certNo != null" >
+        certNo,
+      </if>
+      <if test="employer != null" >
+        employer,
+      </if>
+      <if test="phoneNo != null" >
+        phoneNo,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="certType != null" >
+        #{certType,jdbcType=VARCHAR},
+      </if>
+      <if test="certNo != null" >
+        #{certNo,jdbcType=VARCHAR},
+      </if>
+      <if test="employer != null" >
+        #{employer,jdbcType=VARCHAR},
+      </if>
+      <if test="phoneNo != null" >
+        #{phoneNo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportSpouse" >
+    update t_credit_report_spouse
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="certType != null" >
+        certType = #{certType,jdbcType=VARCHAR},
+      </if>
+      <if test="certNo != null" >
+        certNo = #{certNo,jdbcType=VARCHAR},
+      </if>
+      <if test="employer != null" >
+        employer = #{employer,jdbcType=VARCHAR},
+      </if>
+      <if test="phoneNo != null" >
+        phoneNo = #{phoneNo,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportSpouse" >
+    update t_credit_report_spouse
+    set name = #{name,jdbcType=VARCHAR},
+      certType = #{certType,jdbcType=VARCHAR},
+      certNo = #{certNo,jdbcType=VARCHAR},
+      employer = #{employer,jdbcType=VARCHAR},
+      phoneNo = #{phoneNo,jdbcType=VARCHAR}
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

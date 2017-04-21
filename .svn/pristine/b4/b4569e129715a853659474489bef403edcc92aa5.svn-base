@@ -1,0 +1,115 @@
+package com.hrbb.loan.pos.dao.entity;
+
+import java.util.Date;
+
+public class TRiskChannelConfig {
+    private Integer id;
+
+    private String channel;
+
+    private String channel_no;
+
+    private String channel_code;
+
+    private String risk_type;
+
+    private String risk_type_code;
+
+    private String deleted_flag;
+
+    private Date valid_date;
+
+    private Date invalid_date;
+
+    private Date create_date;
+
+    private Date modify_date;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getChannel() {
+        return channel;
+    }
+
+    public void setChannel(String channel) {
+        this.channel = channel == null ? null : channel.trim();
+    }
+
+    public String getChannel_no() {
+        return channel_no;
+    }
+
+    public void setChannel_no(String channel_no) {
+        this.channel_no = channel_no == null ? null : channel_no.trim();
+    }
+
+    public String getChannel_code() {
+        return channel_code;
+    }
+
+    public void setChannel_code(String channel_code) {
+        this.channel_code = channel_code == null ? null : channel_code.trim();
+    }
+
+    public String getRisk_type() {
+        return risk_type;
+    }
+
+    public void setRisk_type(String risk_type) {
+        this.risk_type = risk_type == null ? null : risk_type.trim();
+    }
+
+    public String getRisk_type_code() {
+        return risk_type_code;
+    }
+
+    public void setRisk_type_code(String risk_type_code) {
+        this.risk_type_code = risk_type_code == null ? null : risk_type_code.trim();
+    }
+
+    public String getDeleted_flag() {
+        return deleted_flag;
+    }
+
+    public void setDeleted_flag(String deleted_flag) {
+        this.deleted_flag = deleted_flag == null ? null : deleted_flag.trim();
+    }
+
+    public Date getValid_date() {
+        return valid_date;
+    }
+
+    public void setValid_date(Date valid_date) {
+        this.valid_date = valid_date;
+    }
+
+    public Date getInvalid_date() {
+        return invalid_date;
+    }
+
+    public void setInvalid_date(Date invalid_date) {
+        this.invalid_date = invalid_date;
+    }
+
+    public Date getCreate_date() {
+        return create_date;
+    }
+
+    public void setCreate_date(Date create_date) {
+        this.create_date = create_date;
+    }
+
+    public Date getModify_date() {
+        return modify_date;
+    }
+
+    public void setModify_date(Date modify_date) {
+        this.modify_date = modify_date;
+    }
+}

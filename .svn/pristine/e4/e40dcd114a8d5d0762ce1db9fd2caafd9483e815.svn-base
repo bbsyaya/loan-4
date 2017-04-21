@@ -1,0 +1,55 @@
+package com.hrbb.loan.pos.dao.impl;
+
+import java.util.Map;
+
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+import org.springframework.stereotype.Repository;
+
+import com.hrbb.loan.pos.dao.TCreditReportCreditCardBriefDao;
+import com.hrbb.loan.pos.dao.entity.TCreditReportCreditCardBrief;
+
+@Repository("tCreditReportCreditCardBriefDao")
+public class TCreditReportCreditCardBriefDaoImpl  extends SqlSessionDaoSupport implements TCreditReportCreditCardBriefDao{
+
+	@Override
+	public int deleteByPrimaryKey(String reportNo) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int insert(TCreditReportCreditCardBrief record) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int insertSelective(TCreditReportCreditCardBrief record) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public TCreditReportCreditCardBrief selectByPrimaryKey(String reportNo) {
+		// TODO Auto-generated method stub
+		return getSqlSession().selectOne("TCreditReportCreditCardBriefMapper.selectByPrimaryKey", reportNo);
+	}
+
+	@Override
+	public int updateByPrimaryKeySelective(TCreditReportCreditCardBrief record) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int updateByPrimaryKey(TCreditReportCreditCardBrief record) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int insertSelectiveMap(Map<String, Object> reqMap) {
+		return getSqlSession().insert("TCreditReportCreditCardBriefMapper.insertSelectiveMap", reqMap);
+	}
+   
+}

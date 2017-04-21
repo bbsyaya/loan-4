@@ -1,0 +1,33 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<div id="tb" style="padding:5px;height:auto">  
+    <fieldset><legend class='dialog-label'>查询条件</legend>
+	<div id="tb" style="padding:3px">
+		<span>申请流水号:</span>
+		<input id="searchPayApplyId" name="searchPayApplyId" style="line-height:20px;border:1px solid #ccc"/>
+		<span>商户名称:</span>
+		<input id="searchPosCustName" name="searchPosCustName" style="line-height:20px;border:1px solid #ccc"/>
+		<br/><br/>
+		<span>客户名称:</span>
+		<input id="searchCustName" name="searchCustName" style="line-height:20px;border:1px solid #ccc"/>
+		<span>客户证件号:</span>
+		<input id="searchPaperId" name="searchPaperId" style="line-height:20px;border:1px solid #ccc"/>
+		<br/><br/>
+		<a href="javascript:void(0)" class="easyui-linkbutton" onclick="queryPaymentApply()" iconCls="icon-search" plain="true">查询</a>
+		&nbsp;&nbsp;<a href="javascript:void(0)"  onclick="queryBlank()" class="easyui-linkbutton" iconCls="icon-cancel" plain="true">重置</a>
+		<br/>
+	</div>
+	</fieldset>
+	<div id="tb">  
+		<c:if test="${reviewStatus == 0 }">
+	    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-redo" onclick="openClaimWindow()">任务认领</a>&nbsp;&nbsp;&nbsp;&nbsp;
+		    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-back" onclick="openDoNotClaimWindow()">任务回池</a>&nbsp;&nbsp;&nbsp;&nbsp;
+	    	<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-tip" onclick="queryCreditReport(0)">获取征信报告</a>&nbsp;&nbsp;&nbsp;&nbsp;
+	    	<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" onclick="executeApproval()">执行用款审核</a>&nbsp;&nbsp;&nbsp;&nbsp;
+   		</c:if>
+    	<c:if test="${reviewStatus ==1 }">
+    		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" onclick="detailPaymentApply()">申请详情</a>
+    	</c:if>
+    </div>
+</div> 

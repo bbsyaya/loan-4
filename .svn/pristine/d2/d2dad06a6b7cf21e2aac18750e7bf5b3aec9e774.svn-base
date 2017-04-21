@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TUpsBillcardstatQueryInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TUpsBillcardstatQueryInfo" >
+    <id column="billCardstatQueryId" property="billCardstatQueryId" jdbcType="INTEGER" />
+    <result column="bankCardNo" property="bankCardNo" jdbcType="VARCHAR" />
+    <result column="userName" property="userName" jdbcType="VARCHAR" />
+    <result column="resCode" property="resCode" jdbcType="VARCHAR" />
+    <result column="resMsg" property="resMsg" jdbcType="VARCHAR" />
+    <result column="totalReceipt" property="totalReceipt" jdbcType="DECIMAL" />
+    <result column="totalExpense" property="totalExpense" jdbcType="DECIMAL" />
+    <result column="totalCount" property="totalCount" jdbcType="INTEGER" />
+    <result column="fileUuid" property="fileUuid" jdbcType="VARCHAR" />
+    <result column="sign" property="sign" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    billCardstatQueryId, bankCardNo, userName, resCode, resMsg, totalReceipt, totalExpense, 
+    totalCount, fileUuid, sign
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_ups_billcardstat_query_info
+    where billCardstatQueryId = #{billCardstatQueryId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_ups_billcardstat_query_info
+    where billCardstatQueryId = #{billCardstatQueryId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TUpsBillcardstatQueryInfo" >
+    insert into t_ups_billcardstat_query_info (billCardstatQueryId, bankCardNo, 
+      userName, resCode, resMsg, 
+      totalReceipt, totalExpense, totalCount, 
+      fileUuid, sign)
+    values (#{billCardstatQueryId,jdbcType=INTEGER}, #{bankCardNo,jdbcType=VARCHAR}, 
+      #{userName,jdbcType=VARCHAR}, #{resCode,jdbcType=VARCHAR}, #{resMsg,jdbcType=VARCHAR}, 
+      #{totalReceipt,jdbcType=DECIMAL}, #{totalExpense,jdbcType=DECIMAL}, #{totalCount,jdbcType=INTEGER}, 
+      #{fileUuid,jdbcType=VARCHAR}, #{sign,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TUpsBillcardstatQueryInfo" >
+    insert into t_ups_billcardstat_query_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="billCardstatQueryId != null" >
+        billCardstatQueryId,
+      </if>
+      <if test="bankCardNo != null" >
+        bankCardNo,
+      </if>
+      <if test="userName != null" >
+        userName,
+      </if>
+      <if test="resCode != null" >
+        resCode,
+      </if>
+      <if test="resMsg != null" >
+        resMsg,
+      </if>
+      <if test="totalReceipt != null" >
+        totalReceipt,
+      </if>
+      <if test="totalExpense != null" >
+        totalExpense,
+      </if>
+      <if test="totalCount != null" >
+        totalCount,
+      </if>
+      <if test="fileUuid != null" >
+        fileUuid,
+      </if>
+      <if test="sign != null" >
+        sign,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="billCardstatQueryId != null" >
+        #{billCardstatQueryId,jdbcType=INTEGER},
+      </if>
+      <if test="bankCardNo != null" >
+        #{bankCardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="resCode != null" >
+        #{resCode,jdbcType=VARCHAR},
+      </if>
+      <if test="resMsg != null" >
+        #{resMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="totalReceipt != null" >
+        #{totalReceipt,jdbcType=DECIMAL},
+      </if>
+      <if test="totalExpense != null" >
+        #{totalExpense,jdbcType=DECIMAL},
+      </if>
+      <if test="totalCount != null" >
+        #{totalCount,jdbcType=INTEGER},
+      </if>
+      <if test="fileUuid != null" >
+        #{fileUuid,jdbcType=VARCHAR},
+      </if>
+      <if test="sign != null" >
+        #{sign,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TUpsBillcardstatQueryInfo" >
+    update t_ups_billcardstat_query_info
+    <set >
+      <if test="bankCardNo != null" >
+        bankCardNo = #{bankCardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        userName = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="resCode != null" >
+        resCode = #{resCode,jdbcType=VARCHAR},
+      </if>
+      <if test="resMsg != null" >
+        resMsg = #{resMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="totalReceipt != null" >
+        totalReceipt = #{totalReceipt,jdbcType=DECIMAL},
+      </if>
+      <if test="totalExpense != null" >
+        totalExpense = #{totalExpense,jdbcType=DECIMAL},
+      </if>
+      <if test="totalCount != null" >
+        totalCount = #{totalCount,jdbcType=INTEGER},
+      </if>
+      <if test="fileUuid != null" >
+        fileUuid = #{fileUuid,jdbcType=VARCHAR},
+      </if>
+      <if test="sign != null" >
+        sign = #{sign,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where billCardstatQueryId = #{billCardstatQueryId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TUpsBillcardstatQueryInfo" >
+    update t_ups_billcardstat_query_info
+    set bankCardNo = #{bankCardNo,jdbcType=VARCHAR},
+      userName = #{userName,jdbcType=VARCHAR},
+      resCode = #{resCode,jdbcType=VARCHAR},
+      resMsg = #{resMsg,jdbcType=VARCHAR},
+      totalReceipt = #{totalReceipt,jdbcType=DECIMAL},
+      totalExpense = #{totalExpense,jdbcType=DECIMAL},
+      totalCount = #{totalCount,jdbcType=INTEGER},
+      fileUuid = #{fileUuid,jdbcType=VARCHAR},
+      sign = #{sign,jdbcType=VARCHAR}
+    where billCardstatQueryId = #{billCardstatQueryId,jdbcType=INTEGER}
+  </update>
+</mapper>

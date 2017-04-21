@@ -1,0 +1,26 @@
+package com.hrbb.loan.pos.biz.backstage.inter;
+
+import java.util.Map;
+
+public interface IPoliceAndAICConnectBiz {
+	
+	public Map<String, Object> getPoliceInfo(String reqXml);
+	
+	public Map<String, String> getPolicReqXmp(String idNo, String name);
+	
+	public boolean hasPoliceInfo(String idNo, String name);
+	
+	
+	public boolean hasAICInfo(String posCustName);
+	
+	public Map<String, String> getAICReqXml(Map<String, Object> reqMap) throws Exception;
+	
+	public Map<String, String> getAICInfo(Map<String, String> reqMap) throws Exception;
+	
+	public String getBankCardCheckUrl(Map<String, String> reqMap);
+	
+	public boolean hasBankCardCheck(String bankAccno);
+	
+	public Map<String, String> updateBankAccnoStatus(String resultMessage, boolean success, String bankAccno) throws Exception;
+	
+}

@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TPaymentApplyApprovalMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TPaymentApplyApproval" >
+    <result column="payApplyId" property="payApplyId" jdbcType="VARCHAR" />
+    <result column="payApplyNum" property="payApplyNum" jdbcType="INTEGER" />
+    <result column="approvalName" property="approvalName" jdbcType="VARCHAR" />
+    <result column="approvalContent" property="approvalContent" jdbcType="VARCHAR" />
+    <result column="approvalStatus" property="approvalStatus" jdbcType="INTEGER" />
+    <result column="approvalStartTime" property="approvalStartTime" jdbcType="TIMESTAMP" />
+    <result column="approvalEndTime" property="approvalEndTime" jdbcType="TIMESTAMP" />
+    <result column="paymentStatusBefore" property="paymentStatusBefore" jdbcType="VARCHAR" />
+    <result column="paymentStatusAfter" property="paymentStatusAfter" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    payApplyId, payApplyNum, approvalName, approvalContent, approvalStatus, approvalStartTime, 
+    approvalEndTime, paymentStatusBefore, paymentStatusAfter
+  </sql>
+  <sql id="Base_Column_List1" >
+    a.payApplyId, a.contNo, a.custId, a.posCustId, a.payApplyAmt,a.payApplyInterest, a.payApplyTerm, a.returnType, a.accNo, 
+    a.expectedDate,a.expectedEndDate, a.applyMemo, a.applyDate, a.status, a.merchantNo, a.merchantDesp, a.createDate, 
+    a.modifiedDate,a.receiptFlag
+  </sql>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TPaymentApplyApproval" >
+    insert into t_payment_apply_approval (payApplyId, payApplyNum, approvalName, 
+      approvalContent, approvalStatus, approvalStartTime, 
+      approvalEndTime, paymentStatusBefore, 
+      paymentStatusAfter)
+    values (#{payApplyId,jdbcType=VARCHAR}, #{payApplyNum,jdbcType=INTEGER}, #{approvalName,jdbcType=VARCHAR}, 
+      #{approvalContent,jdbcType=VARCHAR}, #{approvalStatus,jdbcType=INTEGER}, #{approvalStartTime,jdbcType=TIMESTAMP}, 
+      #{approvalEndTime,jdbcType=TIMESTAMP}, #{paymentStatusBefore,jdbcType=VARCHAR}, 
+      #{paymentStatusAfter,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TPaymentApplyApproval" >
+    insert into t_payment_apply_approval
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="payApplyId != null" >
+        payApplyId,
+      </if>
+      <if test="payApplyNum != null" >
+        payApplyNum,
+      </if>
+      <if test="approvalName != null" >
+        approvalName,
+      </if>
+      <if test="approvalContent != null" >
+        approvalContent,
+      </if>
+      <if test="approvalStatus != null" >
+        approvalStatus,
+      </if>
+      <if test="approvalStartTime != null" >
+        approvalStartTime,
+      </if>
+      <if test="approvalEndTime != null" >
+        approvalEndTime,
+      </if>
+      <if test="paymentStatusBefore != null" >
+        paymentStatusBefore,
+      </if>
+      <if test="paymentStatusAfter != null" >
+        paymentStatusAfter,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="payApplyId != null" >
+        #{payApplyId,jdbcType=VARCHAR},
+      </if>
+      <if test="payApplyNum != null" >
+        #{payApplyNum,jdbcType=INTEGER},
+      </if>
+      <if test="approvalName != null" >
+        #{approvalName,jdbcType=VARCHAR},
+      </if>
+      <if test="approvalContent != null" >
+        #{approvalContent,jdbcType=VARCHAR},
+      </if>
+      <if test="approvalStatus != null" >
+        #{approvalStatus,jdbcType=INTEGER},
+      </if>
+      <if test="approvalStartTime != null" >
+        #{approvalStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="approvalEndTime != null" >
+        #{approvalEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="paymentStatusBefore != null" >
+        #{paymentStatusBefore,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentStatusAfter != null" >
+        #{paymentStatusAfter,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="selectByPayApplyIdAndBeforeStatus" parameterType="Map"  resultMap="BaseResultMap">
+        select 
+    <include refid="Base_Column_List" />
+    from t_payment_apply_approval
+     where 1 = 1 
+    <if test="payApplyId != null">
+        AND payApplyId = #{payApplyId}
+    </if>
+    <if test="status != null">
+        AND paymentStatusBefore = #{status}
+    </if>
+  </select>
+  
+  <update id="updateSelectiveMap" parameterType="map" >
+    update t_payment_apply_approval
+    <set>
+       <if test="payApplyId != null" >
+       payApplyId = #{payApplyId,jdbcType=VARCHAR},
+      </if>
+      <if test="payApplyNum != null" >
+        payApplyNum = #{payApplyNum,jdbcType=INTEGER},
+      </if>
+      <if test="approvalName != null" >
+        approvalName = #{approvalName,jdbcType=VARCHAR},
+      </if>
+      <if test="approvalContent != null" >
+        approvalContent =#{approvalContent,jdbcType=VARCHAR},
+      </if>
+      <if test="approvalStatus != null" >
+        approvalStatus = #{approvalStatus,jdbcType=INTEGER},
+      </if>
+      <if test="approvalStartTime != null" >
+       approvalStartTime =  #{approvalStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="approvalEndTime != null" >
+        approvalEndTime = #{approvalEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="paymentStatusBefore != null" >
+        paymentStatusBefore = #{paymentStatusBefore,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentStatusAfter != null" >
+        paymentStatusAfter = #{paymentStatusAfter,jdbcType=VARCHAR},
+       </if>
+    </set>
+    where payApplyId = #{payApplyId,jdbcType=VARCHAR} AND paymentStatusBefore = #{paymentStatusBefore,jdbcType=VARCHAR}
+    
+  </update>
+  
+  <select id="queryPaymentApplyCurrWork" parameterType="Map" resultType="Map">
+ 	 select d.custName,c.paperId,d.posCustName,d.channel,
+  <include refid="Base_Column_List1"/>
+  	 from t_payment_apply a,t_customer_info c , t_contract_info d ,t_payment_apply_approval e   
+  	 where a.custId = c.custId and a.contNo = d.contNo and a.payApplyId = e.payApplyId   
+ 	 AND 1=1
+  <if test="contNoLike != null">
+  		AND a.contNo like #{contNoLike}
+  </if>
+  <if test="posCustNameLike != null">
+  		AND d.posCustName like #{posCustNameLike}
+  </if>
+  <if test="custNameLike != null">
+  		AND d.custName like #{custNameLike}
+  </if>
+  <if test="paperIdLike != null">
+ 	 	AND c.paperId like #{paperIdLike}
+  </if>
+  <if test="approvalName != null">
+        AND e.approvalName = #{approvalName} 
+  </if>
+		AND e.approvalEndTime is null   
+		limit #{startPage},#{limit}   
+  </select>
+  
+  <select id="countPaymentApplyCurrWork" parameterType="Map" resultType="Long">
+ 	 select count(*) 
+  	 from t_payment_apply a,t_customer_info c , t_contract_info d ,t_payment_apply_approval e   
+  	 where a.custId = c.custId and a.contNo = d.contNo and a.payApplyId = e.payApplyId   
+ 	 AND 1=1
+  <if test="contNoLike != null">
+  		AND a.contNo like #{contNoLike}
+  </if>
+  <if test="posCustNameLike != null">
+  		AND d.posCustName like #{posCustNameLike}
+  </if>
+  <if test="custNameLike != null">
+  		AND d.custName like #{custNameLike}
+  </if>
+  <if test="paperIdLike != null">
+ 	 	AND c.paperId like #{paperIdLike}
+  </if>
+  <if test="approvalName != null">
+        AND e.approvalName = #{approvalName} 
+  </if>
+		AND e.approvalEndTime is null      
+  </select>
+  
+    <select id="queryPaymentApplyFinishedWork" parameterType="Map" resultType="Map">
+ 	 select d.custName,c.paperId,d.posCustName,d.channel,
+  <include refid="Base_Column_List1"/>
+  	 from t_payment_apply a,t_customer_info c , t_contract_info d ,t_payment_apply_approval e   
+  	 where a.custId = c.custId and a.contNo = d.contNo and a.payApplyId = e.payApplyId   
+ 	 AND 1=1
+  <if test="contNoLike != null">
+  		AND a.contNo like #{contNoLike}
+  </if>
+  <if test="posCustNameLike != null">
+  		AND d.posCustName like #{posCustNameLike}
+  </if>
+  <if test="custNameLike != null">
+  		AND d.custName like #{custNameLike}
+  </if>
+  <if test="paperIdLike != null">
+ 	 	AND c.paperId like #{paperIdLike}
+  </if>
+  <if test="approvalName != null">
+        AND e.approvalName = #{approvalName} 
+  </if>
+		AND e.approvalEndTime is not null     
+		limit #{startPage},#{limit}    
+  </select>
+  
+     <select id="countPaymentApplyFinishedWork" parameterType="Map" resultType="Long">
+ 	 select count(*) 
+  	 from t_payment_apply a,t_customer_info c , t_contract_info d ,t_payment_apply_approval e   
+  	 where a.custId = c.custId and a.contNo = d.contNo and a.payApplyId = e.payApplyId   
+ 	 AND 1=1
+  <if test="contNoLike != null">
+  		AND a.contNo like #{contNoLike}
+  </if>
+  <if test="posCustNameLike != null">
+  		AND d.posCustName like #{posCustNameLike}
+  </if>
+  <if test="custNameLike != null">
+  		AND d.custName like #{custNameLike}
+  </if>
+  <if test="paperIdLike != null">
+ 	 	AND c.paperId like #{paperIdLike}
+  </if>
+  <if test="approvalName != null">
+        AND e.approvalName = #{approvalName} 
+  </if>
+		AND e.approvalEndTime is not null      
+  </select>
+</mapper>

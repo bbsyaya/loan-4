@@ -1,0 +1,80 @@
+package com.hrbb.loan.quartz;
+
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
+import com.hrbb.loan.channel.sms.SmsProcesser;
+import com.hrbb.loan.pos.biz.backstage.inter.ISmsSenderBiz;
+import com.hrbb.loan.pos.factory.SysConfigFactory;
+import com.hrbb.loan.pos.service.constants.SmsTypeContants;
+import com.hrbb.loan.pos.util.StringUtil;
+
+@Component("sendSmsMessageTask")
+public class SendSmsMessageTask {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SendSmsMessageTask.class);
+
+    @Autowired
+    private ISmsSenderBiz senderBiz;
+
+    @Autowired
+    @Qualifier("smsProcesser")
+    private SmsProcesser smsProcesser;
+
+    public void execute() {
+
+        try {
+            String switchFlag = SysConfigFactory.getInstance().getService("quartzSwitchService").getPropertyValue("smsSwitch");
+            if (StringUtil.isEmpty(switchFlag) || "false".equals(switchFlag.toLowerCase())) {
+                LOG.info("短信开关为false,不发送短信");
+                return;
+            }
+            
+            //发送短信
+            List<Map<String, Object>> resList = senderBiz.getAllSmsMessage();
+            LOG.debug("发送短信开始。。。。");
+            for (Map<String, Object> map : resList) {
+            	//------58 及资金池模型的手机短信自行管理
+            	String channel = (String)map.get("channel");
+            	if(channel!=null && channel.matches("(58|SM|WX)")) continue;
+            	
+            	//------补件短信暂停发送
+            	String notifyType = (String)map.get("notifyType");
+            	if(notifyType!=null && notifyType.equals(SmsTypeContants.审核补件)) continue;
+            	
+            	//------融360只发放款成功短信
+            	if(channel!=null && notifyType!=null
+            			&& (channel.equals("RN") && !notifyType.equals(SmsTypeContants.放款通知))) continue;
+            	
+                String tempId = (String) map.get("tempId");
+//                if (tempId != null && !tempId.startsWith("58")) {
+                String sendContent = (String) map.get("sendContent");
+                String mobile = (String) map.get("mobile");
+                
+                if(mobile==null || !mobile.matches("[0-9]{11}")){
+                	LOG.error("手机号码有误!mobile="+mobile);
+                	continue;
+                }
+                
+                if (smsProcesser.sendSmsNoTemplate(mobile, sendContent)) {
+                    //如果成功删除记录
+                    senderBiz.deleteSmsMessage((Integer) map.get("id"));
+                    //将短信记录插入短信历史表中
+                    senderBiz.insertSmsMessageHist(tempId, mobile, sendContent);
+                } else {
+                    LOG.debug("发送失败");
+                }
+//                }
+            }
+            LOG.debug("发送短信结束。。。。");
+        } catch (Exception e) {
+            LOG.error("发送短信异常:" + e.getMessage());
+        }
+    }
+}

@@ -1,0 +1,101 @@
+package com.hrbb.loan.timer;
+
+import java.util.List;
+
+import jodd.util.StringUtil;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosPaybackApplyBiz;
+import com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo;
+import com.hrbb.loan.pos.dao.entity.TTransactionRelative;
+import com.hrbb.loan.pos.entity.event.EventException;
+import com.hrbb.loan.pos.entity.event.POSEvent;
+import com.hrbb.loan.pos.entity.event.POSEventsSource;
+import com.hrbb.loan.pos.entity.event.cab.MessageCab;
+import com.hrbb.loan.pos.entity.listener.impl.MsgListener;
+import com.hrbb.loan.pos.service.TransactionRelativeService;
+
+/**
+ * 还款作废任务
+ * 
+ * @author cjq
+ * @version $Id: POSRepaymentTimer.java, v 0.1 2015年9月6日 上午10:33:00 cjq Exp $
+ */
+@Service("ZjPOSRepaymentTimer")
+public class POSRepaymentTimer {
+
+    private Logger                     logger = LoggerFactory.getLogger(POSRepaymentTimer.class);
+
+    /** 还款申请 */
+    @Autowired
+    private LoanPosPaybackApplyBiz     loanPosPaybackApplyBiz;
+
+    /** 交易记录 */
+    @Autowired
+    private TransactionRelativeService transactionRelativeService;
+
+    /**
+     * 
+     */
+    @Scheduled(cron = "0 0 6 * * ?")
+    public void run() {
+        logger.info("还款申请作废Timer开始。。。。。。");
+        /* 偿还方式为01(主动)*/
+        List<TPaybackApplyInfo> list = loanPosPaybackApplyBiz.queryPaybackApplyInfo01();
+        if (!list.isEmpty()) {
+            POSEventsSource source = new POSEventsSource();
+            for (TPaybackApplyInfo tPaybackApplyInfo : list) {
+                if (tPaybackApplyInfo != null) {
+                    int flag1 = loanPosPaybackApplyBiz.updatePaybackApplyInfo(tPaybackApplyInfo
+                        .getPaybackApplyId());
+                    if (flag1 > 0) {
+                        logger.info("还款申请[{}]作废更新成功", tPaybackApplyInfo.getPaybackApplyId());
+                        try {
+                            source.setAttribute("paybackApply", tPaybackApplyInfo);
+                            source.setAttribute(POSEvent.监听事件名称_消息推送, MessageCab.消息推送_还款申请失效通知);
+                            source.addListener(new MsgListener());
+                            source.notifyEvent();
+                        } catch (EventException e) {
+                            logger.error("推送还款通知消息失败.",e);
+                        }
+                    }
+                }
+            }
+        }
+        /* 偿还方式为代扣 02*/
+        List<String> paybackApplyIds = loanPosPaybackApplyBiz.queryPaybackApplyIdList02();
+        if (!paybackApplyIds.isEmpty()) {
+            POSEventsSource source = new POSEventsSource();
+            TPaybackApplyInfo paybackApplyInfo = new TPaybackApplyInfo();
+            TTransactionRelative tr = null;
+            for (String paybackApplyId : paybackApplyIds) {
+                tr = transactionRelativeService
+                    .queryTTransactionRelativeByBusinessId(paybackApplyId);
+                if (tr != null) {
+                    if (StringUtil.isNotEmpty(tr.getTransactionStatus())
+                        && "FAIL".equals(tr.getTransactionStatus())) {
+                        int flag = loanPosPaybackApplyBiz.updatePaybackApplyInfo(paybackApplyId);
+                        if (flag > 0) {
+                            logger.info("还款申请[{}]作废更新成功", paybackApplyId);
+                            paybackApplyInfo = loanPosPaybackApplyBiz.queryPaybackApplyInfoById(paybackApplyId);
+                            try {
+                                source.setAttribute("paybackApplyInfo", paybackApplyInfo);
+                                source.setAttribute(POSEvent.监听事件名称_消息推送, MessageCab.消息推送_还款申请失效通知);
+                                source.addListener(new MsgListener());
+                                source.notifyEvent();
+                            } catch (EventException e) {
+                                logger.error("推送还款通知消息失败.",e);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        logger.info("还款申请作废Timer结束。。。。。。");
+    }
+}

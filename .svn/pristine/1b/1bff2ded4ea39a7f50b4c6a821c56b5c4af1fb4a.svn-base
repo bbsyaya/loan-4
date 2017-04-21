@@ -1,0 +1,119 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<div title="用款申请概要" style="padding:20px;">
+	<!-- 用款申请信息 -->
+	<jsp:include page="../paymentApply/detailPaymentApply/detailPaymentApplyInfo.jsp"></jsp:include>
+	<br/>
+	<table id="execform" style="width:800px; ">
+	<tr><td>
+	<!-- 联行号信息 -->
+	<fieldset style="padding:5px; color:#333; border:#06c dashed 1px;">
+		<legend class='dialog-label' style="color:#06c; font-weight:800; background:#fff;">联行号信息</legend>
+		<table style="width:100%;">
+            <tr>
+				<td class="tdtitle">卡所属地区:</td>
+				<td colspan="3">
+					<select id="insertPosCustProSelect" name="insertPosCustProSelect" 
+						data-options="onChange:function (newVal,oldVal){selectDivision(newVal,$('#insertPosCustCitySelect'),$('#insertBusiDivision'));}"
+						class="easyui-combobox" validType="selectedRequired" required=true editable=false>
+							<option value="">--请选择(省/市)--</option>
+							<c:forEach items="${province}" var="obj">
+								<option value="${obj.itemNo}">${obj.itemName}</option>
+							</c:forEach>
+					</select>
+					&nbsp;
+					<select id="insertPosCustCitySelect" name="insertPosCustCitySelect" 
+						class="easyui-combobox" validType="selectedRequired" required=true editable=false>
+						<option value="">--请选择(市/区)--</option>
+					</select>
+					&nbsp;
+					<!--  <select id="insertBusiDivision" name="insertBusiDivision" 
+						class="easyui-combobox" validType="selectedRequired" required=true editable=false>
+						<option value="">--请选择(区/县)--</option>
+					</select>
+					-->
+				</td>
+			</tr>
+			<tr>
+				<td class="tdtitle">银行名称:</td>
+				<td colspan="3">
+							<select id="insertBankName" name="insertBankName"  data-options="" class="easyui-combobox" validType="selectedRequired" required=true editable=false>
+								<option value="">--请选择开户行--</option>
+								<c:forEach items="${bankNoList}" var="obj">
+									<option value="${obj.itemNo}">${obj.itemName}</option>
+								</c:forEach>
+							</select>
+							<input type="text" id="insertPosCustDetailBankName"
+							name="insertPosCustDetailBankName" class="easyui-validatebox" data-options="required:true" style="width:260px;margin-left: 18px" />
+							<a style="margin-right:50px;float:right" href="javascript:void(0)" class="easyui-linkbutton" onclick="queryBankNo()" iconCls="icon-search" >行号查询</a>
+				</td>
+			</tr>
+            <tr>
+            	<td style="width:15%;word-break;" class="tdtitle">查询结果:</td>
+            	<td colspan="3">
+	            	<select id="cnapsBankInfo" style="width:480px">
+		            	<c:if test="${not empty bankAccount.cdtbranchid}">
+		            		<option value="${bankAccount.cdtbranchid }">${bankAccount.ptcptnm}</option>
+		            	</c:if>
+	            	</select>
+				</td>
+			</tr>
+        </table>
+	</fieldset>
+	<%-- <fieldset style="padding:5px; color:#333; border:#06c dashed 1px;">
+		<legend class='dialog-label' style="color:#06c; font-weight:800; background:#fff;">联行号信息</legend>
+		<table style="width:100%;">
+        	<tr>
+            	<td style="width:15%;word-break;" class="tdtitle">开户行名称:</td>
+           		<td colspan="3"><input id="ptcptnm" name="ptcptnm" size=60 value="${bankAccount.ptcptnm}"/>
+            	<a style="padding-left: 10px" href="javascript:void(0)" class="easyui-linkbutton" onclick="queryBankNoByBankName()" iconCls="icon-search" >行号查询</a></td>
+         	</tr>
+            <tr>
+            	<td style="width:15%;word-break;" class="tdtitle">查询结果:</td>
+            	<td colspan="3"><select id="cnapsBankInfo" style="width:480px">
+            	<c:if test="${not empty bankAccount.cdtbranchid}">
+            		<option value="${bankAccount.cdtbranchid }">${bankAccount.ptcptnm}</option>
+            	</c:if>
+            	</select></td>
+            </tr>
+        </table>
+	</fieldset> --%>
+	</td></tr>
+	<tr><td>&nbsp;</td></tr>
+	<tr><td>
+	<!-- 用款审核信息 -->
+	<fieldset style="padding:5px; color:#333; border:#06c dashed 1px;">
+		<legend class='dialog-label' style="color:#06c; font-weight:800; background:#fff;">用款审核</legend>
+		<table style="width:100%;">
+			<tr>
+           		<td style="width:15%;word-break;" class="tdtitle">用款开始日期:</td>
+				<td><input id="apprBeginDate" name="apprBeginDate" disabled class="easyui-datebox" value="<fmt:formatDate value='${payApprOpinion.apprBeginDate}' pattern='yyyy-MM-dd'/>" size="30"/></td>
+           		<td style="width:15%;word-break;" class="tdtitle">用款到期日:</td>
+				<td><input id="apprEndDate" name="apprEndDate" class="easyui-datebox" value="<fmt:formatDate value='${payApprOpinion.apprEndDate}' pattern='yyyy-MM-dd' />" size="30"/></td> 
+         	</tr>
+         	<tr>
+           		<td class="tdtitle">宽限天数:</td> 
+				<td><input id="graceDays" name="graceDays" disabled value="${payApprOpinion.graceDays}" size="30"/></td>
+           		<td class="tdtitle">还款期次:</td>
+				<td><input id="scheduleTimes" name="scheduleTimes" disabled value="${payApprOpinion.scheduleTimes}" size="30"/></td> 
+         	</tr>
+        	<tr>
+            	<td style="width:15%;word-break;" class="tdtitle">审批意见:</td>
+           		<td colspan="3">
+                	<input type="radio" name="approvalStatus" id="approvalStatus1" value="1" <c:if test="${payApprOpinion.approvalStatus=='1'}">checked</c:if>/>同意
+                	<input type="radio" name="approvalStatus" id="approvalStatus2" value="2" <c:if test="${payApprOpinion.approvalStatus=='2'}">checked</c:if>/>不同意
+            	</td>
+          	</tr>
+         	<tr>
+            	<td style="width:15%;word-break;" class="tdtitle">意见详情</td>
+            	<td colspan="3">
+                	<textarea name="approvalContent" id="approvalContent" cols="50" rows="3" >${payApprOpinion.approvalContent}</textarea>
+              	</td>
+       		</tr>
+        </table>
+	</fieldset>
+	</td></tr>
+	</table>
+</div>

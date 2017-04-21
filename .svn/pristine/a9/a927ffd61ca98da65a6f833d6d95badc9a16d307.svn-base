@@ -1,0 +1,28 @@
+/**
+ * 
+ */
+package com.hrbb.loan.pos.entity.event;
+
+/**
+ * <p>Title: POSEvent.java </p>
+ * <p>Description:  </p>
+ * <p>Copyright: Copyright (C) 2015 Hrbb Ltd. Co.</p> 
+ *     
+ * @author linzhaolin@hrbb.com.cn
+ * @version 
+ * @date 2015年7月8日
+ *
+ * logs: 1. 
+ */
+public interface POSEvent {
+	
+	public static final String 监听事件名称_消息推送 = "msgEvent";  
+	public static final String 监听事件名称_发送短信 = "smsEvent";  
+	public static final String 监听事件名称_外呼任务 = "taskEvent";
+	public static final String 监听事件名称_异步通知 = "ntfEvent";
+	public static final String 监听事件名称_邮件通知 = "mailEvent";
+	
+	public void execute() throws EventException;
+	
+
+}

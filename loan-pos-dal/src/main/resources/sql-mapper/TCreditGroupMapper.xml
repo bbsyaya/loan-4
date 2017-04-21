@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditGroupMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditGroup" >
+    <id column="groupId" property="groupId" jdbcType="VARCHAR" />
+    <result column="groupType" property="groupType" jdbcType="VARCHAR" />
+    <result column="step" property="step" jdbcType="VARCHAR" />
+    <result column="chief" property="chief" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    groupId, groupType, step, chief, status
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_group
+    where groupId = #{groupId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_credit_group
+    where groupId = #{groupId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditGroup" >
+    insert into t_credit_group (groupId, groupType, step, 
+      chief)
+    values (#{groupId,jdbcType=VARCHAR}, #{groupType,jdbcType=VARCHAR}, #{step,jdbcType=VARCHAR}, 
+      #{chief,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditGroup" >
+    insert into t_credit_group
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="groupId != null" >
+        groupId,
+      </if>
+      <if test="groupType != null" >
+        groupType,
+      </if>
+      <if test="step != null" >
+        step,
+      </if>
+      <if test="chief != null" >
+        chief,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="groupId != null" >
+        #{groupId,jdbcType=VARCHAR},
+      </if>
+      <if test="groupType != null" >
+        #{groupType,jdbcType=VARCHAR},
+      </if>
+      <if test="step != null" >
+        #{step,jdbcType=VARCHAR},
+      </if>
+      <if test="chief != null" >
+        #{chief,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditGroup" >
+    update t_credit_group
+    <set >
+      <if test="groupType != null" >
+        groupType = #{groupType,jdbcType=VARCHAR},
+      </if>
+      <if test="step != null" >
+        step = #{step,jdbcType=VARCHAR},
+      </if>
+      <if test="chief != null" >
+        chief = #{chief,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+      	status = #{status}
+      </if>
+    </set>
+    where groupId = #{groupId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditGroup" >
+    update t_credit_group
+    set groupType = #{groupType,jdbcType=VARCHAR},
+      step = #{step,jdbcType=VARCHAR},
+      chief = #{chief,jdbcType=VARCHAR}
+    where groupId = #{groupId,jdbcType=VARCHAR}
+  </update>
+</mapper>

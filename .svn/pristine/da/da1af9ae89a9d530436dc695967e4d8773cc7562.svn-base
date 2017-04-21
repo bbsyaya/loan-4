@@ -1,0 +1,58 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.service.bean;
+
+import java.io.Serializable;
+
+/**
+ * 
+ * @author byp
+ * @version $Id: ApproveRejectMessage.java, v 0.1 2015年3月16日 下午6:32:22 byp Exp $
+ */
+public class ApproveRejectMessage implements Serializable{
+
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -595072330739109533L;
+
+	private String refuseReason;
+    
+    private String nextLoanDate;
+
+    /**
+     * 
+     */
+    public ApproveRejectMessage() {
+    }
+
+    public String getRefuseReason() {
+        return refuseReason;
+    }
+
+    public ApproveRejectMessage setRefuseReason(String refuseReason) {
+        this.refuseReason = refuseReason;
+        return this;
+    }
+  
+    public String getNextLoanDate() {
+        return nextLoanDate;
+    }
+
+    public void setNextLoanDate(String nextLoanDate) {
+        this.nextLoanDate = nextLoanDate;
+    }
+    
+    public String toString() {
+        return "\"refusereason\":\"" + refuseReason+"\"";
+    }
+    
+    public String toString58() {
+        return "\"refusereason\":\"" + refuseReason+"\","
+              + "\"nextLoanDate\":\"" + nextLoanDate + "\"";
+    }
+
+}

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditReportQueryBriefMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditReportQueryBrief" >
+    <id column="reportNo" property="reportNo" jdbcType="VARCHAR" />
+    <result column="qryOrgs1" property="qryOrgs1" jdbcType="INTEGER" />
+    <result column="qryOrgs2" property="qryOrgs2" jdbcType="INTEGER" />
+    <result column="qryTimes1" property="qryTimes1" jdbcType="INTEGER" />
+    <result column="qryTimes2" property="qryTimes2" jdbcType="INTEGER" />
+    <result column="qryTimes2y1" property="qryTimes2y1" jdbcType="INTEGER" />
+    <result column="qryTimes2y2" property="qryTimes2y2" jdbcType="INTEGER" />
+    <result column="qryTimes2y3" property="qryTimes2y3" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    reportNo, qryOrgs1, qryOrgs2, qryTimes1, qryTimes2, qryTimes2y1, qryTimes2y2, qryTimes2y3
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_report_query_brief
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_credit_report_query_brief
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportQueryBrief" >
+    insert into t_credit_report_query_brief (reportNo, qryOrgs1, qryOrgs2, 
+      qryTimes1, qryTimes2, qryTimes2y1, 
+      qryTimes2y2, qryTimes2y3)
+    values (#{reportNo,jdbcType=VARCHAR}, #{qryOrgs1,jdbcType=INTEGER}, #{qryOrgs2,jdbcType=INTEGER}, 
+      #{qryTimes1,jdbcType=INTEGER}, #{qryTimes2,jdbcType=INTEGER}, #{qryTimes2y1,jdbcType=INTEGER}, 
+      #{qryTimes2y2,jdbcType=INTEGER}, #{qryTimes2y3,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportQueryBrief" >
+    insert into t_credit_report_query_brief
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="qryOrgs1 != null" >
+        qryOrgs1,
+      </if>
+      <if test="qryOrgs2 != null" >
+        qryOrgs2,
+      </if>
+      <if test="qryTimes1 != null" >
+        qryTimes1,
+      </if>
+      <if test="qryTimes2 != null" >
+        qryTimes2,
+      </if>
+      <if test="qryTimes2y1 != null" >
+        qryTimes2y1,
+      </if>
+      <if test="qryTimes2y2 != null" >
+        qryTimes2y2,
+      </if>
+      <if test="qryTimes2y3 != null" >
+        qryTimes2y3,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="qryOrgs1 != null" >
+        #{qryOrgs1,jdbcType=INTEGER},
+      </if>
+      <if test="qryOrgs2 != null" >
+        #{qryOrgs2,jdbcType=INTEGER},
+      </if>
+      <if test="qryTimes1 != null" >
+        #{qryTimes1,jdbcType=INTEGER},
+      </if>
+      <if test="qryTimes2 != null" >
+        #{qryTimes2,jdbcType=INTEGER},
+      </if>
+      <if test="qryTimes2y1 != null" >
+        #{qryTimes2y1,jdbcType=INTEGER},
+      </if>
+      <if test="qryTimes2y2 != null" >
+        #{qryTimes2y2,jdbcType=INTEGER},
+      </if>
+      <if test="qryTimes2y3 != null" >
+        #{qryTimes2y3,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="map" >
+    insert into t_credit_report_query_brief
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="qryOrgs1 != null" >
+        qryOrgs1,
+      </if>
+      <if test="qryOrgs2 != null" >
+        qryOrgs2,
+      </if>
+      <if test="qryTimes1 != null" >
+        qryTimes1,
+      </if>
+      <if test="qryTimes2 != null" >
+        qryTimes2,
+      </if>
+      <if test="qryTimes3 != null">
+      	qryTimes3,
+      </if>
+      <if test="qryTimes2y1 != null" >
+        qryTimes2y1,
+      </if>
+      <if test="qryTimes2y2 != null" >
+        qryTimes2y2,
+      </if>
+      <if test="qryTimes2y3 != null" >
+        qryTimes2y3,
+      </if>
+       <if test="queryId != null">
+      	queryId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="qryOrgs1 != null" >
+        #{qryOrgs1,jdbcType=INTEGER},
+      </if>
+      <if test="qryOrgs2 != null" >
+        #{qryOrgs2,jdbcType=INTEGER},
+      </if>
+      <if test="qryTimes1 != null" >
+        #{qryTimes1,jdbcType=INTEGER},
+      </if>
+      <if test="qryTimes2 != null" >
+        #{qryTimes2,jdbcType=INTEGER},
+      </if>
+      <if test="qryTimes3 != null">
+      	#{qryTimes3},
+      </if>
+      <if test="qryTimes2y1 != null" >
+        #{qryTimes2y1,jdbcType=INTEGER},
+      </if>
+      <if test="qryTimes2y2 != null" >
+        #{qryTimes2y2,jdbcType=INTEGER},
+      </if>
+      <if test="qryTimes2y3 != null" >
+        #{qryTimes2y3,jdbcType=INTEGER},
+      </if>
+       <if test="queryId != null">
+      	#{queryId},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportQueryBrief" >
+    update t_credit_report_query_brief
+    <set >
+      <if test="qryOrgs1 != null" >
+        qryOrgs1 = #{qryOrgs1,jdbcType=INTEGER},
+      </if>
+      <if test="qryOrgs2 != null" >
+        qryOrgs2 = #{qryOrgs2,jdbcType=INTEGER},
+      </if>
+      <if test="qryTimes1 != null" >
+        qryTimes1 = #{qryTimes1,jdbcType=INTEGER},
+      </if>
+      <if test="qryTimes2 != null" >
+        qryTimes2 = #{qryTimes2,jdbcType=INTEGER},
+      </if>
+      <if test="qryTimes2y1 != null" >
+        qryTimes2y1 = #{qryTimes2y1,jdbcType=INTEGER},
+      </if>
+      <if test="qryTimes2y2 != null" >
+        qryTimes2y2 = #{qryTimes2y2,jdbcType=INTEGER},
+      </if>
+      <if test="qryTimes2y3 != null" >
+        qryTimes2y3 = #{qryTimes2y3,jdbcType=INTEGER},
+      </if>
+    </set>
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportQueryBrief" >
+    update t_credit_report_query_brief
+    set qryOrgs1 = #{qryOrgs1,jdbcType=INTEGER},
+      qryOrgs2 = #{qryOrgs2,jdbcType=INTEGER},
+      qryTimes1 = #{qryTimes1,jdbcType=INTEGER},
+      qryTimes2 = #{qryTimes2,jdbcType=INTEGER},
+      qryTimes2y1 = #{qryTimes2y1,jdbcType=INTEGER},
+      qryTimes2y2 = #{qryTimes2y2,jdbcType=INTEGER},
+      qryTimes2y3 = #{qryTimes2y3,jdbcType=INTEGER}
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,5 @@
+eclipse.preferences.version=1
+extraProperties=sonar.language\=java
+projectKey=com.hrbb.loan.tools\:loan-pos-tools
+serverUrl=
+version=2

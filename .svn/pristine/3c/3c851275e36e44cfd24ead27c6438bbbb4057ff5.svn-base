@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TUpsBillcardstatSerialMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TUpsBillcardstatSerial" >
+    <id column="serialNo" property="serialNo" jdbcType="INTEGER" />
+    <result column="fileUuid" property="fileUuid" jdbcType="VARCHAR"/>
+    <result column="bankCardNo" property="bankCardNo" jdbcType="VARCHAR" />
+    <result column="userName" property="userName" jdbcType="VARCHAR" />
+    <result column="transactionTime" property="transactionTime" jdbcType="TIMESTAMP" />
+    <result column="chargeTime" property="chargeTime" jdbcType="TIMESTAMP" />
+    <result column="transactionCurrency" property="transactionCurrency" jdbcType="VARCHAR" />
+    <result column="transactionStatus" property="transactionStatus" jdbcType="VARCHAR" />
+    <result column="borrow" property="borrow" jdbcType="DECIMAL" />
+    <result column="lend" property="lend" jdbcType="DECIMAL" />
+    <result column="mid" property="mid" jdbcType="VARCHAR" />
+    <result column="posId" property="posId" jdbcType="VARCHAR" />
+    <result column="mName" property="mName" jdbcType="VARCHAR" />
+    <result column="mcc" property="mcc" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="transactionType" property="transactionType" jdbcType="VARCHAR" />
+    <result column="transactionChannel" property="transactionChannel" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    serialNo, fileUuid, bankCardNo, userName, transactionTime, chargeTime, transactionCurrency, 
+    transactionStatus, borrow, lend, mid, posId, mName, mcc, city, transactionType, transactionChannel, 
+    address
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_ups_billcardstat_serial
+    where serialNo = #{serialNo,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_ups_billcardstat_serial
+    where serialNo = #{serialNo,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TUpsBillcardstatSerial" >
+    insert into t_ups_billcardstat_serial (serialNo, fileUuid, bankCardNo, userName, 
+      transactionTime, chargeTime, transactionCurrency, 
+      transactionStatus, borrow, lend, 
+      mid, posId, mName, 
+      mcc, city, transactionType, 
+      transactionChannel, address)
+    values (#{serialNo,jdbcType=INTEGER}, #{fileUuid,jdbcType=VARCHAR}, #{bankCardNo,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, 
+      #{transactionTime,jdbcType=TIMESTAMP}, #{chargeTime,jdbcType=TIMESTAMP}, #{transactionCurrency,jdbcType=VARCHAR}, 
+      #{transactionStatus,jdbcType=VARCHAR}, #{borrow,jdbcType=DECIMAL}, #{lend,jdbcType=DECIMAL}, 
+      #{mid,jdbcType=VARCHAR}, #{posId,jdbcType=VARCHAR}, #{mName,jdbcType=VARCHAR}, 
+      #{mcc,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, #{transactionType,jdbcType=VARCHAR}, 
+      #{transactionChannel,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR})
+  </insert>
+  
+  <insert id="insertBatch" parameterType="List" >
+    insert into t_ups_billcardstat_serial (fileUuid, bankCardNo, userName, 
+      transactionTime, chargeTime, transactionCurrency, 
+      transactionStatus, borrow, lend, 
+      mid, posId, mName, 
+      mcc, city, transactionType, 
+      transactionChannel, address)
+    values 
+     <foreach collection="list" item="obj" index="index" separator=",">
+    (#{obj.fileUuid,jdbcType=VARCHAR}, #{obj.bankCardNo,jdbcType=VARCHAR}, #{obj.userName,jdbcType=VARCHAR}, 
+      #{obj.transactionTime,jdbcType=TIMESTAMP}, #{obj.chargeTime,jdbcType=TIMESTAMP}, #{obj.transactionCurrency,jdbcType=VARCHAR}, 
+      #{obj.transactionStatus,jdbcType=VARCHAR}, #{obj.borrow,jdbcType=DECIMAL}, #{obj.lend,jdbcType=DECIMAL}, 
+      #{obj.mid,jdbcType=VARCHAR}, #{obj.posId,jdbcType=VARCHAR}, #{obj.mName,jdbcType=VARCHAR}, 
+      #{obj.mcc,jdbcType=VARCHAR}, #{obj.city,jdbcType=VARCHAR}, #{obj.transactionType,jdbcType=VARCHAR}, 
+      #{obj.transactionChannel,jdbcType=VARCHAR}, #{obj.address,jdbcType=VARCHAR})
+      </foreach>
+  </insert>
+ 
+  
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TUpsBillcardstatSerial" >
+    insert into t_ups_billcardstat_serial
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fileUuid != null" >
+        fileUuid,
+      </if>
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="bankCardNo != null" >
+        bankCardNo,
+      </if>
+      <if test="userName != null" >
+        userName,
+      </if>
+      <if test="transactionTime != null" >
+        transactionTime,
+      </if>
+      <if test="chargeTime != null" >
+        chargeTime,
+      </if>
+      <if test="transactionCurrency != null" >
+        transactionCurrency,
+      </if>
+      <if test="transactionStatus != null" >
+        transactionStatus,
+      </if>
+      <if test="borrow != null" >
+        borrow,
+      </if>
+      <if test="lend != null" >
+        lend,
+      </if>
+      <if test="mid != null" >
+        mid,
+      </if>
+      <if test="posId != null" >
+        posId,
+      </if>
+      <if test="mName != null" >
+        mName,
+      </if>
+      <if test="mcc != null" >
+        mcc,
+      </if>
+      <if test="city != null" >
+        city,
+      </if>
+      <if test="transactionType != null" >
+        transactionType,
+      </if>
+      <if test="transactionChannel != null" >
+        transactionChannel,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fileUuid != null" >
+        #{fileUuid,jdbcType=VARCHAR},
+      </if>
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=INTEGER},
+      </if>
+      <if test="bankCardNo != null" >
+        #{bankCardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="transactionTime != null" >
+        #{transactionTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="chargeTime != null" >
+        #{chargeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="transactionCurrency != null" >
+        #{transactionCurrency,jdbcType=VARCHAR},
+      </if>
+      <if test="transactionStatus != null" >
+        #{transactionStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="borrow != null" >
+        #{borrow,jdbcType=DECIMAL},
+      </if>
+      <if test="lend != null" >
+        #{lend,jdbcType=DECIMAL},
+      </if>
+      <if test="mid != null" >
+        #{mid,jdbcType=VARCHAR},
+      </if>
+      <if test="posId != null" >
+        #{posId,jdbcType=VARCHAR},
+      </if>
+      <if test="mName != null" >
+        #{mName,jdbcType=VARCHAR},
+      </if>
+      <if test="mcc != null" >
+        #{mcc,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="transactionType != null" >
+        #{transactionType,jdbcType=VARCHAR},
+      </if>
+      <if test="transactionChannel != null" >
+        #{transactionChannel,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TUpsBillcardstatSerial" >
+    update t_ups_billcardstat_serial
+    <set >
+      <if test="fileUuid != null" >
+        fileUuid = #{bankCardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="bankCardNo != null" >
+        bankCardNo = #{bankCardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        userName = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="transactionTime != null" >
+        transactionTime = #{transactionTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="chargeTime != null" >
+        chargeTime = #{chargeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="transactionCurrency != null" >
+        transactionCurrency = #{transactionCurrency,jdbcType=VARCHAR},
+      </if>
+      <if test="transactionStatus != null" >
+        transactionStatus = #{transactionStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="borrow != null" >
+        borrow = #{borrow,jdbcType=DECIMAL},
+      </if>
+      <if test="lend != null" >
+        lend = #{lend,jdbcType=DECIMAL},
+      </if>
+      <if test="mid != null" >
+        mid = #{mid,jdbcType=VARCHAR},
+      </if>
+      <if test="posId != null" >
+        posId = #{posId,jdbcType=VARCHAR},
+      </if>
+      <if test="mName != null" >
+        mName = #{mName,jdbcType=VARCHAR},
+      </if>
+      <if test="mcc != null" >
+        mcc = #{mcc,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        city = #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="transactionType != null" >
+        transactionType = #{transactionType,jdbcType=VARCHAR},
+      </if>
+      <if test="transactionChannel != null" >
+        transactionChannel = #{transactionChannel,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where serialNo = #{serialNo,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TUpsBillcardstatSerial" >
+    update t_ups_billcardstat_serial
+    set fileUuid = #{fileUuid,jdbcType=VARCHAR},
+      bankCardNo = #{bankCardNo,jdbcType=VARCHAR},
+      userName = #{userName,jdbcType=VARCHAR},
+      transactionTime = #{transactionTime,jdbcType=TIMESTAMP},
+      chargeTime = #{chargeTime,jdbcType=TIMESTAMP},
+      transactionCurrency = #{transactionCurrency,jdbcType=VARCHAR},
+      transactionStatus = #{transactionStatus,jdbcType=VARCHAR},
+      borrow = #{borrow,jdbcType=DECIMAL},
+      lend = #{lend,jdbcType=DECIMAL},
+      mid = #{mid,jdbcType=VARCHAR},
+      posId = #{posId,jdbcType=VARCHAR},
+      mName = #{mName,jdbcType=VARCHAR},
+      mcc = #{mcc,jdbcType=VARCHAR},
+      city = #{city,jdbcType=VARCHAR},
+      transactionType = #{transactionType,jdbcType=VARCHAR},
+      transactionChannel = #{transactionChannel,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR}
+    where serialNo = #{serialNo,jdbcType=INTEGER}
+  </update>
+</mapper>

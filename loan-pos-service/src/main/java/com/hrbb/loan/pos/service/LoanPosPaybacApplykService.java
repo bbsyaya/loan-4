@@ -1,0 +1,36 @@
+package com.hrbb.loan.pos.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo;
+
+public interface LoanPosPaybacApplykService {
+	List<TPaybackApplyInfo> getPaybackApplyMap(Map<String, Object> reqMap);
+
+	int updatePaybackApply(Map<String, Object> updateMap);
+	
+	List<Map<String, Object>> queryPaybackDetailsByMaps(Map<String, Object> map);
+	
+	List<Map<String, Object>> queryPaybackDetailsBySlApp(Map<String, Object> map);
+
+
+	long countNumber(Map<String, Object> reqMap);
+
+	
+	TPaybackApplyInfo selectByPrimaryKey(String paybackApplyId);
+	
+	List<TPaybackApplyInfo> queryPaybackApplyInfo01();
+	
+	List<String> queryPaybackApplyIdList02();
+	
+	int updatePaybackApplyInfo(String paybackApplyId);
+	
+	/**
+	 * 查询指定条件的还款申请
+	 * 
+	 * @param rqMap
+	 * @return
+	 */
+	TPaybackApplyInfo queryPaybackApplyInfo(Map<String,Object> reqMap);
+}

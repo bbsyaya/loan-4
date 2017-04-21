@@ -1,0 +1,604 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TPosSerialnoInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TPosSerialnoInfo" >
+    <id column="posSerialNo" property="posSerialNo"/>
+    <result column="posKind" property="posKind" jdbcType="VARCHAR" />
+    <result column="tradeDate" property="tradeDate" jdbcType="TIMESTAMP" />
+    <result column="tradeTime" property="tradeTime" jdbcType="VARCHAR" />
+    <result column="tradeAmt" property="tradeAmt" jdbcType="DECIMAL" />
+    <result column="cardLastFourState" property="cardLastFourState" jdbcType="VARCHAR" />
+    <result column="tradeCardKind" property="tradeCardKind" jdbcType="VARCHAR" />
+    <result column="tradeNum" property="tradeNum" jdbcType="VARCHAR" />
+    <result column="regTimeTradeAmt" property="regTimeTradeAmt" jdbcType="DECIMAL" />
+    <result column="regTimeTradeNum" property="regTimeTradeNum" jdbcType="VARCHAR" />
+    <result column="maxTradeAmtPerMonth" property="maxTradeAmtPerWeek" jdbcType="DECIMAL" />
+    <result column="creditCardTradeAmtRate" property="creditCardTradeAmtRate" jdbcType="VARCHAR" />
+    <result column="creditCardTradeNumRate" property="creditCardTradeNumRate" jdbcType="VARCHAR" />
+    <result column="differentCardNoNum" property="differentCardNoNum" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    posSerialNo, posKind, tradeDate, tradeTime, tradeAmt, cardLastFourState, tradeCardKind, 
+    tradeNum, regTimeTradeAmt, regTimeTradeNum, maxTradeAmtPerMonth, creditCardTradeAmtRate, 
+    creditCardTradeNumRate, differentCardNoNum, posChannel, merchantId, merchantName,tradeType, merchantTypeCode,tradeCardNo
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_pos_serialno_info
+    where posSerialNo = #{posSerialNo}
+  </select>
+  
+  <select id="selectMap" resultType="map" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_pos_serialno_info
+    where 1=1 
+    <if test="loanId != null">
+    	AND loanId = #{loanId}
+    </if>
+    
+    <if test="startPage != null">
+    	LIMIT #{startPage}, #{limit}
+    </if>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_pos_serialno_info
+    where posSerialNo = #{posSerialNo}
+  </delete>
+  <delete id="deleteByLoanId" parameterType="java.lang.String">
+  	delete from t_pos_serialno_info
+  	where loanId = #{loanId}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TPosSerialnoInfo" >
+    insert into t_pos_serialno_info (posSerialNo, posKind, tradeDate, 
+      tradeTime, tradeAmt, cardLastFourState, 
+      tradeCardKind, tradeNum, regTimeTradeAmt, 
+      regTimeTradeNum, maxTradeAmtPerWeek, creditCardTradeAmtRate, 
+      creditCardTradeNumRate, differentCardNoNum
+      )
+    values (#{posSerialNo}, #{posKind,jdbcType=VARCHAR}, #{tradeDate,jdbcType=VARCHAR}, 
+      #{tradeTime,jdbcType=VARCHAR}, #{tradeAmt,jdbcType=DECIMAL}, #{cardLastFourState,jdbcType=VARCHAR}, 
+      #{tradeCardKind,jdbcType=VARCHAR}, #{tradeNum,jdbcType=VARCHAR}, #{regTimeTradeAmt,jdbcType=DECIMAL}, 
+      #{regTimeTradeNum,jdbcType=VARCHAR}, #{maxTradeAmtPerWeek,jdbcType=DECIMAL}, #{creditCardTradeAmtRate,jdbcType=VARCHAR}, 
+      #{creditCardTradeNumRate,jdbcType=VARCHAR}, #{differentCardNoNum,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TPosSerialnoInfo" >
+    insert into t_pos_serialno_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="posSerialNo != null" >
+        posSerialNo,
+  	</if>   
+
+      <if test="posKind != null" >
+        posKind,
+      </if>
+      <if test="tradeDate != null" >
+        tradeDate,
+      </if>
+      <if test="tradeTime != null" >
+        tradeTime,
+      </if>
+      <if test="tradeAmt != null" >
+        tradeAmt,
+      </if>
+      <if test="cardLastFourState != null" >
+        cardLastFourState,
+      </if>
+      <if test="tradeCardKind != null" >
+        tradeCardKind,
+      </if>
+      <if test="tradeNum != null" >
+        tradeNum,
+      </if>
+      <if test="regTimeTradeAmt != null" >
+        regTimeTradeAmt,
+      </if>
+      <if test="regTimeTradeNum != null" >
+        regTimeTradeNum,
+      </if>
+      <if test="maxTradeAmtPerWeek != null" >
+        maxTradeAmtPerWeek,
+      </if>
+      <if test="creditCardTradeAmtRate != null" >
+        creditCardTradeAmtRate,
+      </if>
+      <if test="creditCardTradeNumRate != null" >
+        creditCardTradeNumRate,
+      </if>
+      <if test="differentCardNoNum != null" >
+        differentCardNoNum,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="posSerialNo != null" >
+        #{posSerialNo},
+      </if>
+      <if test="posKind != null" >
+        #{posKind,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeDate != null" >
+        #{tradeDate,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeTime != null" >
+        #{tradeTime,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeAmt != null" >
+        #{tradeAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="cardLastFourState != null" >
+        #{cardLastFourState,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeCardKind != null" >
+        #{tradeCardKind,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeNum != null" >
+        #{tradeNum,jdbcType=VARCHAR},
+      </if>
+      <if test="regTimeTradeAmt != null" >
+        #{regTimeTradeAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="regTimeTradeNum != null" >
+        #{regTimeTradeNum,jdbcType=VARCHAR},
+      </if>
+      <if test="maxTradeAmtPerWeek != null" >
+        #{maxTradeAmtPerWeek,jdbcType=DECIMAL},
+      </if>
+      <if test="creditCardTradeAmtRate != null" >
+        #{creditCardTradeAmtRate,jdbcType=VARCHAR},
+      </if>
+      <if test="creditCardTradeNumRate != null" >
+        #{creditCardTradeNumRate,jdbcType=VARCHAR},
+      </if>
+      <if test="differentCardNoNum != null" >
+        #{differentCardNoNum,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="map" >
+    insert into t_pos_serialno_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="posSerialNo != null" >
+        posSerialNo,
+      </if>
+      <if test="loanId != null">
+      	loanId,
+      </if>
+      <if test="posKind != null" >
+        posKind,
+      </if>
+      <if test="tradeDate != null" >
+        tradeDate,
+      </if>
+      <if test="tradeTime != null" >
+        tradeTime,
+      </if>
+      <if test="tradeAmt != null" >
+        tradeAmt,
+      </if>
+      <if test="cardLastFourState != null" >
+        cardLastFourState,
+      </if>
+      <if test="tradeCardKind != null" >
+        tradeCardKind,
+      </if>
+      <if test="tradeNum != null" >
+        tradeNum,
+      </if>
+      <if test="regTimeTradeAmt != null" >
+        regTimeTradeAmt,
+      </if>
+      <if test="regTimeTradeNum != null" >
+        regTimeTradeNum,
+      </if>
+      <if test="maxTradeAmtPerWeek != null" >
+        maxTradeAmtPerWeek,
+      </if>
+      <if test="creditCardTradeAmtRate != null" >
+        creditCardTradeAmtRate,
+      </if>
+      <if test="creditCardTradeNumRate != null" >
+        creditCardTradeNumRate,
+      </if>
+      <if test="differentCardNoNum != null" >
+        differentCardNoNum,
+      </if>
+      <if test="posChannel != null">
+      	posChannel,
+      </if>
+      <if test="merchantId != null">
+      	merchantId,
+      </if>
+      <if test="merchantName != null">
+      	merchantName,
+      </if>
+      <if test="tradeType != null">
+      	tradeType,
+      </if>
+      <if test="merchantTypeCode != null">
+      	merchantTypeCode,
+      </if>
+      <if test="tradeCardNo != null">
+      	tradeCardNo,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="posSerialNo != null" >
+        #{posSerialNo},
+      </if>
+      <if test="loanId != null">
+      	#{loanId},
+      </if>
+      <if test="posKind != null" >
+        #{posKind,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeDate != null" >
+        #{tradeDate},
+      </if>
+      <if test="tradeTime != null" >
+        #{tradeTime,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeAmt != null" >
+        #{tradeAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="cardLastFourState != null" >
+        #{cardLastFourState,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeCardKind != null" >
+        #{tradeCardKind,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeNum != null" >
+        #{tradeNum,jdbcType=VARCHAR},
+      </if>
+      <if test="regTimeTradeAmt != null" >
+        #{regTimeTradeAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="regTimeTradeNum != null" >
+        #{regTimeTradeNum,jdbcType=VARCHAR},
+      </if>
+      <if test="maxTradeAmtPerWeek != null" >
+        #{maxTradeAmtPerWeek,jdbcType=DECIMAL},
+      </if>
+      <if test="creditCardTradeAmtRate != null" >
+        #{creditCardTradeAmtRate,jdbcType=VARCHAR},
+      </if>
+      <if test="creditCardTradeNumRate != null" >
+        #{creditCardTradeNumRate,jdbcType=VARCHAR},
+      </if>
+      <if test="differentCardNoNum != null" >
+        #{differentCardNoNum,jdbcType=VARCHAR},
+      </if>
+      <if test="posChannel != null">
+      	#{posChannel},
+      </if>
+      <if test="merchantId != null">
+      	#{merchantId},
+      </if>
+      <if test="merchantName != null">
+      	#{merchantName},
+      </if>
+      <if test="tradeType != null">
+      	#{tradeType},
+      </if>
+      <if test="merchantTypeCode != null">
+      	#{merchantTypeCode},
+      </if>
+      <if test="tradeCardNo != null">
+      	#{tradeCardNo},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMapBatch" parameterType="List" >
+    insert into t_pos_serialno_info
+  	(posSerialNo, loanId, posKind, tradeDate, tradeTime, tradeAmt, cardLastFourState, tradeCardKind, tradeNum, regTimeTradeAmt, regTimeTradeNum, maxTradeAmtPerWeek,
+       creditCardTradeAmtRate, creditCardTradeNumRate, differentCardNoNum, posChannel, merchantId, merchantName, tradeType, merchantTypeCode, tradeCardNo)
+   	values
+   	<foreach collection="list" item="obj" index="index" separator=",">
+       (#{obj.posSerialNo, jdbcType=VARCHAR}, #{obj.loanId, jdbcType=VARCHAR}, #{obj.posKind, jdbcType=VARCHAR}, #{obj.tradeDate,jdbcType=VARCHAR}, 
+      #{obj.tradeTime,jdbcType=VARCHAR}, #{obj.tradeAmt,jdbcType=DECIMAL}, #{obj.cardLastFourState,jdbcType=VARCHAR}, 
+      #{obj.tradeCardKind,jdbcType=VARCHAR}, #{obj.tradeNum,jdbcType=VARCHAR}, #{obj.regTimeTradeAmt,jdbcType=DECIMAL}, 
+      #{obj.regTimeTradeNum,jdbcType=VARCHAR}, #{obj.maxTradeAmtPerWeek,jdbcType=DECIMAL}, #{obj.creditCardTradeAmtRate,jdbcType=VARCHAR}, 
+      #{obj.creditCardTradeNumRate,jdbcType=VARCHAR}, #{obj.differentCardNoNum,jdbcType=VARCHAR}, #{obj.posChannel, jdbcType=VARCHAR}, 
+      #{obj.merchantId, jdbcType=VARCHAR}, #{obj.merchantName, jdbcType=VARCHAR}, #{obj.tradeType, jdbcType=VARCHAR}, #{obj.merchantType, jdbcType=VARCHAR},
+      #{obj.tradeCardNo, jdbcType=VARCHAR})
+     </foreach>
+  </insert>
+  
+  
+  
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TPosSerialnoInfo" >
+    update t_pos_serialno_info
+    <set >
+      <if test="posKind != null" >
+        posKind = #{posKind,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeDate != null" >
+        tradeDate = #{tradeDate,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeTime != null" >
+        tradeTime = #{tradeTime,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeAmt != null" >
+        tradeAmt = #{tradeAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="cardLastFourState != null" >
+        cardLastFourState = #{cardLastFourState,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeCardKind != null" >
+        tradeCardKind = #{tradeCardKind,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeNum != null" >
+        tradeNum = #{tradeNum,jdbcType=VARCHAR},
+      </if>
+      <if test="regTimeTradeAmt != null" >
+        regTimeTradeAmt = #{regTimeTradeAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="regTimeTradeNum != null" >
+        regTimeTradeNum = #{regTimeTradeNum,jdbcType=VARCHAR},
+      </if>
+      <if test="maxTradeAmtPerWeek != null" >
+        maxTradeAmtPerWeek = #{maxTradeAmtPerWeek,jdbcType=DECIMAL},
+      </if>
+      <if test="creditCardTradeAmtRate != null" >
+        creditCardTradeAmtRate = #{creditCardTradeAmtRate,jdbcType=VARCHAR},
+      </if>
+      <if test="creditCardTradeNumRate != null" >
+        creditCardTradeNumRate = #{creditCardTradeNumRate,jdbcType=VARCHAR},
+      </if>
+      <if test="differentCardNoNum != null" >
+        differentCardNoNum = #{differentCardNoNum,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where posSerialNo = #{posSerialNo}
+  </update>
+  
+  <update id="updateByPrimaryKeySelectiveMap" parameterType="map" >
+    update t_pos_serialno_info
+    <set >
+      <if test="posKind != null" >
+        posKind = #{posKind,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeDate != null" >
+        tradeDate = #{tradeDate,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeTime != null" >
+        tradeTime = #{tradeTime,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeAmt != null" >
+        tradeAmt = #{tradeAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="cardLastFourState != null" >
+        cardLastFourState = #{cardLastFourState,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeCardKind != null" >
+        tradeCardKind = #{tradeCardKind,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeNum != null" >
+        tradeNum = #{tradeNum,jdbcType=VARCHAR},
+      </if>
+      <if test="regTimeTradeAmt != null" >
+        regTimeTradeAmt = #{regTimeTradeAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="regTimeTradeNum != null" >
+        regTimeTradeNum = #{regTimeTradeNum,jdbcType=VARCHAR},
+      </if>
+      <if test="maxTradeAmtPerWeek != null" >
+        maxTradeAmtPerWeek = #{maxTradeAmtPerWeek,jdbcType=DECIMAL},
+      </if>
+      <if test="creditCardTradeAmtRate != null" >
+        creditCardTradeAmtRate = #{creditCardTradeAmtRate,jdbcType=VARCHAR},
+      </if>
+      <if test="creditCardTradeNumRate != null" >
+        creditCardTradeNumRate = #{creditCardTradeNumRate,jdbcType=VARCHAR},
+      </if>
+      <if test="differentCardNoNum != null" >
+        differentCardNoNum = #{differentCardNoNum,jdbcType=VARCHAR},
+      </if>
+      <if test="posChannel != null">
+      	posChannel = #{posChannel}
+      </if>
+    </set>
+    where posSerialNo = #{posSerialNo}
+  </update>
+  
+  <select id="countMap" parameterType="Map" resultType="Long">
+  	SELECT COUNT(*) FROM t_pos_serialno_info 
+  	WHERE 1=1
+  	<if test="loanId != null">
+  		AND loanId = #{loanId}
+  	</if>
+  </select>
+  <select id="countPosSerials" parameterType="java.lang.String" resultType="Long">
+  	SELECT COUNT(*) FROM t_pos_serialno_info
+  	WHERE 1=1
+	<if test="_parameter!=null and _parameter!=''">
+  		AND loanId = #{_parameter}
+  	</if>
+  </select>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TPosSerialnoInfo" >
+    update t_pos_serialno_info
+    set posKind = #{posKind,jdbcType=VARCHAR},
+      tradeDate = #{tradeDate,jdbcType=VARCHAR},
+      tradeTime = #{tradeTime,jdbcType=VARCHAR},
+      tradeAmt = #{tradeAmt,jdbcType=DECIMAL},
+      cardLastFourState = #{cardLastFourState,jdbcType=VARCHAR},
+      tradeCardKind = #{tradeCardKind,jdbcType=VARCHAR},
+      tradeNum = #{tradeNum,jdbcType=VARCHAR},
+      regTimeTradeAmt = #{regTimeTradeAmt,jdbcType=DECIMAL},
+      regTimeTradeNum = #{regTimeTradeNum,jdbcType=VARCHAR},
+      maxTradeAmtPerWeek = #{maxTradeAmtPerWeek,jdbcType=DECIMAL},
+      creditCardTradeAmtRate = #{creditCardTradeAmtRate,jdbcType=VARCHAR},
+      creditCardTradeNumRate = #{creditCardTradeNumRate,jdbcType=VARCHAR},
+      differentCardNoNum = #{differentCardNoNum,jdbcType=VARCHAR}
+    where posSerialNo = #{posSerialNo}
+  </update>
+
+	<select id="selectSumMap" resultType="Map" parameterType="Map">
+		SELECT sum(tradeAmt) as tradeAmtsum,sum(tradeNum) as tradeNumSum
+		,sum(differentCardNoNum) as differentCardNoNumSum
+		,min(tradeDate) as mintradeDate
+		,sum(regTimeTradeAmt) as regTimeTradeAmtSum
+		,sum(regTimeTradeNum) as regTimeTradeNumSum
+		,max(tradeAmt) as tradeAmtsumMax
+		,min(tradeAmt) as tradeAmtsumMin
+		 FROM
+		t_pos_serialno_info
+		WHERE (tradeType is null
+		<if test="tradeType != null">
+			or tradeType = #{tradeType,jdbcType=VARCHAR}
+		</if>
+		)
+		<if test="loanId != null">
+			and loanId = #{loanId,jdbcType=VARCHAR}
+		</if>
+		<if test="posChannel != null">
+			and posChannel = #{posChannel,jdbcType=VARCHAR}
+		</if>
+		<if test="posKind != null">
+			and posKind = #{posKind,jdbcType=VARCHAR}
+		</if>
+		<if test="tradeDate != null">
+			and tradeDate >= #{tradeDate,jdbcType=VARCHAR}
+		</if>
+		<if test="tradeAmt != null">
+			and tradeAmt >0
+		</if>
+	</select>
+	<select id="selectSumMapStdev" resultType="Map" parameterType="Map">
+		SELECT 0 as num, ifnull(sum(tradeAmt),0.00) as tradeAmtsum
+		FROM t_pos_serialno_info
+		WHERE (tradeType is null or tradeType = #{tradeType,jdbcType=VARCHAR})
+		  and loanId = #{loanId,jdbcType=VARCHAR}
+	      and posKind = #{posKind,jdbcType=VARCHAR}
+		  and LEFT(tradeDate,7) = #{tradeDate0,jdbcType=VARCHAR}
+		union
+		SELECT 1 as num, ifnull(sum(tradeAmt),0.00) as tradeAmtsum
+		FROM t_pos_serialno_info
+		WHERE (tradeType is null or tradeType = #{tradeType,jdbcType=VARCHAR})
+		  and loanId = #{loanId,jdbcType=VARCHAR}
+	      and posKind = #{posKind,jdbcType=VARCHAR}
+		  and LEFT(tradeDate,7) = #{tradeDate1,jdbcType=VARCHAR}
+		union
+		SELECT 2 as num, ifnull(sum(tradeAmt),0.00) as tradeAmtsum
+		FROM t_pos_serialno_info
+		WHERE (tradeType is null or tradeType = #{tradeType,jdbcType=VARCHAR})
+		  and loanId = #{loanId,jdbcType=VARCHAR}
+	      and posKind = #{posKind,jdbcType=VARCHAR}
+		  and LEFT(tradeDate,7) = #{tradeDate2,jdbcType=VARCHAR}
+		union
+		SELECT 3 as num, ifnull(sum(tradeAmt),0.00) as tradeAmtsum
+		FROM t_pos_serialno_info
+		WHERE (tradeType is null or tradeType = #{tradeType,jdbcType=VARCHAR})
+		  and loanId = #{loanId,jdbcType=VARCHAR}
+	      and posKind = #{posKind,jdbcType=VARCHAR}
+		  and LEFT(tradeDate,7) = #{tradeDate3,jdbcType=VARCHAR}
+		union
+		SELECT 4 as num, ifnull(sum(tradeAmt),0.00) as tradeAmtsum
+		FROM t_pos_serialno_info
+		WHERE (tradeType is null or tradeType = #{tradeType,jdbcType=VARCHAR})
+		  and loanId = #{loanId,jdbcType=VARCHAR}
+	      and posKind = #{posKind,jdbcType=VARCHAR}
+		  and LEFT(tradeDate,7) = #{tradeDate4,jdbcType=VARCHAR}
+		union
+		SELECT 5 as num, ifnull(sum(tradeAmt),0.00) as tradeAmtsum
+		FROM t_pos_serialno_info
+		WHERE (tradeType is null or tradeType = #{tradeType,jdbcType=VARCHAR})
+		  and loanId = #{loanId,jdbcType=VARCHAR}
+	      and posKind = #{posKind,jdbcType=VARCHAR}
+		  and LEFT(tradeDate,7) = #{tradeDate5,jdbcType=VARCHAR}
+		order by num
+	</select>
+	<select id="selectSumBankCard" resultType="Map" parameterType="Map">
+		select count(*) as bankcardsum from (
+		SELECT tradeCardNo 
+		 FROM
+		t_pos_serialno_info
+		WHERE  (tradeType is null
+		<if test="tradeType != null">
+			or tradeType = #{tradeType,jdbcType=VARCHAR}
+		</if>
+		)
+		<if test="loanId != null">
+			and loanId = #{loanId,jdbcType=VARCHAR}
+		</if>
+		<if test="posChannel != null">
+			and posChannel = #{posChannel,jdbcType=VARCHAR}
+		</if>
+		<if test="posKind != null">
+			and posKind = #{posKind,jdbcType=VARCHAR}
+		</if>
+		<if test="tradeDate != null">
+			and tradeDate >= #{tradeDate,jdbcType=VARCHAR}
+		</if>
+		group by tradeCardNo) t
+	</select>
+	<select id="selectCountMonth" resultType="Map" parameterType="Map">
+		select count(tradedate) as countMonth,ifnull(max(tradedate),0) as maxMonth from (
+			select distinct concat(left(tradedate,4),substring(tradedate,6,2)) tradedate
+			from t_pos_serialno_info 
+		where  (tradeType is null
+		<if test="tradeType != null">
+			or tradeType = #{tradeType,jdbcType=VARCHAR}
+		</if>
+		)
+		<if test="loanId != null">
+			and loanId = #{loanId,jdbcType=VARCHAR}
+		</if>
+		<if test="posChannel != null">
+			and posChannel = #{posChannel,jdbcType=VARCHAR}
+		</if>
+		and posKind in ('1','4')
+		<if test="posKind != null">
+			and posKind = #{posKind,jdbcType=VARCHAR}
+		</if>
+		<if test="tradeDate != null">
+			and tradeDate >= #{tradeDate,jdbcType=VARCHAR}
+		</if>
+		<if test="tradeAmt != null">
+			and tradeAmt >0
+		</if>
+		) t 
+	</select>
+	<select id="selectSumMapReview2" resultType="Map" parameterType="Map">
+		SELECT LEFT(tradeDate,7) tradeDate,count(posSerialNo) num,sum(tradeAmt) tradeAmtSum
+		  FROM t_pos_serialno_info
+		 WHERE (tradeType is null
+		<if test="tradeType != null">
+			or tradeType = #{tradeType,jdbcType=VARCHAR}
+		</if>
+		)
+		<if test="loanId != null">
+			and loanId = #{loanId,jdbcType=VARCHAR}
+		</if>
+		<if test="posKind != null">
+			and posKind = #{posKind,jdbcType=VARCHAR}
+		</if>
+		<if test="tradeDate != null">
+			and tradeDate >= #{tradeDate,jdbcType=VARCHAR}
+		</if>
+		group by LEFT(tradeDate,7)
+		order by LEFT(tradeDate,7)
+	</select>
+	
+	<select id="selectTPosByMap" resultMap="BaseResultMap" parameterType="Map" >
+	    select 
+	    <include refid="Base_Column_List" />
+	    from t_pos_serialno_info
+	    where 1=1 
+	    <if test="posChannel != null">
+	    	AND posChannel = #{posChannel,jdbcType=VARCHAR}
+	    </if>
+	    <if test="posKind != null">
+	    	AND posKind = #{posKind,jdbcType=VARCHAR}
+	    </if>
+	    	AND loanId in
+	     <foreach item="item" index="index" collection="loanIdList" open="(" separator="," close=")">
+	          #{item}
+	     </foreach>
+  </select>
+</mapper>

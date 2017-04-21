@@ -1,0 +1,37 @@
+package com.hrbb.test;
+
+import java.util.Date;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.test.context.ContextConfiguration;
+
+import com.hrbb.loan.constants.SmsTypeContants;
+import com.hrbb.loan.jms.sender.SmsMessageSender;
+import com.hrbb.loan.pos.dao.entity.TSmsMessage;
+import com.hrbb.sh.framework.HServiceException;
+import com.hrbb.test.UnitTest;
+
+
+@ContextConfiguration(locations = {
+                                   "classpath:config/context/jms-context.xml"})
+public class MqSendTest extends UnitTest {
+	
+	@Autowired
+	@Qualifier("smsMessageSender")
+    private SmsMessageSender smsMessageSender;
+
+	@Test
+	public void testServe() throws HServiceException {
+	    
+	    TSmsMessage message = new  TSmsMessage();
+	    message.setMobile("123123");
+	    message.setSendContent("asdasdasdasdasd");
+	    message.setChannel("SM");
+	    message.setNotifyType(SmsTypeContants.PAY);
+	    message.setCreateTime(new Date());
+	    message.setRealtime(true);
+	    smsMessageSender.sendMessage(message);
+	}
+}

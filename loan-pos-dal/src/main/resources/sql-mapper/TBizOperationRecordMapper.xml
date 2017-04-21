@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TBizOperationRecordMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TBizOperationRecord" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="bizPhase" property="bizPhase" jdbcType="VARCHAR" />
+    <result column="bizNo" property="bizNo" jdbcType="VARCHAR" />
+    <result column="operationType" property="operationType" jdbcType="VARCHAR" />
+    <result column="operationContent" property="operationContent" jdbcType="VARCHAR" />
+    <result column="operationId" property="operationId" jdbcType="VARCHAR" />
+    <result column="operationTime" property="operationTime" jdbcType="TIMESTAMP" />
+    <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, bizPhase, bizNo, operationType, operationContent, operationId, operationTime, 
+    remarks
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_biz_operation_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_biz_operation_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TBizOperationRecord" >
+    insert into t_biz_operation_record (id, bizPhase, bizNo, 
+      operationType, operationContent, operationId, 
+      operationTime, remarks)
+    values (#{id,jdbcType=INTEGER}, #{bizPhase,jdbcType=VARCHAR}, #{bizNo,jdbcType=VARCHAR}, 
+      #{operationType,jdbcType=VARCHAR}, #{operationContent,jdbcType=VARCHAR}, #{operationId,jdbcType=VARCHAR}, 
+      #{operationTime,jdbcType=TIMESTAMP}, #{remarks,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TBizOperationRecord" >
+    insert into t_biz_operation_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="bizPhase != null" >
+        bizPhase,
+      </if>
+      <if test="bizNo != null" >
+        bizNo,
+      </if>
+      <if test="operationType != null" >
+        operationType,
+      </if>
+      <if test="operationContent != null" >
+        operationContent,
+      </if>
+      <if test="operationId != null" >
+        operationId,
+      </if>
+      <if test="operationTime != null" >
+        operationTime,
+      </if>
+      <if test="remarks != null" >
+        remarks,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="bizPhase != null" >
+        #{bizPhase,jdbcType=VARCHAR},
+      </if>
+      <if test="bizNo != null" >
+        #{bizNo,jdbcType=VARCHAR},
+      </if>
+      <if test="operationType != null" >
+        #{operationType,jdbcType=VARCHAR},
+      </if>
+      <if test="operationContent != null" >
+        #{operationContent,jdbcType=VARCHAR},
+      </if>
+      <if test="operationId != null" >
+        #{operationId,jdbcType=VARCHAR},
+      </if>
+      <if test="operationTime != null" >
+        #{operationTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TBizOperationRecord" >
+    update t_biz_operation_record
+    <set >
+      <if test="bizPhase != null" >
+        bizPhase = #{bizPhase,jdbcType=VARCHAR},
+      </if>
+      <if test="bizNo != null" >
+        bizNo = #{bizNo,jdbcType=VARCHAR},
+      </if>
+      <if test="operationType != null" >
+        operationType = #{operationType,jdbcType=VARCHAR},
+      </if>
+      <if test="operationContent != null" >
+        operationContent = #{operationContent,jdbcType=VARCHAR},
+      </if>
+      <if test="operationId != null" >
+        operationId = #{operationId,jdbcType=VARCHAR},
+      </if>
+      <if test="operationTime != null" >
+        operationTime = #{operationTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remarks != null" >
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TBizOperationRecord" >
+    update t_biz_operation_record
+    set bizPhase = #{bizPhase,jdbcType=VARCHAR},
+      bizNo = #{bizNo,jdbcType=VARCHAR},
+      operationType = #{operationType,jdbcType=VARCHAR},
+      operationContent = #{operationContent,jdbcType=VARCHAR},
+      operationId = #{operationId,jdbcType=VARCHAR},
+      operationTime = #{operationTime,jdbcType=TIMESTAMP},
+      remarks = #{remarks,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <insert id="insertSelectiveMapBatch" parameterType="List" >
+  	insert into t_biz_operation_record (bizPhase,bizNo,operationType,operationContent,operationId,operationTime)
+  	values
+   	<foreach collection="list" item="obj" index="index" separator=",">
+   	(
+	   	#{obj.bizPhase, jdbcType=VARCHAR}, 
+	   	#{obj.bizNo, jdbcType=VARCHAR}, 
+	   	#{obj.operationType, jdbcType=VARCHAR}, 
+	   	#{obj.operationContent,jdbcType=VARCHAR},
+	   	#{obj.operationId,jdbcType=VARCHAR},
+	   	#{obj.operationTime,jdbcType=TIMESTAMP}
+   	)
+   	</foreach>
+  </insert>
+</mapper>

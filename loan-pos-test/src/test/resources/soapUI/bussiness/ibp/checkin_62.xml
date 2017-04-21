@@ -1,0 +1,25 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:fram="http://framework.facade.common.transcore.pinganfu.com/">
+	<soapenv:Header />
+	<soapenv:Body>
+		<fram:transactionCheckIn>
+			<arg0>
+				<busiChannel>W</busiChannel>
+				<businessCode>20</businessCode>
+				<ccy>CNY</ccy>
+				<dcFlag>D</dcFlag>
+				<feeAmt>0</feeAmt>
+				<registerFlag>0</registerFlag> <!-- 0.双方都注册；1.付款方未注册（通过给卡号等信息完成交易）；2收款方未注册 -->
+				<orderNo>${orderNo}</orderNo>
+				<customerId>1000010000000681</customerId>
+				<customerName>李锐</customerName>
+				<productCode>100020090000</productCode>
+				<toCustomerId>2000010000000002</toCustomerId>
+				<toCustomerName>程绍</toCustomerName>
+				<transAmount>1000000</transAmount>
+				<transTotalAmount>1000000</transTotalAmount>
+				<transType>62</transType><!-- 普通线上收单,消费立减只支持这个 -->
+			</arg0>
+		</fram:transactionCheckIn>
+	</soapenv:Body>
+</soapenv:Envelope>

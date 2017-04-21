@@ -1,0 +1,301 @@
+package com.hrbb.loan.hessian.impl;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.hessian.inter.IUpsDataApiHessionService;
+import com.hrbb.loan.pos.dao.entity.TUpsBillcardstatQueryInfo;
+import com.hrbb.loan.pos.dao.entity.TUpsBillcardstatSerial;
+import com.hrbb.loan.pos.service.UpsDataApiService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.sh.framework.domain.ups.UpsConfigBean;
+import com.hrbb.sh.framework.facade.ups.UpsDataApiFacade;
+import com.unionpaysmart.data.sdk.model.bill.request.BillCardStatRequest;
+import com.unionpaysmart.data.sdk.model.bill.request.BillDownloadRequest;
+import com.unionpaysmart.data.sdk.model.bill.request.BillsCardRequest;
+import com.unionpaysmart.data.sdk.model.bill.response.BillCardStatResponse;
+import com.unionpaysmart.data.sdk.model.bill.response.BillDownloadResponse;
+import com.unionpaysmart.data.sdk.model.bill.response.BillsCardResponse;
+import com.unionpaysmart.data.sdk.util.JSONUtil;
+
+@Component("upsDataApiHessionServiceImpl")
+public class UpsDataApiHessionServiceImpl implements IUpsDataApiHessionService {
+
+    private Logger    logger = Logger.getLogger(UpsDataApiHessionServiceImpl.class);
+
+    @Autowired
+    UpsDataApiFacade  upsDataApiFacade;
+
+    @Autowired
+    UpsDataApiService upsDataApiService;
+
+    @Override
+    public Map<String, Object> getPosSerialByBankCardId(Map<String, Object> reqMap) {
+        //获取请求参数
+        String card = (String) reqMap.get("card");
+        String name = (String) reqMap.get("name");
+        String beginDateStr = (String) reqMap.get("beginDateStr");
+        String endDateStr = (String) reqMap.get("endDateStr");
+
+        //银联智慧配置初始化，指定用户名、密码等信息
+        UpsConfigBean configBean = initUpsConfigBean();
+        //请求参数
+        BillCardStatRequest billCardStatRequest = new BillCardStatRequest();
+        billCardStatRequest.setType(1);
+        billCardStatRequest.setCard(card);
+        billCardStatRequest.setName(name);
+        Date beginDate;
+        try {
+            beginDate = DateUtil.getDatePattern3(beginDateStr);
+            billCardStatRequest.setBeginDate(beginDate);
+        } catch (Exception e) {
+            logger.error("日期类型转换错误", e);
+            return null;
+        }
+        Date endDate;
+        try {
+            endDate = DateUtil.getDatePattern3(endDateStr);
+            billCardStatRequest.setEndDate(endDate);
+        } catch (Exception e) {
+            logger.error("日期类型装换错误", e);
+            return null;
+        }
+
+        BillCardStatResponse billCardStatResponse = upsDataApiFacade.callBillCardStat(
+            billCardStatRequest, configBean);
+        logger.info("billCardStatResponse is :" + billCardStatResponse);
+        return null;
+    }
+
+    /** 
+     * @see com.hrbb.loan.hessian.inter.IUpsDataApiHessionService#getPosSerialByBankCardIds(java.util.Map)
+     */
+    @Override
+    public Map<String, Object> getPosSerialByBankCardIds(Map<String, Object> reqMap) {
+
+        try {
+            Map<String, Object> respMap;
+            //获取请求参数
+            String card = (String) reqMap.get("card");//银行卡号
+            String[] cards = new String[]{card};
+            String name = (String) reqMap.get("name");//持卡人姓名
+            String cid = (String) reqMap.get("cid");//身份证号
+            String beginDateStr = (String) reqMap.get("beginDateStr");//起始日期字符串
+            String endDateStr = (String) reqMap.get("endDateStr");//结束日期字符串
+            
+            // step1: 银联智慧配置初始化
+            UpsConfigBean configBean = initUpsConfigBean();
+            
+            // step2: 查询银行卡流水
+            BillsCardResponse billsCardResponse = callBillscard(cards, name, cid, beginDateStr, endDateStr, configBean);
+            if(billsCardResponse == null){
+                logger.debug("银行号流水查询失败");
+                return null;
+            }
+            
+            String fileUuid = billsCardResponse.getFileUuid();//下载标识符，用于下载账单文件
+            logger.debug("fileUuid is " + fileUuid);
+            Thread.sleep(3000);
+            // step3: 下载账单
+            respMap = downloadBill(configBean, fileUuid, card, name);
+            
+            
+            
+            return respMap;
+        } catch (Exception e) {
+            logger.error("", e);
+            return null;
+        }
+    }
+
+    /**
+     * 查询银行卡指定时间段内流水
+     * 
+     * @param cards
+     * @param name
+     * @param cid
+     * @param beginDateStr
+     * @param endDateStr
+     * @param configBean
+     * @return
+     */
+    private BillsCardResponse callBillscard(String[] cards, String name, String cid,
+                                            String beginDateStr, String endDateStr,
+                                            UpsConfigBean configBean) {
+        
+        try {
+            BillsCardRequest billsCardRequest = new BillsCardRequest();
+            billsCardRequest.setType(1);
+            billsCardRequest.setCard(cards);
+            billsCardRequest.setName(name);
+            billsCardRequest.setCid(cid);
+            Date beginDate;
+            try {
+                beginDate = DateUtil.getDatePattern3(beginDateStr);
+                billsCardRequest.setBeginDate(beginDate);
+            } catch (Exception e) {
+                logger.error("日期类型转换错误", e);
+                return null;
+            }
+            Date endDate;
+            try {
+                endDate = DateUtil.getDatePattern3(endDateStr);
+                billsCardRequest.setEndDate(endDate);
+            } catch (Exception e) {
+                logger.error("日期类型装换错误", e);
+                return null;
+            }
+            logger.debug("根据银行卡查询银行流水开始,billsCardRequest=" + billsCardRequest);
+            BillsCardResponse billsCardResponse = upsDataApiFacade.callBillsCard(billsCardRequest, configBean);
+            logger.debug("根据银行卡查询银行流水结果为 ,billsCardResponse = " + JSONUtil.toJson(billsCardResponse));
+            if (billsCardResponse != null && "0000".equals(billsCardResponse.getResCode())) {
+                TUpsBillcardstatQueryInfo upsBillcardstatQueryInfo = new TUpsBillcardstatQueryInfo();
+                upsBillcardstatQueryInfo.setBankCardNo(cards[0]);
+                upsBillcardstatQueryInfo.setUserName(name);
+                upsBillcardstatQueryInfo.setResCode(billsCardResponse.getResCode());
+                upsBillcardstatQueryInfo.setResMsg(billsCardResponse.getResMsg());
+                upsBillcardstatQueryInfo.setTotalReceipt(new BigDecimal(billsCardResponse.getTotalReceipt()));
+                upsBillcardstatQueryInfo.setTotalExpense(new BigDecimal(billsCardResponse.getTotalExpense()));
+                upsBillcardstatQueryInfo.setTotalCount(billsCardResponse.getTotalCount());
+                upsBillcardstatQueryInfo.setFileUuid(billsCardResponse.getFileUuid());
+                upsBillcardstatQueryInfo.setSign(billsCardResponse.getSign());
+                upsDataApiService.saveUpsBillcardstatQueryInfo(upsBillcardstatQueryInfo);
+                return billsCardResponse;
+            }
+            return null;
+        } catch (Exception e) {
+            logger.error("银行卡流水查询异常", e);
+            return null;
+        }
+    }
+
+    /**
+     * 账单下载
+     * 
+     * @param configBean
+     * @param fileUuid
+     * @return
+     */
+    private Map<String, Object> downloadBill(UpsConfigBean configBean, String fileUuid, String card, String name) {
+
+        try {
+            if (fileUuid == null || "".equals(fileUuid)) {
+                return respMap("999", "fileUuid为空，账单下载失败");
+            }
+
+            BillDownloadRequest billDownloadRequest = new BillDownloadRequest();
+            billDownloadRequest.setResType("1");
+            billDownloadRequest.setUuid(fileUuid);
+            logger.debug("账单下载开始,fileUuid = " + fileUuid);
+            BillDownloadResponse billDownloadResponse = upsDataApiFacade.callBillDownload(
+                billDownloadRequest, configBean);
+            if (billDownloadResponse.getResMsg().contains("文件正在生成")) {
+                logger.info("文件正在生成中，请稍后下载");
+                Thread.sleep(3000);
+                upsDataApiFacade.callBillDownload(billDownloadRequest, configBean);
+            }
+            logger.info(billDownloadResponse.getResCode());
+
+            logger.info("账单下载结果：" + JSONUtil.toJson(billDownloadResponse));
+
+            String data = billDownloadResponse.getData();
+            if (data == null) {
+                return respMap("999", "账单数据为空");
+            }
+            //银行流水List
+            List<TUpsBillcardstatSerial> upsBillcardstatSerials = new ArrayList<TUpsBillcardstatSerial>();
+            //单条流水
+            TUpsBillcardstatSerial upsBillcardstatSerial = new TUpsBillcardstatSerial();
+
+            String[] datas = data.split("\\n");
+            if (datas.length > 1) {
+                for (int i = 1; i < datas.length; i++) {
+                    String perSercial = datas[i];
+                    String[] params = perSercial.split(",", 14);
+                    upsBillcardstatSerial.setFileUuid(fileUuid);
+                    upsBillcardstatSerial.setBankCardNo(card);
+                    upsBillcardstatSerial.setUserName(name);
+                    try {
+                        upsBillcardstatSerial.setTransactionTime(DateUtil
+                            .getDatePattern4(params[0]));
+                    } catch (Exception e) {
+                        logger.error("类型转换错误", e);
+                    }
+                    try {
+                        upsBillcardstatSerial.setChargeTime(DateUtil.getDatePattern3(params[1]));
+                    } catch (Exception e) {
+                        logger.error("类型转换错误", e);
+                    }
+                    upsBillcardstatSerial.setTransactionCurrency(params[2]);
+                    upsBillcardstatSerial.setTransactionStatus(params[3]);
+                    upsBillcardstatSerial.setBorrow(new BigDecimal(params[4]));
+                    upsBillcardstatSerial.setLend(new BigDecimal(params[5]));
+                    upsBillcardstatSerial.setMid(params[6]);
+                    upsBillcardstatSerial.setPosId(params[7]);
+                    upsBillcardstatSerial.setmName(params[8]);
+                    upsBillcardstatSerial.setMcc(params[9]);
+                    upsBillcardstatSerial.setCity(params[10]);
+                    upsBillcardstatSerial.setTransactionType(params[11]);
+                    upsBillcardstatSerial.setTransactionChannel(params[12]);
+                    upsBillcardstatSerial.setAddress(params[13]);
+                    upsBillcardstatSerials.add(upsBillcardstatSerial);
+                }
+            }
+
+            if (upsBillcardstatSerials == null || upsBillcardstatSerials.size() == 0) {
+                return respMap("999", "账单下载完成，数据为空");
+            }
+
+            int flag = upsDataApiService.saveTUpsBillcardstatSerialBatch(upsBillcardstatSerials);
+            if (flag > 0) {
+                logger.info("银行流水明细入库成功");
+                Map<String,Object> reqMap = Maps.newConcurrentMap();
+                reqMap.put("fileUuid", fileUuid);
+                Map<String,Object> respMap = upsDataApiService.queryConsumeSummary(fileUuid);
+                upsDataApiService.saveUpsBillcardConsumeSummary(respMap);
+                return respMap("000", "账单下载完成，数据入库成功");
+            } else {
+                logger.info("银行流水明细入库异常");
+                return respMap("999", "银行流水明细入库异常");
+            }
+        } catch (Exception e) {
+            logger.error("账单下载异常", e);
+            return respMap("999", "账单下载异常");
+        }
+    }
+
+    /**
+     * 初始化银联智慧配置
+     * 
+     * @return
+     */
+    private UpsConfigBean initUpsConfigBean() {
+        UpsConfigBean configBean = new UpsConfigBean();
+        configBean.setAccount("T810332");
+        configBean.setPrivateKey("T810332");
+        return configBean;
+    }
+    
+    /**
+     * 返回参数
+     * 
+     * @param respCode
+     * @param respMsg
+     * @return
+     */
+    private Map<String, Object> respMap(String respCode, String respMsg) {
+        Map<String, Object> respMap = Maps.newHashMap();
+        respMap.put("respCode", respCode);
+        respMap.put("respMsg", respMsg);
+        return respMap;
+    }
+
+}

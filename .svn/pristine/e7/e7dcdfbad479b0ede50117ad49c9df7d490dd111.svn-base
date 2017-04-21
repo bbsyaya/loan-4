@@ -1,0 +1,145 @@
+/*     */ package com.amarsoft.app.crq.reportnew;
+/*     */ 
+/*     */ import com.amarsoft.app.crq.report.CreditReport;
+import com.amarsoft.app.crq.report.ECRReportData;
+import com.amarsoft.app.crq.report.ICRReportData;
+import com.amarsoft.app.crq.report.ReportBasicNode;
+import com.amarsoft.app.crq.report.ReportChapter;
+import com.amarsoft.app.crq.report.ReportData;
+import com.amarsoft.app.crq.report.ReportDescribe;
+import com.amarsoft.app.crq.report.ReportPart;
+import com.amarsoft.app.crq.report.ReportSection;
+import com.amarsoft.app.crq.util.ObjectHelper;
+/*     */ import com.amarsoft.are.jbo.BizObjectManager;
+/*     */ import com.amarsoft.are.jbo.JBOException;
+/*     */ import com.amarsoft.are.jbo.JBOFactory;
+/*     */ import com.amarsoft.are.lang.Element;
+/*     */ import com.amarsoft.are.lang.StringX;
+/*     */ import com.amarsoft.are.util.json.JSONDecoder;
+/*     */ import com.amarsoft.are.util.json.JSONElement;
+/*     */ import com.amarsoft.are.util.json.JSONObject;
+/*     */ import java.util.HashMap;
+/*     */ import java.util.List;
+/*     */ import java.util.Map;
+/*     */ 
+/*     */ public class CreditReportManager
+/*     */ {
+/*     */   private static JSONObject getValue(JSONObject jsonReport, String elementName)
+/*     */   {
+/*  35 */     JSONElement element = (JSONElement)jsonReport.get(elementName);
+/*  36 */     return (JSONObject)element.getValue();
+/*     */   }
+/*     */ 
+/*     */   public static CreditReport convertJson2CreditReport(String reportJson)
+/*     */     throws Exception
+/*     */   {
+/*  47 */     CreditReport report = null;
+/*  48 */     JSONObject jsonReport = JSONDecoder.decode(reportJson);
+/*     */ 
+/*  50 */     if (jsonReport != null) {
+/*  51 */       JSONObject jsonReportDescribe = getValue(jsonReport, "ReportDescribe");
+/*     */ 
+/*  53 */       ReportDescribe reportDescribe = (ReportDescribe)ObjectHelper.fillObjectFromJSONObject(new ReportDescribe(), jsonReportDescribe);
+/*     */ 
+/*  55 */       ReportData reportData = null;
+/*  56 */       if ("ICR".equals(reportDescribe.getReportType()))
+/*  57 */         reportData = new ICRReportData();
+/*     */       else {
+/*  59 */         reportData = new ECRReportData();
+/*     */       }
+/*     */ 
+/*  62 */       List reportPartList = reportData.getPartList();
+/*  63 */       List reportChapterList = null;
+/*  64 */       List reportSectionList = null;
+/*     */ 
+/*  66 */       JSONObject jsonReportData = getValue(jsonReport, "ReportData");
+/*     */ 
+/*  68 */       JSONObject jsonReportPartList = getValue(jsonReportData, "PartList");
+/*     */ 
+/*  70 */       ReportPart part = null;
+/*  71 */       ReportChapter chapter = null;
+/*  72 */       ReportSection section = null;
+/*  73 */       JSONObject jsonReportPart = null;
+/*  74 */       JSONObject jsonReportChapterList = null;
+/*  75 */       JSONObject jsonReportChapter = null;
+/*  76 */       JSONObject jsonReportSectionList = null;
+/*  77 */       JSONObject jsonReportSectionListMap = null;
+/*  78 */       JSONObject jsonReportSection = null;
+/*  79 */       Map sectionListMap = null;
+/*  80 */       for (int i = 0; i < reportPartList.size(); i++) {
+/*  81 */         part = (ReportPart)reportPartList.get(i);
+/*  82 */         jsonReportPart = (JSONObject)jsonReportPartList.get(i).getValue();
+/*     */ 
+/*  84 */         fillNodeContent(part, jsonReportPart);
+/*     */ 
+/*  86 */         reportChapterList = part.getChapterList();
+/*  87 */         jsonReportChapterList = getValue(jsonReportPart, "ChapterList");
+/*  88 */         for (int j = 0; (reportChapterList != null) && (j < reportChapterList.size()); j++) {
+/*  89 */           chapter = (ReportChapter)reportChapterList.get(j);
+/*  90 */           jsonReportChapter = (JSONObject)jsonReportChapterList.get(j).getValue();
+/*     */ 
+/*  92 */           fillNodeContent(chapter, jsonReportChapter);
+/*     */ 
+/*  94 */           reportSectionList = chapter.getSectionList();
+/*  95 */           if (StringX.isEmpty(chapter.getMainSection())) {
+/*  96 */             jsonReportSectionList = getValue(jsonReportChapter, "SectionList");
+/*  97 */             for (int k = 0; (reportSectionList != null) && (k < reportSectionList.size()); k++) {
+/*  98 */               section = (ReportSection)reportSectionList.get(k);
+/*  99 */               jsonReportSection = (JSONObject)jsonReportSectionList.get(k).getValue();
+/*     */ 
+/* 101 */               fillNodeContent(section, jsonReportSection);
+/*     */             }
+/*     */           }
+/*     */           else {
+/* 105 */             sectionListMap = new HashMap();
+/* 106 */             chapter.setSectionListMap(sectionListMap);
+/* 107 */             jsonReportSectionListMap = getValue(jsonReportChapter, "SectionListMap");
+/* 108 */             JSONElement ele = null;
+/* 109 */             for (int k = 0; (jsonReportSectionListMap != null) && (jsonReportSectionListMap.size() > 0) && (k < jsonReportSectionListMap.size()); k++) {
+/* 110 */               ele = (JSONElement)jsonReportSectionListMap.get(k);
+/* 111 */               jsonReportSectionList = (JSONObject)ele.getValue();
+/* 112 */               if (jsonReportSectionList != null)
+/*     */               {
+/* 115 */                 for (int m = 0; (reportSectionList != null) && (m < reportSectionList.size()); m++) {
+/* 116 */                   section = (ReportSection)reportSectionList.get(m);
+/*     */ 
+/* 118 */                   jsonReportSection = (JSONObject)jsonReportSectionList.get(m).getValue();
+/*     */ 
+/* 120 */                   fillNodeContent(section, jsonReportSection);
+/*     */                 }
+/* 122 */                 sectionListMap.put(ele.getName(), reportSectionList);
+/*     */               }
+/*     */             }
+/*     */           }
+/*     */         }
+/*     */       }
+/* 128 */       report = new CreditReport();
+/* 129 */       report.setReportDescribe(reportDescribe);
+/* 130 */       report.setReportData(reportData);
+/*     */     }
+/* 132 */     return report;
+/*     */   }
+/*     */ 
+/*     */   private static void fillNodeContent(ReportBasicNode node, JSONObject jsonNode)
+/*     */     throws JBOException
+/*     */   {
+/*     */     BizObjectManager bm;
+/* 142 */     if (!StringX.isEmpty(node.getJboClass())) {
+/* 143 */       bm = JBOFactory.getFactory().getManager(node.getJboClass());
+/* 144 */       JSONObject nodeContent = getValue(jsonNode, "Content");
+/* 145 */       if ((nodeContent != null) && (nodeContent.get(0) != null)&&(!nodeContent.get(0).isNull()))
+/* 146 */         if (!node.isMulti()) {
+/* 147 */           node.addContent(ObjectHelper.fillJBOFromJSONObject(bm.newObject(), (JSONObject)nodeContent.get(0).getValue()));
+/*     */         } else {
+/* 149 */           List<JSONElement> listReportNodeContent = nodeContent.getElementTable();
+/* 150 */           for (JSONElement jsonElementNodeContent : listReportNodeContent)
+/* 151 */             node.addContent(ObjectHelper.fillJBOFromJSONObject(bm.newObject(), (JSONObject)jsonElementNodeContent.getValue()));
+/*     */         }
+/*     */     }
+/*     */   }
+/*     */ }
+
+/* Location:           C:\Users\Johnson\Desktop\amarcrq-reportjson-decode-3.0-beta-b21_g .jar
+ * Qualified Name:     com.amarsoft.app.crq.report.CreditReportManager
+ * JD-Core Version:    0.6.2
+ */

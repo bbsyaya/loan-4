@@ -1,0 +1,93 @@
+package com.hrbb.loan.timer;
+
+import java.net.URISyntaxException;
+import java.util.Calendar;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.hrbb.loan.pos.biz.backstage.inter.SynFileBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.SynFileUploadBiz;
+import com.hrbb.loan.pos.biz.constants.SynFileConstants;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.FileUtil;
+import com.hrbb.sh.framework.HServiceException;
+
+/**
+ * 银商周报文件作成并上传
+ * 
+ * @author marco
+ * @version $Id: POSSynFileTimer.java, v 0.1 2015年5月27日 下午4:45:50 marco Exp $
+ */
+@Service("POSSynFileTimer")
+public class POSSynFileTimer {
+
+	private Logger logger = LoggerFactory.getLogger(POSSynFileTimer.class);
+
+	@Autowired
+	@Qualifier("synFileBiz")
+	private SynFileBiz biz;
+
+	@Autowired
+	@Qualifier("synFileUploadBiz")
+	private SynFileUploadBiz bizUpload;
+
+	@Value("#{systemInfo[synFileUploanEnable]}")
+	private boolean synFileUploanEnable;
+
+	/**
+	 * 定时查询放款结果
+	 * 
+	 */
+	// @Scheduled(cron = "0 30 12 ? * FRI")
+	@Scheduled(cron = "0 30 12 * * ?")
+	// @Scheduled(cron = "0/30 * * * * *")
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = { Exception.class })
+	public void run() throws HServiceException {
+
+		logger.info("POSSynFileTimer begin");
+		// 项目路径
+		String synFilePath = "";
+		try {
+			synFilePath = this.getClass().getClassLoader()
+					.getResource("../../").toURI().getPath()
+					+ SynFileConstants.SYNFILEUM;
+		} catch (URISyntaxException e) {
+			logger.error("获取输出路径失败！", e);
+			return;
+		}
+		// linux下不能去掉前面的斜线；windows下要保留
+		// synFilePath = synFilePath.substring(1);
+		logger.info("synFilePath=" + synFilePath);
+		// 数据区间
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, -1);
+
+		String to = DateUtil.getDateToString12(cal.getTime());
+
+		cal.add(Calendar.DATE, -6);
+		String from = DateUtil.getDateToString12(cal.getTime());
+		// 文件名
+		String fileName = SynFileConstants.NO_STATISTICS
+				.concat(SynFileConstants.STRING_UNDERLINE).concat(from)
+				.concat(SynFileConstants.STRING_UNDERLINE).concat(to)
+				.concat(FileUtil.FILETYPE_XLSX);
+
+		// 创建文件
+		biz.makeSynFile(synFilePath, fileName);
+
+		logger.info("synFileUploanEnable=" + synFileUploanEnable);
+		// 上传文件
+		if (synFileUploanEnable) {
+			bizUpload.upload(synFilePath + fileName);
+		}
+		logger.info("POSSynFileTimer end");
+	}
+}

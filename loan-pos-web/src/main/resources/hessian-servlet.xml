@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+                        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+                        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<bean id="frontier" name="/remote/frontier" 
+		class="org.springframework.remoting.caucho.HessianServiceExporter">
+		<property name="serviceInterface" value="com.hrbb.sh.framework.FrontierProvider" />
+		<property name="service" ref="frontierProvider" />
+	</bean>
+
+	<bean id="frontierProvider" class="com.hrbb.loan.FrontierProviderImpl" />
+	
+	<bean id="connectPolice"
+		class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<property name="serviceUrl"
+			value="http://35.8.33.48:11097/loan-pos-web/connectPolice" />
+		<property name="serviceInterface" value="com.hrbb.sh.framework.ConnectPoliceService" />
+	</bean>
+	
+	<bean id="connectAIC" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<property name="serviceUrl"
+			value="http://35.8.33.48:11097/loan-pos-web/connectAIC" />
+		<property name="serviceInterface" value="com.hrbb.sh.framework.ConnectAICService" />
+	</bean>
+	
+	<bean id="hftpService" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<property name="serviceUrl" value="http://10.1.5.224:11097/frontier/remoting/hftpService" />
+		<property name="serviceInterface" value="com.hrbb.sh.framework.ftpproxy.HFTPService" />
+	</bean>
+
+	<bean id="ftpTransUpload" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<property name="serviceUrl" value="http://35.8.33.21:11096/loan-ftp-web/ftpTransUpload.do" />
+		<property name="serviceInterface" value="com.hrbb.loan.ftp.web.controller.FtpTransUpload" />
+	</bean>
+	
+</beans>

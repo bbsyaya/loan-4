@@ -1,0 +1,966 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCustomerMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCustomer" >
+    <id column="custId" property="custId" jdbcType="VARCHAR" />
+    <result column="custName" property="custName" jdbcType="VARCHAR" />
+    <result column="paperKind" property="paperKind" jdbcType="VARCHAR" />
+    <result column="paperId" property="paperId" jdbcType="VARCHAR" />
+    <result column="birtDate" property="birtDate" jdbcType="DATE" />
+    <result column="sexSign" property="sexSign" jdbcType="VARCHAR" />
+    <result column="marrSign" property="marrSign" jdbcType="VARCHAR" />
+    <result column="educSign" property="educSign" jdbcType="VARCHAR" />
+    <result column="childNum" property="childNum" jdbcType="VARCHAR" />
+    <result column="regiSeat" property="regiSeat" jdbcType="VARCHAR" />
+    <result column="natiSign1" property="natiSign1" jdbcType="VARCHAR" />
+    <result column="natiFlag" property="natiFlag" jdbcType="VARCHAR" />
+    <result column="resiYear" property="resiYear" jdbcType="VARCHAR" />
+    <result column="residentProv" property="residentProv" jdbcType="VARCHAR" />
+    <result column="residentCity" property="residentCity" jdbcType="VARCHAR" />
+     <result column="residentDivision" property="residentDivision" jdbcType="VARCHAR" />
+    <result column="residentDetail" property="residentDetail" jdbcType="VARCHAR" />
+    <result column="contactAddrFlag" property="contactAddrFlag" jdbcType="VARCHAR" />
+    <result column="inhabStatSign" property="inhabStatSign" jdbcType="VARCHAR" />
+    <result column="workCorp" property="workCorp" jdbcType="VARCHAR" />
+    <result column="corpAddr" property="corpAddr" jdbcType="VARCHAR" />
+    <result column="mobilePhone" property="mobilePhone" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="weixinNo" property="weixinNo" jdbcType="VARCHAR" />
+    <result column="qqNo" property="qqNo" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+    <result column="lastChanPerson" property="lastChanPerson" jdbcType="VARCHAR" />
+    <result column="lastChanDate" property="lastChanDate" jdbcType="TIMESTAMP" />
+    <result column="loanPaperId" property="loanPaperId" jdbcType="VARCHAR" />
+    <result column="loanPaperCheckDate" property="loanPaperCheckDate" jdbcType="DATE" />
+    <result column="busiYear" property="busiYear" jdbcType="VARCHAR" />
+    <result column="localHouseNum" property="localHouseNum" jdbcType="VARCHAR" />
+    <result column="otherHouseNum" property="otherHouseNum" jdbcType="VARCHAR" />
+    <result column="familyCustName" property="familyCustName" jdbcType="VARCHAR" />
+    <result column="matePaperKind" property="matePaperKind" jdbcType="VARCHAR" />
+    <result column="matePaperId" property="matePaperId" jdbcType="VARCHAR" />
+    <result column="mateMobilephone" property="mateMobilephone" jdbcType="VARCHAR" />
+    <result column="veriFication" property="veriFication" jdbcType="VARCHAR" />
+    <result column="nationality" property="nationality" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    custId, custName, paperKind, paperId, birtDate, sexSign, marrSign, educSign, childNum, 
+    regiSeat, natiSign1, natiFlag, resiYear, residentProv, residentCity,residentDivision,residentDetail, 
+    contactAddrFlag, inhabStatSign, workCorp, corpAddr, mobilePhone, tel, weixinNo, qqNo, 
+    email, remarks, lastChanPerson, lastChanDate, loanPaperId, loanPaperCheckDate,
+    busiYear, localHouseNum, otherHouseNum, familyCustName, matePaperKind, 
+    matePaperId, mateMobilephone, veriFication, mateSexSign, mateBirtDate,
+    nationality,mateRegiAddr,mateNationSign
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_customer_info
+    where custId = #{custId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectSelective" resultMap="BaseResultMap" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_customer_info
+    where 1=1
+	<if test="paperId != null">
+		and paperId = #{paperId,jdbcType=VARCHAR}
+	</if>
+	
+    <if test="startPage != null">
+    	LIMIT #{startPage}, #{limit}
+    </if>
+  </select>
+  
+  <select id="selectSelectiveMap" resultType="map" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_customer_info
+    where 1=1
+    <if test="paperId != null">
+		and paperId = #{paperId,jdbcType=VARCHAR}
+	</if>
+	<if test="custName != null">
+		and custName =  #{custName,jdbcType=VARCHAR}
+	</if>
+	<if test="custId != null">
+		and custId = #{custId,jdbcType=VARCHAR}
+	</if>
+	<if test="mobilePhone != null">
+		and mobilePhone = #{mobilePhone,jdbcType=VARCHAR}
+	</if>
+    <if test="startPage != null">
+    	LIMIT #{startPage}, #{limit}
+    </if>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_customer_info
+    where custId = #{custId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCustomer" >
+    insert into t_customer_info (custId, custName, paperKind, 
+      paperId, birtDate, sexSign, 
+      marrSign, educSign, childNum, 
+      regiSeat, natiSign1, natiFlag, 
+      resiYear, residentProv, residentCity,residentDivision,
+      residentDetail, contactAddrFlag, inhabStatSign, 
+      workCorp, corpAddr, mobilePhone, 
+      tel, weixinNo, qqNo, 
+      email, remarks, lastChanPerson, 
+      lastChanDate, loanPaperId, loanPaperCheckDate, 
+      busiYear, localHouseNum, otherHouseNum, 
+      familyCustName, matePaperKind, matePaperId, 
+      mateMobilephone, 
+      veriFication)
+    values (#{custId,jdbcType=VARCHAR}, #{custName,jdbcType=VARCHAR}, #{paperKind,jdbcType=VARCHAR}, 
+      #{paperId,jdbcType=VARCHAR}, #{birtDate,jdbcType=DATE}, #{sexSign,jdbcType=VARCHAR}, 
+      #{marrSign,jdbcType=VARCHAR}, #{educSign,jdbcType=VARCHAR}, #{childNum,jdbcType=VARCHAR}, 
+      #{regiSeat,jdbcType=VARCHAR}, #{natiSign1,jdbcType=VARCHAR}, #{natiFlag,jdbcType=VARCHAR}, 
+      #{resiYear,jdbcType=VARCHAR}, #{residentProv,jdbcType=VARCHAR}, #{residentCity,jdbcType=VARCHAR},#{residentDivision,jdbcType=VARCHAR}, 
+      #{residentDetail,jdbcType=VARCHAR}, #{contactAddrFlag,jdbcType=VARCHAR}, #{inhabStatSign,jdbcType=VARCHAR}, 
+      #{workCorp,jdbcType=VARCHAR}, #{corpAddr,jdbcType=VARCHAR}, #{mobilePhone,jdbcType=VARCHAR}, 
+      #{tel,jdbcType=VARCHAR}, #{weixinNo,jdbcType=VARCHAR}, #{qqNo,jdbcType=VARCHAR}, 
+      #{email,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR}, #{lastChanPerson,jdbcType=VARCHAR}, 
+      #{lastChanDate,jdbcType=TIMESTAMP}, #{loanPaperId,jdbcType=VARCHAR}, #{loanPaperCheckDate,jdbcType=DATE}, 
+      #{busiYear,jdbcType=VARCHAR}, #{localHouseNum,jdbcType=VARCHAR}, #{otherHouseNum,jdbcType=VARCHAR}, 
+      #{familyCustName,jdbcType=VARCHAR}, #{matePaperKind,jdbcType=VARCHAR}, #{matePaperId,jdbcType=VARCHAR}, 
+      #{mateMobilephone,jdbcType=VARCHAR}, 
+      #{veriFication,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCustomer" >
+    insert into t_customer_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="custName != null" >
+        custName,
+      </if>
+      <if test="paperKind != null" >
+        paperKind,
+      </if>
+      <if test="paperId != null" >
+        paperId,
+      </if>
+      <if test="birtDate != null" >
+        birtDate,
+      </if>
+      <if test="sexSign != null" >
+        sexSign,
+      </if>
+      <if test="marrSign != null" >
+        marrSign,
+      </if>
+      <if test="educSign != null" >
+        educSign,
+      </if>
+      <if test="childNum != null" >
+        childNum,
+      </if>
+      <if test="regiSeat != null" >
+        regiSeat,
+      </if>
+      <if test="natiSign1 != null" >
+        natiSign1,
+      </if>
+      <if test="natiFlag != null" >
+        natiFlag,
+      </if>
+      <if test="resiYear != null" >
+        resiYear,
+      </if>
+      <if test="residentProv != null" >
+        residentProv,
+      </if>
+      <if test="residentCity != null" >
+        residentCity,
+      </if>
+      <if test="residentDivision != null" >
+        residentDivision,
+      </if>
+      <if test="residentDetail != null" >
+        residentDetail,
+      </if>
+      <if test="contactAddrFlag != null" >
+        contactAddrFlag,
+      </if>
+      <if test="inhabStatSign != null" >
+        inhabStatSign,
+      </if>
+      <if test="workCorp != null" >
+        workCorp,
+      </if>
+      <if test="corpAddr != null" >
+        corpAddr,
+      </if>
+      <if test="mobilePhone != null" >
+        mobilePhone,
+      </if>
+      <if test="tel != null" >
+        tel,
+      </if>
+      <if test="weixinNo != null" >
+        weixinNo,
+      </if>
+      <if test="qqNo != null" >
+        qqNo,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="remarks != null" >
+        remarks,
+      </if>
+      <if test="lastChanPerson != null" >
+        lastChanPerson,
+      </if>
+      <if test="lastChanDate != null" >
+        lastChanDate,
+      </if>
+      <if test="loanPaperId != null" >
+        loanPaperId,
+      </if>
+      <if test="loanPaperCheckDate != null" >
+        loanPaperCheckDate,
+      </if>
+      <if test="busiYear != null" >
+        busiYear,
+      </if>
+      <if test="localHouseNum != null" >
+        localHouseNum,
+      </if>
+      <if test="otherHouseNum != null" >
+        otherHouseNum,
+      </if>
+      <if test="familyCustName != null" >
+        familyCustName,
+      </if>
+      <if test="matePaperKind != null" >
+        matePaperKind,
+      </if>
+      <if test="matePaperId != null" >
+        matePaperId,
+      </if>
+      <if test="mateMobilephone != null" >
+        mateMobilephone,
+      </if>
+      <if test="veriFication != null" >
+        veriFication,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="custId != null" >
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="custName != null" >
+        #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="paperKind != null" >
+        #{paperKind,jdbcType=VARCHAR},
+      </if>
+      <if test="paperId != null" >
+        #{paperId,jdbcType=VARCHAR},
+      </if>
+      <if test="birtDate != null" >
+        #{birtDate,jdbcType=DATE},
+      </if>
+      <if test="sexSign != null" >
+        #{sexSign,jdbcType=VARCHAR},
+      </if>
+      <if test="marrSign != null" >
+        #{marrSign,jdbcType=VARCHAR},
+      </if>
+      <if test="educSign != null" >
+        #{educSign,jdbcType=VARCHAR},
+      </if>
+      <if test="childNum != null" >
+        #{childNum,jdbcType=VARCHAR},
+      </if>
+      <if test="regiSeat != null" >
+        #{regiSeat,jdbcType=VARCHAR},
+      </if>
+      <if test="natiSign1 != null" >
+        #{natiSign1,jdbcType=VARCHAR},
+      </if>
+      <if test="natiFlag != null" >
+        #{natiFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="resiYear != null" >
+        #{resiYear,jdbcType=VARCHAR},
+      </if>
+      <if test="residentProv != null" >
+        #{residentProv,jdbcType=VARCHAR},
+      </if>
+      <if test="residentCity != null" >
+        #{residentCity,jdbcType=VARCHAR},
+      </if>
+      <if test="residentDivision != null" >
+        #{residentDivision,jdbcType=VARCHAR},
+      </if>
+      <if test="residentDetail != null" >
+        #{residentDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="contactAddrFlag != null" >
+        #{contactAddrFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="inhabStatSign != null" >
+        #{inhabStatSign,jdbcType=VARCHAR},
+      </if>
+      <if test="workCorp != null" >
+        #{workCorp,jdbcType=VARCHAR},
+      </if>
+      <if test="corpAddr != null" >
+        #{corpAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="mobilePhone != null" >
+        #{mobilePhone,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="weixinNo != null" >
+        #{weixinNo,jdbcType=VARCHAR},
+      </if>
+      <if test="qqNo != null" >
+        #{qqNo,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="lastChanPerson != null" >
+        #{lastChanPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="lastChanDate != null" >
+        #{lastChanDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="loanPaperId != null" >
+        #{loanPaperId,jdbcType=VARCHAR},
+      </if>
+      <if test="loanPaperCheckDate != null" >
+        #{loanPaperCheckDate,jdbcType=DATE},
+      </if>
+      <if test="busiYear != null" >
+        #{busiYear,jdbcType=VARCHAR},
+      </if>
+      <if test="localHouseNum != null" >
+        #{localHouseNum,jdbcType=VARCHAR},
+      </if>
+      <if test="otherHouseNum != null" >
+        #{otherHouseNum,jdbcType=VARCHAR},
+      </if>
+      <if test="familyCustName != null" >
+        #{familyCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="matePaperKind != null" >
+        #{matePaperKind,jdbcType=VARCHAR},
+      </if>
+      <if test="matePaperId != null" >
+        #{matePaperId,jdbcType=VARCHAR},
+      </if>
+      <if test="mateMobilephone != null" >
+        #{mateMobilephone,jdbcType=VARCHAR},
+      </if>
+      <if test="veriFication != null" >
+        #{veriFication,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="map" >
+    insert into t_customer_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="custName != null" >
+        custName,
+      </if>
+      <if test="paperKind != null" >
+        paperKind,
+      </if>
+      <if test="paperId != null" >
+        paperId,
+      </if>
+      <if test="birtDate != null" >
+        birtDate,
+      </if>
+      <if test="sexSign != null" >
+        sexSign,
+      </if>
+      <if test="marrSign != null" >
+        marrSign,
+      </if>
+      <if test="educSign != null" >
+        educSign,
+      </if>
+      <if test="childNum != null" >
+        childNum,
+      </if>
+      <if test="regiSeat != null" >
+        regiSeat,
+      </if>
+      <if test="natiSign1 != null" >
+        natiSign1,
+      </if>
+      <if test="natiFlag != null" >
+        natiFlag,
+      </if>
+      <if test="resiYear != null" >
+        resiYear,
+      </if>
+      <if test="residentProv != null" >
+        residentProv,
+      </if>
+      <if test="residentCity != null" >
+        residentCity,
+      </if>
+      <if test="residentDivision != null" >
+        residentDivision,
+      </if>
+      <if test="residentDetail != null" >
+        residentDetail,
+      </if>
+      <if test="contactAddrFlag != null" >
+        contactAddrFlag,
+      </if>
+      <if test="inhabStatSign != null" >
+        inhabStatSign,
+      </if>
+      <if test="workCorp != null" >
+        workCorp,
+      </if>
+      <if test="corpAddr != null" >
+        corpAddr,
+      </if>
+      <if test="mobilePhone != null" >
+        mobilePhone,
+      </if>
+      <if test="tel != null" >
+        tel,
+      </if>
+      <if test="weixinNo != null" >
+        weixinNo,
+      </if>
+      <if test="qqNo != null" >
+        qqNo,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="remarks != null" >
+        remarks,
+      </if>
+      <if test="lastChanPerson != null" >
+        lastChanPerson,
+      </if>
+      <if test="lastChanDate != null" >
+        lastChanDate,
+      </if>
+      <if test="loanPaperId != null" >
+        loanPaperId,
+      </if>
+      <if test="loanPaperCheckDate != null" >
+        loanPaperCheckDate,
+      </if>
+      <if test="busiYear != null" >
+        busiYear,
+      </if>
+      <if test="localHouseNum != null" >
+        localHouseNum,
+      </if>
+      <if test="otherHouseNum != null" >
+        otherHouseNum,
+      </if>
+      <if test="familyCustName != null" >
+        familyCustName,
+      </if>
+      <if test="matePaperKind != null" >
+        matePaperKind,
+      </if>
+      <if test="matePaperId != null" >
+        matePaperId,
+      </if>
+      <if test="mateMobilephone != null" >
+        mateMobilephone,
+      </if>
+      <if test="veriFication != null" >
+        veriFication,
+      </if>
+      <if test="mateSexSign != null">
+      	mateSexSign,
+      </if>
+      <if test="mateBirtDate != null">
+      	mateBirtDate,
+      </if>
+      <if test="nationality != null">
+      	nationality,
+      </if>
+      <if test="mateRegiAddr != null">
+      	mateRegiAddr,
+      </if>
+      <if test="mateNationSign != null">
+      	mateNationSign,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="custId != null" >
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="custName != null" >
+        #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="paperKind != null" >
+        #{paperKind,jdbcType=VARCHAR},
+      </if>
+      <if test="paperId != null" >
+        #{paperId,jdbcType=VARCHAR},
+      </if>
+      <if test="birtDate != null" >
+        #{birtDate,jdbcType=DATE},
+      </if>
+      <if test="sexSign != null" >
+        #{sexSign,jdbcType=VARCHAR},
+      </if>
+      <if test="marrSign != null" >
+        #{marrSign,jdbcType=VARCHAR},
+      </if>
+      <if test="educSign != null" >
+        #{educSign,jdbcType=VARCHAR},
+      </if>
+      <if test="childNum != null" >
+        #{childNum,jdbcType=VARCHAR},
+      </if>
+      <if test="regiSeat != null" >
+        #{regiSeat,jdbcType=VARCHAR},
+      </if>
+      <if test="natiSign1 != null" >
+        #{natiSign1,jdbcType=VARCHAR},
+      </if>
+      <if test="natiFlag != null" >
+        #{natiFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="resiYear != null" >
+        #{resiYear,jdbcType=VARCHAR},
+      </if>
+      <if test="residentProv != null" >
+        #{residentProv,jdbcType=VARCHAR},
+      </if>
+      <if test="residentCity != null" >
+        #{residentCity,jdbcType=VARCHAR},
+      </if>
+      <if test="residentDivision != null" >
+        #{residentDivision,jdbcType=VARCHAR},
+      </if>
+      <if test="residentDetail != null" >
+        #{residentDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="contactAddrFlag != null" >
+        #{contactAddrFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="inhabStatSign != null" >
+        #{inhabStatSign,jdbcType=VARCHAR},
+      </if>
+      <if test="workCorp != null" >
+        #{workCorp,jdbcType=VARCHAR},
+      </if>
+      <if test="corpAddr != null" >
+        #{corpAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="mobilePhone != null" >
+        #{mobilePhone,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="weixinNo != null" >
+        #{weixinNo,jdbcType=VARCHAR},
+      </if>
+      <if test="qqNo != null" >
+        #{qqNo,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="lastChanPerson != null" >
+        #{lastChanPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="lastChanDate != null" >
+        #{lastChanDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="loanPaperId != null" >
+        #{loanPaperId,jdbcType=VARCHAR},
+      </if>
+      <if test="loanPaperCheckDate != null" >
+        #{loanPaperCheckDate,jdbcType=DATE},
+      </if>
+      <if test="busiYear != null" >
+        #{busiYear,jdbcType=VARCHAR},
+      </if>
+      <if test="localHouseNum != null" >
+        #{localHouseNum,jdbcType=VARCHAR},
+      </if>
+      <if test="otherHouseNum != null" >
+        #{otherHouseNum,jdbcType=VARCHAR},
+      </if>
+      <if test="familyCustName != null" >
+        #{familyCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="matePaperKind != null" >
+        #{matePaperKind,jdbcType=VARCHAR},
+      </if>
+      <if test="matePaperId != null" >
+        #{matePaperId,jdbcType=VARCHAR},
+      </if>
+      <if test="mateMobilephone != null" >
+        #{mateMobilephone,jdbcType=VARCHAR},
+      </if>
+      <if test="veriFication != null" >
+        #{veriFication,jdbcType=VARCHAR},
+      </if>
+      <if test="mateSexSign != null">
+      	#{mateSexSign},
+      </if>
+      <if test="mateBirtDate != null">
+      	#{mateBirtDate},
+      </if>
+      <if test="nationality != null">
+      	nationality,
+      </if>
+      <if test="mateRegiAddr != null">
+      	mateRegiAddr,
+      </if>
+      <if test="mateNationSign != null">
+      	mateNationSign,
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCustomer" >
+    update t_customer_info
+    <set >
+      <if test="custName != null" >
+        custName = #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="paperKind != null" >
+        paperKind = #{paperKind,jdbcType=VARCHAR},
+      </if>
+      <if test="paperId != null" >
+        paperId = #{paperId,jdbcType=VARCHAR},
+      </if>
+      <if test="birtDate != null" >
+        birtDate = #{birtDate,jdbcType=DATE},
+      </if>
+      <if test="sexSign != null" >
+        sexSign = #{sexSign,jdbcType=VARCHAR},
+      </if>
+      <if test="marrSign != null" >
+        marrSign = #{marrSign,jdbcType=VARCHAR},
+      </if>
+      <if test="educSign != null" >
+        educSign = #{educSign,jdbcType=VARCHAR},
+      </if>
+      <if test="childNum != null" >
+        childNum = #{childNum,jdbcType=VARCHAR},
+      </if>
+      <if test="regiSeat != null" >
+        regiSeat = #{regiSeat,jdbcType=VARCHAR},
+      </if>
+      <if test="natiSign1 != null" >
+        natiSign1 = #{natiSign1,jdbcType=VARCHAR},
+      </if>
+      <if test="natiFlag != null" >
+        natiFlag = #{natiFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="resiYear != null" >
+        resiYear = #{resiYear,jdbcType=VARCHAR},
+      </if>
+      <if test="residentProv != null" >
+        residentProv = #{residentProv,jdbcType=VARCHAR},
+      </if>
+      <if test="residentCity != null" >
+        residentCity = #{residentCity,jdbcType=VARCHAR},
+      </if>
+      <if test="residentDivision != null" >
+        residentDivision = #{residentDivision,jdbcType=VARCHAR},
+      </if>
+      <if test="residentDetail != null" >
+        residentDetail = #{residentDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="contactAddrFlag != null" >
+        contactAddrFlag = #{contactAddrFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="inhabStatSign != null" >
+        inhabStatSign = #{inhabStatSign,jdbcType=VARCHAR},
+      </if>
+      <if test="workCorp != null" >
+        workCorp = #{workCorp,jdbcType=VARCHAR},
+      </if>
+      <if test="corpAddr != null" >
+        corpAddr = #{corpAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="mobilePhone != null" >
+        mobilePhone = #{mobilePhone,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        tel = #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="weixinNo != null" >
+        weixinNo = #{weixinNo,jdbcType=VARCHAR},
+      </if>
+      <if test="qqNo != null" >
+        qqNo = #{qqNo,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="lastChanPerson != null" >
+        lastChanPerson = #{lastChanPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="lastChanDate != null" >
+        lastChanDate = #{lastChanDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="loanPaperId != null" >
+        loanPaperId = #{loanPaperId,jdbcType=VARCHAR},
+      </if>
+      <if test="loanPaperCheckDate != null" >
+        loanPaperCheckDate = #{loanPaperCheckDate,jdbcType=DATE},
+      </if>
+      <if test="busiYear != null" >
+        busiYear = #{busiYear,jdbcType=VARCHAR},
+      </if>
+      <if test="localHouseNum != null" >
+        localHouseNum = #{localHouseNum,jdbcType=VARCHAR},
+      </if>
+      <if test="otherHouseNum != null" >
+        otherHouseNum = #{otherHouseNum,jdbcType=VARCHAR},
+      </if>
+      <if test="familyCustName != null" >
+        familyCustName = #{familyCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="matePaperKind != null" >
+        matePaperKind = #{matePaperKind,jdbcType=VARCHAR},
+      </if>
+      <if test="matePaperId != null" >
+        matePaperId = #{matePaperId,jdbcType=VARCHAR},
+      </if>
+      <if test="mateMobilephone != null" >
+        mateMobilephone = #{mateMobilephone,jdbcType=VARCHAR},
+      </if>
+      <if test="veriFication != null" >
+        veriFication = #{veriFication,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where custId = #{custId,jdbcType=VARCHAR}
+  </update>
+  
+  
+  <update id="updateByPrimaryKeySelectiveMap" parameterType="map" >
+    update t_customer_info
+    <set >
+      <if test="custName != null" >
+        custName = #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="paperKind != null" >
+        paperKind = #{paperKind,jdbcType=VARCHAR},
+      </if>
+      <if test="paperId != null" >
+        paperId = #{paperId,jdbcType=VARCHAR},
+      </if>
+      <if test="birtDate != null" >
+        birtDate = #{birtDate,jdbcType=DATE},
+      </if>
+      <if test="sexSign != null" >
+        sexSign = #{sexSign,jdbcType=VARCHAR},
+      </if>
+      <if test="marrSign != null" >
+        marrSign = #{marrSign,jdbcType=VARCHAR},
+      </if>
+      <if test="educSign != null" >
+        educSign = #{educSign,jdbcType=VARCHAR},
+      </if>
+      <if test="childNum != null" >
+        childNum = #{childNum,jdbcType=VARCHAR},
+      </if>
+      <if test="regiSeat != null" >
+        regiSeat = #{regiSeat,jdbcType=VARCHAR},
+      </if>
+      <if test="natiSign1 != null" >
+        natiSign1 = #{natiSign1,jdbcType=VARCHAR},
+      </if>
+      <if test="natiFlag != null" >
+        natiFlag = #{natiFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="resiYear != null" >
+        resiYear = #{resiYear,jdbcType=VARCHAR},
+      </if>
+      <if test="residentProv != null" >
+        residentProv = #{residentProv,jdbcType=VARCHAR},
+      </if>
+      <if test="residentCity != null" >
+        residentCity = #{residentCity,jdbcType=VARCHAR},
+      </if>
+      <if test="residentDivision != null" >
+        residentDivision = #{residentDivision,jdbcType=VARCHAR},
+      </if>
+      <if test="residentDetail != null" >
+        residentDetail = #{residentDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="contactAddrFlag != null" >
+        contactAddrFlag = #{contactAddrFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="inhabStatSign != null" >
+        inhabStatSign = #{inhabStatSign,jdbcType=VARCHAR},
+      </if>
+      <if test="workCorp != null" >
+        workCorp = #{workCorp,jdbcType=VARCHAR},
+      </if>
+      <if test="corpAddr != null" >
+        corpAddr = #{corpAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="mobilePhone != null" >
+        mobilePhone = #{mobilePhone,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        tel = #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="weixinNo != null" >
+        weixinNo = #{weixinNo,jdbcType=VARCHAR},
+      </if>
+      <if test="qqNo != null" >
+        qqNo = #{qqNo,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="lastChanPerson != null" >
+        lastChanPerson = #{lastChanPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="lastChanDate != null" >
+        lastChanDate = #{lastChanDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="loanPaperId != null" >
+        loanPaperId = #{loanPaperId,jdbcType=VARCHAR},
+      </if>
+      <if test="loanPaperCheckDate != null" >
+        loanPaperCheckDate = #{loanPaperCheckDate,jdbcType=DATE},
+      </if>
+      <if test="busiYear != null" >
+        busiYear = #{busiYear,jdbcType=VARCHAR},
+      </if>
+      <if test="localHouseNum != null" >
+        localHouseNum = #{localHouseNum,jdbcType=VARCHAR},
+      </if>
+      <if test="otherHouseNum != null" >
+        otherHouseNum = #{otherHouseNum,jdbcType=VARCHAR},
+      </if>
+      <if test="familyCustName != null" >
+        familyCustName = #{familyCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="matePaperKind != null" >
+        matePaperKind = #{matePaperKind,jdbcType=VARCHAR},
+      </if>
+      <if test="matePaperId != null" >
+        matePaperId = #{matePaperId,jdbcType=VARCHAR},
+      </if>
+      <if test="mateMobilephone != null" >
+        mateMobilephone = #{mateMobilephone,jdbcType=VARCHAR},
+      </if>
+      <if test="veriFication != null" >
+        veriFication = #{veriFication,jdbcType=VARCHAR},
+      </if>
+      <if test="mateSexSign != null">
+      	mateSexSign = #{mateSexSign},
+      </if>
+      <if test="mateBirtDate != null">
+      	mateBirtDate = #{mateBirtDate},
+      </if>
+    </set>
+    where 1=1 
+    <if test="custId != null">
+   	  AND custId = #{custId,jdbcType=VARCHAR}
+    </if>
+    <if test="custName != null">
+      AND custName = #{custName, jdbcType=VARCHAR}
+    </if>
+    <if test="paperId != null">
+      AND paperId = #{paperId, jdbcType=VARCHAR}
+    </if>
+  </update>
+  
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCustomer" >
+    update t_customer_info
+    set custName = #{custName,jdbcType=VARCHAR},
+      paperKind = #{paperKind,jdbcType=VARCHAR},
+      paperId = #{paperId,jdbcType=VARCHAR},
+      birtDate = #{birtDate,jdbcType=DATE},
+      sexSign = #{sexSign,jdbcType=VARCHAR},
+      marrSign = #{marrSign,jdbcType=VARCHAR},
+      educSign = #{educSign,jdbcType=VARCHAR},
+      childNum = #{childNum,jdbcType=VARCHAR},
+      regiSeat = #{regiSeat,jdbcType=VARCHAR},
+      natiSign1 = #{natiSign1,jdbcType=VARCHAR},
+      natiFlag = #{natiFlag,jdbcType=VARCHAR},
+      resiYear = #{resiYear,jdbcType=VARCHAR},
+      residentProv = #{residentProv,jdbcType=VARCHAR},
+      residentCity = #{residentCity,jdbcType=VARCHAR},
+      residentDivision = #{residentDivision,jdbcType=VARCHAR},
+      residentDetail = #{residentDetail,jdbcType=VARCHAR},
+      contactAddrFlag = #{contactAddrFlag,jdbcType=VARCHAR},
+      inhabStatSign = #{inhabStatSign,jdbcType=VARCHAR},
+      workCorp = #{workCorp,jdbcType=VARCHAR},
+      corpAddr = #{corpAddr,jdbcType=VARCHAR},
+      mobilePhone = #{mobilePhone,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      weixinNo = #{weixinNo,jdbcType=VARCHAR},
+      qqNo = #{qqNo,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      remarks = #{remarks,jdbcType=VARCHAR},
+      lastChanPerson = #{lastChanPerson,jdbcType=VARCHAR},
+      lastChanDate = #{lastChanDate,jdbcType=TIMESTAMP},
+      loanPaperId = #{loanPaperId,jdbcType=VARCHAR},
+      loanPaperCheckDate = #{loanPaperCheckDate,jdbcType=DATE},
+      busiYear = #{busiYear,jdbcType=VARCHAR},
+      localHouseNum = #{localHouseNum,jdbcType=VARCHAR},
+      otherHouseNum = #{otherHouseNum,jdbcType=VARCHAR},
+      familyCustName = #{familyCustName,jdbcType=VARCHAR},
+      matePaperKind = #{matePaperKind,jdbcType=VARCHAR},
+      matePaperId = #{matePaperId,jdbcType=VARCHAR},
+      mateMobilephone = #{mateMobilephone,jdbcType=VARCHAR},
+      veriFication = #{veriFication,jdbcType=VARCHAR}
+    where custId = #{custId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectCountForRiskCheck" resultType="Long"  parameterType="com.hrbb.loan.pos.dao.entity.TCustomer" >
+	select count(custId) from t_customer_info
+	where 1=1
+	<choose>
+        <when test="checkFlag == 40">
+        	and matePaperId = #{matePaperId,jdbcType=VARCHAR}
+		    and paperId != #{paperId,jdbcType=VARCHAR}
+        </when>
+        <when test="checkFlag == 41">
+            and paperId = #{matePaperId,jdbcType=VARCHAR}
+		    and custName != #{familyCustName,jdbcType=VARCHAR}
+        </when>
+        <otherwise>
+            and paperId != #{paperId,jdbcType=VARCHAR} 
+            and (
+                   mobilePhone = #{mateMobilephone,jdbcType=VARCHAR}
+                or mateMobilephone = #{mateMobilephone,jdbcType=VARCHAR}
+                )
+        </otherwise>
+    </choose>
+  </select>
+</mapper>

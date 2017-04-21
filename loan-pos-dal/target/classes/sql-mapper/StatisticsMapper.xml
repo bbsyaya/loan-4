@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="StatisticsMapper" >
+
+  <select id="selectCallingTasks" resultType="map" parameterType="map">
+  	select callingType,count(*) as cnt
+  	from t_calling_task ct
+  	where 1 =1 
+  	<if test="claimIdNotNull != null">
+  		AND ct.claimId is not null 	
+  	</if>
+  	<if test="callingTimeNotNull != null">
+  		AND ct.callingTime is not null
+  	</if>
+  	group by callingType
+  </select>
+  
+  <select id="selectTodoReviews" resultType="map" parameterType="map">
+	select 'xx' as applyStatus,count(*) as cnt
+  	from t_credit_apply_info ai
+  	where ((ai.applyStatus='10' and ai.infoInputPerson is null)
+  			or (ai.applyStatus='20' and ai.infoCheckPerson is null)
+  			or (ai.applyStatus='21' and ai.infoCheckPerson is null)
+  			or (ai.applyStatus='31' and ai.creditRecheckPerson is null)
+  			or (ai.applyStatus='32' and ai.creditRecheckPerson is null)
+  			or (ai.applyStatus='41' and ai.dueDiligencePerson is null))
+  	group by 1
+  	union
+  	SELECT apprState as applyStatus,count(*) 
+  	from t_credit_apply_aprv_info 
+  	where appEndTime is null
+	group by 1
+  </select>
+  
+  <select id="selectChannelEntries" resultType="map" parameterType="map">
+	select channel,count(*) as total,
+	sum(CASE when applyStatus in ('00') then 1 ELSE 0 END) as todos,
+	sum(CASE when applyStatus in ('91','92') then 1 ELSE 0 END) as rejects,
+	SUM(CASE when applyStatus in ('90') then 1 ELSE 0 END) as pass,
+	SUM(CASE when applyStatus in ('10','20','21','30','31','32','40','41') then 1 ELSE 0 END) as reviews
+	from t_credit_apply_info ai
+	where applyStatus is not NULL
+	group by 1
+  </select>
+  
+  <select id="selectDailyEntries" resultType="map" parameterType="map">
+	select DATE_FORMAT(beginDate,'%Y-%m-%d') as beginDate,
+		count(*) as total
+	from t_credit_apply_info ai
+	where applyStatus is not NULL
+	and (beginDate &gt;= STR_TO_DATE(#{queryBeginDate,jdbcType=VARCHAR},'%Y-%m-%d')
+		and beginDate &lt;= STR_TO_DATE(#{queryEndDate,jdbcType=VARCHAR},'%Y-%m-%d')
+		)
+	group by 1
+  </select>
+  
+  <select id="selectDailyExecutes" resultType="map" parameterType="map">
+	SELECT DATE_FORMAT(appBeginTime,'%Y-%m-%d') as beginDate,
+		DATE_FORMAT(appEndTime,'%Y-%m-%d') as endDate,
+		count(*) as total,
+		SUM(CASE when appBeginTime is not null and appEndTime is null then 1 else 0 end) as doing,
+		SUM(CASE WHEN apprState in ('30','31','41') and apprResult='20' then 1 ELSE 0 end) as rej,
+		SUM(CASE WHEN apprState in ('30','31','41') and apprResult='10' then 1 ELSE 0 end) as pass
+  	from t_credit_apply_aprv_info 
+  	where (
+  			(apprState in ('30','31','41') and apprResult in ('10','20'))
+			or (appEndTime is NULL)
+		  )
+		and (
+		(appBeginTime &gt;= STR_TO_DATE(#{queryBeginDate,jdbcType=VARCHAR},'%Y-%m-%d')
+			and appBeginTime &lt;= STR_TO_DATE(#{queryEndDate,jdbcType=VARCHAR},'%Y-%m-%d')
+			)
+		OR
+		(appEndTime &gt;= STR_TO_DATE(#{queryBeginDate,jdbcType=VARCHAR},'%Y-%m-%d')
+			and appEndTime &lt;= STR_TO_DATE(#{queryEndDate,jdbcType=VARCHAR},'%Y-%m-%d')
+			)
+		)
+	group by 1,2
+  </select>
+  
+  <select id="queryTaskTips1" resultType="map" parameterType="map">
+	select applyStatus,count(*) as cnt
+  	from t_credit_apply_info ai
+  	where ((ai.applyStatus='10' and ai.infoInputPerson is null)
+  			or (ai.applyStatus='20' and ai.infoCheckPerson is null)
+  			or (ai.applyStatus='21' and ai.infoCheckPerson is null)
+  			or (ai.applyStatus='31' and ai.creditRecheckPerson is null)
+  			or (ai.applyStatus='32' and ai.creditRecheckPerson is null)
+  			or (ai.applyStatus='41' and ai.dueDiligencePerson is null))
+  	group by 1
+  </select>
+  <select id="queryTaskTips2" resultType="int" parameterType="map">
+	select count(*) as cnt
+  	from t_approve_result ar
+  	where ar.approveStatus='01'
+  </select>
+  <select id="queryTaskTips3" resultType="map" parameterType="map">
+	select count(*) as cnt,
+		sum(case when claimerId=#{claimerId,jdbcType=VARCHAR} then 1 else 0 end) as claimed
+  	from t_calling_task ct
+  	where callingTime is null
+  </select>
+  <select id="queryTaskTips4" resultType="map" parameterType="map">
+	select count(*) as cnt, min(DATE_FORMAT(endDate,'%Y-%m-%d')) as minDate
+	from t_receipt_info 
+	where (endDate &gt;= DATE(NOW())
+	 	and endDate &lt;= DATE_ADD(DATE(NOW()),INTERVAL 7 DAY)
+	 	)
+  </select>
+  <select id="queryTaskTips5" resultType="map" parameterType="map">
+	select ap.apprState,count(*) as cnt,min(DATE_FORMAT(appBeginTime,'%Y-%m-%d')) as minDate
+	from t_credit_apply_aprv_info ap
+	where ap.apprvId=#{approver,jdbcType=VARCHAR}
+	and appEndTime is null
+	group by 1
+  </select>
+  <select id="queryTaskTips6" resultType="map" parameterType="map">
+	select count(*) as cnt, min(DATE_FORMAT(signDate,'%Y-%m-%d')) as signDate
+	from t_contract_info
+	where agreementStatus='06'
+  </select>
+  <select id="queryTaskTips7" resultType="map" parameterType="map">
+	select count(*) as cnt
+	from t_payment_apply a, t_contract_info c
+	where a.`status` in ('10','80')
+  	and a.contNo = c.contNo
+	and not EXISTS (
+		select 'X' from t_payment_apply_approval p
+		where a.payApplyId = p.payApplyId
+		and a.`status` = p.paymentStatusBefore
+	)
+  </select>
+  <select id="queryTaskTips8" resultType="map" parameterType="map">
+	select count(*) as cnt
+	from t_credit_apply_info ap
+	where ap.applyStatus='10'
+  </select>
+  <select id="queryTaskTips9" resultType="map" parameterType="map">
+	SELECT count(*) as cnt, min(DATE_FORMAT(e.beginDate,'%Y-%m-%d')) as minDate
+	FROM t_payment_apply a, t_receipt_info e
+	WHERE a.payApplyId = e.payApplyId
+	AND e.loanExecuteStatus IN ('00', '10', '19', '29')
+	AND a. STATUS IN ('90', '91')
+  </select>
+</mapper>

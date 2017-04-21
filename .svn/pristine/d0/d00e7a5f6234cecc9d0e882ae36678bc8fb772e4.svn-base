@@ -1,0 +1,90 @@
+package com.hrbb.loan.pos.util;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Iterator;
+
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+/**
+ *<h1></h1>
+ *@author Johnson Song
+ *@version Id: Poi.java, v 1.0 2015-3-9 下午5:41:45 Johnson Song Exp
+ */
+public class PoiUtil {
+	public static void main(String[] args) throws IOException {  
+		String path = "e:\\EMAIL\\POS-LOAN-ISSUE-LOG_v2015407.xlsx";
+		File file = new File(path);
+        Workbook wb= read(file);
+        Sheet shee = wb.getSheetAt(1);
+        Iterator<Row> iterator = shee.iterator();
+        
+    }  
+    private static void writer(String path, String fileName,String fileType) throws IOException {  
+        //创建工作文档对象  
+        Workbook wb = null;  
+        if (fileType.equals("xls")) {  
+            wb = new HSSFWorkbook();  
+        }  
+        else if(fileType.equals("xlsx"))  
+        {  
+            wb = new XSSFWorkbook();  
+        }  
+        else  
+        {  
+            System.out.println("您的文档格式不正确！");  
+        }  
+        //创建sheet对象  
+        Sheet sheet1 = (Sheet) wb.createSheet("sheet1");  
+        //循环写入行数据  
+        for (int i = 0; i < 5; i++) {  
+            Row row = (Row) sheet1.createRow(i);  
+            //循环写入列数据  
+            for (int j = 0; j < 8; j++) {  
+                Cell cell = row.createCell(j);  
+                cell.setCellValue("测试"+j);  
+            }  
+        }  
+        //创建文件流  
+        OutputStream stream = new FileOutputStream(path+fileName+"."+fileType);  
+        //写入数据  
+        wb.write(stream);  
+        //关闭文件流  
+        stream.close();  
+    }  
+    public static Workbook read(File file) throws IOException  
+    {  
+    	String fileName = file.getName();
+    	String fileType = fileName.substring(fileName.lastIndexOf(".")+1, fileName.length());
+        InputStream stream = new FileInputStream(file);  
+        if (fileType.equals("xls")) {  
+            return new HSSFWorkbook(stream);  
+        }  
+        else if (fileType.equals("xlsx")) {  
+            return new XSSFWorkbook(stream);
+        }  
+        else {  
+            System.out.println("您输入的excel格式不正确");
+            return null;
+        } 
+       /* Sheet sheet1 = wb.getSheetAt(0);  */
+       /* for (Row row : sheet1) {  
+        	System.out.println(row.getRowNum());
+            for (Cell cell : row) { 
+                System.out.print(cell.getRowIndex()); 
+                row.get
+            }  
+            System.out.println();  
+        } */
+    }
+}

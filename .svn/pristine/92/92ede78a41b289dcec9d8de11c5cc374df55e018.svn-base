@@ -1,0 +1,91 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<div id="tb" style="padding:5px;height:auto">
+	<fieldset>
+	<legend class='dialog-label'>
+		<img class="filterPlus" src="../img/1x1.gif" width="1" height="1" id="filterIconPlus" onClick="showFilterArea()">
+		<img class="filterMinus" src="../img/1x1.gif" width="1" height="1" id="filterIconMinus" onClick="hideFilterArea()">
+		查询条件
+	</legend>
+	<div id="filterArea" style="padding:3px">
+	<table width="800" border="0" cellspacing="1" cellpadding="0">
+	  <tr>
+	    <td width="90">申请编号:</td>
+	    <td width="180"><input id="searchBizLoanId" name="searchBizLoanId" style="line-height:20px;border:1px solid #ccc"/></td>
+	    <td width="90">商户名称:</td>
+	    <td width="180"><input id="searchPosCustName" name="searchPosCustName" style="line-height:20px;border:1px solid #ccc"/></td>
+	    <td width="90">客户姓名:</td>
+	    <td width="180"><input id="searchCustName" name="searchCustName" style="line-height:20px;border:1px solid #ccc"/></td>
+	  </tr>
+	  <tr>
+	    <td width="90">客户证件号:</td>
+	    <td width="180"><input id="searchPaperId" name="searchPaperId" style="line-height:20px;border:1px solid #ccc"/></td>
+	   	<td width="90">推荐机构:</td>
+	    <td width="180"><input id="searchRecOrg" name="searchRecOrg" style="line-height:20px;border:1px solid #ccc"/></td>
+	    <td width="90">推荐人:</td>
+	    <td width="180"><input id="searchRecPerson" name="searchRecPerson" style="line-height:20px;border:1px solid #ccc"/></td>
+	  </tr>
+	  <tr>
+	    <td width="90">业务渠道:</td>
+	    <td width="180">
+	    <select id="searchChannel" name="searchChannel">
+			<option value=""></option>
+			<option value="UP">银联</option>
+			<option value="YB">易宝</option>
+			<option value="KQ">快钱</option>
+			<option value="UM">银商</option>
+			<option value="YS">银盛</option>
+			<option value="CY">四川烟草</option>
+			<option value="YF">云之富</option>
+			<option value="HK">汇卡</option>
+			<option value="58">58金融</option>
+			<option value="HC">慧聪网</option>
+			<option value="SQ">商圈</option>
+			<option value="ZY">展业</option>
+			<option value="ZZ">自助</option>
+			<option value="QT">其他</option>
+		</select>
+		</td>
+	    <td width="90">&nbsp;</td>
+	    <td width="180">&nbsp;</td>
+	  </tr>
+		<!-- <span>业务状态:</span>
+		<select id="searchApplyStatus" name="searchApplyStatus">
+			<option value="00">待处理</option>
+		</select> -->
+	  <tr>
+	    <td colspan="6" align="center">
+		<a href="javascript:void(0)" class="easyui-linkbutton" onclick="executeQeury()" iconCls="icon-search" plain="true">查询</a>&nbsp;&nbsp;
+		<a href="javascript:void(0)"  onclick="queryBlank()" class="easyui-linkbutton" iconCls="icon-cancel" plain="true">重置</a>&nbsp;&nbsp;
+		</td>
+	  </tr>
+	  </table>
+	</div>
+	</fieldset>
+	<div id="tb">  
+	<c:if test="${viewMode=='SPC' and applyStatus == '00'}">
+	    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" onclick="openCreditApply()">新增申请</a>&nbsp;&nbsp;
+	    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" onclick="submitCreditApply()">提交审批</a>&nbsp;&nbsp;
+	    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" onclick="deleteCreditApply()">取消申请</a>&nbsp;&nbsp;
+    </c:if>
+    <c:if test="${viewMode=='SPC' and empty applyStatus}">
+    	<!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" onclick="openDetailApply()">申请详情</a>&nbsp;&nbsp; -->
+    	<a id="btnAppr" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" onclick="executeApproval()">审批详情</a>&nbsp;&nbsp;
+    </c:if>
+    <c:if test="${viewMode=='SPC' and applyStatus == '90'}">
+    	<!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" onclick="openDetailApply()">申请详情</a>&nbsp;&nbsp; -->
+    	<a id="btnAppr" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" onclick="executeApproval()">审批详情</a>&nbsp;&nbsp;
+    	<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" onclick="openReconsiderWindow(90)">申请复议</a>&nbsp;&nbsp;
+    </c:if>
+    <c:if test="${viewMode=='SPC' and applyStatus == '92'}">
+    	<!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" onclick="openDetailApply()">申请详情</a>&nbsp;&nbsp; -->
+    	<a id="btnAppr" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" onclick="executeApproval()">审批详情</a>&nbsp;&nbsp;
+    	<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" onclick="openReconsiderWindow(92)">申请复议</a>&nbsp;&nbsp;
+    </c:if>
+    <c:if test="${viewMode=='ALL' or applyStatus == '93'}">
+    	<!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" onclick="openDetailApply()">申请详情</a>&nbsp;&nbsp; -->
+    	<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" onclick="executeApproval()">审批详情</a>&nbsp;&nbsp; 
+    </c:if>
+    </div>
+</div> 

@@ -1,0 +1,24 @@
+package com.hrbb.loan.pos.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import com.hrbb.loan.pos.dao.entity.TBdExecutor;
+
+public interface TBdExecutorDao {
+    int deleteByPrimaryKey(Integer menberId);
+
+    int insert(TBdExecutor record);
+
+    int insertSelective(TBdExecutor record);
+
+    TBdExecutor selectByPrimaryKey(Integer menberId);
+
+    int updateByPrimaryKeySelective(TBdExecutor record);
+
+    int updateByPrimaryKey(TBdExecutor record);
+    
+    List<TBdExecutor> selectListBySelective(Map<String,Object> reqMap);
+
+    long countListBySelective(Map<String, Object> reqMap) ;
+}

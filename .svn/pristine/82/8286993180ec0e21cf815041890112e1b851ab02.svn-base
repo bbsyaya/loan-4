@@ -1,0 +1,24 @@
+package com.hrbb.loan.pos.dao;
+
+import java.util.List;
+
+import com.hrbb.loan.pos.dao.entity.TCfgChannelAccount;
+
+public interface TCfgChannelAccountDao {
+    int deleteByPrimaryKey(Integer id);
+
+    int insert(TCfgChannelAccount record);
+
+    int insertSelective(TCfgChannelAccount record);
+
+    public TCfgChannelAccount selectByPrimaryKey(Integer id);
+
+    int updateByPrimaryKeySelective(TCfgChannelAccount record);
+
+    int updateByPrimaryKey(TCfgChannelAccount record);
+    
+    public List<TCfgChannelAccount> getEffectAccount();
+    
+    public TCfgChannelAccount getChannelAccount(String channel);
+    
+}

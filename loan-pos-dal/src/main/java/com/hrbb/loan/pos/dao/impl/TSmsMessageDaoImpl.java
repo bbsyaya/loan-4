@@ -1,0 +1,69 @@
+package com.hrbb.loan.pos.dao.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+import org.springframework.stereotype.Repository;
+
+import com.hrbb.loan.pos.dao.TSmsMessageDao;
+import com.hrbb.loan.pos.dao.entity.TSmsMessage;
+
+@Repository("tSmsMessageDao")
+public class TSmsMessageDaoImpl extends SqlSessionDaoSupport implements TSmsMessageDao{
+
+	@Override
+	public int deleteByPrimaryKey(Integer id) {
+		return getSqlSession().delete("TSmsMessageMapper.deleteByPrimaryKey", id);
+	}
+
+	@Override
+	public int insert(TSmsMessage record) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int insertSelective(TSmsMessage record) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public TSmsMessage selectByPrimaryKey(Integer id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int updateByPrimaryKeySelective(TSmsMessage record) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int updateByPrimaryKey(TSmsMessage record) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public List<Map<String, Object>> getSelectiveMap(Map<String, Object> reqMap) {
+		return getSqlSession().selectList("TSmsMessageMapper.selectSelectiveMap", reqMap); 
+	}
+
+	@Override
+	public int insertSelectiveMap(Map<String, Object> reqMap) {
+		return getSqlSession().insert("TSmsMessageMapper.insertSelectiveMap", reqMap);
+	}
+
+	@Override
+	public void insertSmsMsgBatch(List<TSmsMessage> list) {
+		getSqlSession().insert("TSmsMessageMapper.insertSmsMsgBatch", list);
+	}
+
+    public int batchInsert(List<TSmsMessage> messages) {
+        return getSqlSession().insert("TSmsMessageMapper.batchInsert", messages);
+    }
+
+}

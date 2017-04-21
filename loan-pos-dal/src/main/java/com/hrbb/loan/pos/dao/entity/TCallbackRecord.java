@@ -1,0 +1,94 @@
+package com.hrbb.loan.pos.dao.entity;
+
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * @author zhangwei5@hrbb.com.cn
+ * @date 2015年9月17日下午4:19:05
+ */
+public class TCallbackRecord implements Serializable {
+    private static final long serialVersionUID = 540151806078188904L;
+
+    private Integer id;
+
+    private String loanId;
+
+    private String contNo;
+
+    private String respCode;
+
+    private Date created_at;
+
+    private Date updated_at;
+    
+    
+    public TCallbackRecord() {
+        super();
+    }
+
+    /**
+     * @param loanId 贷款编号
+     * @param contNo 协议编号
+     * @param respCode 响应码
+     * @param created_at 创建时间
+     * @param updated_at 更新时间
+     */
+    public TCallbackRecord(String loanId, String contNo, String respCode, Date created_at, Date updated_at) {
+        super();
+        this.loanId = loanId;
+        this.contNo = contNo;
+        this.respCode = respCode;
+        this.created_at = created_at;
+        this.updated_at = updated_at;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getLoanId() {
+        return loanId;
+    }
+
+    public void setLoanId(String loanId) {
+        this.loanId = loanId == null ? null : loanId.trim();
+    }
+
+    public String getContNo() {
+        return contNo;
+    }
+
+    public void setContNo(String contNo) {
+        this.contNo = contNo == null ? null : contNo.trim();
+    }
+
+    public String getRespCode() {
+        return respCode;
+    }
+
+    public void setRespCode(String respCode) {
+        this.respCode = respCode == null ? null : respCode.trim();
+    }
+
+    public Date getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(Date created_at) {
+        this.created_at = created_at;
+    }
+
+    public Date getUpdated_at() {
+        return updated_at;
+    }
+
+    public void setUpdated_at(Date updated_at) {
+        this.updated_at = updated_at;
+    }
+    
+}

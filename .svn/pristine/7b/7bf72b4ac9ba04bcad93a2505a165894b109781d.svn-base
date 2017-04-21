@@ -1,0 +1,191 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.biz.expressions.mult;
+
+import java.math.BigDecimal;
+
+import com.hrbb.loan.pos.biz.expressions.bean.ScoreProfileBean;
+import com.hrbb.loan.pos.dao.entity.TCustomer;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.MathUtils;
+
+/**
+ * 1.2.2.1 基础信息评分测算
+ * 
+ * @author XLY
+ * @version $Id: BaseFormula.java, v 0.1 2015-3-10 上午9:37:10 XLY Exp $
+ */
+public class BaseFormula {
+
+	/**
+	 * 计算基础信息评分
+	 * 
+	 * @param tc
+	 * @param ab
+	 * @return
+	 */
+	public static ScoreProfileBean computer(TCustomer tc, BigDecimal regCapital) {
+		ScoreProfileBean sb = new ScoreProfileBean();
+		// sb.setSp1(tc.getBusiYear() == null ? BigDecimal.ZERO
+		// : formulaSP1(new BigDecimal(tc.getBusiYear())));
+		sb.setSp1(BigDecimal.ZERO);
+		// 申请人拥有经营房地产数量评分
+		sb.setSp2(tc.getLocalHouseNum() == null ? BigDecimal.ZERO
+				: formulaSP2(new BigDecimal(tc.getLocalHouseNum())));
+		// sb.setSp3(formulaSP3(regCapital));
+		sb.setSp3(BigDecimal.ZERO);
+		// 申请人年龄评分
+		BigDecimal age = DateUtil.getAgeByYear(tc.getBirtDate());
+		sb.setSp4(formulaSP4(age));
+		// 申请人婚姻状况
+		// sb.setSp5(formulaSP5(tc.getMarrSign()));
+		sb.setSp5(BigDecimal.ZERO);
+		// 申请人婚姻状况与子女数评分
+		if (tc.getChildNum() == null) {
+			sb.setSp6(BigDecimal.ZERO);
+		} else {
+			sb.setSp6(formulaSP6(new BigDecimal(tc.getChildNum()), age,
+					tc.getMarrSign()));
+		}
+		sb.setScoreProfile(sb.getSp1().add(sb.getSp2()).add(sb.getSp3())
+				.add(sb.getSp4()).add(sb.getSp5()).add(sb.getSp6()));
+		return sb;
+	}
+
+	/**
+	 * SP1-
+	 * 
+	 * @param busiYear
+	 *            工作年限
+	 * @return
+	 */
+	public static BigDecimal formulaSP1(BigDecimal busiYear) {
+		if (busiYear.compareTo(new BigDecimal(10)) > 0) {
+			return new BigDecimal(5);
+		}
+		return MathUtils.div(busiYear, new BigDecimal(2));
+	}
+
+	/**
+	 * 
+	 * @param localHouseNum
+	 *            经营地房产数
+	 * @return
+	 */
+	public static BigDecimal formulaSP2(BigDecimal localHouseNum) {
+		if (localHouseNum.compareTo(BigDecimal.ONE) >= 0) {
+			return new BigDecimal(3);
+		}
+		return BigDecimal.ZERO;
+	}
+
+	/**
+	 * 
+	 * @param regCapital
+	 *            注册资本--工商查询
+	 * @return
+	 */
+	public static BigDecimal formulaSP3(BigDecimal regCapital) {
+		if (regCapital == null)
+			return BigDecimal.ZERO;
+		if (regCapital.compareTo(BigDecimal.ZERO) > 0)
+			return new BigDecimal(3);
+		return BigDecimal.ZERO;
+	}
+
+	/**
+	 * 
+	 * @param age
+	 *            年龄--申请表
+	 * @return
+	 */
+	public static BigDecimal formulaSP4(BigDecimal age) {
+		// 小于20
+		if (age.compareTo(new BigDecimal(20)) < 0) {
+			return BigDecimal.ZERO;
+			// 大于等于20
+		} else {
+			// 小于35
+			if (age.compareTo(new BigDecimal(35)) < 0) {
+				return MathUtils.div(
+						age.subtract(new BigDecimal(25)).multiply(
+								new BigDecimal(4)), BigDecimal.TEN);
+				// 大于等于35
+			} else {
+				// 小于等于45
+				if (age.compareTo(new BigDecimal(45)) <= 0) {
+					return new BigDecimal(4);
+					// 大于45
+				} else {
+					// 小于等于55
+					if (age.compareTo(new BigDecimal(55)) <= 0) {
+						return MathUtils.div(new BigDecimal(55).subtract(age)
+								.multiply(new BigDecimal(4)), BigDecimal.TEN);
+						// 大于等于55
+					} else {
+						return BigDecimal.ZERO;
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * @param marrSign
+	 *            婚姻状况 0,未婚，1，已婚
+	 * @return
+	 */
+	public static BigDecimal formulaSP5(String marrSign) {
+		switch (marrSign) {
+		case "10":
+			return new BigDecimal(3);
+		case "20":
+			return new BigDecimal(6);
+		default:
+			return BigDecimal.ZERO;
+		}
+	}
+
+	/**
+	 * 
+	 * @param childNum
+	 *            子女人数
+	 * @return
+	 */
+	public static BigDecimal formulaSP6(BigDecimal childNum, BigDecimal age,
+			String marrSign) {
+		switch (marrSign) {
+		// 未婚
+		case "10":
+			if (childNum.compareTo(BigDecimal.ZERO) == 0) {
+				return new BigDecimal(2);
+			} else {
+				return BigDecimal.ZERO;
+			}
+			// 已婚
+		case "20":
+			if (childNum.compareTo(BigDecimal.ZERO) > 0) {
+				return new BigDecimal(7);
+			} else {
+				// 子女人数0
+				if (childNum.compareTo(BigDecimal.ZERO) == 0) {
+					// 年龄>30
+					if (age.compareTo(new BigDecimal(30)) > 0) {
+						return new BigDecimal(4);
+						// 年龄<=30
+					} else {
+						return new BigDecimal(5);
+					}
+				} else {
+					return BigDecimal.ZERO;
+				}
+			}
+		default:
+			return BigDecimal.ZERO;
+		}
+	}
+}

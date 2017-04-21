@@ -1,0 +1,197 @@
+/**
+ * 
+ */
+package com.hrbb.loan.pos.service.impl;
+
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.dao.IGenericConfigDao;
+import com.hrbb.loan.pos.dao.TCustomerDao;
+import com.hrbb.loan.pos.dao.entity.TransactionLog;
+import com.hrbb.loan.pos.service.IGenericConfigService;
+import com.hrbb.loan.pos.util.DateUtil;
+
+/**
+* <p>Title: GenericConfigServiceImpl.java </p>
+* <p>Description:  </p>
+* <p>Copyright: Copyright (C) 2015 Hrbb Ltd. Co.</p> 
+*     
+* @author linzhaolin@hrbb.com.cn
+* @version 
+* @date 2015-4-16
+*
+* logs: 1. 
+*/
+@Service("genericConfigService")
+public class GenericConfigServiceImpl implements IGenericConfigService {
+	
+	private Logger logger = LoggerFactory.getLogger(GenericConfigServiceImpl.class);
+
+	@Autowired
+	@Qualifier("genericConfigDao")
+	private IGenericConfigDao genericConfigDao;
+	
+	@Autowired
+	private TCustomerDao customerDao;
+
+	/* (non-Javadoc)
+	 * @see com.hrbb.loan.pos.service.IGenericConfigService#getIssuerInfo(java.lang.String)
+	 */
+	@Override
+	public Map<String, Object> getIssuerInfo(String cardno) {
+		// TODO Auto-generated method stub
+		Map<String, Object> reqMap = new HashMap<String, Object>();
+		reqMap.put("cardNo", cardno);
+		Map<String, Object> map = genericConfigDao.getIssuerInfo(reqMap);
+		
+		if(map==null || map.size()==0){
+			map = Maps.newHashMap();
+		}
+		
+		return map;
+	}
+
+	@Override
+	public String getMobileBelong(String prefix) {
+		
+		Map<String, Object> reqMap = new HashMap<String, Object>();
+		reqMap.put("prefix", prefix);
+		Map<String, Object> map = genericConfigDao.getMobileBelong(reqMap);
+		if(map==null || map.size()==0){
+			return "";
+		}else{
+			return (String)map.get("belongs");
+		}
+	}
+
+	/**
+	 * 获取下一工作日
+	 * @param date
+	 * @return
+	 */
+	public Date getWorkingDate(Date date) {
+		String curDate = getNextWorkingDate(date);
+		Date workingDate = null;
+		try {
+			workingDate = DateUtil.parse2Date(curDate, DateUtil.HRRB_SHORT_DATETIME_FORMAT);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			logger.error("获取工作日失败!",e);
+			workingDate = date;
+		}
+		return workingDate;
+	}
+	
+	@Override
+	public String getNextWorkingDate(Date date) {
+		
+		String sourceDate = DateUtil.formatDate(date, DateUtil.HRRB_SHORT_DATETIME_FORMAT);
+		Map<String, Object> reqMap = Maps.newHashMap();
+		reqMap.put("specDate", sourceDate);		//yyyy-MM-dd
+		
+		Map<String, Object> map = genericConfigDao.getNextWorkingDate(reqMap);
+		if(map==null || map.size()==0){
+			String workingDate = "";
+			//非特殊日期判断是否周末
+			Calendar tempcal = new GregorianCalendar();
+			tempcal.setTime(date);
+			
+			int dayIndex = tempcal.get(Calendar.DAY_OF_WEEK);
+			switch(dayIndex){
+				case 7:		//周六
+					workingDate = DateUtil.getRelativeDate(date, 0, 0, 2);		//周一
+					break;
+				case 1:		//周日
+					workingDate = DateUtil.getRelativeDate(date, 0, 0, 1);		//周一
+					break;
+				default:
+					workingDate = DateUtil.formatDate(date, DateUtil.HRRB_SHORT_DATETIME_FORMAT);
+			}
+			
+			if(workingDate.equals(sourceDate)){
+				return sourceDate;
+				
+			}else{
+				try {
+					//计算的workingDate有没有撞上假日
+					workingDate = getNextWorkingDate(DateUtil.parse2Date(workingDate));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return workingDate;
+			}
+			
+		}else{
+			//特殊日期返回指定日期
+			String sNextWorkingDate = (String)map.get("nextWorkingDate");
+			if(sNextWorkingDate==null || sNextWorkingDate.trim().length()==0){
+				return DateUtil.formatDate(date, DateUtil.HRRB_SHORT_DATETIME_FORMAT);
+			}else{
+				return sNextWorkingDate;
+			}
+		}
+	}
+
+	@Override
+	public Map<String, Object> getRecInfo(String contactNo) {
+		//异常数据处理
+		if(contactNo==null || contactNo.trim().length()==0) return new HashMap<String, Object>();
+		
+		/*反馈map*/
+		Map<String, Object> responseMap = new HashMap<String, Object>();
+		/*请求map*/
+		Map<String, Object> reqMap = new HashMap<String, Object>();
+		reqMap.put("contactNo", contactNo.trim());
+		Map<String, Object> map = genericConfigDao.getRecInfo(reqMap);
+		
+		if(map==null || map.size()==0){
+			//当展业推荐机构中没有改手机对应信息，那么查询是否有对应的贷款申请人
+			Map<String, Object> custMap = new HashMap<String, Object>();
+			custMap.put("mobilePhone", contactNo);
+			List<Map<String, Object>> resultSet = customerDao.selectSelectiveMap(custMap);
+			if(resultSet == null || resultSet.size() == 0){
+				map = Maps.newHashMap();
+			}else{
+				map = resultSet.get(0);
+				responseMap.put("recPerson", map.get("custName"));
+				responseMap.put("recOrg", "申请人推荐");
+				responseMap.put("recManager", "");
+			}
+		}else{
+			responseMap.put("recPerson", map.get("menberName"));
+			responseMap.put("recOrg", map.get("orgName"));
+			responseMap.put("recManager", map.get("manager")==null?"":map.get("manager"));
+		}
+		
+		return responseMap;
+	}
+
+	@Override
+	public int insertTransactionLog(TransactionLog log) {
+		try{
+			genericConfigDao.insertTransactionLog(log);
+		}catch(Exception e){
+			e.fillInStackTrace();
+			e.printStackTrace();
+			logger.warn("记录核算交易日志失败!",e);
+		}
+		
+		return 0;
+	}
+	
+	
+	
+}

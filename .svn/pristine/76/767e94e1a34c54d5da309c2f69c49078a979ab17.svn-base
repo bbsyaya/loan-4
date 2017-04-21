@@ -1,0 +1,481 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.biz.backstage.inter.impl;
+
+import java.io.File;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.biz.expressions.bean.MultResultBean;
+import com.hrbb.loan.pos.biz.expressions.bean.RiskSuggestionBean;
+import com.hrbb.loan.pos.biz.expressions.bean.ScoreBureauBean;
+import com.hrbb.loan.pos.biz.expressions.bean.ScoreProfileBean;
+import com.hrbb.loan.pos.biz.expressions.index.InitCalcIndexComputer;
+import com.hrbb.loan.pos.biz.expressions.index.ModelIndexFormula;
+import com.hrbb.loan.pos.biz.expressions.index.RiskCheckResultFormula;
+import com.hrbb.loan.pos.biz.expressions.index.RiskCheckResultStockCustFormula;
+import com.hrbb.loan.pos.biz.expressions.mult.AmtOfCreditComputer;
+import com.hrbb.loan.pos.biz.expressions.mult.BaseFormula;
+import com.hrbb.loan.pos.biz.expressions.mult.CreditFormula;
+import com.hrbb.loan.pos.biz.expressions.mult.CreditSuggestionComputer;
+import com.hrbb.loan.pos.biz.expressions.mult.LoanPricingComputer;
+import com.hrbb.loan.pos.biz.expressions.mult.MultComputer;
+import com.hrbb.loan.pos.dao.entity.TCreditApply;
+import com.hrbb.loan.pos.dao.entity.TCreditReportIndicator;
+import com.hrbb.loan.pos.dao.entity.TCustomer;
+import com.hrbb.loan.pos.dao.entity.TPosCustInfo;
+import com.hrbb.loan.pos.dao.entity.TRiskCheckCalcIndex;
+import com.hrbb.loan.pos.dao.entity.TRiskCheckModelIndex;
+import com.hrbb.loan.pos.dao.entity.TRiskCheckResult;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanRiskCheckBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.impl.reader.MRRowReader;
+import com.hrbb.loan.pos.biz.constants.RiskSuggestionDescEnum;
+import com.hrbb.loan.pos.service.LoanPosCustService;
+import com.hrbb.loan.pos.service.LoanPosCustomerService;
+import com.hrbb.loan.pos.service.LoanRiskAICInfoService;
+import com.hrbb.loan.pos.service.LoanRiskCheckService;
+import com.hrbb.loan.pos.service.LoanRiskCreditApplyService;
+import com.hrbb.loan.pos.service.LoanRiskCreditReportService;
+import com.hrbb.loan.pos.service.LoanRiskPosSerialService;
+import com.hrbb.loan.pos.service.bean.PosSerialHandledInfoBean;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.loan.pos.util.constants.ReviewNoteConstants;
+import com.hrbb.loan.pos.util.excel.ExcelReaderUtil;
+
+/**
+ * 
+ * @author XLY
+ * @version $Id: LoanRiskCheckFacadeImpl.java, v 0.1 2015-3-11 上午9:32:55 XLY Exp
+ *          $
+ */
+@Component("loanRiskCheckBiz")
+public class LoanRiskCheckBizImpl implements LoanRiskCheckBiz {
+
+	private final Logger logger = LoggerFactory
+			.getLogger(LoanRiskCheckBizImpl.class);
+
+	@Autowired
+	private LoanRiskPosSerialService loanRiskPosSerialService;
+	@Autowired
+	private LoanRiskCreditReportService loanRiskCreditReportService;
+	@Autowired
+	private LoanRiskCreditApplyService loanRiskCreditApplyService;
+
+	@Autowired
+	private LoanPosCustomerService loanPosCustomerService;
+	@Autowired
+	private LoanPosCustService loanPosCustService;
+
+	@Autowired
+	private LoanRiskAICInfoService loanRiskAICInfoService;
+
+	@Autowired
+	private LoanRiskCheckService loanRiskCheckService;
+
+	@Override
+	public TRiskCheckResult queryRiskCheckResult(String loanId) {
+		return loanRiskCheckService.selectRiskCheckResult(loanId);
+	}
+
+	/**
+	 * 风险初审
+	 * 
+	 * @see com.hrbb.loan.pos.biz.backstage.inter.LoanRiskCheckBiz#execRiskCheck(java.lang.String)
+	 */
+	@Override
+	public TRiskCheckResult execRiskCheck(String loanId) {
+
+		logger.debug("execRiskCheck begin");
+		logger.debug("LoanId=" + loanId);
+
+		// 获取原始数据
+		// 申请信息
+		TCreditApply tCreditApply = loanRiskCreditApplyService
+				.getCreditApplyById(loanId);
+		logger.debug("申请信息 ProdId=" + tCreditApply.getProdId());
+		logger.debug("申请信息 CustId=" + tCreditApply.getCustId());
+		logger.debug("申请信息 PosCustId=" + tCreditApply.getPosCustId());
+
+		// 查询申请人信息
+		TCustomer tCustomer = loanPosCustomerService
+				.getCustumerInfoById(tCreditApply.getCustId());
+		logger.debug("申请人信息 PaperId=" + tCustomer.getPaperId());
+
+		// 查询商户信息
+		TPosCustInfo tPosCustInfo = loanPosCustService
+				.selectOnePosCust(tCreditApply.getPosCustId());
+		logger.debug("商户信息 PosCustName=" + tPosCustInfo.getPosCustName());
+
+		// 处理完成的pos流水信息
+		PosSerialHandledInfoBean posInfoBean = loanRiskPosSerialService
+				.computerPosSerial(loanId);
+		if (posInfoBean == null) {
+			logger.debug("pos流水信息 没有");
+		} else {
+			logger.debug("pos流水信息 有");
+		}
+
+		logger.debug("1.2.1征信报告基础指标  begin");
+		// 1.2.1征信报告基础指标
+		TCreditReportIndicator cri = loanRiskCreditReportService
+				.queryAndInsertCreditReport(tCustomer.getPaperId());
+		logger.debug("1.2.1征信报告基础指标  end");
+
+		// 1.3.1.1指标定义
+		logger.debug("1.3.1.1指标定义  begin");
+		// 计算ModelIndex，并插入表
+		TRiskCheckModelIndex modelIndexBean = calcAndInsertModelIndex(loanId,
+				cri, posInfoBean);
+		logger.debug("1.3.1.1指标定义  end");
+
+		// 1.3.1.2指标计算
+		logger.debug("1.3.1.2指标计算  begin");
+		// 计算CalcIndex，并插入表
+		TRiskCheckCalcIndex calcIndexBean = calcAndInsertCalcIndex(loanId, cri,
+				modelIndexBean, tCreditApply, tPosCustInfo);
+		logger.debug("1.3.1.2指标计算  end");
+		// 1.3.1.3指标结果输出
+
+		// 1.3.2.1 基础信息评分测算
+		logger.debug("1.3.2.1 基础信息评分测算  begin");
+		ScoreProfileBean spb = BaseFormula.computer(tCustomer,
+				tPosCustInfo.getRegCapital());
+		logger.debug("1.3.2.1 基础信息评分测算  end");
+
+		// 1.3.2.2 信用记录评分测算
+		logger.debug("1.3.2.2 信用记录评分测算  begin");
+		ScoreBureauBean sbb = CreditFormula.computer(modelIndexBean, cri,
+				calcIndexBean);
+		logger.debug("1.3.2.2 信用记录评分测算  end");
+
+		// 1.3.2.3模型综合评分
+		logger.debug("1.3.2.3模型综合评分  begin");
+		MultResultBean mrb = MultComputer.computer(spb.getScoreProfile(),
+				sbb.getScoreBureau());
+		logger.debug("1.3.2.3模型综合评分  end");
+
+		// 1.3.2.4 贷款定价建议
+		logger.debug("1.3.2.4 贷款定价建议  begin");
+		BigDecimal finalModelP = LoanPricingComputer.computer(mrb,
+				modelIndexBean, calcIndexBean, tCustomer.getPaperId(),
+				tCustomer.getMatePaperId());
+		logger.debug("finalModelP=" + finalModelP);
+		logger.debug("1.3.2.4 贷款定价建议  end");
+
+		// 1.3.2.5 授信额度建议和1.3.2.6模型建议额度调整
+		logger.debug(" 1.3.2.5 授信额度建议和1.3.2.6模型建议额度调整  begin");
+		BigDecimal finalModelCl = AmtOfCreditComputer.computer(mrb,
+				modelIndexBean, tCreditApply.getChannel(), tPosCustInfo,
+				tCreditApply.getApplyAmt(), finalModelP,
+				tCreditApply.getProdId(), cri, tCustomer.getLocalHouseNum());
+		logger.debug("finalModelCl=" + finalModelCl);
+		logger.debug(" 1.3.2.5 授信额度建议和1.3.2.6模型建议额度调整  end");
+
+		// （六）、利率调整
+		logger.debug("利率调整");
+		finalModelP = LoanPricingComputer.computerForAdjust(finalModelCl,
+				finalModelP);
+		// 特殊情况
+		finalModelCl = AmtOfCreditComputer.computerForSpecialCase(finalModelCl,
+				tPosCustInfo, tCreditApply.getChannel(),
+				modelIndexBean.getModelIndex18(), finalModelP);
+
+		// 1.3.2.7 授信审批策略建议
+		logger.debug(" 1.3.2.7 授信审批策略建议  begin");
+		RiskSuggestionBean riskSuggestionBean = CreditSuggestionComputer
+				.getRiskSuggection(mrb, modelIndexBean, calcIndexBean,
+						tCreditApply.getApplyAmt(),
+						tPosCustInfo.getOperAddrCode(),
+						tCreditApply.getChannel(), tCreditApply.getProdId());
+		logger.debug("SuggestDecision="
+				+ riskSuggestionBean.getSuggestDecision());
+		logger.debug("DeclineReason=" + riskSuggestionBean.getDeclineReason());
+		logger.debug(" 1.3.2.7 授信审批策略建议  end");
+
+		// 1.3.2.8模型结果输出
+		// 删除计算结果
+		int flag = loanRiskCheckService.deleteRiskCheckResult(loanId);
+		if (flag == 1) {
+			logger.debug("模型结果RiskCheckResult  删除成功");
+		} else {
+			logger.debug("指标计算RiskCheckResult  不存在");
+		}
+		// 计算
+		TRiskCheckResult tRiskCheckResult = RiskCheckResultFormula
+				.initRiskCheckResult(tCreditApply, tPosCustInfo, tCustomer,
+						riskSuggestionBean, finalModelCl, finalModelP, mrb,
+						cri, modelIndexBean);
+		logger.debug("风险等级Result12=" + tRiskCheckResult.getResult12());
+		logger.debug(" 1.3.2.8模型结果输出  end");
+		// 插入表
+		tRiskCheckResult.setLoanId(loanId);
+		tRiskCheckResult
+				.setVersion(ReviewNoteConstants.RISK_CHECK_MODELVERSION);
+		logger.debug("模型Version=" + ReviewNoteConstants.RISK_CHECK_MODELVERSION);
+		flag = loanRiskCheckService.insertRiskCheckResult(tRiskCheckResult);
+		if (flag == 1) {
+			logger.debug("模型结果RiskCheckResult  插入成功");
+		} else {
+			logger.debug("指标计算RiskCheckResult  插入失败");
+		}
+		// 审核结果通过
+		if (RiskSuggestionDescEnum.SUGGESTIONREZULT_OK.getDescription().equals(
+				riskSuggestionBean.getSuggestDecision())) {
+			logger.debug("审核结果通过");
+			// 风险类型判断规则
+			boolean riskLevel = checkRiskLevel(loanId, tCustomer.getPaperId(),
+					tRiskCheckResult.getResult12(), mrb.getFinalModelScore(),
+					tRiskCheckResult.getResult08(), cri,
+					tPosCustInfo.getPosCustName(), tCustomer.getMobilePhone());
+			if (riskLevel) {
+				logger.debug("极低风险");
+			} else {
+				logger.debug("非极低风险");
+			}
+			tRiskCheckResult.setRiskLevel(riskLevel);
+			// 审核结果拒绝
+		} else {
+			logger.debug("审核结果拒绝");
+		}
+		logger.debug("execRiskCheck end");
+		return tRiskCheckResult;
+	}
+
+	/**
+	 * 插入征信报告指标表；计算Model_Index，并插入表；计算Calc_Index，并插入表
+	 * 
+	 * @param cri
+	 * @param loanId
+	 * @return 1：正常；0：异常
+	 */
+	@Override
+	public int insertCreditReport(TCreditReportIndicator cri, String loanId) {
+		logger.debug("insertCreditReport begin");
+		// 参数错误
+		if (cri == null || StringUtil.isEmpty(loanId)) {
+			return 0;
+		}
+		logger.debug("信用报告编号CR001=" + cri.getCR001());
+		logger.debug("被查询者姓名CR003=" + cri.getCR003());
+		logger.debug("被查询者证件号码CR005=" + cri.getCR005());
+		logger.debug("LoanId=" + loanId);
+
+		// 插入表
+		int flag = loanRiskCreditReportService.insert(cri);
+		if (flag == 1) {
+			logger.debug("插入征信报告指标成功");
+		} else {
+			logger.debug("插入征信报告指标失败");
+			logger.debug("insertCreditReport end");
+			return 0;
+		}
+		// 申请信息
+		TCreditApply tCreditApply = loanRiskCreditApplyService
+				.getCreditApplyById(loanId);
+		logger.debug("申请信息 CustId=" + tCreditApply.getCustId());
+		logger.debug("申请信息 PosCustId=" + tCreditApply.getPosCustId());
+
+		// 查询申请人信息
+		TCustomer tCustomer = loanPosCustomerService
+				.getCustumerInfoById(tCreditApply.getCustId());
+		logger.debug("申请人信息 PaperId=" + tCustomer.getPaperId());
+
+		// 查询商户信息
+		TPosCustInfo tPosCustInfo = loanPosCustService
+				.selectOnePosCust(tCreditApply.getPosCustId());
+		logger.debug("商户信息 PosCustName=" + tPosCustInfo.getPosCustName());
+
+		// 处理完成的pos流水信息
+		PosSerialHandledInfoBean posInfoBean = loanRiskPosSerialService
+				.computerPosSerial(loanId);
+		if (posInfoBean == null) {
+			logger.debug("pos流水信息 没有");
+		} else {
+			logger.debug("pos流水信息 有");
+		}
+
+		// 计算ModelIndex，并插入表
+		TRiskCheckModelIndex modelIndexBean = calcAndInsertModelIndex(loanId,
+				cri, posInfoBean);
+		if (modelIndexBean == null) {
+			logger.debug("insertCreditReport end");
+			return 0;
+		}
+		// 计算CalcIndex，并插入表
+		TRiskCheckCalcIndex calcIndexBean = calcAndInsertCalcIndex(loanId, cri,
+				modelIndexBean, tCreditApply, tPosCustInfo);
+		if (calcIndexBean == null) {
+			logger.debug("insertCreditReport end");
+			return 0;
+		}
+		logger.debug("insertCreditReport end");
+		return 1;
+	}
+
+	/**
+	 * 计算ModelIndex，并插入表
+	 * 
+	 * @param loanId
+	 * @param cri
+	 * @return
+	 */
+	private TRiskCheckModelIndex calcAndInsertModelIndex(String loanId,
+			TCreditReportIndicator cri, PosSerialHandledInfoBean posInfoBean) {
+		logger.debug("calcAndInsertModelIndex begin");
+		// 删除中间计算结果
+		int flag = loanRiskCheckService.deleteRiskModelIndex(loanId);
+		if (flag == 1) {
+			logger.debug("指标定义ModelIndex  删除成功");
+		} else {
+			logger.debug("指标定义ModelIndex  不存在");
+		}
+
+		// 计算
+		TRiskCheckModelIndex modelIndexBean = ModelIndexFormula
+				.initModelIndexBean(posInfoBean, cri);
+		// 插入表
+		modelIndexBean.setLoanId(loanId);
+		flag = loanRiskCheckService.insertRiskModelIndex(modelIndexBean);
+		if (flag == 1) {
+			logger.debug("指标定义ModelIndex  插入成功");
+		} else {
+			logger.debug("指标定义ModelIndex  插入失败");
+			return null;
+		}
+		logger.debug("calcAndInsertModelIndex end");
+		return modelIndexBean;
+	}
+
+	/**
+	 * 计算CalcIndex，并插入表
+	 * 
+	 * @param loanId
+	 * @param cri
+	 * @param modelIndexBean
+	 * @param tCreditApply
+	 * @param tPosCustInfo
+	 * @return
+	 */
+	private TRiskCheckCalcIndex calcAndInsertCalcIndex(String loanId,
+			TCreditReportIndicator cri, TRiskCheckModelIndex modelIndexBean,
+			TCreditApply tCreditApply, TPosCustInfo tPosCustInfo) {
+		// 删除中间计算结果
+		int flag = loanRiskCheckService.deleteRiskCalcIndex(loanId);
+		if (flag == 1) {
+			logger.debug("指标计算CalcIndex  删除成功");
+		} else {
+			logger.debug("指标计算CalcIndex  不存在");
+		}
+		// 计算
+		TRiskCheckCalcIndex calcIndexBean = InitCalcIndexComputer
+				.initCalcIndexBean(modelIndexBean, tCreditApply, cri,
+						tPosCustInfo);
+		// 插入表
+		calcIndexBean.setLoanId(loanId);
+		flag = loanRiskCheckService.insertRiskCalcIndex(calcIndexBean);
+		if (flag == 1) {
+			logger.debug("指标计算CalcIndex  插入成功");
+		} else {
+			logger.debug("指标计算CalcIndex  插入失败");
+			return null;
+		}
+		return calcIndexBean;
+	}
+
+	/**
+	 * 上传模型结果excel
+	 * 
+	 * @param file
+	 */
+	public boolean uploadModelResult(File file) {
+		try {
+			Map<String, TCreditReportIndicator> insertMap = Maps.newHashMap();
+			MRRowReader reader = new MRRowReader();
+			reader.addHandleMap(insertMap);
+			ExcelReaderUtil.readExcel(reader, file.getAbsolutePath());
+			if (reader.fireTrigger())
+				return false;
+			int resultCode = 0;
+			if (!insertMap.isEmpty()) {
+				for (Map.Entry<String, TCreditReportIndicator> entry : insertMap
+						.entrySet()) {
+					String loanId = entry.getKey();
+					TCreditReportIndicator tc = entry.getValue();
+					resultCode = insertCreditReport(tc, loanId);
+				}
+				insertMap.clear();
+			}
+			if (resultCode == 1) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception e) {
+			logger.error("上传模型结果文件异常:[" + e.getMessage() + "]");
+			return false;
+		}
+	}
+
+	/**
+	 * Rule-4. 风险类型判断规则
+	 * 
+	 * @param riskCheckResult
+	 * @return
+	 */
+	public boolean checkRiskLevel(String loanId, String paperId, int risk_tier,
+			BigDecimal final_model_score, BigDecimal final_model_cl,
+			TCreditReportIndicator cri, String posCustName, String mobile) {
+		logger.debug("checkRiskLevel begin");
+		logger.debug("loanId=" + loanId);
+		// 获取原始数据
+		// // 申请信息
+		// TCreditApply tCreditApply = loanRiskCreditApplyService
+		// .getCreditApplyById(loanId);
+		// logger.debug("申请信息 CustId=" + tCreditApply.getCustId());
+		//
+		// // 查询申请人信息
+		// TCustomer tCustomer = loanPosCustomerService
+		// .getCustumerInfoById(tCreditApply.getCustId());
+		// logger.debug("申请人信息 PaperId=" + tCustomer.getPaperId());
+
+		Map<String, Object> reqMap = Maps.newHashMap();
+		reqMap.put("paperIdLike", paperId);
+		reqMap.put(ReviewNoteConstants.APPLYSTATUS,
+				ReviewNoteConstants.APPLYSTATUS_CODE_90);
+		Long total = loanRiskCreditApplyService.countCreditApply(reqMap);
+
+		boolean result = false;
+		// 非存量客户
+		if (total == 0) {
+			result = RiskCheckResultStockCustFormula.checkNotStockCustomer(
+					risk_tier, final_model_score, final_model_cl, paperId, cri,
+					posCustName, mobile);
+			// 存量客户
+		} else {
+			result = RiskCheckResultStockCustFormula.checkStockCustomer(loanId,
+					paperId, mobile, cri.getCR009());
+		}
+		logger.debug("checkRiskLevel end");
+		return result;
+	}
+
+	/**
+	 * 查询风险探测结果
+	 * 
+	 * @see com.hrbb.loan.pos.biz.backstage.inter.CreditApplyForReviewBiz#selectForRiskDetection(com.hrbb.loan.pos.dao.entity.TCreditApply)
+	 */
+	@Override
+	public List<Map<String, Object>> selectForRiskDetection(String loanid) {
+		return loanRiskCheckService.selectForRiskDetection(loanid);
+	}
+}

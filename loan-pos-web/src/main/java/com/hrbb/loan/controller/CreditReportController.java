@@ -1,0 +1,156 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.controller;
+
+import java.io.PrintWriter;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.biz.backstage.inter.CreditReportBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.ILoanPosCreditApplyBackStageBiz;
+import com.hrbb.loan.pos.dao.entity.TCreditReportBrief;
+import com.hrbb.loan.pos.factory.SysConfigFactory;
+import com.hrbb.loan.pos.service.CreditReportService;
+import com.hrbb.loan.pos.util.constants.ReviewNoteConstants;
+import com.hrbb.sh.framework.domain.CreditInvestigateRequest;
+
+/**
+ * 
+ * @author marco
+ * @version $Id: CreditReportController.java, v 0.1 2015-3-2 下午8:04:52 marco Exp
+ *          $
+ */
+@Controller
+@RequestMapping("/creditReport")
+public class CreditReportController {
+
+	private final Logger logger = LoggerFactory
+			.getLogger(CreditReportController.class);
+
+	@Autowired
+	@Qualifier("creditReportBiz")
+	private CreditReportBiz creditReportBiz;
+
+	@Autowired
+	private ILoanPosCreditApplyBackStageBiz lLoanPosCreditApplyBackStageBiz;
+
+	@Autowired
+	@Qualifier("creditReportService")
+	private CreditReportService creditReportService;
+
+//	@Value("#{systemInfo[imageUrl]}")
+	private String imageUrl;
+	
+	@PostConstruct
+	public void loadDictionary() {
+		imageUrl = SysConfigFactory.getInstance().getService("basicService").getPropertyValue("fsUrl");
+	}
+
+	/**
+	 * <h2>获取征信报告</h2>
+	 * 
+	 * @param reviewid
+	 * @return modelAndView
+	 * @throws Exception
+	 */
+	@RequestMapping("/queryCreditReport")
+	public ModelAndView queryCreditReport(
+			@RequestParam(value = "paperId", required = false) String paperId,
+			@RequestParam(value = "custName", required = false) String custName,
+			@RequestParam(value = "confirmFlag", required = false) Integer confirmFlag,
+			@RequestParam(value = "queryReason", required = false) String queryReason,
+			PrintWriter out) throws Exception {
+		// 检查查询日期是否大于20天
+		try{
+			logger.debug("confirmFlag=" + confirmFlag.intValue());
+			if (confirmFlag.intValue() == 0) {
+				int result = creditReportBiz.checkCreditReport(paperId);
+				logger.debug("查询结果result=" + result);
+				// 询问是否要查询,或征信报告不完整
+				if (result == ReviewNoteConstants.CREDIT_REPORT_RESULT_VALUE_0
+						|| result == ReviewNoteConstants.CREDIT_REPORT_RESULT_VALUE_2
+						|| result == ReviewNoteConstants.CREDIT_REPORT_RESULT_VALUE_5) {
+					out.print(result);
+					// 直接查询
+				} else {
+					// 下载征信报告
+					String msg = getCreditInvestigate(paperId, custName,
+							queryReason);
+					out.print(msg);
+					logger.debug("下载征信报告结果msg=" + msg);
+				}
+				// 查询
+			} else {
+				// 下载征信报告
+				String msg = getCreditInvestigate(paperId, custName, queryReason);
+				out.print(msg);
+				logger.debug("下载征信报告结果msg=" + msg);
+			}
+			
+		}catch(Exception e){
+			logger.error("查询征信报告" + e.getMessage());
+			out.print("查询征信报告异常");
+		}
+		return null;
+	}
+
+	/**
+	 * 下载征信报告
+	 * 
+	 * @param paperId
+	 * @return
+	 */
+	private String getCreditInvestigate(String paperId, String custName,
+			String queryReason) {
+
+		CreditInvestigateRequest request = new CreditInvestigateRequest();
+		// 用户名外部传入
+		request.setCustNme(custName);
+		// 身份证号码外部传入
+		request.setCustId(paperId);
+		// 查询原因外部传入
+		request.setQryWay(queryReason);
+
+		Map<String, Object> reqMap = Maps.newHashMap();
+		reqMap.put("creditInvestigateRequest", request);
+		// 获取征信报告
+		Map<String, Object> rezultMap = lLoanPosCreditApplyBackStageBiz
+				.creditInvestigate(reqMap);
+		return rezultMap.get("respMsg").toString();
+	}
+
+	@RequestMapping("/getReportHtml")
+	public ModelAndView getReportHtml(
+			@RequestParam(value = "paperId", required = true) String paperId,
+			PrintWriter out) {
+		TCreditReportBrief trb = queryReportBrief(paperId);
+		if (trb == null)
+			out.print("");
+
+		String htmlFile = trb.getFormatHtml();
+		if (htmlFile == null || htmlFile.trim().length() == 0)
+			out.print("");
+
+		out.print(imageUrl + htmlFile);
+
+		return null;
+	}
+
+	private TCreditReportBrief queryReportBrief(String paperId) {
+		return creditReportService.getBrief(paperId);
+	}
+}

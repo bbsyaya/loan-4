@@ -1,0 +1,389 @@
+[INFO] [2015-04-10 10:09:35.867] com.hrbb.test.PosApplyTest.testApply(158) | <?xml version="1.0" encoding="GBK"?>
+<UMSFX xmlns="http://www.chinaums.com/UMSFX/1.0">
+		<ReqHeader>
+			<TransCode>HB01</TransCode>
+			<SrcReqDate>20120424</SrcReqDate>
+			<SrcReqTime>195435</SrcReqTime>
+			<SrcReqId>0000000001</SrcReqId>
+			<ChannelId>002</ChannelId>
+			<MAC>ACD1F98C33BEFFAB</MAC>
+		</ReqHeader>
+<ReqBody>
+			<posorg>01</posorg>
+			<poscustname>上海露酒</poscustname>
+			<regicode>1231342131233123</regicode>
+			<dealscope>酒类</dealscope>
+			<operaddrRegion>311012</operaddrRegion>
+			<residentRegion>3101112</residentRegion>
+			<operaddrdetail>上海市浦东新区噜噜噜</operaddrdetail>
+			<industrytypeid>31231</industrytypeid>
+			<custname>斯拉的</custname>
+			<paperkind>01</paperkind>
+			<paperid>310115198805020113</paperid>
+			<sexsign>01</sexsign>
+			<busiyear>12</busiyear>
+			<marrsign>10</marrsign>
+			<educsign>20</educsign>
+			<childnum>1</childnum>
+			<localhousenum>1</localhousenum>
+			<otherhousenum>1</otherhousenum>
+			<mobilephone>15001929875</mobilephone>
+			<tel>68682162</tel>
+			<bankName>工商银行</bankName>
+			<bankBrandName>上海分行</bankBrandName>
+			<bankSubName>虹口支行</bankSubName>
+			<residentdetail>上海市浦东新区呼呼呼</residentdetail>
+			<contactaddrflag>上海浦东新区呼呼呼</contactaddrflag>
+			<weixinno>syslsy</weixinno>
+			<qqno>435432218</qqno>
+			<email>songyilinking@sina.com</email>
+			<familycustname>哭哭哦哦</familycustname>
+			<matepaperkind>01</matepaperkind>
+			<matepaperid>310115198805020113</matepaperid>
+			<matemobilephone>15001929875</matemobilephone>
+			<relacustname>肃然</relacustname>
+			<relakind>1</relakind>
+			<relamobilephone>15001929875</relamobilephone>
+			<relatel>50219592</relatel>
+			<imagefilepackagename>123123</imagefilepackagename>
+			<apptcapi>5000</apptcapi>
+			<retukind1>01</retukind1>
+			<retukind2>01</retukind2>
+			<bankaccno>6212304213043123</bankaccno>
+			<bankid>010101</bankid>
+			<operid>10202130</operid>
+			<stdshno>1223483567</stdshno>
+			<stdmerno>123403567</stdmerno>
+			<appterm>12</appterm>
+		</ReqBody>
+</UMSFX>
+
+[INFO] [2015-04-10 10:09:35.883] com.hrbb.test.PosApplyTest.testApply(159) | 2025
+[ERROR] [2015-04-10 10:09:36.039] com.hrbb.test.SocketTestBase.sendMessage(33) | about to write message...
+[INFO] [2015-04-10 10:15:54.694] com.hrbb.test.PosApplyTest.testApply(158) | <?xml version="1.0" encoding="GBK" standalone="no"?><UMSFX><ReqHeader><TransCode>HB01</TransCode><ChannelId>0001</ChannelId><SrcReqDate>20150409</SrcReqDate><SrcReqTime>20150409</SrcReqTime><SrcReqId>4bdd5cc71fca41589f1876404bc94cff</SrcReqId><MAC>0178fb15101f53e9d7d724fb741478e0</MAC></ReqHeader><ReqBody><posorg>UM</posorg><poscustname>结算测试</poscustname><regicode>110108005657423</regicode><dealscope>董建军</dealscope><operaddrRegion>350300</operaddrRegion><residentRegion>120000</residentRegion><operaddrdetail>但渐渐地就</operaddrdetail><industrytypeid/><custname>结算测试</custname><paperkind>01</paperkind><paperid>320902199505140017</paperid><sexsign>1</sexsign><busiyear>1</busiyear><marrsign>10</marrsign><educsign>10</educsign><childnum/><localhousenum>1</localhousenum><otherhousenum>1</otherhousenum><mobilephone>13402157618</mobilephone><tel>021-22022002</tel><bankName>中国农业银行</bankName><bankBrandName>的角度讲J</bankBrandName><bankSubName>继续西进</bankSubName><residentdetail>的角度讲见</residentdetail><contactaddrflag>的角度讲见</contactaddrflag><weixinno/><qqno/><email/><familycustname/><matepaperkind>01</matepaperkind><matepaperid/><matemobilephone/><relacustname>董建军</relacustname><relakind>2</relakind><relamobilephone>17091820011</relamobilephone><relatel/><imagefilepackagename>UMS__330101898440358122571.gz</imagefilepackagename><apptcapi>10</apptcapi><retukind1>01</retukind1><retukind2>02</retukind2><bankaccno>6228481128162432676</bankaccno><bankid>CHINAUMS</bankid><operid>CUMS0001</operid><stdshno/><stdmerno>33898440358122571</stdmerno><appterm>12</appterm></ReqBody></UMSFX>
+[INFO] [2015-04-10 10:15:54.694] com.hrbb.test.PosApplyTest.testApply(159) | 1579
+[ERROR] [2015-04-10 10:15:54.772] com.hrbb.test.SocketTestBase.sendMessage(33) | about to write message...
+[INFO] [2015-04-10 10:16:35.454] com.hrbb.test.PosApplyTest.testApply(158) | <?xml version="1.0" encoding="GBK" standalone="no"?><UMSFX><ReqHeader><TransCode>HB01</TransCode><ChannelId>0001</ChannelId><SrcReqDate>20150409</SrcReqDate><SrcReqTime>20150409</SrcReqTime><SrcReqId>4bdd5cc71fca41589f1876404bc94cff</SrcReqId><MAC>0178fb15101f53e9d7d724fb741478e0</MAC></ReqHeader><ReqBody><posorg>UM</posorg><poscustname>结算测试</poscustname><regicode>110108005657423</regicode><dealscope>董建军</dealscope><operaddrRegion>350300</operaddrRegion><residentRegion>120000</residentRegion><operaddrdetail>但渐渐地就</operaddrdetail><industrytypeid/><custname>结算测试</custname><paperkind>01</paperkind><paperid>320902199505140017</paperid><sexsign>1</sexsign><busiyear>1</busiyear><marrsign>10</marrsign><educsign>10</educsign><childnum/><localhousenum>1</localhousenum><otherhousenum>1</otherhousenum><mobilephone>13402157618</mobilephone><tel>021-22022002</tel><bankName>中国农业银行</bankName><bankBrandName>的角度讲J</bankBrandName><bankSubName>继续西进</bankSubName><residentdetail>的角度讲见</residentdetail><contactaddrflag>的角度讲见</contactaddrflag><weixinno/><qqno/><email/><familycustname/><matepaperkind>01</matepaperkind><matepaperid/><matemobilephone/><relacustname>董建军</relacustname><relakind>2</relakind><relamobilephone>17091820011</relamobilephone><relatel/><imagefilepackagename>UMS__330101898440358122571.gz</imagefilepackagename><apptcapi>10</apptcapi><retukind1>01</retukind1><retukind2>02</retukind2><bankaccno>6228481128162432676</bankaccno><bankid>CHINAUMS</bankid><operid>CUMS0001</operid><stdshno/><stdmerno>33898440358122571</stdmerno><appterm>12</appterm></ReqBody></UMSFX>
+
+[INFO] [2015-04-10 10:16:35.454] com.hrbb.test.PosApplyTest.testApply(159) | 1581
+[ERROR] [2015-04-10 10:16:35.532] com.hrbb.test.SocketTestBase.sendMessage(33) | about to write message...
+[INFO] [2015-04-10 10:16:35.704] com.hrbb.test.SocketTestBase.sendMessage(42) | 000478<?xml version="1.0" encoding="GBK"?><UMSFX xmlns="http://www.chinaums.com/UMSFX/1.0">		<RespHeader>			<TransCode>HB01</TransCode>			<RespReqId>0000000001</RespReqId>						<RespCode>APPL0014</RespCode>			<RespTime>20150410</RespTime>			<RespTime>20150410</RespTime>			<RespMsg>子女人数为空或有误</RespMsg>			<ChannelId>002</ChannelId>						<MAC>ACD1F98C33BEFFAB</MAC>		</RespHeader>		<RespBody><TransCode>HB01</TransCode></RespBody></UMSFX>
+[INFO] [2015-04-10 10:17:18.670] com.hrbb.test.PosApplyTest.testApply(158) | <?xml version="1.0" encoding="GBK" standalone="no"?><UMSFX><ReqHeader><TransCode>HB01</TransCode><ChannelId>0001</ChannelId><SrcReqDate>20150409</SrcReqDate><SrcReqTime>20150409</SrcReqTime><SrcReqId>4bdd5cc71fca41589f1876404bc94cff</SrcReqId><MAC>0178fb15101f53e9d7d724fb741478e0</MAC></ReqHeader><ReqBody><posorg>UM</posorg><poscustname>结算测试</poscustname><regicode>110108005657423</regicode><dealscope>董建军</dealscope><operaddrRegion>350300</operaddrRegion><residentRegion>120000</residentRegion><operaddrdetail>但渐渐地就</operaddrdetail><industrytypeid/><custname>结算测试</custname><paperkind>01</paperkind><paperid>320902199505140017</paperid><sexsign>1</sexsign><busiyear>1</busiyear><marrsign>10</marrsign><educsign>10</educsign><childnum/><localhousenum>1</localhousenum><otherhousenum>1</otherhousenum><mobilephone>13402157618</mobilephone><tel>021-22022002</tel><bankName>中国农业银行</bankName><bankBrandName>的角度讲J</bankBrandName><bankSubName>继续西进</bankSubName><residentdetail>的角度讲见</residentdetail><contactaddrflag>的角度讲见</contactaddrflag><weixinno/><qqno/><email/><familycustname/><matepaperkind>01</matepaperkind><matepaperid/><matemobilephone/><relacustname>董建军</relacustname><relakind>2</relakind><relamobilephone>17091820011</relamobilephone><relatel/><imagefilepackagename>UMS__330101898440358122571.gz</imagefilepackagename><apptcapi>10</apptcapi><retukind1>01</retukind1><retukind2>02</retukind2><bankaccno>6228481128162432676</bankaccno><bankid>CHINAUMS</bankid><operid>CUMS0001</operid><stdshno/><stdmerno>33898440358122571</stdmerno><appterm>12</appterm></ReqBody></UMSFX>
+[INFO] [2015-04-10 10:17:18.670] com.hrbb.test.PosApplyTest.testApply(159) | 1579
+[ERROR] [2015-04-10 10:17:18.748] com.hrbb.test.SocketTestBase.sendMessage(33) | about to write message...
+[INFO] [2015-04-10 10:17:46.565] com.hrbb.test.PosApplyTest.testApply(158) | <?xml version="1.0" encoding="GBK" standalone="no"?><UMSFX><ReqHeader><TransCode>HB01</TransCode><ChannelId>0001</ChannelId><SrcReqDate>20150409</SrcReqDate><SrcReqTime>20150409</SrcReqTime><SrcReqId>4bdd5cc71fca41589f1876404bc94cff</SrcReqId><MAC>0178fb15101f53e9d7d724fb741478e0</MAC></ReqHeader><ReqBody><posorg>UM</posorg><poscustname>结算测试</poscustname><regicode>110108005657423</regicode><dealscope>董建军</dealscope><operaddrRegion>350300</operaddrRegion><residentRegion>120000</residentRegion><operaddrdetail>但渐渐地就</operaddrdetail><industrytypeid/><custname>结算测试</custname><paperkind>01</paperkind><paperid>320902199505140017</paperid><sexsign>1</sexsign><busiyear>1</busiyear><marrsign>10</marrsign><educsign>10</educsign><childnum/><localhousenum>1</localhousenum><otherhousenum>1</otherhousenum><mobilephone>13402157618</mobilephone><tel>021-22022002</tel><bankName>中国农业银行</bankName><bankBrandName>的角度讲J</bankBrandName><bankSubName>继续西进</bankSubName><residentdetail>的角度讲见</residentdetail><contactaddrflag>的角度讲见</contactaddrflag><weixinno/><qqno/><email/><familycustname/><matepaperkind>01</matepaperkind><matepaperid/><matemobilephone/><relacustname>董建军</relacustname><relakind>2</relakind><relamobilephone>17091820011</relamobilephone><relatel/><imagefilepackagename>UMS__330101898440358122571.gz</imagefilepackagename><apptcapi>10</apptcapi><retukind1>01</retukind1><retukind2>02</retukind2><bankaccno>6228481128162432676</bankaccno><bankid>CHINAUMS</bankid><operid>CUMS0001</operid><stdshno/><stdmerno>33898440358122571</stdmerno><appterm>12</appterm></ReqBody></UMSFX>
+[INFO] [2015-04-10 10:17:46.565] com.hrbb.test.PosApplyTest.testApply(159) | 1579
+[ERROR] [2015-04-10 10:17:46.674] com.hrbb.test.SocketTestBase.sendMessage(33) | about to write message...
+[INFO] [2015-04-10 10:17:46.830] com.hrbb.test.SocketTestBase.sendMessage(42) | 000478<?xml version="1.0" encoding="GBK"?><UMSFX xmlns="http://www.chinaums.com/UMSFX/1.0">		<RespHeader>			<TransCode>HB01</TransCode>			<RespReqId>0000000001</RespReqId>						<RespCode>APPL0014</RespCode>			<RespTime>20150410</RespTime>			<RespTime>20150410</RespTime>			<RespMsg>子女人数为空或有误</RespMsg>			<ChannelId>002</ChannelId>						<MAC>ACD1F98C33BEFFAB</MAC>		</RespHeader>		<RespBody><TransCode>HB01</TransCode></RespBody></UMSFX>
+[INFO] [2015-04-10 10:18:14.384] com.hrbb.test.PosApplyTest.testApply(158) | <?xml version="1.0" encoding="GBK" standalone="no"?><UMSFX><ReqHeader><TransCode>HB01</TransCode><ChannelId>0001</ChannelId><SrcReqDate>20150409</SrcReqDate><SrcReqTime>20150409</SrcReqTime><SrcReqId>4bdd5cc71fca41589f1876404bc94cff</SrcReqId><MAC>0178fb15101f53e9d7d724fb741478e0</MAC></ReqHeader><ReqBody><posorg>UM</posorg><poscustname>结算测试</poscustname><regicode>110108005657423</regicode><dealscope>董建军</dealscope><operaddrRegion>350300</operaddrRegion><residentRegion>120000</residentRegion><operaddrdetail>但渐渐地就</operaddrdetail><industrytypeid/><custname>结算测试</custname><paperkind>01</paperkind><paperid>320902199505140017</paperid><sexsign>1</sexsign><busiyear>1</busiyear><marrsign>10</marrsign><educsign>10</educsign><childnum/><localhousenum>1</localhousenum><otherhousenum>1</otherhousenum><mobilephone>13402157618</mobilephone><tel>021-22022002</tel><bankName>中国农业银行</bankName><bankBrandName>的角度讲J</bankBrandName><bankSubName>继续西进</bankSubName><residentdetail>的角度讲见</residentdetail><contactaddrflag>的角度讲见</contactaddrflag><weixinno/><qqno/><email/><familycustname/><matepaperkind>01</matepaperkind><matepaperid/><matemobilephone/><relacustname>董建军</relacustname><relakind>2</relakind><relamobilephone>17091820011</relamobilephone><relatel/><imagefilepackagename>UMS__330101898440358122571.gz</imagefilepackagename><apptcapi>10</apptcapi><retukind1>01</retukind1><retukind2>02</retukind2><bankaccno>6228481128162432676</bankaccno><bankid>CHINAUMS</bankid><operid>CUMS0001</operid><stdshno/><stdmerno>33898440358122571</stdmerno><appterm>12</appterm></ReqBody></UMSFX>
+[INFO] [2015-04-10 10:18:14.384] com.hrbb.test.PosApplyTest.testApply(159) | 1579
+[ERROR] [2015-04-10 10:18:14.447] com.hrbb.test.SocketTestBase.sendMessage(33) | about to write message...
+[INFO] [2015-04-10 10:18:14.571] com.hrbb.test.SocketTestBase.sendMessage(42) | 000478<?xml version="1.0" encoding="GBK"?><UMSFX xmlns="http://www.chinaums.com/UMSFX/1.0">		<RespHeader>			<TransCode>HB01</TransCode>			<RespReqId>0000000001</RespReqId>						<RespCode>APPL0014</RespCode>			<RespTime>20150410</RespTime>			<RespTime>20150410</RespTime>			<RespMsg>子女人数为空或有误</RespMsg>			<ChannelId>002</ChannelId>						<MAC>ACD1F98C33BEFFAB</MAC>		</RespHeader>		<RespBody><TransCode>HB01</TransCode></RespBody></UMSFX>
+[INFO] [2015-04-10 10:21:03.213] com.hrbb.test.PosApplyTest.testApply(158) | <?xml version="1.0" encoding="GBK" standalone="no"?><UMSFX><ReqHeader><TransCode>HB01</TransCode><ChannelId>0001</ChannelId><SrcReqDate>20150409</SrcReqDate><SrcReqTime>20150409</SrcReqTime><SrcReqId>4bdd5cc71fca41589f1876404bc94cff</SrcReqId><MAC>0178fb15101f53e9d7d724fb741478e0</MAC></ReqHeader><ReqBody><posorg>UM</posorg><poscustname>结算测试</poscustname><regicode>110108005657423</regicode><dealscope>董建军</dealscope><operaddrRegion>350300</operaddrRegion><residentRegion>120000</residentRegion><operaddrdetail>但渐渐地就</operaddrdetail><industrytypeid/><custname>结算测试</custname><paperkind>01</paperkind><paperid>320902199505140017</paperid><sexsign>1</sexsign><busiyear>1</busiyear><marrsign>10</marrsign><educsign>10</educsign><childnum/><localhousenum>1</localhousenum><otherhousenum>1</otherhousenum><mobilephone>13402157618</mobilephone><tel>021-22022002</tel><bankName>中国农业银行</bankName><bankBrandName>的角度讲J</bankBrandName><bankSubName>继续西进</bankSubName><residentdetail>的角度讲见</residentdetail><contactaddrflag>的角度讲见</contactaddrflag><weixinno/><qqno/><email/><familycustname/><matepaperkind>01</matepaperkind><matepaperid/><matemobilephone/><relacustname>董建军</relacustname><relakind>2</relakind><relamobilephone>17091820011</relamobilephone><relatel/><imagefilepackagename>UMS__330101898440358122571.gz</imagefilepackagename><apptcapi>10</apptcapi><retukind1>01</retukind1><retukind2>02</retukind2><bankaccno>6228481128162432676</bankaccno><bankid>CHINAUMS</bankid><operid>CUMS0001</operid><stdshno/><stdmerno>33898440358122571</stdmerno><appterm>12</appterm></ReqBody></UMSFX>
+[INFO] [2015-04-10 10:21:03.213] com.hrbb.test.PosApplyTest.testApply(159) | 1579
+[INFO] [2015-04-10 10:21:03.293] com.hrbb.test.SocketTestBase.sendMessage(51) | 1623
+[INFO] [2015-04-10 10:21:14.603] com.hrbb.test.SocketTestBase.sendMessage(56) | return:[B@17ad352e
+[INFO] [2015-04-10 10:21:14.603] com.hrbb.test.SocketTestBase.sendMessage(59) | 000478<?xml version="1.0" encoding="GBK"?>
+<UMSFX xmlns="http://www.chinaums.com/UMSFX/1.0">
+		<RespHeader>
+			<TransCode>HB01</TransCode>
+			<RespReqId>0000000001</RespReqId>			
+			<RespCode>APPL0014</RespCode>
+			<RespTime>20150410</RespTime>
+			<RespTime>20150410</RespTime>
+			<RespMsg>子女人数为空或有误</RespMsg>
+			<ChannelId>002</ChannelId>			
+			<MAC>ACD1F98C33BEFFAB</MAC>
+		</RespHeader>
+		<RespBody><TransCode>HB01</TransCode>
+</RespBody>
+</UMSFX>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+[INFO] [2015-04-10 10:52:49.236] com.hrbb.test.PosApplyTest.testApply(158) | 001631<?xml version="1.0" encoding="GBK" standalone="no"?><UMSFX><ReqHeader><TransCode>HB01</TransCode><ChannelId>0001</ChannelId><SrcReqDate>20150409</SrcReqDate><SrcReqTime>20150409</SrcReqTime><SrcReqId>4bdd5cc71fca41589f1876404bc94cff</SrcReqId><MAC>0178fb15101f53e9d7d724fb741478e0</MAC></ReqHeader><ReqBody><posorg>UM</posorg><poscustname>结算测试</poscustname><regicode>110108005657423</regicode><dealscope>董建军</dealscope><operaddrRegion>350300</operaddrRegion><residentRegion>120000</residentRegion><operaddrdetail>但渐渐地就</operaddrdetail><industrytypeid/><custname>结算测试</custname><paperkind>01</paperkind><paperid>320902199505140017</paperid><sexsign>1</sexsign><busiyear>1</busiyear><marrsign>10</marrsign><educsign>10</educsign><childnum/><localhousenum>1</localhousenum><otherhousenum>1</otherhousenum><mobilephone>13402157618</mobilephone><tel>021-22022002</tel><bankName>中国农业银行</bankName><bankBrandName>的角度讲J</bankBrandName><bankSubName>继续西进</bankSubName><residentdetail>的角度讲见</residentdetail><contactaddrflag>的角度讲见</contactaddrflag><weixinno/><qqno/><email/><familycustname/><matepaperkind>01</matepaperkind><matepaperid/><matemobilephone/><relacustname>董建军</relacustname><relakind>2</relakind><relamobilephone>17091820011</relamobilephone><relatel/><imagefilepackagename>UMS__330101898440358122571.gz</imagefilepackagename><apptcapi>10</apptcapi><retukind1>01</retukind1><retukind2>02</retukind2><bankaccno>6228481128162432676</bankaccno><bankid>CHINAUMS</bankid><operid>CUMS0001</operid><stdshno/><stdmerno>33898440358122571</stdmerno><appterm>12</appterm></ReqBody></UMSFX>
+[INFO] [2015-04-10 10:52:49.252] com.hrbb.test.PosApplyTest.testApply(159) | 1585
+[INFO] [2015-04-10 10:52:49.345] com.hrbb.test.SocketTestBase.sendMessage(51) | 1629
+[INFO] [2015-04-10 10:53:00.147] com.hrbb.test.SocketTestBase.sendMessage(56) | return:[B@17ad352e
+[INFO] [2015-04-10 10:53:00.147] com.hrbb.test.SocketTestBase.sendMessage(59) | <?xml version="1.0" encoding="GBK"?>
+<UMSFX xmlns="http://www.chinaums.com/UMSFX/1.0">
+		<RespHeader>
+			<TransCode></TransCode>
+			<RespReqId>0000000001</RespReqId>			
+			<RespCode>FF</RespCode>
+			<RespTime>20150410</RespTime>
+			<RespTime>20150410</RespTime>
+			<RespMsg>failed to convert...</RespMsg>
+			<ChannelId>002</ChannelId>			
+			<MAC>ACD1F98C33BEFFAB</MAC>
+		</RespHeader>
+		<RespBody/>
+</UMSFX>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+[INFO] [2015-04-10 14:07:09.674] com.hrbb.test.PosApplyTest.testApply(158) | 001631<?xml version="1.0" encoding="GBK" standalone="no"?><UMSFX><ReqHeader><TransCode>HB01</TransCode><ChannelId>0001</ChannelId><SrcReqDate>20150409</SrcReqDate><SrcReqTime>20150409</SrcReqTime><SrcReqId>4bdd5cc71fca41589f1876404bc94cff</SrcReqId><MAC>0178fb15101f53e9d7d724fb741478e0</MAC></ReqHeader><ReqBody><posorg>UM</posorg><poscustname>结算测试</poscustname><regicode>110108005657423</regicode><dealscope>董建军</dealscope><operaddrRegion>350300</operaddrRegion><residentRegion>120000</residentRegion><operaddrdetail>但渐渐地就</operaddrdetail><industrytypeid/><custname>结算测试</custname><paperkind>01</paperkind><paperid>320902199505140017</paperid><sexsign>1</sexsign><busiyear>1</busiyear><marrsign>10</marrsign><educsign>10</educsign><childnum/><localhousenum>1</localhousenum><otherhousenum>1</otherhousenum><mobilephone>13402157618</mobilephone><tel>021-22022002</tel><bankName>中国农业银行</bankName><bankBrandName>的角度讲J</bankBrandName><bankSubName>继续西进</bankSubName><residentdetail>的角度讲见</residentdetail><contactaddrflag>的角度讲见</contactaddrflag><weixinno/><qqno/><email/><familycustname/><matepaperkind>01</matepaperkind><matepaperid/><matemobilephone/><relacustname>董建军</relacustname><relakind>2</relakind><relamobilephone>17091820011</relamobilephone><relatel/><imagefilepackagename>UMS__330101898440358122571.gz</imagefilepackagename><apptcapi>10</apptcapi><retukind1>01</retukind1><retukind2>02</retukind2><bankaccno>6228481128162432676</bankaccno><bankid>CHINAUMS</bankid><operid>CUMS0001</operid><stdshno/><stdmerno>33898440358122571</stdmerno><appterm>12</appterm></ReqBody></UMSFX>
+[INFO] [2015-04-10 14:07:09.674] com.hrbb.test.PosApplyTest.testApply(159) | 1585
+[INFO] [2015-04-10 14:07:09.799] com.hrbb.test.SocketTestBase.sendMessage(51) | 1628
+[INFO] [2015-04-10 14:07:20.758] com.hrbb.test.SocketTestBase.sendMessage(56) | return:[B@17ad352e
+[INFO] [2015-04-10 14:07:20.758] com.hrbb.test.SocketTestBase.sendMessage(59) | 000478<?xml version="1.0" encoding="GBK"?>
+<UMSFX xmlns="http://www.chinaums.com/UMSFX/1.0">
+		<RespHeader>
+			<TransCode>HB01</TransCode>
+			<RespReqId>0000000001</RespReqId>			
+			<RespCode>APPL0014</RespCode>
+			<RespTime>20150410</RespTime>
+			<RespTime>20150410</RespTime>
+			<RespMsg>子女人数为空或有误</RespMsg>
+			<ChannelId>002</ChannelId>			
+			<MAC>ACD1F98C33BEFFAB</MAC>
+		</RespHeader>
+		<RespBody><TransCode>HB01</TransCode>
+</RespBody>
+</UMSFX>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+[INFO] [2015-04-10 14:53:55.655] com.hrbb.test.PosApplyTest.testApply(158) | 001631<?xml version="1.0" encoding="GBK" standalone="no"?><UMSFX><ReqHeader><TransCode>HB01</TransCode><ChannelId>0001</ChannelId><SrcReqDate>20150409</SrcReqDate><SrcReqTime>20150409</SrcReqTime><SrcReqId>4bdd5cc71fca41589f1876404bc94cff</SrcReqId><MAC>0178fb15101f53e9d7d724fb741478e0</MAC></ReqHeader><ReqBody><posorg>UM</posorg><poscustname>结算测试</poscustname><regicode>110108005657423</regicode><dealscope>董建军</dealscope><operaddrRegion>350300</operaddrRegion><residentRegion>120000</residentRegion><operaddrdetail>但渐渐地就</operaddrdetail><industrytypeid/><custname>结算测试</custname><paperkind>01</paperkind><paperid>320902199505140017</paperid><sexsign>1</sexsign><busiyear>1</busiyear><marrsign>10</marrsign><educsign>10</educsign><childnum/><localhousenum>1</localhousenum><otherhousenum>1</otherhousenum><mobilephone>13402157618</mobilephone><tel>021-22022002</tel><bankName>中国农业银行</bankName><bankBrandName>的角度讲J</bankBrandName><bankSubName>继续西进</bankSubName><residentdetail>的角度讲见</residentdetail><contactaddrflag>的角度讲见</contactaddrflag><weixinno/><qqno/><email/><familycustname/><matepaperkind>01</matepaperkind><matepaperid/><matemobilephone/><relacustname>董建军</relacustname><relakind>2</relakind><relamobilephone>17091820011</relamobilephone><relatel/><imagefilepackagename>UMS__330101898440358122571.gz</imagefilepackagename><apptcapi>10</apptcapi><retukind1>01</retukind1><retukind2>02</retukind2><bankaccno>6228481128162432676</bankaccno><bankid>CHINAUMS</bankid><operid>CUMS0001</operid><stdshno/><stdmerno>33898440358122571</stdmerno><appterm>12</appterm></ReqBody></UMSFX>
+[INFO] [2015-04-10 14:53:55.660] com.hrbb.test.PosApplyTest.testApply(159) | 1585
+[INFO] [2015-04-10 14:53:58.768] com.hrbb.test.SocketTestBase.sendMessage(51) | 1628
+[INFO] [2015-04-10 14:55:33.933] com.hrbb.test.PosApplyTest.testApply(158) | 001631<?xml version="1.0" encoding="GBK" standalone="no"?><UMSFX><ReqHeader><TransCode>HB01</TransCode><ChannelId>0001</ChannelId><SrcReqDate>20150409</SrcReqDate><SrcReqTime>20150409</SrcReqTime><SrcReqId>4bdd5cc71fca41589f1876404bc94cff</SrcReqId><MAC>0178fb15101f53e9d7d724fb741478e0</MAC></ReqHeader><ReqBody><posorg>UM</posorg><poscustname>结算测试</poscustname><regicode>110108005657423</regicode><dealscope>董建军</dealscope><operaddrRegion>350300</operaddrRegion><residentRegion>120000</residentRegion><operaddrdetail>但渐渐地就</operaddrdetail><industrytypeid/><custname>结算测试</custname><paperkind>01</paperkind><paperid>320902199505140017</paperid><sexsign>1</sexsign><busiyear>1</busiyear><marrsign>10</marrsign><educsign>10</educsign><childnum/><localhousenum>1</localhousenum><otherhousenum>1</otherhousenum><mobilephone>13402157618</mobilephone><tel>021-22022002</tel><bankName>中国农业银行</bankName><bankBrandName>的角度讲J</bankBrandName><bankSubName>继续西进</bankSubName><residentdetail>的角度讲见</residentdetail><contactaddrflag>的角度讲见</contactaddrflag><weixinno/><qqno/><email/><familycustname/><matepaperkind>01</matepaperkind><matepaperid/><matemobilephone/><relacustname>董建军</relacustname><relakind>2</relakind><relamobilephone>17091820011</relamobilephone><relatel/><imagefilepackagename>UMS__330101898440358122571.gz</imagefilepackagename><apptcapi>10</apptcapi><retukind1>01</retukind1><retukind2>02</retukind2><bankaccno>6228481128162432676</bankaccno><bankid>CHINAUMS</bankid><operid>CUMS0001</operid><stdshno/><stdmerno>33898440358122571</stdmerno><appterm>12</appterm></ReqBody></UMSFX>
+[INFO] [2015-04-10 14:55:33.936] com.hrbb.test.PosApplyTest.testApply(159) | 1585
+[INFO] [2015-04-10 14:55:34.038] com.hrbb.test.SocketTestBase.sendMessage(51) | 1628
+[INFO] [2015-04-10 14:56:08.667] com.hrbb.test.PosApplyTest.testApply(158) | 001631<?xml version="1.0" encoding="GBK" standalone="no"?><UMSFX><ReqHeader><TransCode>HB01</TransCode><ChannelId>0001</ChannelId><SrcReqDate>20150409</SrcReqDate><SrcReqTime>20150409</SrcReqTime><SrcReqId>4bdd5cc71fca41589f1876404bc94cff</SrcReqId><MAC>0178fb15101f53e9d7d724fb741478e0</MAC></ReqHeader><ReqBody><posorg>UM</posorg><poscustname>结算测试</poscustname><regicode>110108005657423</regicode><dealscope>董建军</dealscope><operaddrRegion>350300</operaddrRegion><residentRegion>120000</residentRegion><operaddrdetail>但渐渐地就</operaddrdetail><industrytypeid/><custname>结算测试</custname><paperkind>01</paperkind><paperid>320902199505140017</paperid><sexsign>1</sexsign><busiyear>1</busiyear><marrsign>10</marrsign><educsign>10</educsign><childnum/><localhousenum>1</localhousenum><otherhousenum>1</otherhousenum><mobilephone>13402157618</mobilephone><tel>021-22022002</tel><bankName>中国农业银行</bankName><bankBrandName>的角度讲J</bankBrandName><bankSubName>继续西进</bankSubName><residentdetail>的角度讲见</residentdetail><contactaddrflag>的角度讲见</contactaddrflag><weixinno/><qqno/><email/><familycustname/><matepaperkind>01</matepaperkind><matepaperid/><matemobilephone/><relacustname>董建军</relacustname><relakind>2</relakind><relamobilephone>17091820011</relamobilephone><relatel/><imagefilepackagename>UMS__330101898440358122571.gz</imagefilepackagename><apptcapi>10</apptcapi><retukind1>01</retukind1><retukind2>02</retukind2><bankaccno>6228481128162432676</bankaccno><bankid>CHINAUMS</bankid><operid>CUMS0001</operid><stdshno/><stdmerno>33898440358122571</stdmerno><appterm>12</appterm></ReqBody></UMSFX>
+[INFO] [2015-04-10 14:56:08.669] com.hrbb.test.PosApplyTest.testApply(159) | 1585
+[INFO] [2015-04-10 14:56:08.785] com.hrbb.test.SocketTestBase.sendMessage(51) | 1628
+[INFO] [2015-04-10 14:57:08.658] com.hrbb.test.PosApplyTest.testApply(158) | <?xml version="1.0" encoding="GBK" standalone="no"?><UMSFX><ReqHeader><TransCode>HB01</TransCode><ChannelId>0001</ChannelId><SrcReqDate>20150409</SrcReqDate><SrcReqTime>20150409</SrcReqTime><SrcReqId>4bdd5cc71fca41589f1876404bc94cff</SrcReqId><MAC>0178fb15101f53e9d7d724fb741478e0</MAC></ReqHeader><ReqBody><posorg>UM</posorg><poscustname>结算测试</poscustname><regicode>110108005657423</regicode><dealscope>董建军</dealscope><operaddrRegion>350300</operaddrRegion><residentRegion>120000</residentRegion><operaddrdetail>但渐渐地就</operaddrdetail><industrytypeid/><custname>结算测试</custname><paperkind>01</paperkind><paperid>320902199505140017</paperid><sexsign>1</sexsign><busiyear>1</busiyear><marrsign>10</marrsign><educsign>10</educsign><childnum/><localhousenum>1</localhousenum><otherhousenum>1</otherhousenum><mobilephone>13402157618</mobilephone><tel>021-22022002</tel><bankName>中国农业银行</bankName><bankBrandName>的角度讲J</bankBrandName><bankSubName>继续西进</bankSubName><residentdetail>的角度讲见</residentdetail><contactaddrflag>的角度讲见</contactaddrflag><weixinno/><qqno/><email/><familycustname/><matepaperkind>01</matepaperkind><matepaperid/><matemobilephone/><relacustname>董建军</relacustname><relakind>2</relakind><relamobilephone>17091820011</relamobilephone><relatel/><imagefilepackagename>UMS__330101898440358122571.gz</imagefilepackagename><apptcapi>10</apptcapi><retukind1>01</retukind1><retukind2>02</retukind2><bankaccno>6228481128162432676</bankaccno><bankid>CHINAUMS</bankid><operid>CUMS0001</operid><stdshno/><stdmerno>33898440358122571</stdmerno><appterm>12</appterm></ReqBody></UMSFX>
+[INFO] [2015-04-10 14:57:08.662] com.hrbb.test.PosApplyTest.testApply(159) | 1579
+[INFO] [2015-04-10 14:57:08.756] com.hrbb.test.SocketTestBase.sendMessage(51) | 1623
+[INFO] [2015-04-10 14:57:19.854] com.hrbb.test.SocketTestBase.sendMessage(56) | return:[B@6c7e6b26
+[INFO] [2015-04-10 14:57:19.854] com.hrbb.test.SocketTestBase.sendMessage(59) | <?xml version="1.0" encoding="GBK"?>
+<UMSFX xmlns="http://www.chinaums.com/UMSFX/1.0">
+		<RespHeader>
+			<TransCode></TransCode>
+			<RespReqId>0000000001</RespReqId>			
+			<RespCode>FF</RespCode>
+			<RespTime>20150410</RespTime>
+			<RespTime>20150410</RespTime>
+			<RespMsg>failed to convert...</RespMsg>
+			<ChannelId>002</ChannelId>			
+			<MAC>ACD1F98C33BEFFAB</MAC>
+		</RespHeader>
+		<RespBody/>
+</UMSFX>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+[INFO] [2015-04-10 14:57:46.035] com.hrbb.test.PosApplyTest.testApply(158) | 001631<?xml version="1.0" encoding="GBK" standalone="no"?><UMSFX><ReqHeader><TransCode>HB01</TransCode><ChannelId>0001</ChannelId><SrcReqDate>20150409</SrcReqDate><SrcReqTime>20150409</SrcReqTime><SrcReqId>4bdd5cc71fca41589f1876404bc94cff</SrcReqId><MAC>0178fb15101f53e9d7d724fb741478e0</MAC></ReqHeader><ReqBody><posorg>UM</posorg><poscustname>结算测试</poscustname><regicode>110108005657423</regicode><dealscope>董建军</dealscope><operaddrRegion>350300</operaddrRegion><residentRegion>120000</residentRegion><operaddrdetail>但渐渐地就</operaddrdetail><industrytypeid/><custname>结算测试</custname><paperkind>01</paperkind><paperid>320902199505140017</paperid><sexsign>1</sexsign><busiyear>1</busiyear><marrsign>10</marrsign><educsign>10</educsign><childnum/><localhousenum>1</localhousenum><otherhousenum>1</otherhousenum><mobilephone>13402157618</mobilephone><tel>021-22022002</tel><bankName>中国农业银行</bankName><bankBrandName>的角度讲J</bankBrandName><bankSubName>继续西进</bankSubName><residentdetail>的角度讲见</residentdetail><contactaddrflag>的角度讲见</contactaddrflag><weixinno/><qqno/><email/><familycustname/><matepaperkind>01</matepaperkind><matepaperid/><matemobilephone/><relacustname>董建军</relacustname><relakind>2</relakind><relamobilephone>17091820011</relamobilephone><relatel/><imagefilepackagename>UMS__330101898440358122571.gz</imagefilepackagename><apptcapi>10</apptcapi><retukind1>01</retukind1><retukind2>02</retukind2><bankaccno>6228481128162432676</bankaccno><bankid>CHINAUMS</bankid><operid>CUMS0001</operid><stdshno/><stdmerno>33898440358122571</stdmerno><appterm>12</appterm></ReqBody></UMSFX>
+[INFO] [2015-04-10 14:57:46.039] com.hrbb.test.PosApplyTest.testApply(159) | 1585
+[INFO] [2015-04-10 14:57:46.128] com.hrbb.test.SocketTestBase.sendMessage(51) | 1628
+[INFO] [2015-04-10 14:58:11.697] com.hrbb.test.PosApplyTest.testApply(158) | 001631<?xml version="1.0" encoding="GBK" standalone="no"?><UMSFX><ReqHeader><TransCode>HB01</TransCode><ChannelId>0001</ChannelId><SrcReqDate>20150409</SrcReqDate><SrcReqTime>20150409</SrcReqTime><SrcReqId>4bdd5cc71fca41589f1876404bc94cff</SrcReqId><MAC>0178fb15101f53e9d7d724fb741478e0</MAC></ReqHeader><ReqBody><posorg>UM</posorg><poscustname>结算测试</poscustname><regicode>110108005657423</regicode><dealscope>董建军</dealscope><operaddrRegion>350300</operaddrRegion><residentRegion>120000</residentRegion><operaddrdetail>但渐渐地就</operaddrdetail><industrytypeid/><custname>结算测试</custname><paperkind>01</paperkind><paperid>320902199505140017</paperid><sexsign>1</sexsign><busiyear>1</busiyear><marrsign>10</marrsign><educsign>10</educsign><childnum/><localhousenum>1</localhousenum><otherhousenum>1</otherhousenum><mobilephone>13402157618</mobilephone><tel>021-22022002</tel><bankName>中国农业银行</bankName><bankBrandName>的角度讲J</bankBrandName><bankSubName>继续西进</bankSubName><residentdetail>的角度讲见</residentdetail><contactaddrflag>的角度讲见</contactaddrflag><weixinno/><qqno/><email/><familycustname/><matepaperkind>01</matepaperkind><matepaperid/><matemobilephone/><relacustname>董建军</relacustname><relakind>2</relakind><relamobilephone>17091820011</relamobilephone><relatel/><imagefilepackagename>UMS__330101898440358122571.gz</imagefilepackagename><apptcapi>10</apptcapi><retukind1>01</retukind1><retukind2>02</retukind2><bankaccno>6228481128162432676</bankaccno><bankid>CHINAUMS</bankid><operid>CUMS0001</operid><stdshno/><stdmerno>33898440358122571</stdmerno><appterm>12</appterm></ReqBody></UMSFX>
+[INFO] [2015-04-10 14:58:11.700] com.hrbb.test.PosApplyTest.testApply(159) | 1585
+[INFO] [2015-04-10 14:58:11.804] com.hrbb.test.SocketTestBase.sendMessage(51) | 1628
+[INFO] [2015-04-10 14:59:33.215] com.hrbb.test.PosApplyTest.testApply(158) | <?xml version="1.0" encoding="GBK" standalone="no"?><UMSFX><ReqHeader><TransCode>HB01</TransCode><ChannelId>0001</ChannelId><SrcReqDate>20150409</SrcReqDate><SrcReqTime>20150409</SrcReqTime><SrcReqId>4bdd5cc71fca41589f1876404bc94cff</SrcReqId><MAC>0178fb15101f53e9d7d724fb741478e0</MAC></ReqHeader><ReqBody><posorg>UM</posorg><poscustname>结算测试</poscustname><regicode>110108005657423</regicode><dealscope>董建军</dealscope><operaddrRegion>350300</operaddrRegion><residentRegion>120000</residentRegion><operaddrdetail>但渐渐地就</operaddrdetail><industrytypeid/><custname>结算测试</custname><paperkind>01</paperkind><paperid>320902199505140017</paperid><sexsign>1</sexsign><busiyear>1</busiyear><marrsign>10</marrsign><educsign>10</educsign><childnum/><localhousenum>1</localhousenum><otherhousenum>1</otherhousenum><mobilephone>13402157618</mobilephone><tel>021-22022002</tel><bankName>中国农业银行</bankName><bankBrandName>的角度讲J</bankBrandName><bankSubName>继续西进</bankSubName><residentdetail>的角度讲见</residentdetail><contactaddrflag>的角度讲见</contactaddrflag><weixinno/><qqno/><email/><familycustname/><matepaperkind>01</matepaperkind><matepaperid/><matemobilephone/><relacustname>董建军</relacustname><relakind>2</relakind><relamobilephone>17091820011</relamobilephone><relatel/><imagefilepackagename>UMS__330101898440358122571.gz</imagefilepackagename><apptcapi>10</apptcapi><retukind1>01</retukind1><retukind2>02</retukind2><bankaccno>6228481128162432676</bankaccno><bankid>CHINAUMS</bankid><operid>CUMS0001</operid><stdshno/><stdmerno>33898440358122571</stdmerno><appterm>12</appterm></ReqBody></UMSFX>
+[INFO] [2015-04-10 14:59:33.218] com.hrbb.test.PosApplyTest.testApply(159) | 1579
+[INFO] [2015-04-10 14:59:33.303] com.hrbb.test.SocketTestBase.sendMessage(51) | 1623
+[INFO] [2015-04-10 14:59:54.605] com.hrbb.test.PosApplyTest.testApply(158) | <?xml version="1.0" encoding="GBK" standalone="no"?><UMSFX><ReqHeader><TransCode>HB01</TransCode><ChannelId>0001</ChannelId><SrcReqDate>20150409</SrcReqDate><SrcReqTime>20150409</SrcReqTime><SrcReqId>4bdd5cc71fca41589f1876404bc94cff</SrcReqId><MAC>0178fb15101f53e9d7d724fb741478e0</MAC></ReqHeader><ReqBody><posorg>UM</posorg><poscustname>结算测试</poscustname><regicode>110108005657423</regicode><dealscope>董建军</dealscope><operaddrRegion>350300</operaddrRegion><residentRegion>120000</residentRegion><operaddrdetail>但渐渐地就</operaddrdetail><industrytypeid/><custname>结算测试</custname><paperkind>01</paperkind><paperid>320902199505140017</paperid><sexsign>1</sexsign><busiyear>1</busiyear><marrsign>10</marrsign><educsign>10</educsign><childnum/><localhousenum>1</localhousenum><otherhousenum>1</otherhousenum><mobilephone>13402157618</mobilephone><tel>021-22022002</tel><bankName>中国农业银行</bankName><bankBrandName>的角度讲J</bankBrandName><bankSubName>继续西进</bankSubName><residentdetail>的角度讲见</residentdetail><contactaddrflag>的角度讲见</contactaddrflag><weixinno/><qqno/><email/><familycustname/><matepaperkind>01</matepaperkind><matepaperid/><matemobilephone/><relacustname>董建军</relacustname><relakind>2</relakind><relamobilephone>17091820011</relamobilephone><relatel/><imagefilepackagename>UMS__330101898440358122571.gz</imagefilepackagename><apptcapi>10</apptcapi><retukind1>01</retukind1><retukind2>02</retukind2><bankaccno>6228481128162432676</bankaccno><bankid>CHINAUMS</bankid><operid>CUMS0001</operid><stdshno/><stdmerno>33898440358122571</stdmerno><appterm>12</appterm></ReqBody></UMSFX>
+[INFO] [2015-04-10 14:59:54.608] com.hrbb.test.PosApplyTest.testApply(159) | 1579
+[INFO] [2015-04-10 14:59:54.687] com.hrbb.test.SocketTestBase.sendMessage(51) | 1623
+[INFO] [2015-04-10 15:04:01.979] com.hrbb.test.PosApplyTest.testApply(158) | <?xml version="1.0" encoding="GBK" standalone="no"?><UMSFX><ReqHeader><TransCode>HB01</TransCode><ChannelId>0001</ChannelId><SrcReqDate>20150409</SrcReqDate><SrcReqTime>20150409</SrcReqTime><SrcReqId>4bdd5cc71fca41589f1876404bc94cff</SrcReqId><MAC>0178fb15101f53e9d7d724fb741478e0</MAC></ReqHeader><ReqBody><posorg>UM</posorg><poscustname>结算测试</poscustname><regicode>110108005657423</regicode><dealscope>董建军</dealscope><operaddrRegion>350300</operaddrRegion><residentRegion>120000</residentRegion><operaddrdetail>但渐渐地就</operaddrdetail><industrytypeid/><custname>结算测试</custname><paperkind>01</paperkind><paperid>320902199505140017</paperid><sexsign>1</sexsign><busiyear>1</busiyear><marrsign>10</marrsign><educsign>10</educsign><childnum/><localhousenum>1</localhousenum><otherhousenum>1</otherhousenum><mobilephone>13402157618</mobilephone><tel>021-22022002</tel><bankName>中国农业银行</bankName><bankBrandName>的角度讲J</bankBrandName><bankSubName>继续西进</bankSubName><residentdetail>的角度讲见</residentdetail><contactaddrflag>的角度讲见</contactaddrflag><weixinno/><qqno/><email/><familycustname/><matepaperkind>01</matepaperkind><matepaperid/><matemobilephone/><relacustname>董建军</relacustname><relakind>2</relakind><relamobilephone>17091820011</relamobilephone><relatel/><imagefilepackagename>UMS__330101898440358122571.gz</imagefilepackagename><apptcapi>10</apptcapi><retukind1>01</retukind1><retukind2>02</retukind2><bankaccno>6228481128162432676</bankaccno><bankid>CHINAUMS</bankid><operid>CUMS0001</operid><stdshno/><stdmerno>33898440358122571</stdmerno><appterm>12</appterm></ReqBody></UMSFX>
+[INFO] [2015-04-10 15:04:01.982] com.hrbb.test.PosApplyTest.testApply(159) | 1579
+[INFO] [2015-04-10 15:04:02.095] com.hrbb.test.SocketTestBase.sendMessage(51) | 1622
+[INFO] [2015-04-10 15:04:13.487] com.hrbb.test.SocketTestBase.sendMessage(56) | return:[B@17ad352e
+[INFO] [2015-04-10 15:04:13.487] com.hrbb.test.SocketTestBase.sendMessage(59) | <?xml version="1.0" encoding="GBK"?>
+<UMSFX xmlns="http://www.chinaums.com/UMSFX/1.0">
+		<RespHeader>
+			<TransCode></TransCode>
+			<RespReqId>0000000001</RespReqId>			
+			<RespCode>FF</RespCode>
+			<RespTime>20150410</RespTime>
+			<RespTime>20150410</RespTime>
+			<RespMsg>failed to convert...</RespMsg>
+			<ChannelId>002</ChannelId>			
+			<MAC>ACD1F98C33BEFFAB</MAC>
+		</RespHeader>
+		<RespBody/>
+</UMSFX>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+[INFO] [2015-04-10 15:04:27.406] com.hrbb.test.PosApplyTest.testApply(158) | 001631<?xml version="1.0" encoding="GBK" standalone="no"?><UMSFX><ReqHeader><TransCode>HB01</TransCode><ChannelId>0001</ChannelId><SrcReqDate>20150409</SrcReqDate><SrcReqTime>20150409</SrcReqTime><SrcReqId>4bdd5cc71fca41589f1876404bc94cff</SrcReqId><MAC>0178fb15101f53e9d7d724fb741478e0</MAC></ReqHeader><ReqBody><posorg>UM</posorg><poscustname>结算测试</poscustname><regicode>110108005657423</regicode><dealscope>董建军</dealscope><operaddrRegion>350300</operaddrRegion><residentRegion>120000</residentRegion><operaddrdetail>但渐渐地就</operaddrdetail><industrytypeid/><custname>结算测试</custname><paperkind>01</paperkind><paperid>320902199505140017</paperid><sexsign>1</sexsign><busiyear>1</busiyear><marrsign>10</marrsign><educsign>10</educsign><childnum/><localhousenum>1</localhousenum><otherhousenum>1</otherhousenum><mobilephone>13402157618</mobilephone><tel>021-22022002</tel><bankName>中国农业银行</bankName><bankBrandName>的角度讲J</bankBrandName><bankSubName>继续西进</bankSubName><residentdetail>的角度讲见</residentdetail><contactaddrflag>的角度讲见</contactaddrflag><weixinno/><qqno/><email/><familycustname/><matepaperkind>01</matepaperkind><matepaperid/><matemobilephone/><relacustname>董建军</relacustname><relakind>2</relakind><relamobilephone>17091820011</relamobilephone><relatel/><imagefilepackagename>UMS__330101898440358122571.gz</imagefilepackagename><apptcapi>10</apptcapi><retukind1>01</retukind1><retukind2>02</retukind2><bankaccno>6228481128162432676</bankaccno><bankid>CHINAUMS</bankid><operid>CUMS0001</operid><stdshno/><stdmerno>33898440358122571</stdmerno><appterm>12</appterm></ReqBody></UMSFX>
+[INFO] [2015-04-10 15:04:27.409] com.hrbb.test.PosApplyTest.testApply(159) | 1585
+[INFO] [2015-04-10 15:04:27.549] com.hrbb.test.SocketTestBase.sendMessage(51) | 1628
+[INFO] [2015-04-10 15:04:39.035] com.hrbb.test.SocketTestBase.sendMessage(56) | return:[B@6c7e6b26
+[INFO] [2015-04-10 15:04:39.036] com.hrbb.test.SocketTestBase.sendMessage(59) | 000478<?xml version="1.0" encoding="GBK"?>
+<UMSFX xmlns="http://www.chinaums.com/UMSFX/1.0">
+		<RespHeader>
+			<TransCode>HB01</TransCode>
+			<RespReqId>0000000001</RespReqId>			
+			<RespCode>APPL0014</RespCode>
+			<RespTime>20150410</RespTime>
+			<RespTime>20150410</RespTime>
+			<RespMsg>子女人数为空或有误</RespMsg>
+			<ChannelId>002</ChannelId>			
+			<MAC>ACD1F98C33BEFFAB</MAC>
+		</RespHeader>
+		<RespBody><TransCode>HB01</TransCode>
+</RespBody>
+</UMSFX>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+[INFO] [2015-04-10 15:07:44.313] com.hrbb.test.PosApplyTest.testApply(158) | 001631<?xml version="1.0" encoding="GBK" standalone="no"?><UMSFX><ReqHeader><TransCode>HB01</TransCode><ChannelId>0001</ChannelId><SrcReqDate>20150409</SrcReqDate><SrcReqTime>20150409</SrcReqTime><SrcReqId>4bdd5cc71fca41589f1876404bc94cff</SrcReqId><MAC>0178fb15101f53e9d7d724fb741478e0</MAC></ReqHeader><ReqBody><posorg>UM</posorg><poscustname>结算测试</poscustname><regicode>110108005657423</regicode><dealscope>董建军</dealscope><operaddrRegion>350300</operaddrRegion><residentRegion>120000</residentRegion><operaddrdetail>但渐渐地就</operaddrdetail><industrytypeid/><custname>结算测试</custname><paperkind>01</paperkind><paperid>320902199505140017</paperid><sexsign>1</sexsign><busiyear>1</busiyear><marrsign>10</marrsign><educsign>10</educsign><childnum/><localhousenum>1</localhousenum><otherhousenum>1</otherhousenum><mobilephone>13402157618</mobilephone><tel>021-22022002</tel><bankName>中国农业银行</bankName><bankBrandName>的角度讲J</bankBrandName><bankSubName>继续西进</bankSubName><residentdetail>的角度讲见</residentdetail><contactaddrflag>的角度讲见</contactaddrflag><weixinno/><qqno/><email/><familycustname/><matepaperkind>01</matepaperkind><matepaperid/><matemobilephone/><relacustname>董建军</relacustname><relakind>2</relakind><relamobilephone>17091820011</relamobilephone><relatel/><imagefilepackagename>UMS__330101898440358122571.gz</imagefilepackagename><apptcapi>10</apptcapi><retukind1>01</retukind1><retukind2>02</retukind2><bankaccno>6228481128162432676</bankaccno><bankid>CHINAUMS</bankid><operid>CUMS0001</operid><stdshno/><stdmerno>33898440358122571</stdmerno><appterm>12</appterm></ReqBody></UMSFX>
+[INFO] [2015-04-10 15:07:44.315] com.hrbb.test.PosApplyTest.testApply(159) | 1585
+[INFO] [2015-04-10 15:07:44.414] com.hrbb.test.SocketTestBase.sendMessage(51) | 1628
+[INFO] [2015-04-10 15:07:56.315] com.hrbb.test.SocketTestBase.sendMessage(56) | return:[B@17ad352e
+[INFO] [2015-04-10 15:07:56.315] com.hrbb.test.SocketTestBase.sendMessage(59) | 000478<?xml version="1.0" encoding="GBK"?>
+<UMSFX xmlns="http://www.chinaums.com/UMSFX/1.0">
+		<RespHeader>
+			<TransCode>HB01</TransCode>
+			<RespReqId>0000000001</RespReqId>			
+			<RespCode>APPL0014</RespCode>
+			<RespTime>20150410</RespTime>
+			<RespTime>20150410</RespTime>
+			<RespMsg>子女人数为空或有误</RespMsg>
+			<ChannelId>002</ChannelId>			
+			<MAC>ACD1F98C33BEFFAB</MAC>
+		</RespHeader>
+		<RespBody><TransCode>HB01</TransCode>
+</RespBody>
+</UMSFX>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+[INFO] [2015-04-10 15:28:10.917] com.hrbb.test.PosApplyTest.testApply(158) | <?xml version="1.0" encoding="GBK"?>
+<UMSFX xmlns="http://www.chinaums.com/UMSFX/1.0">
+		<ReqHeader>
+			<TransCode>HB01</TransCode>
+			<SrcReqDate>20120424</SrcReqDate>
+			<SrcReqTime>195435</SrcReqTime>
+			<SrcReqId>0000000001</SrcReqId>
+			<ChannelId>002</ChannelId>
+			<MAC>ACD1F98C33BEFFAB</MAC>
+		</ReqHeader>
+<ReqBody>
+			<posorg>01</posorg>
+			<poscustname>上海露酒</poscustname>
+			<regicode>1231342131233123</regicode>
+			<dealscope>酒类</dealscope>
+			<operaddrRegion>311012</operaddrRegion>
+			<residentRegion>3101112</residentRegion>
+			<operaddrdetail>上海市浦东新区噜噜噜</operaddrdetail>
+			<industrytypeid>31231</industrytypeid>
+			<custname>斯拉的</custname>
+			<paperkind>01</paperkind>
+			<paperid>310115198805020113</paperid>
+			<sexsign>01</sexsign>
+			<busiyear>12</busiyear>
+			<marrsign>10</marrsign>
+			<educsign>20</educsign>
+			<childnum>1</childnum>
+			<localhousenum>1</localhousenum>
+			<otherhousenum>1</otherhousenum>
+			<mobilephone>15001929875</mobilephone>
+			<tel>68682162</tel>
+			<bankName>工商银行</bankName>
+			<bankBrandName>上海分行</bankBrandName>
+			<bankSubName>虹口支行</bankSubName>
+			<residentdetail>上海市浦东新区呼呼呼</residentdetail>
+			<contactaddrflag>上海浦东新区呼呼呼</contactaddrflag>
+			<weixinno>syslsy</weixinno>
+			<qqno>435432218</qqno>
+			<email>songyilinking@sina.com</email>
+			<familycustname>哭哭哦哦</familycustname>
+			<matepaperkind>01</matepaperkind>
+			<matepaperid>310115198805020113</matepaperid>
+			<matemobilephone>15001929875</matemobilephone>
+			<relacustname>肃然</relacustname>
+			<relakind>1</relakind>
+			<relamobilephone>15001929875</relamobilephone>
+			<relatel>50219592</relatel>
+			<imagefilepackagename>123123</imagefilepackagename>
+			<apptcapi>5000</apptcapi>
+			<retukind1>01</retukind1>
+			<retukind2>01</retukind2>
+			<bankaccno>6212304213043123</bankaccno>
+			<bankid>010101</bankid>
+			<operid>10202130</operid>
+			<stdshno>1223483567</stdshno>
+			<stdmerno>123403567</stdmerno>
+			<appterm>12</appterm>
+		</ReqBody>
+</UMSFX>
+
+[INFO] [2015-04-10 15:28:10.920] com.hrbb.test.PosApplyTest.testApply(159) | 2025
+[INFO] [2015-04-10 15:28:13.957] com.hrbb.test.SocketTestBase.sendMessage(51) | 2081
+[INFO] [2015-04-10 15:28:50.296] com.hrbb.test.PosApplyTest.testApply(158) | 001631<?xml version="1.0" encoding="GBK" standalone="no"?><UMSFX><ReqHeader><TransCode>HB01</TransCode><ChannelId>0001</ChannelId><SrcReqDate>20150409</SrcReqDate><SrcReqTime>20150409</SrcReqTime><SrcReqId>4bdd5cc71fca41589f1876404bc94cff</SrcReqId><MAC>0178fb15101f53e9d7d724fb741478e0</MAC></ReqHeader><ReqBody><posorg>UM</posorg><poscustname>结算测试</poscustname><regicode>110108005657423</regicode><dealscope>董建军</dealscope><operaddrRegion>350300</operaddrRegion><residentRegion>120000</residentRegion><operaddrdetail>但渐渐地就</operaddrdetail><industrytypeid/><custname>结算测试</custname><paperkind>01</paperkind><paperid>320902199505140017</paperid><sexsign>1</sexsign><busiyear>1</busiyear><marrsign>10</marrsign><educsign>10</educsign><childnum/><localhousenum>1</localhousenum><otherhousenum>1</otherhousenum><mobilephone>13402157618</mobilephone><tel>021-22022002</tel><bankName>中国农业银行</bankName><bankBrandName>的角度讲J</bankBrandName><bankSubName>继续西进</bankSubName><residentdetail>的角度讲见</residentdetail><contactaddrflag>的角度讲见</contactaddrflag><weixinno/><qqno/><email/><familycustname/><matepaperkind>01</matepaperkind><matepaperid/><matemobilephone/><relacustname>董建军</relacustname><relakind>2</relakind><relamobilephone>17091820011</relamobilephone><relatel/><imagefilepackagename>UMS__330101898440358122571.gz</imagefilepackagename><apptcapi>10</apptcapi><retukind1>01</retukind1><retukind2>02</retukind2><bankaccno>6228481128162432676</bankaccno><bankid>CHINAUMS</bankid><operid>CUMS0001</operid><stdshno/><stdmerno>33898440358122571</stdmerno><appterm>12</appterm></ReqBody></UMSFX>
+[INFO] [2015-04-10 15:28:50.298] com.hrbb.test.PosApplyTest.testApply(159) | 1585
+[INFO] [2015-04-10 15:28:50.803] com.hrbb.test.SocketTestBase.sendMessage(51) | 1628
+[INFO] [2015-04-10 15:29:02.334] com.hrbb.test.SocketTestBase.sendMessage(56) | return:[B@4752dd7b
+[INFO] [2015-04-10 15:29:02.334] com.hrbb.test.SocketTestBase.sendMessage(59) | 000478<?xml version="1.0" encoding="GBK"?>
+<UMSFX xmlns="http://www.chinaums.com/UMSFX/1.0">
+		<RespHeader>
+			<TransCode>HB01</TransCode>
+			<RespReqId>0000000001</RespReqId>			
+			<RespCode>APPL0014</RespCode>
+			<RespTime>20150410</RespTime>
+			<RespTime>20150410</RespTime>
+			<RespMsg>子女人数为空或有误</RespMsg>
+			<ChannelId>002</ChannelId>			
+			<MAC>ACD1F98C33BEFFAB</MAC>
+		</RespHeader>
+		<RespBody><TransCode>HB01</TransCode>
+</RespBody>
+</UMSFX>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+[INFO] [2015-04-10 15:36:45.338] com.hrbb.test.PosApplyTest.testApply(158) | 001631<?xml version="1.0" encoding="GBK" standalone="no"?><UMSFX><ReqHeader><TransCode>HB01</TransCode><ChannelId>0001</ChannelId><SrcReqDate>20150410</SrcReqDate><SrcReqTime>20150410</SrcReqTime><SrcReqId>4e706aa5c8f347de911006333682a4d9</SrcReqId><MAC>d76f92de871b25104ad02a3a39716dd7</MAC></ReqHeader><ReqBody><posorg>03</posorg><poscustname>常州市武******金店</poscustname><regicode>320483600544217</regicode><dealscope>物流</dealscope><operaddrRegion>310000</operaddrRegion><residentRegion>110000</residentRegion><operaddrdetail>浦东新区</operaddrdetail><industrytypeid/><custname>陈卫平</custname><paperkind>01</paperkind><paperid>320411197501070232</paperid><sexsign>1</sexsign><busiyear>11</busiyear><marrsign>10</marrsign><educsign>10</educsign><childnum>0</childnum><localhousenum>1</localhousenum><otherhousenum>2</otherhousenum><mobilephone>13182585252</mobilephone><tel>021-22222222</tel><bankName>中国农业银行</bankName><bankBrandName>上海市</bankBrandName><bankSubName>南京路</bankSubName><residentdetail>永定门</residentdetail><contactaddrflag>浦东新区</contactaddrflag><weixinno/><qqno/><email/><familycustname/><matepaperkind>01</matepaperkind><matepaperid/><matemobilephone/><relacustname>张三</relacustname><relakind>3</relakind><relamobilephone>18511112222</relamobilephone><relatel/><imagefilepackagename>UMS__320412898320450390494.gz</imagefilepackagename><apptcapi>10</apptcapi><retukind1>01</retukind1><retukind2>02</retukind2><bankaccno>6228481128162432676</bankaccno><bankid>CHINAUMS</bankid><operid>CUMS0001</operid><stdshno/><stdmerno>32898320450390494</stdmerno><appterm>12</appterm></ReqBody></UMSFX> 
+[INFO] [2015-04-10 15:36:45.341] com.hrbb.test.PosApplyTest.testApply(159) | 1596
+[INFO] [2015-04-10 15:36:45.466] com.hrbb.test.SocketTestBase.sendMessage(51) | 1632
+[INFO] [2015-04-10 15:36:56.642] com.hrbb.test.SocketTestBase.sendMessage(56) | return:[B@6c7e6b26
+[INFO] [2015-04-10 15:36:56.642] com.hrbb.test.SocketTestBase.sendMessage(59) | 000481<?xml version="1.0" encoding="GBK"?>
+<UMSFX xmlns="http://www.chinaums.com/UMSFX/1.0">
+		<RespHeader>
+			<TransCode>HB01</TransCode>
+			<RespReqId>0000000001</RespReqId>			
+			<RespCode>APPL0039</RespCode>
+			<RespTime>20150410</RespTime>
+			<RespTime>20150410</RespTime>
+			<RespMsg>商户流水号为空或有误</RespMsg>
+			<ChannelId>002</ChannelId>			
+			<MAC>ACD1F98C33BEFFAB</MAC>
+		</RespHeader>
+		<RespBody><TransCode>HB01</TransCode>
+</RespBody>
+</UMSFX>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+[INFO] [2015-04-10 15:37:31.958] com.hrbb.test.PosApplyTest.testApply(158) | 001631<?xml version="1.0" encoding="GBK" standalone="no"?><UMSFX><ReqHeader><TransCode>HB01</TransCode><ChannelId>0001</ChannelId><SrcReqDate>20150410</SrcReqDate><SrcReqTime>20150410</SrcReqTime><SrcReqId>4e706aa5c8f347de911006333682a4d9</SrcReqId><MAC>d76f92de871b25104ad02a3a39716dd7</MAC></ReqHeader><ReqBody><posorg>03</posorg><poscustname>常州市武******金店</poscustname><regicode>320483600544217</regicode><dealscope>物流</dealscope><operaddrRegion>310000</operaddrRegion><residentRegion>110000</residentRegion><operaddrdetail>浦东新区</operaddrdetail><industrytypeid/><custname>陈卫平</custname><paperkind>01</paperkind><paperid>320411197501070232</paperid><sexsign>1</sexsign><busiyear>11</busiyear><marrsign>10</marrsign><educsign>10</educsign><childnum>0</childnum><localhousenum>1</localhousenum><otherhousenum>2</otherhousenum><mobilephone>13182585252</mobilephone><tel>021-22222222</tel><bankName>中国农业银行</bankName><bankBrandName>上海市</bankBrandName><bankSubName>南京路</bankSubName><residentdetail>永定门</residentdetail><contactaddrflag>浦东新区</contactaddrflag><weixinno/><qqno/><email/><familycustname/><matepaperkind>01</matepaperkind><matepaperid/><matemobilephone/><relacustname>张三</relacustname><relakind>3</relakind><relamobilephone>18511112222</relamobilephone><relatel/><imagefilepackagename>UMS__320412898320450390494.gz</imagefilepackagename><apptcapi>10</apptcapi><retukind1>01</retukind1><retukind2>02</retukind2><bankaccno>6228481128162432676</bankaccno><bankid>CHINAUMS</bankid><operid>CUMS0001</operid><stdshno>23123123</stdshno><stdmerno>32898320450390494</stdmerno><appterm>12</appterm></ReqBody></UMSFX> 
+[INFO] [2015-04-10 15:37:31.960] com.hrbb.test.PosApplyTest.testApply(159) | 1613
+[INFO] [2015-04-10 15:37:32.133] com.hrbb.test.SocketTestBase.sendMessage(51) | 1649
+[INFO] [2015-04-10 15:37:43.549] com.hrbb.test.SocketTestBase.sendMessage(56) | return:[B@4752dd7b
+[INFO] [2015-04-10 15:37:43.550] com.hrbb.test.SocketTestBase.sendMessage(59) | 000640<?xml version="1.0" encoding="GBK"?>
+<UMSFX xmlns="http://www.chinaums.com/UMSFX/1.0">
+		<RespHeader>
+			<TransCode>HB01</TransCode>
+			<RespReqId>0000000001</RespReqId>			
+			<RespCode>APPL0000</RespCode>
+			<RespTime>20150410</RespTime>
+			<RespTime>20150410</RespTime>
+			<RespMsg>操作成功</RespMsg>
+			<ChannelId>002</ChannelId>			
+			<MAC>ACD1F98C33BEFFAB</MAC>
+		</RespHeader>
+		<RespBody><Stdmerno>32898320450390494</Stdmerno>
+<Stdshno>23123123</Stdshno>
+<Loanid>LO2015041015371037695406273400</Loanid>
+<Custid>CU20150410153710345320411197501070232851</Custid>
+<TransCode>HB01</TransCode>
+</RespBody>
+</UMSFX>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+[INFO] [2015-04-10 16:53:23.852] com.hrbb.test.PosApplyTest.testApply(158) | 001631<?xml version="1.0" encoding="GBK" standalone="no"?><UMSFX><ReqHeader><TransCode>HB01</TransCode><ChannelId>0001</ChannelId><SrcReqDate>20150410</SrcReqDate><SrcReqTime>20150410</SrcReqTime><SrcReqId>4e706aa5c8f347de911006333682a4d9</SrcReqId><MAC>d76f92de871b25104ad02a3a39716dd7</MAC></ReqHeader><ReqBody><posorg>03</posorg><poscustname>常州市武******金店</poscustname><regicode>320483600544217</regicode><dealscope>物流</dealscope><operaddrRegion>310000</operaddrRegion><residentRegion>110000</residentRegion><operaddrdetail>浦东新区</operaddrdetail><industrytypeid/><custname>陈卫平</custname><paperkind>01</paperkind><paperid>320411197501070232</paperid><sexsign>1</sexsign><busiyear>11</busiyear><marrsign>10</marrsign><educsign>10</educsign><childnum>0</childnum><localhousenum>1</localhousenum><otherhousenum>2</otherhousenum><mobilephone>13182585252</mobilephone><tel>021-22222222</tel><bankName>中国农业银行</bankName><bankBrandName>上海市</bankBrandName><bankSubName>南京路</bankSubName><residentdetail>永定门</residentdetail><contactaddrflag>浦东新区</contactaddrflag><weixinno/><qqno/><email/><familycustname/><matepaperkind>01</matepaperkind><matepaperid/><matemobilephone/><relacustname>张三</relacustname><relakind>3</relakind><relamobilephone>18511112222</relamobilephone><relatel/><imagefilepackagename>UMS__320412898320450390494.gz</imagefilepackagename><apptcapi>10</apptcapi><retukind1>01</retukind1><retukind2>02</retukind2><bankaccno>6228481128162432676</bankaccno><bankid>CHINAUMS</bankid><operid>CUMS0001</operid><stdshno>23123123</stdshno><stdmerno>32898320450390494</stdmerno><appterm>12</appterm></ReqBody></UMSFX> 
+[INFO] [2015-04-10 16:53:23.855] com.hrbb.test.PosApplyTest.testApply(159) | 1613
+[INFO] [2015-04-10 16:53:24.025] com.hrbb.test.SocketTestBase.sendMessage(51) | 1649
+[INFO] [2015-04-10 16:53:35.953] com.hrbb.test.SocketTestBase.sendMessage(56) | return:[B@114adad2
+[INFO] [2015-04-10 16:53:35.953] com.hrbb.test.SocketTestBase.sendMessage(59) | 000640<?xml version="1.0" encoding="GBK"?>
+<UMSFX xmlns="http://www.chinaums.com/UMSFX/1.0">
+		<RespHeader>
+			<TransCode>HB01</TransCode>
+			<RespReqId>0000000001</RespReqId>			
+			<RespCode>APPL0000</RespCode>
+			<RespTime>20150410</RespTime>
+			<RespTime>20150410</RespTime>
+			<RespMsg>操作成功</RespMsg>
+			<ChannelId>002</ChannelId>			
+			<MAC>ACD1F98C33BEFFAB</MAC>
+		</RespHeader>
+		<RespBody><stdmerno>32898320450390494</stdmerno>
+<stdshno>23123123</stdshno>
+<loanid>LO2015041016530224378230849000</loanid>
+<custid>CU20150410153710345320411197501070232851</custid>
+<transCode>HB01</transCode>
+</RespBody>
+</UMSFX>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           

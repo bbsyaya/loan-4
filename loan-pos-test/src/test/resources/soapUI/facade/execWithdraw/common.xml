@@ -1,0 +1,15 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:fram="http://framework.facade.common.transcore.pinganfu.com/">
+	<soapenv:Header />
+	<soapenv:Body>
+		<fram:execWithdraw>
+			<arg0>
+				<amount>1000000</amount>
+				<currencyCode>CNY</currencyCode>
+				<extFeilds>{asdfasfasfasfas:dafasfasfas2}</extFeilds>
+				<toCredentialType>2</toCredentialType>
+				<transId>${transId}</transId> <!-- 00030005201403210000000000030541  -->
+			</arg0>
+		</fram:execWithdraw>
+	</soapenv:Body>
+</soapenv:Envelope>

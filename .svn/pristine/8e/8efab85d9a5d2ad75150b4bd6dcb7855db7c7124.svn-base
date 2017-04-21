@@ -1,0 +1,66 @@
+package com.hrbb.loan.pos.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.hrbb.loan.pos.dao.TBdExecutorDao;
+import com.hrbb.loan.pos.dao.TRiskChannelConfigDao;
+import com.hrbb.loan.pos.dao.TRiskZoneConfigDao;
+import com.hrbb.loan.pos.dao.entity.TBdExecutor;
+import com.hrbb.loan.pos.dao.entity.TRiskChannelConfig;
+import com.hrbb.loan.pos.dao.entity.TRiskZoneConfig;
+import com.hrbb.loan.pos.service.ModelParamConfigService;
+@Service("ModelParamConfigService")
+public class ModelParamConfigServiceImpl implements ModelParamConfigService {
+	@Autowired
+	private TRiskZoneConfigDao    tRiskZoneConfigDao;
+	
+	@Autowired
+	private TRiskChannelConfigDao    tRiskChannelConfigDao;
+
+	@Override
+	public List<TRiskZoneConfig> queryRiskZoneConfig(Map<String, Object> reqMap) {
+		 return tRiskZoneConfigDao.selectListBySelective(reqMap);
+	}
+	@Override
+	public long countRiskZoneConfig(Map<String, Object> reqMap) {
+		 return tRiskZoneConfigDao.countListBySelective(reqMap);
+	}
+	@Override
+	public TRiskZoneConfig selectRiskzoneConfigByRegcode(String string) {
+		 return tRiskZoneConfigDao.selectRiskzoneConfigByRegcode(string);
+	}
+	@Override
+	public int saveRiskzoneConfig(Map<String, Object> reqMap) {
+		 return tRiskZoneConfigDao.saveRiskzoneConfig(reqMap);
+	}
+	@Override
+	public TRiskZoneConfig selectRiskZoneConfigByID(Integer id) {
+		 return tRiskZoneConfigDao.selectByPrimaryKey(id);
+	}
+	@Override
+	public int modifyRiskzoneConfig(Map<String, Object> reqMap) {
+		 return tRiskZoneConfigDao.updateByUpdateMap(reqMap);
+	}
+	@Override
+	public int deleteRiskzoneConfig(String id) {
+		 return tRiskZoneConfigDao.deleteRiskzoneConfigByID(id);
+	}
+	@Override
+	public List<TRiskChannelConfig> queryRiskChannelConfig(
+			Map<String, Object> reqMap) {
+		 return tRiskChannelConfigDao.selectListBySelective(reqMap);
+	}
+	@Override
+	public long countRiskChannelConfig(Map<String, Object> reqMap) {
+		 return tRiskChannelConfigDao.countListBySelective(reqMap);
+	}
+	@Override
+	public TRiskChannelConfig selectRiskChannelConfigByID(Integer id) {
+		return tRiskChannelConfigDao.selectByPrimaryKey(id);
+	}
+
+}

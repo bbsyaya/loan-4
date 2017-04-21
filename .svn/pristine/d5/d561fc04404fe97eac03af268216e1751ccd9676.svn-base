@@ -1,0 +1,8 @@
+#Synchro File Path
+synchrofilepath=/home/loan-pos-synchrofile/
+#channel
+channels=UM,58,HC,ZW
+channelFtpIds=UMI,58I,HCI,ZWI
+#dataTransfer File Path
+#dataTransferfilepath=/home/loan-pos-dataTransferfile/dataTransferfile/all.json
+#dataTransferfilepath=C\:workPOSLOANdataTransferall.json

@@ -1,0 +1,28 @@
+package com.hrbb.loan.pos.dao;
+
+import java.util.List;
+
+import com.hrbb.loan.pos.dao.entity.TUpsBillcardstatSerial;
+
+/**
+ * 
+ * @author cjq
+ * @version $Id: TUpsBillcardstatSerialDao.java, v 0.1 2015年7月16日 上午10:50:58 cjq Exp $
+ */
+public interface TUpsBillcardstatSerialDao {
+    
+    /**
+     * 银行流水入库
+     * 
+     * @param upsbillcardstatSercial
+     * @return
+     */
+    int insert(TUpsBillcardstatSerial upsbillcardstatSercial);
+
+    /**
+     * 
+     * @param upsbillcardstatSercials
+     * @return
+     */
+    int insertBatch(List<TUpsBillcardstatSerial> upsBillcardstatSercials);
+}

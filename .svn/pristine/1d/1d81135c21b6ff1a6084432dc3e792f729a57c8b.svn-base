@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.hrbb.loan</groupId>
+	<artifactId>loan</artifactId>
+
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>loan</name>
+
+	<modules>
+		<module>loan-pos-biz</module>
+		<module>loan-pos-dal</module>
+		<module>loan-pos-facade</module>
+		<module>loan-pos-integration</module>
+		<module>loan-pos-util</module>
+		<module>loan-pos-service</module>
+		<module>loan-pos-test</module>
+		<module>loan-pos-web</module>
+		<module>loan-pos-xstream</module>
+		<module>loan-pos-tools</module>
+	</modules>
+
+	<properties>
+		<!-- Generic properties -->
+		<com.hrbb.loan.version>1.0.0-SNAPSHOT</com.hrbb.loan.version>
+		<!-- Generic properties -->
+		<java.version>1.7</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<spring.version>3.2.4.RELEASE</spring.version>
+		<mybatis.version>3.1.1</mybatis.version>
+		<mybatis-spring.version>1.1.1</mybatis-spring.version>
+		<mybatis-ehcache.version>1.0.0</mybatis-ehcache.version>
+		<junit.version>4.11</junit.version>
+		<commons-io.version>20030203.000550</commons-io.version>
+		<commons.lang.version>2.6</commons.lang.version>
+		<sitemesh.version>2.4.2</sitemesh.version>
+		<freemarker.version>2.3.19</freemarker.version>
+		<logback.version>1.0.13</logback.version>
+		<slf4.version>1.7.5</slf4.version>
+		<zk.version>3.3.3</zk.version>
+		<cxf.version>2.7.5</cxf.version>
+		<netty.version>4.0.25.Final</netty.version>
+		<commons-beanutils.version>1.8.3</commons-beanutils.version>
+		<gson.version>2.2.4</gson.version>
+		<ojdbc.version>11.2.0</ojdbc.version>
+		<commons-dbcp.version>1.4</commons-dbcp.version>
+		<ganymed.ssh.version>build210</ganymed.ssh.version>
+		<sonar.language>java</sonar.language>
+		<spring-data.version>1.7.0.RELEASE</spring-data.version>
+		<spring.security>3.2.4.RELEASE</spring.security>
+		<loan-pos-biz.version>1.0.0-SNAPSHOT</loan-pos-biz.version>
+		<c3p0.version>0.9.1.2</c3p0.version>
+		<cglib.version>3.1</cglib.version>
+		<json-version>2.2.4</json-version>
+		<alibaba-json-version>1.2.3</alibaba-json-version>
+		<com.caucho.version>3.1.5</com.caucho.version>
+		<httpcomponents.version>4.3.6</httpcomponents.version>
+		<com.hrbb.ump.facade.version>1.0.0-SNAPSHOT</com.hrbb.ump.facade.version>
+	</properties>
+
+
+	<dependencyManagement>
+
+
+		<dependencies>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>2.4</version>
+			</dependency>
+			<!-- excel -->
+			<!-- <dependency> <groupId>net.sourceforge.jexcelapi</groupId> <artifactId>jxl</artifactId> 
+				<version>2.6.12</version> </dependency> -->
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi</artifactId>
+				<version>3.11</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi-ooxml</artifactId>
+				<version>3.11</version>
+			</dependency>
+			<!-- ====================application CXF======================== -->
+			<dependency>
+				<groupId>com.hrbb.loan.facade</groupId>
+				<artifactId>loan-pos-facade</artifactId>
+				<version>${com.hrbb.loan.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.hrbb.loan.model</groupId>
+				<artifactId>loan-pos-model</artifactId>
+				<version>${com.hrbb.loan.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.hrbb.loan.common.dal</groupId>
+				<artifactId>loan-pos-dal</artifactId>
+				<version>${com.hrbb.loan.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.hrbb.loan.service</groupId>
+				<artifactId>loan-pos-service</artifactId>
+				<version>${com.hrbb.loan.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.hrbb.loan.common.util</groupId>
+				<artifactId>loan-pos-util</artifactId>
+				<version>${com.hrbb.loan.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.hrbb.loan.biz</groupId>
+				<artifactId>loan-pos-biz</artifactId>
+				<version>${com.hrbb.loan.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.hrbb.loan.common.integration</groupId>
+				<artifactId>loan-pos-integration</artifactId>
+				<version>${com.hrbb.loan.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.hrbb.loan.runtime</groupId>
+				<artifactId>runtime</artifactId>
+				<version>${com.hrbb.loan.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.hrbb.loan.common</groupId>
+				<artifactId>common</artifactId>
+				<version>${com.hrbb.loan.version}</version>
+			</dependency>
+			<!-- ====================WebService CXF======================== -->
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-frontend-jaxws</artifactId>
+				<version>${cxf.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-transports-http</artifactId>
+				<version>${cxf.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-transports-http-jetty</artifactId>
+				<version>${cxf.version}</version>
+			</dependency>
+			<!-- ====================logback======================== -->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jcl-over-slf4j</artifactId>
+				<version>${slf4.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-all</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+
+			<!-- ====================Springframework+SpringMVC======================== -->
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-core</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-beans</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-test</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-web</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-webmvc</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-aop</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-jdbc</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-tx</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context-support</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-orm</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-jms</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-expression</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-aspects</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-tx</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-commons</artifactId>
+				<version>${spring-data.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-core</artifactId>
+				<version>${spring.security}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-web</artifactId>
+				<version>${spring.security}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-config</artifactId>
+				<version>${spring.security}</version>
+			</dependency>
+			<!-- ====================Mybatis======================== -->
+			<dependency>
+				<groupId>org.mybatis</groupId>
+				<artifactId>mybatis</artifactId>
+				<version>${mybatis.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mybatis</groupId>
+				<artifactId>mybatis-spring</artifactId>
+				<version>${mybatis-spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mybatis</groupId>
+				<artifactId>mybatis-ehcache</artifactId>
+				<version>${mybatis-ehcache.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-api</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.mybatis</groupId>
+				<artifactId>mybatis-spring</artifactId>
+				<version>${mybatis-spring.version}</version>
+			</dependency>
+
+			<!-- ====================mysql======================== -->
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>5.1.32</version>
+			</dependency>
+
+			<!-- ====================junit======================== -->
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${junit.version}</version>
+			</dependency>
+			<!-- ====================commons======================== -->
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${commons-io.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-lang</groupId>
+				<artifactId>commons-lang</artifactId>
+				<version>${commons.lang.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-beanutils</groupId>
+				<artifactId>commons-beanutils</artifactId>
+				<version>${commons-beanutils.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-fileupload</groupId>
+				<artifactId>commons-fileupload</artifactId>
+				<version>1.2.1</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-collections</groupId>
+				<artifactId>commons-collections</artifactId>
+				<version>3.2.1</version>
+			</dependency>
+			<!-- ====================sitemesh======================== -->
+			<dependency>
+				<groupId>opensymphony</groupId>
+				<artifactId>sitemesh</artifactId>
+				<version>${sitemesh.version}</version>
+			</dependency>
+			<!-- ====================freemarker======================== -->
+			<dependency>
+				<groupId>org.freemarker</groupId>
+				<artifactId>freemarker</artifactId>
+				<version>${freemarker.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.code.gson</groupId>
+				<artifactId>gson</artifactId>
+				<version>${gson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.hrbb.loan.biz</groupId>
+				<artifactId>loan-pos-biz</artifactId>
+				<version>${loan-pos-biz.version}</version>
+			</dependency>
+			<!-- c3p0 -->
+			<dependency>
+				<groupId>c3p0</groupId>
+				<artifactId>c3p0</artifactId>
+				<version>${c3p0.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>16.0</version>
+			</dependency>
+			<!-- ====================cglib======================== -->
+			<dependency>
+				<groupId>cglib</groupId>
+				<artifactId>cglib-nodep</artifactId>
+				<version>${cglib.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>cglib</groupId>
+				<artifactId>cglib</artifactId>
+				<version>${cglib.version}</version>
+			</dependency>
+
+
+			<!-- log4j -->
+			<dependency>
+				<groupId>log4j</groupId>
+				<artifactId>log4j</artifactId>
+				<version>1.2.17</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>1.7.5</version>
+			</dependency>
+
+			<!-- ====================json======================== -->
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${json-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-annotations</artifactId>
+				<version>${json-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${json-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.alibaba</groupId>
+				<artifactId>fastjson</artifactId>
+				<version>${alibaba-json-version}</version>
+			</dependency>
+			<!-- ====================hession======================== -->
+			<dependency>
+				<groupId>com.caucho</groupId>
+				<artifactId>hessian</artifactId>
+				<version>${com.caucho.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpclient</artifactId>
+				<version>${httpcomponents.version}</version>
+			</dependency>
+			<!-- ====================ump======================== -->
+			<dependency>
+				<groupId>com.hrbb.ump.facade</groupId>
+				<artifactId>ump-facade</artifactId>
+				<version>${com.hrbb.ump.facade.version}</version>
+			</dependency>
+		</dependencies>
+
+	</dependencyManagement>
+
+	<profiles>
+		<profile>
+			<id>jdk-1.7</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+				<jdk>1.7</jdk>
+			</activation>
+			<properties>
+				<maven.compiler.source>1.7</maven.compiler.source>
+				<maven.compiler.target>1.7</maven.compiler.target>
+				<maven.compiler.compilerVersion>1.7</maven.compiler.compilerVersion>
+			</properties>
+		</profile>
+	</profiles>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<version>0.5.3.201107060350</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<!-- To use the plugin goals in your POM or parent POM -->
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+			<!-- <plugin> <groupId>org.jacoco</groupId> <artifactId>jacoco-maven-plugin</artifactId> 
+				<configuration> <includes>*</includes> </configuration> <executions> <execution> 
+				<id>pre-test</id> <goals> <goal>prepare-agent</goal> </goals> </execution> 
+				<execution> <id>post-test</id> <phase>test</phase> <goals> <goal>report</goal> 
+				</goals> </execution> </executions> </plugin> -->
+
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-archetype-plugin</artifactId>
+				<version>2.2</version>
+			</plugin>
+
+			<!-- 识别jar包中的注解 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.1</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>releases</id>
+			<name>Releases</name>
+			<url>http://10.1.5.228:8081/nexus/content/repositories/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<name>Snapshots</name>
+			<url>http://10.1.5.228:8081/nexus/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+</project>

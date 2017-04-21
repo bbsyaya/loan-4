@@ -1,0 +1,152 @@
+package com.hrbb.loan.quartz;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.biz.backstage.inter.CreditApplyForReviewBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.ILoanPosCreditApplyBackStageBiz;
+import com.hrbb.loan.pos.dao.TCreditApplyForReviewDao;
+import com.hrbb.loan.pos.dao.TMessageDao;
+import com.hrbb.loan.pos.dao.entity.TCreditApply;
+import com.hrbb.loan.pos.dao.entity.TCreditReportPool;
+import com.hrbb.loan.pos.dao.entity.TMessage;
+import com.hrbb.loan.pos.factory.SysConfigFactory;
+import com.hrbb.loan.pos.service.CreditReportService;
+import com.hrbb.loan.pos.service.bean.CreditReportDownloadMessage;
+import com.hrbb.loan.pos.util.constants.ReviewNoteConstants;
+import com.hrbb.sh.framework.domain.CreditInvestigateRequest;
+
+@Service("extCreditReportPoolTask")
+public class ExtCreditReportPoolTask {
+	
+	Logger logger = LoggerFactory.getLogger(ExtCreditReportPoolTask.class);
+	
+	@Autowired
+	private ILoanPosCreditApplyBackStageBiz loanBiz;
+	
+	@Autowired
+	@Qualifier("creditApplyForReviewBiz")
+	private CreditApplyForReviewBiz caBiz;
+	
+	@Autowired
+	@Qualifier("tCreditApplyForReviewDao")
+	private TCreditApplyForReviewDao daoCA;
+	
+	@Autowired
+	private TMessageDao tMessageDao;
+	
+	@Autowired
+	private CreditReportService creditReportService;
+	
+	public void execute(){
+		try{
+		String crPoolNum = SysConfigFactory.getInstance().getService("CRService").getPropertyValue("crPoolNum");
+		Integer pageSize = Integer.parseInt(crPoolNum);
+		Map<String, Object> queryMap = Maps.newHashMap();
+		queryMap.put("status", "0");
+		queryMap.put("startPage", 0);
+		queryMap.put("pageSize", pageSize);
+		List<TCreditReportPool> lists = creditReportService.getCreditReportPool(queryMap);
+		for(TCreditReportPool pool : lists){
+			Map<String, Object> reqMap = Maps.newHashMap();
+			//下载征信报告
+			logger.info("回调成功开始下载征信报告");
+			CreditInvestigateRequest request1 = new CreditInvestigateRequest();
+			// 用户名外部传入
+			request1.setCustNme(pool.getCustName());
+			// 身份证号码外部传入
+			request1.setCustId(pool.getPaperId());
+			// 查询原因外部传入
+			request1.setQryWay("02I");
+			
+			reqMap.put("creditInvestigateRequest", request1);
+			Map<String, Object> resMap = loanBiz.creditInvestigate(reqMap);
+			if(!"00".equals((String)resMap.get("respCode"))){
+				logger.error("征信报告下载失败");
+				TCreditApply tCreditApply = new TCreditApply();
+				tCreditApply.setLoanId(pool.getLoanId());
+				tCreditApply.setApplyStatus("10");
+				caBiz.updateApplyStatus(tCreditApply);
+	/*							try {
+	                pushImageMissingMsg(tCreditApply, null);
+	            } catch (EventException e1) {
+	                logger.error(ExceptionUtils.getFullStackTrace(e1));
+	            }*/
+				continue;
+			}
+			logger.info("下载征信报告完成, 接着上传征信报告");
+			
+			//上传征信报告
+			reqMap = Maps.newHashMap();
+			reqMap.put("certNo", pool.getPaperId());
+			reqMap.put("channel", pool.getChannel());
+			Map<String, Object> uploadCreditInvestHtmlResMap = loanBiz.uploadCreditInvestHtml(reqMap);
+			if(!"0".equals(uploadCreditInvestHtmlResMap.get("respCode"))){
+				logger.error("征信报告上传失败");
+				TCreditApply tCreditApply = new TCreditApply();
+				tCreditApply.setLoanId(pool.getLoanId());
+				tCreditApply.setApplyStatus("10");
+				caBiz.updateApplyStatus(tCreditApply);
+				/*try {
+	                pushImageMissingMsg(tCreditApply, null);
+	            } catch (EventException e1) {
+	                logger.error(ExceptionUtils.getFullStackTrace(e1));
+	            }*/
+				continue;
+			}
+			logger.info("上传征信报告完成");
+			TCreditApply ca = caBiz.selectOne(pool.getLoanId());
+			if(ca == null){
+				logger.info("查询到的记录为空, loanId为:" + pool.getLoanId());
+				continue;
+			}
+			ca.setLoanId(pool.getLoanId());
+			// 申请状态
+			ca.setApplyStatus(ReviewNoteConstants.APPLYSTATUS_CODE_60);
+			// 最后操作人
+			ca.setLastOperId("system");
+			// 最后操作时间
+			ca.setLastOperTime(new Date());
+			// 更新申请状态
+			int flag = daoCA.updateForReview(ca);
+			logger.debug("更新申请状态结果为flag="+flag);
+			pool.setStatus("1");
+			pool.setUpdateTime(new Date());
+			// 更新池状态
+			int flag1 = creditReportService.updateCreditReportPool(pool);
+			// 保存成功
+			if (flag == 1 && flag1 == 1) {
+				CreditReportDownloadMessage crdm = new CreditReportDownloadMessage();
+				crdm.setLoanid(pool.getLoanId());
+				crdm.setFilepackagename((String)uploadCreditInvestHtmlResMap.get("zipFileName"));
+				crdm.setKey((String)uploadCreditInvestHtmlResMap.get("zipFilePwd"));
+				TMessage message = new TMessage();
+				message.setMessageInfo(crdm.toString());
+				message.setChannel(pool.getChannel());
+				message.setCreateTime(new Date());
+				message.setCustId(pool.getCustId());
+				message.setLoanId(pool.getLoanId());
+				message.setMessageType("14");
+				message.setStdshNo(ca.getStdshno());
+				message.setInChannelKind("02");
+				tMessageDao.insert(message);
+				logger.info("下载征信报告消息插入成功");
+				
+			}
+		}
+		
+	}catch(Exception e){
+		logger.error("发生异常:", e);
+	}
+	
+	}
+		
+}

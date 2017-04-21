@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd
+        http://cxf.apache.org/jaxws
+        http://cxf.apache.org/schemas/jaxws.xsd" default-autowire="byName">
+    <import resource="classpath:META-INF/cxf/cxf.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml"/>
+    
+    <!--  <jaxws:server id="loanPosCustomerBiz"
+                  serviceClass="com.hrbb.loan.pos.facade.LoanPosCustomerBizFacade"
+                  address="/loanPosCustomerBizFacade">
+        <jaxws:serviceBean>
+            <ref bean="loanPosCustomerBizFacade"/>·
+        </jaxws:serviceBean>
+    </jaxws:server> -->
+
+    <jaxws:server id="loanPosCreditApplyBiz"
+                  serviceClass="com.hrbb.loan.pos.facade.LoanPosCreditApplyBizFacade"
+                  address="/loanPosCreditApplyBizFacadee">
+        <jaxws:serviceBean>
+            <ref bean="loanPosCreditApplyBizFacade"/>
+        </jaxws:serviceBean>
+    </jaxws:server>
+    
+   <!--  <jaxws:server id="loanPosBlacklistBiz"
+                  serviceClass="com.hrbb.loan.pos.facade.LoanPosBlacklistBizFacade"
+                  address="/loanPosBlacklistBizFacadee">
+        <jaxws:serviceBean>
+            <ref bean="loanPosBlacklistBizFacade"/>
+        </jaxws:serviceBean>
+    </jaxws:server> -->
+    
+    
+   <!--  <jaxws:server id="WsDemobiz"
+                  serviceClass="com.hrbb.loan.pos.facade.WsDemoFacade"
+                  address="/WsDemoFacadee">
+        <jaxws:serviceBean>
+            <ref bean="wsDemoBizFacade"/>
+        </jaxws:serviceBean>
+    </jaxws:server> -->
+    
+    
+   <!-- TEST -->
+      <jaxws:server id="loanPosCustomerBizTest"
+                  serviceClass="com.hrbb.loan.pos.biz.backstage.inter.ILoanPosCustomerBackStageBiz"
+                  address="/loanPosCustomerBizFacadeTest">
+        <jaxws:serviceBean>
+            <ref bean="loanPosCustomerBackStageBiz"/>
+        </jaxws:serviceBean>
+    </jaxws:server> 
+</beans>

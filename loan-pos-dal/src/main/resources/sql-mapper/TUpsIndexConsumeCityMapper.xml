@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TUpsIndexConsumeCityMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TUpsIndexConsumeCity" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="fileUuid" property="fileUuid" jdbcType="VARCHAR"/>
+    <result column="indexConsumeCityName" property="indexConsumeCityName" jdbcType="VARCHAR" />
+    <result column="indexConsumeAmount" property="indexConsumeAmount" jdbcType="DECIMAL" />
+    <result column="indexConsumeCount" property="indexConsumeCount" jdbcType="VARCHAR" />
+    <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, fileUuid, indexConsumeCityName, indexConsumeAmount, indexConsumeCount, createTime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_ups_index_consume_city
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_ups_index_consume_city
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TUpsIndexConsumeCity" >
+    insert into t_ups_index_consume_city (id, fileUuid, indexConsumeCityName, indexConsumeAmount, 
+      indexConsumeCount, createTime)
+    values (#{id,jdbcType=INTEGER}, #{fileUuid,jdbcType=VARCHAR}, #{indexConsumeCityName,jdbcType=VARCHAR}, #{indexConsumeAmount,jdbcType=DECIMAL}, 
+      #{indexConsumeCount,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TUpsIndexConsumeCity" >
+    insert into t_ups_index_consume_city
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="fileUuid != null">
+      	fileUuid,
+      </if>
+      <if test="indexConsumeCityName != null" >
+        indexConsumeCityName,
+      </if>
+      <if test="indexConsumeAmount != null" >
+        indexConsumeAmount,
+      </if>
+      <if test="indexConsumeCount != null" >
+        indexConsumeCount,
+      </if>
+      <if test="createTime != null" >
+        createTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="fileUuid !=null">
+        #{fileUuid，jdbcType=VARCHAR},
+      </if>
+      <if test="indexConsumeCityName != null" >
+        #{indexConsumeCityName,jdbcType=VARCHAR},
+      </if>
+      <if test="indexConsumeAmount != null" >
+        #{indexConsumeAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="indexConsumeCount != null" >
+        #{indexConsumeCount,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TUpsIndexConsumeCity" >
+    update t_ups_index_consume_city
+    <set >
+      <if test="indexConsumeCityName != null" >
+        indexConsumeCityName = #{indexConsumeCityName,jdbcType=VARCHAR},
+      </if>
+      <if test="indexConsumeAmount != null" >
+        indexConsumeAmount = #{indexConsumeAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="indexConsumeCount != null" >
+        indexConsumeCount = #{indexConsumeCount,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        createTime = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TUpsIndexConsumeCity" >
+    update t_ups_index_consume_city
+    set indexConsumeCityName = #{indexConsumeCityName,jdbcType=VARCHAR},
+      indexConsumeAmount = #{indexConsumeAmount,jdbcType=DECIMAL},
+      indexConsumeCount = #{indexConsumeCount,jdbcType=VARCHAR},
+      createTime = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+	<insert id="insertBatch" parameterType="List">
+		insert into t_ups_index_consume_city (fileUuid, indexConsumeCityName,
+		indexConsumeAmount,
+		indexConsumeCount, createTime)
+		values
+		<foreach collection="list" item="obj" index="index" separator=",">
+			(#{obj.fileUuid,jdbcType=VARCHAR},
+			#{obj.indexConsumeCityName,jdbcType=VARCHAR},
+			#{obj.indexConsumeAmount,jdbcType=DECIMAL},
+			#{obj.indexConsumeCount,jdbcType=VARCHAR},
+			#{obj.createTime,jdbcType=TIMESTAMP})
+		</foreach>
+	</insert>
+   <select id="selectByFileUuid" resultMap="BaseResultMap" parameterType="java.lang.String">
+	select
+	<include refid="Base_Column_List" />
+	from t_ups_index_consume_city
+	where fileUuid = #{fileUuid,jdbcType=VARCHAR}
+</select>
+</mapper>

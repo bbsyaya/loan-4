@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TBankAccnoInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TBankAccnoInfo" >
+    <id column="bankAccno" property="bankAccno" jdbcType="VARCHAR" />
+    <result column="custId" property="custId" jdbcType="VARCHAR" />
+    <result column="bankName" property="bankName" jdbcType="VARCHAR" />
+    <result column="bankBranName" property="bankBranName" jdbcType="VARCHAR" />
+    <result column="bankSubbName" property="bankSubbName" jdbcType="VARCHAR" />
+    <result column="cdtbranchid" property="cdtbranchid" jdbcType="VARCHAR" />
+    <result column="ptcptnm" property="ptcptnm" jdbcType="VARCHAR" />
+    <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    bankAccno, custId, bankName, bankBranName, bankSubbName,cdtbranchid,ptcptnm,createTime,status
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_bankaccno_info
+    where bankAccno = #{bankAccno,jdbcType=VARCHAR}
+  </select>
+  <select id="getLoanBankNameByBankAccno" resultType="java.lang.String" parameterType="java.lang.String" >
+    select bankName
+    from t_bankaccno_info
+    where bankAccno = #{bankAccno,jdbcType=VARCHAR}
+  </select>
+  <select id="selectMap" resultType="map" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_bankaccno_info
+    where 1=1
+    <if test="custId != null">
+		and custId = #{custId,jdbcType=VARCHAR}
+	</if>
+    <if test="bankAccno != null">
+		and bankAccno = #{bankAccno,jdbcType=VARCHAR}
+	</if>
+	<if test="startPage != null">
+    	LIMIT #{startPage}, #{limit} 
+    </if>
+  </select>
+  
+  <select id="selectRowCount" resultType="map" parameterType="map" >
+    select count(*) as cnt
+    from t_bankaccno_info
+    where 1=1
+    <if test="custId != null">
+		and custId = #{custId,jdbcType=VARCHAR}
+	</if>
+    <if test="bankAccno != null">
+		and bankAccno = #{bankAccno,jdbcType=VARCHAR}
+	</if>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_bankaccno_info
+    where bankAccno = #{bankAccno,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TBankAccnoInfo" >
+    insert into t_bankaccno_info (bankAccno, custId, bankName, 
+      bankBranName, bankSubbName,createTime,status)
+    values (#{bankAccno,jdbcType=VARCHAR}, #{custId,jdbcType=VARCHAR}, #{bankName,jdbcType=VARCHAR}, 
+      #{bankBranName,jdbcType=VARCHAR}, #{bankSubbName,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR},#{status,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TBankAccnoInfo" >
+    insert into t_bankaccno_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="bankAccno != null" >
+        bankAccno,
+      </if>
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="bankName != null" >
+        bankName,
+      </if>
+      <if test="bankBranName != null" >
+        bankBranName,
+      </if>
+      <if test="bankSubbName != null" >
+        bankSubbName,
+      </if>
+      <if test="createTime != null" >
+        createTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="bankAccno != null" >
+        #{bankAccno,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="bankName != null" >
+        #{bankName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankBranName != null" >
+        #{bankBranName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankSubbName != null" >
+        #{bankSubbName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="map" >
+    insert into t_bankaccno_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="bankAccno != null" >
+        bankAccno,
+      </if>
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="bankName != null" >
+        bankName,
+      </if>
+      <if test="bankBranName != null" >
+        bankBranName,
+      </if>
+      <if test="bankSubbName != null" >
+        bankSubbName,
+      </if>
+      <if test="createTime != null" >
+        createTime,
+      </if>
+      <if test="status != null">
+      	status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="bankAccno != null" >
+        #{bankAccno,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="bankName != null" >
+        #{bankName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankBranName != null" >
+        #{bankBranName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankSubbName != null" >
+        #{bankSubbName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+      	#{status},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TBankAccnoInfo" >
+    update t_bankaccno_info
+    <set >
+      <if test="custId != null" >
+        custId = #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="bankName != null" >
+        bankName = #{bankName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankBranName != null" >
+        bankBranName = #{bankBranName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankSubbName != null" >
+        bankSubbName = #{bankSubbName,jdbcType=VARCHAR},
+      </if>
+      <if test="cdtbranchid != null">
+        cdtbranchid = #{cdtbranchid,jdbcType=VARCHAR},
+      </if>
+      <if test="ptcptnm != null">
+        ptcptnm = #{ptcptnm,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where bankAccno = #{bankAccno,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeySelectiveMap" parameterType="map" >
+    update t_bankaccno_info
+    <set >
+      <if test="custId != null" >
+        custId = #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="bankName != null" >
+        bankName = #{bankName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankBranName != null" >
+        bankBranName = #{bankBranName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankSubbName != null" >
+        bankSubbName = #{bankSubbName,jdbcType=VARCHAR},
+      </if>
+      <if test="cdtbranchid != null">
+        cdtbranchid = #{cdtbranchid,jdbcType=VARCHAR},
+      </if>
+      <if test="ptcptnm != null">
+        ptcptnm = #{ptcptnm,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where bankAccno = #{bankAccno,jdbcType=VARCHAR}
+  </update>
+  
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TBankAccnoInfo" >
+    update t_bankaccno_info
+    set custId = #{custId,jdbcType=VARCHAR},
+      bankName = #{bankName,jdbcType=VARCHAR},
+      bankBranName = #{bankBranName,jdbcType=VARCHAR},
+      bankSubbName = #{bankSubbName,jdbcType=VARCHAR},
+      cdtbranchid = #{cdtbranchid,jdbcType=VARCHAR},
+      ptcptnm = #{ptcptnm,jdbcType=VARCHAR}
+    where bankAccno = #{bankAccno,jdbcType=VARCHAR}
+  </update>
+</mapper>

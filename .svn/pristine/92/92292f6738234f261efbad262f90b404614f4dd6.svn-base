@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCfgFundingPoolMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCfgFundingPool" >
+    <id column="poolNo" property="poolNo" jdbcType="VARCHAR" />
+    <result column="poolName" property="poolName" jdbcType="VARCHAR" />
+    <result column="channel" property="channel" jdbcType="VARCHAR" />
+    <result column="effectDate" property="effectDate" jdbcType="DATE" />
+    <result column="expiredDate" property="expiredDate" jdbcType="DATE" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="leverage" property="leverage" jdbcType="DECIMAL" />
+    <result column="bailAccount" property="bailAccount" jdbcType="VARCHAR" />
+    <result column="prepaidGrace" property="prepaidGrace" jdbcType="INTEGER" />
+    <result column="allowSpillover" property="allowSpillover" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    poolNo, poolName, channel, effectDate, expiredDate, price, leverage, bailAccount, 
+    prepaidGrace, allowSpillover, remark
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_cfg_funding_pool
+    where poolNo = #{poolNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_cfg_funding_pool
+    where poolNo = #{poolNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCfgFundingPool" >
+    insert into t_cfg_funding_pool (poolNo, poolName, channel, 
+      effectDate, expiredDate, price, 
+      leverage, bailAccount, prepaidGrace, 
+      allowSpillover, remark)
+    values (#{poolNo,jdbcType=VARCHAR}, #{poolName,jdbcType=VARCHAR}, #{channel,jdbcType=VARCHAR}, 
+      #{effectDate,jdbcType=DATE}, #{expiredDate,jdbcType=DATE}, #{price,jdbcType=DECIMAL}, 
+      #{leverage,jdbcType=DECIMAL}, #{bailAccount,jdbcType=VARCHAR}, #{prepaidGrace,jdbcType=INTEGER}, 
+      #{allowSpillover,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCfgFundingPool" >
+    insert into t_cfg_funding_pool
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="poolNo != null" >
+        poolNo,
+      </if>
+      <if test="poolName != null" >
+        poolName,
+      </if>
+      <if test="channel != null" >
+        channel,
+      </if>
+      <if test="effectDate != null" >
+        effectDate,
+      </if>
+      <if test="expiredDate != null" >
+        expiredDate,
+      </if>
+      <if test="price != null" >
+        price,
+      </if>
+      <if test="leverage != null" >
+        leverage,
+      </if>
+      <if test="bailAccount != null" >
+        bailAccount,
+      </if>
+      <if test="prepaidGrace != null" >
+        prepaidGrace,
+      </if>
+      <if test="allowSpillover != null" >
+        allowSpillover,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="poolNo != null" >
+        #{poolNo,jdbcType=VARCHAR},
+      </if>
+      <if test="poolName != null" >
+        #{poolName,jdbcType=VARCHAR},
+      </if>
+      <if test="channel != null" >
+        #{channel,jdbcType=VARCHAR},
+      </if>
+      <if test="effectDate != null" >
+        #{effectDate,jdbcType=DATE},
+      </if>
+      <if test="expiredDate != null" >
+        #{expiredDate,jdbcType=DATE},
+      </if>
+      <if test="price != null" >
+        #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="leverage != null" >
+        #{leverage,jdbcType=DECIMAL},
+      </if>
+      <if test="bailAccount != null" >
+        #{bailAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="prepaidGrace != null" >
+        #{prepaidGrace,jdbcType=INTEGER},
+      </if>
+      <if test="allowSpillover != null" >
+        #{allowSpillover,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCfgFundingPool" >
+    update t_cfg_funding_pool
+    <set >
+      <if test="poolName != null" >
+        poolName = #{poolName,jdbcType=VARCHAR},
+      </if>
+      <if test="channel != null" >
+        channel = #{channel,jdbcType=VARCHAR},
+      </if>
+      <if test="effectDate != null" >
+        effectDate = #{effectDate,jdbcType=DATE},
+      </if>
+      <if test="expiredDate != null" >
+        expiredDate = #{expiredDate,jdbcType=DATE},
+      </if>
+      <if test="price != null" >
+        price = #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="leverage != null" >
+        leverage = #{leverage,jdbcType=DECIMAL},
+      </if>
+      <if test="bailAccount != null" >
+        bailAccount = #{bailAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="prepaidGrace != null" >
+        prepaidGrace = #{prepaidGrace,jdbcType=INTEGER},
+      </if>
+      <if test="allowSpillover != null" >
+        allowSpillover = #{allowSpillover,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where poolNo = #{poolNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCfgFundingPool" >
+    update t_cfg_funding_pool
+    set poolName = #{poolName,jdbcType=VARCHAR},
+      channel = #{channel,jdbcType=VARCHAR},
+      effectDate = #{effectDate,jdbcType=DATE},
+      expiredDate = #{expiredDate,jdbcType=DATE},
+      price = #{price,jdbcType=DECIMAL},
+      leverage = #{leverage,jdbcType=DECIMAL},
+      bailAccount = #{bailAccount,jdbcType=VARCHAR},
+      prepaidGrace = #{prepaidGrace,jdbcType=INTEGER},
+      allowSpillover = #{allowSpillover,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR}
+    where poolNo = #{poolNo,jdbcType=VARCHAR}
+  </update>
+  <select id="selectSelective" resultMap="BaseResultMap" parameterType="Map">
+    select 
+    <include refid="Base_Column_List" />
+    from t_cfg_funding_pool
+    where 1=1
+      <if test="channel != null" >
+        and channel = #{channel,jdbcType=VARCHAR}
+      </if>
+      <if test="beginDate != null" >
+        and effectDate <![CDATA[ <= str_to_date(#{beginDate},'%Y-%m-%d') ]]> 
+      </if>
+      <if test="beginDate != null" >
+        and expiredDate <![CDATA[ >= str_to_date(#{beginDate},'%Y-%m-%d') ]]> 
+      </if>
+  </select>
+  
+  <select id="selectSelectiveMap" resultType="Map" parameterType="Map">
+    select 
+    <include refid="Base_Column_List" />
+    from t_cfg_funding_pool
+    where 1=1
+      <if test="channel != null" >
+        and channel = #{channel,jdbcType=VARCHAR}
+      </if>
+      <if test="beginDate != null" >
+        and effectDate <![CDATA[ <= str_to_date(#{beginDate},'%Y-%m-%d') ]]> 
+      </if>
+      <if test="beginDate != null" >
+        and expiredDate <![CDATA[ >= str_to_date(#{beginDate},'%Y-%m-%d') ]]> 
+      </if>
+  </select>
+  
+  <select id="selectOneSelective" resultMap="BaseResultMap" parameterType="Map">
+    select 
+    <include refid="Base_Column_List" />
+    from t_cfg_funding_pool
+    where 1=1
+      <if test="channel != null" >
+        and channel = #{channel,jdbcType=VARCHAR}
+      </if>
+      <if test="beginDate != null" >
+        and effectDate <![CDATA[ <= str_to_date(#{beginDate},'%Y-%m-%d') ]]> 
+      </if>
+      <if test="beginDate != null" >
+        and expiredDate >= str_to_date(#{beginDate},'%Y-%m-%d')
+      </if>
+      <if test="beginDate == null" >
+        and effectDate <![CDATA[ <= CURDATE() ]]> and expiredDate >= CURDATE()
+      </if>
+  </select>
+</mapper>

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TApprovedRulesConfigMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TApprovedRulesConfig" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="ruleNo" property="ruleNo" jdbcType="VARCHAR" />
+    <result column="prodId" property="prodId" jdbcType="VARCHAR" />
+    <result column="prodName" property="prodName" jdbcType="VARCHAR" />
+    <result column="channel" property="channel" jdbcType="VARCHAR" />
+    <result column="region" property="region" jdbcType="VARCHAR" />
+    <result column="age" property="age" jdbcType="DOUBLE" />
+    <result column="amt_uplimit" property="amt_uplimit" jdbcType="DOUBLE" />
+    <result column="deleted_flag" property="deleted_flag" jdbcType="VARCHAR" />
+    <result column="valid_date" property="valid_date" jdbcType="DATE" />
+    <result column="invalid_date" property="invalid_date" jdbcType="DATE" />
+    <result column="create_date" property="create_date" jdbcType="DATE" />
+    <result column="modify_date" property="modify_date" jdbcType="DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, ruleNo, prodId, prodName, channel, region, age, amt_uplimit, deleted_flag, valid_date, 
+    invalid_date, create_date, modify_date
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_approved_rules
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_approved_rules
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TApprovedRulesConfig" >
+    insert into t_approved_rules (id, ruleNo, prodId, 
+      prodName, channel, region, 
+      age, amt_uplimit, deleted_flag, 
+      valid_date, invalid_date, create_date, 
+      modify_date)
+    values (#{id,jdbcType=INTEGER}, #{ruleNo,jdbcType=VARCHAR}, #{prodId,jdbcType=VARCHAR}, 
+      #{prodName,jdbcType=VARCHAR}, #{channel,jdbcType=VARCHAR}, #{region,jdbcType=VARCHAR}, 
+      #{age,jdbcType=DOUBLE}, #{amt_uplimit,jdbcType=DOUBLE}, #{deleted_flag,jdbcType=VARCHAR}, 
+      #{valid_date,jdbcType=DATE}, #{invalid_date,jdbcType=DATE}, #{create_date,jdbcType=DATE}, 
+      #{modify_date,jdbcType=DATE})
+  </insert>
+  <insert id="saveApprovedRulesConfig" parameterType="Map" >
+    insert into t_approved_rules
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="ruleNo != null" >
+        ruleNo,
+      </if>
+      <if test="prodId != null" >
+        prodId,
+      </if>
+      <if test="prodName != null" >
+        prodName,
+      </if>
+      <if test="channel != null" >
+        channel,
+      </if>
+      <if test="region != null" >
+        region,
+      </if>
+      <if test="age != null" >
+        age,
+      </if>
+      <if test="amt_uplimit != null" >
+        amt_uplimit,
+      </if>
+      <if test="deleted_flag != null" >
+        deleted_flag,
+      </if>
+      <if test="valid_date != null" >
+        valid_date,
+      </if>
+      <if test="invalid_date != null" >
+        invalid_date,
+      </if>
+      <if test="create_date != null" >
+        create_date,
+      </if>
+      <if test="modify_date != null" >
+        modify_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="ruleNo != null" >
+        #{ruleNo,jdbcType=VARCHAR},
+      </if>
+      <if test="prodId != null" >
+        #{prodId,jdbcType=VARCHAR},
+      </if>
+      <if test="prodName != null" >
+        #{prodName,jdbcType=VARCHAR},
+      </if>
+      <if test="channel != null" >
+        #{channel,jdbcType=VARCHAR},
+      </if>
+      <if test="region != null" >
+        #{region,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null" >
+        #{age,jdbcType=DOUBLE},
+      </if>
+      <if test="amt_uplimit != null" >
+        #{amt_uplimit,jdbcType=DOUBLE},
+      </if>
+      <if test="deleted_flag != null" >
+        #{deleted_flag,jdbcType=VARCHAR},
+      </if>
+      <if test="valid_date != null" >
+        #{valid_date,jdbcType=DATE},
+      </if>
+      <if test="invalid_date != null" >
+        #{invalid_date,jdbcType=DATE},
+      </if>
+      <if test="create_date != null" >
+        #{create_date,jdbcType=DATE},
+      </if>
+      <if test="modify_date != null" >
+        #{modify_date,jdbcType=DATE},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByUpdateMap" parameterType="Map" >
+    update t_approved_rules
+    <set >
+      <if test="ruleNo != null" >
+        ruleNo = #{ruleNo,jdbcType=VARCHAR},
+      </if>
+      <if test="prodId != null" >
+        prodId = #{prodId,jdbcType=VARCHAR},
+      </if>
+      <if test="prodName != null" >
+        prodName = #{prodName,jdbcType=VARCHAR},
+      </if>
+      <if test="channel != null" >
+        channel = #{channel,jdbcType=VARCHAR},
+      </if>
+      <if test="region != null" >
+        region = #{region,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null" >
+        age = #{age,jdbcType=DOUBLE},
+      </if>
+      <if test="amt_uplimit != null" >
+        amt_uplimit = #{amt_uplimit,jdbcType=DOUBLE},
+      </if>
+      <if test="deleted_flag != null" >
+        deleted_flag = #{deleted_flag,jdbcType=VARCHAR},
+      </if>
+      <if test="valid_date != null" >
+        valid_date = #{valid_date,jdbcType=DATE},
+      </if>
+      <if test="invalid_date != null" >
+        invalid_date = #{invalid_date,jdbcType=DATE},
+      </if>
+      <if test="create_date != null" >
+        create_date = #{create_date,jdbcType=DATE},
+      </if>
+      <if test="modify_date != null" >
+        modify_date = #{modify_date,jdbcType=DATE},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TApprovedRulesConfig" >
+    update t_approved_rules
+    set ruleNo = #{ruleNo,jdbcType=VARCHAR},
+      prodId = #{prodId,jdbcType=VARCHAR},
+      prodName = #{prodName,jdbcType=VARCHAR},
+      channel = #{channel,jdbcType=VARCHAR},
+      region = #{region,jdbcType=VARCHAR},
+      age = #{age,jdbcType=DOUBLE},
+      amt_uplimit = #{amt_uplimit,jdbcType=DOUBLE},
+      deleted_flag = #{deleted_flag,jdbcType=VARCHAR},
+      valid_date = #{valid_date,jdbcType=DATE},
+      invalid_date = #{invalid_date,jdbcType=DATE},
+      create_date = #{create_date,jdbcType=DATE},
+      modify_date = #{modify_date,jdbcType=DATE}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectListBySelective" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_approved_rules
+   	where 1=1
+	<if test="ruleNo != null">
+		AND ruleNo like #{ruleNo}
+	</if>
+	<if test="prodId != null">
+		AND prodId = #{prodId}
+	</if>
+	<if test="startPage != null">
+		LIMIT #{startPage}, #{limit}
+	</if>
+  </select>
+  <select id="countListBySelective" resultType="Long" parameterType="map">
+		select count(*)
+		from t_approved_rules
+		 	where 1=1
+	<if test="ruleNo != null">
+		AND ruleNo like #{ruleNo}
+	</if>
+	<if test="prodId != null">
+		AND prodId = #{prodId}
+	</if>
+	</select>
+	<select id="selectApprovedRulesConfigByRegcode" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_approved_rules
+    where ruleNo = #{ruleNo,jdbcType=VARCHAR}
+   </select>
+   <delete id="deleteApprovedRulesConfigByID" parameterType="java.lang.String" >
+    delete from t_approved_rules
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+</mapper>

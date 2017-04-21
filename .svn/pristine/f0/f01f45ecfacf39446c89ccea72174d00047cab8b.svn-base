@@ -1,0 +1,202 @@
+package com.hrbb.loan.pos.biz.backstage.inter.impl;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Component;
+
+import com.alibaba.fastjson.JSON;
+import com.hrbb.loan.pos.biz.backstage.inter.ISendMessageBiz;
+import com.hrbb.loan.pos.dao.entity.TMessage;
+import com.hrbb.loan.pos.dao.entity.TMessageHist;
+import com.hrbb.loan.pos.service.LoanPosMessageService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.sh.framework.HRequest;
+import com.hrbb.sh.framework.HResponse;
+import com.hrbb.sh.framework.HService;
+import com.hrbb.sh.framework.HttpRequestSender;
+import com.hrbb.sh.framework.util.BankUtil;
+
+public class SendMessageBizImpl implements ISendMessageBiz {
+	
+	private Logger logger = LoggerFactory.getLogger(SendMessageBizImpl.class);
+
+	
+	@Autowired
+	private LoanPosMessageService loanPosMessageService;
+	
+
+	
+	private HService hServiceum;
+	
+	@Autowired
+	private HttpRequestSender requestsender;
+
+
+	public HService gethServiceum() {
+		return hServiceum;
+	}
+
+
+
+
+	public void sethServiceum(HService hServiceum) {
+		this.hServiceum = hServiceum;
+	}
+
+
+	@Override
+	public void sendMessage() {
+		//logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>发送任务启动...");
+		
+		try {
+		    //判断是否连通？
+		    List<TMessage> msgList = loanPosMessageService.selectAll();
+		    logger.info(">>>>.Total number is : " + msgList.size());
+		    for (TMessage message : msgList) {
+		    	    HRequest req = new HRequest();
+		    	    HResponse res = new HResponse();
+		    	    int flag = 0;
+		    	    if("UM".equals(message.getChannel())){
+		    	    	//header info
+				        req.setBizType("HB13");
+		    	    }else if("58".equals(message.getChannel())) {
+		    	    	//header info
+				        req.setBizType("58T13");
+		    	    }
+		            Date date = new Date();
+		            req.setRequestTime(date);
+		            StringBuffer buffer = new StringBuffer();
+
+		            Map<String,Object> propMap = new HashMap<String, Object>();
+		            req.setProperties(propMap);
+		            propMap.put("messagetype", message.getMessageType());
+	                propMap.put("messageinfo", message.getMessageInfo());
+	                propMap.put("messageaddi", message.getMessageAddi());
+	                propMap.put("custid", message.getCustId());
+	                propMap.put("loanId", message.getLoanId());
+	                propMap.put("contno", message.getContNo());
+	                propMap.put("listid", message.getListId());
+	                propMap.put("loanacno", message.getLoanAcNo());
+	                String dateStr = DateUtil.getCurrentTimePatterna();
+	                propMap.put("pushdate", dateStr);
+	                propMap.put("stdshno", message.getStdshNo());
+	                propMap.put("stdmerno", message.getStdMerNo());
+
+	                propMap.put("srcReqDate", DateUtil.getTodayDatePattern1());
+	                propMap.put("srcReqTime", DateUtil.getTodayDatePattern1());
+	                propMap.put("srcReqId", "1");
+	                propMap.put("channelId", "002");
+	                
+	                buffer.append(message.getMessageType()).append('|').append(message.getMessageInfo()).append('|')
+	                      .append(message.getMessageAddi()).append('|').append(message.getCustId()).append('|')
+	                      .append(message.getLoanId()).append('|').append(message.getListId()).append('|')
+	                      .append(message.getLoanAcNo()).append('|').append(dateStr).append('|')
+	                      .append(message.getStdshNo()).append('|').append(message.getStdMerNo());
+	                propMap.put("mac", BankUtil.getMD5(buffer.toString(), "GBK"));
+	                
+	                
+		        if ("UM".equals(message.getChannel()) && "02".equals(message.getInChannelKind())){
+		        	logger.info("-----进入银商渠道-------");
+		            logger.info(">>>>. CHANNEL is : " + message.getChannel());
+		            res = hServiceum.serve(req);
+		            flag = 1;
+		            logger.info(">>>>>>发送结果:"+res.getRespCode()+"-"+res.getRespMessage());
+		        }else if("58".equals(message.getChannel()) && "02".equals(message.getInChannelKind())){
+		        	logger.info("------进入58渠道------");
+		        	logger.info(">>>>. CHANNEL is : " + message.getChannel());
+		        	String url = "http://csd.58v5.cn/channel/hrbb/notify";
+		        	
+		        	 Date d = new Date();
+		        	 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		        	 String pd = sdf.format(d);
+		        	 String messageinfo = message.getMessageInfo();
+		        	 String msinfo = JSON.toJSONString(messageinfo);
+		        	 Map<String,Object> messmap = new HashMap<String, Object>();
+	        		 messmap.put("TransType","58T15");
+	        		 messmap.put("messageinfo",msinfo);
+	        		 messmap.put("loanid",message.getLoanId());
+	        		 messmap.put("pushdate",pd);
+	        		 messmap.put("stdshno",message.getStdshNo());
+		        	
+		        	//审核结果通知（通过）
+		        	if(message.getMessageType().equals("1")){
+		        		 messmap.put("messagetype","1");
+		        	}else if(message.getMessageType().equals("2")){
+		        		//审核结果通知（拒绝）	
+		        		 messmap.put("messagetype","2");
+		        	}else if(message.getMessageType().equals("3")){
+		        		//补件通知
+		        		 messmap.put("messagetype","3");
+		        	}else if(message.getMessageType().equals("4")){
+		        		//协议签订通知
+		        		 messmap.put("messagetype","4");
+		        	}else if(message.getMessageType().equals("5")){
+		        		//放款结果通知
+		        		 messmap.put("messagetype","5");
+		        	}else if(message.getMessageType().equals("6")){
+		        		//协议状态调整通知
+		        		 messmap.put("messagetype","6");
+		        	}else if(message.getMessageType().equals("7")){
+		        		//还款结果通知
+		        		 messmap.put("messagetype","7");
+		        	}else if(message.getMessageType().equals("8")){
+		        		//到期还款提醒
+		        		 messmap.put("messagetype","8");
+		        	}else if(message.getMessageType().equals("9")){
+		        		//逾期催收通知
+		        		 messmap.put("messagetype","9");
+		        	}
+		        	
+		        	
+		        	String data = JSON.toJSONString(messmap);
+		        	requestsender.sendEncryptedWithCompanion(url, data, "58tc");
+//		        	service.sendEncryptedWithCompanion(url, post, "58tc");
+//		        	res = hService58.serve(req);
+		        	flag = 1;
+		        	logger.info(">>>>>>往58同城推送消息结束>>>>>");
+		        }
+		        if(flag==1){
+		        	TMessageHist tMessageHist = new TMessageHist();
+	            	tMessageHist.setId(message.getId());
+	            	tMessageHist.setMessageType(message.getMessageType());
+	            	tMessageHist.setMessageInfo(message.getMessageInfo());
+	            	tMessageHist.setMessageAddi(message.getMessageAddi());
+	            	tMessageHist.setCustId(message.getCustId());
+	            	tMessageHist.setLoanId(message.getLoanId());
+	            	tMessageHist.setContNo(message.getContNo());
+	            	tMessageHist.setListId(message.getListId());
+	            	tMessageHist.setLoanAcNo(message.getLoanAcNo());
+	        		tMessageHist.setCreateTime(message.getCreateTime());
+	        		tMessageHist.setTimerDate(message.getTimerDate());
+	        		tMessageHist.setStdshNo(message.getStdshNo());
+	        		tMessageHist.setStdMerNo(message.getStdMerNo());
+	        		tMessageHist.setChannel(message.getChannel());
+	        		tMessageHist.setInChannelKind(message.getInChannelKind());
+	        		loanPosMessageService.insertMessageHist(tMessageHist);
+	                loanPosMessageService.deleteById(message.getId());
+	                logger.info(">>>>>>发送成功，删除消息：id="+message.getId());
+		        }
+		        
+	            logger.debug(res.getRespMessage());
+                }                      //for循环结束
+			//logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>发送任务结束!");
+			
+		} catch (Exception e) {
+			logger.error(e.getMessage(), (Throwable)e);
+			return;
+		}
+
+	}
+
+}

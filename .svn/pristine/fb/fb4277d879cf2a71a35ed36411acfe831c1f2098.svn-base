@@ -1,0 +1,1015 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditApplyAprvInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo" >
+    <id column="appNum" property="appNum" jdbcType="INTEGER" />
+    <id column="loanId" property="loanId" jdbcType="VARCHAR" />
+    <result column="custId" property="custId" jdbcType="VARCHAR" />
+    <result column="custName" property="custName" jdbcType="VARCHAR" />
+    <result column="prodId" property="prodId" jdbcType="VARCHAR" />
+    <result column="prodName" property="prodName" jdbcType="VARCHAR" />
+    <result column="appCredLevel" property="appCredLevel" jdbcType="VARCHAR" />
+    <result column="appMaxCred" property="appMaxCred" jdbcType="DECIMAL" />
+    <result column="lowRiskType" property="lowRiskType" jdbcType="VARCHAR" />
+    <result column="currSign" property="currSign" jdbcType="VARCHAR" />
+    <result column="apptcApi" property="apptcApi" jdbcType="DECIMAL" />
+    <result column="termUnit" property="termUnit" jdbcType="CHAR" />
+    <result column="apptTerm" property="apptTerm" jdbcType="VARCHAR" />
+    <result column="assuKind" property="assuKind" jdbcType="VARCHAR" />
+    <result column="depositKind" property="depositKind" jdbcType="VARCHAR" />
+    <result column="depositRate" property="depositRate" jdbcType="DECIMAL" />
+    <result column="asDepositRate" property="asDepositRate" jdbcType="DECIMAL" />
+    <result column="inteType" property="inteType" jdbcType="VARCHAR" />
+    <result column="inteAdjuKind" property="inteAdjuKind" jdbcType="VARCHAR" />
+    <result column="rateCode" property="rateCode" jdbcType="VARCHAR" />
+    <result column="rateNote" property="rateNote" jdbcType="VARCHAR" />
+    <result column="basicInteRate" property="basicInteRate" jdbcType="DECIMAL" />
+    <result column="floatInteRate" property="floatInteRate" jdbcType="DECIMAL" />
+    <result column="moreInteRate" property="moreInteRate" jdbcType="DECIMAL" />
+    <result column="inteRate" property="inteRate" jdbcType="DECIMAL" />
+    <result column="retRate" property="retRate" jdbcType="DECIMAL" />
+    <result column="retuKind" property="retuKind" jdbcType="VARCHAR" />
+    <result column="retuKind2" property="retuKind2" jdbcType="VARCHAR" />
+    <result column="loanUsereMark" property="loanUsereMark" jdbcType="VARCHAR" />
+    <result column="riskFlag" property="riskFlag" jdbcType="VARCHAR" />
+    <result column="riskRemark" property="riskRemark" jdbcType="VARCHAR" />
+    <result column="loanPrecond" property="loanPrecond" jdbcType="VARCHAR" />
+    <result column="payPrecond" property="payPrecond" jdbcType="VARCHAR" />
+    <result column="riskPrecautmeas" property="riskPrecautmeas" jdbcType="VARCHAR" />
+    <result column="otherCond" property="otherCond" jdbcType="VARCHAR" />
+    <result column="apprInfo" property="apprInfo" jdbcType="VARCHAR" />
+    <result column="operId" property="operId" jdbcType="VARCHAR" />
+    <result column="bankId" property="bankId" jdbcType="VARCHAR" />
+    <result column="apprvDate" property="apprvDate" jdbcType="TIMESTAMP" />
+    <result column="apprVendDate" property="apprVendDate" jdbcType="TIMESTAMP" />
+    <result column="apprvId" property="apprvId" jdbcType="VARCHAR" />
+    <result column="apprvBankId" property="apprvBankId" jdbcType="VARCHAR" />
+    <result column="apprState" property="apprState" jdbcType="VARCHAR" />
+    <result column="apprResult" property="apprResult" jdbcType="VARCHAR" />
+    <result column="appBeginTime" property="appBeginTime" jdbcType="TIMESTAMP" />
+    <result column="appEndTime" property="appEndTime" jdbcType="TIMESTAMP" />
+    <result column="apprAmount" property="apprAmount" jdbcType="DECIMAL" />
+    <result column="apprInte" property="apprInte" jdbcType="DECIMAL" />
+    <result column="apprInfoExt" property="apprInfoExt" jdbcType="VARCHAR" />
+    <result column="backToId" property="backToId" jdbcType="VARCHAR" />
+    <result column="needInforCodes" property="needInforCodes" jdbcType="VARCHAR" />
+    <result column="needReason" property="needReason" jdbcType="VARCHAR" />
+    <result column="refuseCode" property="refuseCode" jdbcType="VARCHAR" />
+    <result column="passCode" property="passCode" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    appNum, loanId, custId, custName, prodId, prodName, appCredLevel, appMaxCred, lowRiskType, 
+    currSign, apptcApi, termUnit, apptTerm, assuKind, depositKind, depositRate, asDepositRate, 
+    inteType, inteAdjuKind, rateCode, rateNote, basicInteRate, floatInteRate, moreInteRate, 
+    inteRate, retRate, retuKind, retuKind2, loanUsereMark, riskFlag, riskRemark, loanPrecond, 
+    payPrecond, riskPrecautmeas, otherCond, apprInfo, operId, bankId, apprvDate, apprVendDate, 
+    apprvId, apprvBankId, apprState, apprResult, appBeginTime, appEndTime, apprAmount, 
+    apprInte, apprInfoExt, backToId, needInforCodes, needReason, refuseCode, passCode, remark
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfoKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_apply_aprv_info
+    where appNum = #{appNum,jdbcType=INTEGER}
+      and loanId = #{loanId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectNotSubbmit" resultMap="BaseResultMap" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo" >
+    select appNum,apprAmount,apprInte,apprResult,backToId,apprInfo,apprInfoExt,refuseCode,appBeginTime,passCode,retuKind,remark
+    from t_credit_apply_aprv_info
+    where loanId = #{loanId,jdbcType=VARCHAR}
+      and apprvId = #{apprvId,jdbcType=VARCHAR}
+      and appEndTime is null
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfoKey" >
+    delete from t_credit_apply_aprv_info
+    where appNum = #{appNum,jdbcType=INTEGER}
+      and loanId = #{loanId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo" >
+    delete from t_credit_apply_aprv_info
+    where loanId = #{loanId,jdbcType=VARCHAR}
+      and apprvId = #{apprvId,jdbcType=VARCHAR}
+      and appEndTime is null
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo" >
+    insert into t_credit_apply_aprv_info (appNum, loanId, custId, 
+      custName, prodId, prodName, 
+      appCredLevel, appMaxCred, lowRiskType, 
+      currSign, apptcApi, termUnit, 
+      apptTerm, assuKind, depositKind, 
+      depositRate, asDepositRate, inteType, 
+      inteAdjuKind, rateCode, rateNote, 
+      basicInteRate, floatInteRate, moreInteRate, 
+      inteRate, retRate, retuKind, 
+      retuKind2, loanUsereMark, riskFlag, 
+      riskRemark, loanPrecond, payPrecond, 
+      riskPrecautmeas, otherCond, apprInfo, 
+      operId, bankId, apprvDate, 
+      apprVendDate, apprvId, apprvBankId, 
+      apprState, apprResult, appBeginTime, 
+      appEndTime, apprAmount, apprInte, 
+      apprInfoExt, backToId, needInforCodes, 
+      needReason, refuseCode, passCode,
+      remark)
+    values (#{appNum,jdbcType=INTEGER}, #{loanId,jdbcType=VARCHAR}, #{custId,jdbcType=VARCHAR}, 
+      #{custName,jdbcType=VARCHAR}, #{prodId,jdbcType=VARCHAR}, #{prodName,jdbcType=VARCHAR}, 
+      #{appCredLevel,jdbcType=VARCHAR}, #{appMaxCred,jdbcType=DECIMAL}, #{lowRiskType,jdbcType=VARCHAR}, 
+      #{currSign,jdbcType=VARCHAR}, #{apptcApi,jdbcType=DECIMAL}, #{termUnit,jdbcType=CHAR}, 
+      #{apptTerm,jdbcType=VARCHAR}, #{assuKind,jdbcType=VARCHAR}, #{depositKind,jdbcType=VARCHAR}, 
+      #{depositRate,jdbcType=DECIMAL}, #{asDepositRate,jdbcType=DECIMAL}, #{inteType,jdbcType=VARCHAR}, 
+      #{inteAdjuKind,jdbcType=VARCHAR}, #{rateCode,jdbcType=VARCHAR}, #{rateNote,jdbcType=VARCHAR}, 
+      #{basicInteRate,jdbcType=DECIMAL}, #{floatInteRate,jdbcType=DECIMAL}, #{moreInteRate,jdbcType=DECIMAL}, 
+      #{inteRate,jdbcType=DECIMAL}, #{retRate,jdbcType=DECIMAL}, #{retuKind,jdbcType=VARCHAR}, 
+      #{retuKind2,jdbcType=VARCHAR}, #{loanUsereMark,jdbcType=VARCHAR}, #{riskFlag,jdbcType=VARCHAR}, 
+      #{riskRemark,jdbcType=VARCHAR}, #{loanPrecond,jdbcType=VARCHAR}, #{payPrecond,jdbcType=VARCHAR}, 
+      #{riskPrecautmeas,jdbcType=VARCHAR}, #{otherCond,jdbcType=VARCHAR}, #{apprInfo,jdbcType=VARCHAR}, 
+      #{operId,jdbcType=VARCHAR}, #{bankId,jdbcType=VARCHAR}, #{apprvDate,jdbcType=TIMESTAMP}, 
+      #{apprVendDate,jdbcType=TIMESTAMP}, #{apprvId,jdbcType=VARCHAR}, #{apprvBankId,jdbcType=VARCHAR}, 
+      #{apprState,jdbcType=VARCHAR}, #{apprResult,jdbcType=VARCHAR}, #{appBeginTime,jdbcType=TIMESTAMP}, 
+      #{appEndTime,jdbcType=TIMESTAMP}, #{apprAmount,jdbcType=DECIMAL}, #{apprInte,jdbcType=DECIMAL}, 
+      #{apprInfoExt,jdbcType=VARCHAR}, #{backToId,jdbcType=VARCHAR}, #{needInforCodes,jdbcType=VARCHAR},
+      #{needReason,jdbcType=VARCHAR}, #{refuseCode,jdbcType=VARCHAR}, #{passCode,jdbcType=VARCHAR}),
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo" >
+    insert into t_credit_apply_aprv_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="appNum != null" >
+        appNum,
+      </if>
+      <if test="loanId != null" >
+        loanId,
+      </if>
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="custName != null" >
+        custName,
+      </if>
+      <if test="prodId != null" >
+        prodId,
+      </if>
+      <if test="prodName != null" >
+        prodName,
+      </if>
+      <if test="appCredLevel != null" >
+        appCredLevel,
+      </if>
+      <if test="appMaxCred != null" >
+        appMaxCred,
+      </if>
+      <if test="lowRiskType != null" >
+        lowRiskType,
+      </if>
+      <if test="currSign != null" >
+        currSign,
+      </if>
+      <if test="apptcApi != null" >
+        apptcApi,
+      </if>
+      <if test="termUnit != null" >
+        termUnit,
+      </if>
+      <if test="apptTerm != null" >
+        apptTerm,
+      </if>
+      <if test="assuKind != null" >
+        assuKind,
+      </if>
+      <if test="depositKind != null" >
+        depositKind,
+      </if>
+      <if test="depositRate != null" >
+        depositRate,
+      </if>
+      <if test="asDepositRate != null" >
+        asDepositRate,
+      </if>
+      <if test="inteType != null" >
+        inteType,
+      </if>
+      <if test="inteAdjuKind != null" >
+        inteAdjuKind,
+      </if>
+      <if test="rateCode != null" >
+        rateCode,
+      </if>
+      <if test="rateNote != null" >
+        rateNote,
+      </if>
+      <if test="basicInteRate != null" >
+        basicInteRate,
+      </if>
+      <if test="floatInteRate != null" >
+        floatInteRate,
+      </if>
+      <if test="moreInteRate != null" >
+        moreInteRate,
+      </if>
+      <if test="inteRate != null" >
+        inteRate,
+      </if>
+      <if test="retRate != null" >
+        retRate,
+      </if>
+      <if test="retuKind != null" >
+        retuKind,
+      </if>
+      <if test="retuKind2 != null" >
+        retuKind2,
+      </if>
+      <if test="loanUsereMark != null" >
+        loanUsereMark,
+      </if>
+      <if test="riskFlag != null" >
+        riskFlag,
+      </if>
+      <if test="riskRemark != null" >
+        riskRemark,
+      </if>
+      <if test="loanPrecond != null" >
+        loanPrecond,
+      </if>
+      <if test="payPrecond != null" >
+        payPrecond,
+      </if>
+      <if test="riskPrecautmeas != null" >
+        riskPrecautmeas,
+      </if>
+      <if test="otherCond != null" >
+        otherCond,
+      </if>
+      <if test="apprInfo != null" >
+        apprInfo,
+      </if>
+      <if test="operId != null" >
+        operId,
+      </if>
+      <if test="bankId != null" >
+        bankId,
+      </if>
+      <if test="apprvDate != null" >
+        apprvDate,
+      </if>
+      <if test="apprVendDate != null" >
+        apprVendDate,
+      </if>
+      <if test="apprvId != null" >
+        apprvId,
+      </if>
+      <if test="apprvBankId != null" >
+        apprvBankId,
+      </if>
+      <if test="apprState != null" >
+        apprState,
+      </if>
+      <if test="apprResult != null" >
+        apprResult,
+      </if>
+      <if test="appBeginTime != null" >
+        appBeginTime,
+      </if>
+      <if test="appEndTime != null" >
+        appEndTime,
+      </if>
+      <if test="apprAmount != null" >
+        apprAmount,
+      </if>
+      <if test="apprInte != null" >
+        apprInte,
+      </if>
+      <if test="apprInfoExt != null" >
+        apprInfoExt,
+      </if>
+      <if test="backToId != null" >
+        backToId,
+      </if>
+      <if test="needInforCodes != null" >
+        needInforCodes,
+      </if>
+      <if test="needReason != null" >
+        needReason,
+      </if>
+      <if test="refuseCode != null" >
+        refuseCode,
+      </if>
+      <if test="passCode != null" >
+        passCode,
+      </if>
+      <if test="remark != null" >
+        remark
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="appNum != null" >
+        #{appNum,jdbcType=INTEGER},
+      </if>
+      <if test="loanId != null" >
+        #{loanId,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="custName != null" >
+        #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="prodId != null" >
+        #{prodId,jdbcType=VARCHAR},
+      </if>
+      <if test="prodName != null" >
+        #{prodName,jdbcType=VARCHAR},
+      </if>
+      <if test="appCredLevel != null" >
+        #{appCredLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="appMaxCred != null" >
+        #{appMaxCred,jdbcType=DECIMAL},
+      </if>
+      <if test="lowRiskType != null" >
+        #{lowRiskType,jdbcType=VARCHAR},
+      </if>
+      <if test="currSign != null" >
+        #{currSign,jdbcType=VARCHAR},
+      </if>
+      <if test="apptcApi != null" >
+        #{apptcApi,jdbcType=DECIMAL},
+      </if>
+      <if test="termUnit != null" >
+        #{termUnit,jdbcType=CHAR},
+      </if>
+      <if test="apptTerm != null" >
+        #{apptTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="assuKind != null" >
+        #{assuKind,jdbcType=VARCHAR},
+      </if>
+      <if test="depositKind != null" >
+        #{depositKind,jdbcType=VARCHAR},
+      </if>
+      <if test="depositRate != null" >
+        #{depositRate,jdbcType=DECIMAL},
+      </if>
+      <if test="asDepositRate != null" >
+        #{asDepositRate,jdbcType=DECIMAL},
+      </if>
+      <if test="inteType != null" >
+        #{inteType,jdbcType=VARCHAR},
+      </if>
+      <if test="inteAdjuKind != null" >
+        #{inteAdjuKind,jdbcType=VARCHAR},
+      </if>
+      <if test="rateCode != null" >
+        #{rateCode,jdbcType=VARCHAR},
+      </if>
+      <if test="rateNote != null" >
+        #{rateNote,jdbcType=VARCHAR},
+      </if>
+      <if test="basicInteRate != null" >
+        #{basicInteRate,jdbcType=DECIMAL},
+      </if>
+      <if test="floatInteRate != null" >
+        #{floatInteRate,jdbcType=DECIMAL},
+      </if>
+      <if test="moreInteRate != null" >
+        #{moreInteRate,jdbcType=DECIMAL},
+      </if>
+      <if test="inteRate != null" >
+        #{inteRate,jdbcType=DECIMAL},
+      </if>
+      <if test="retRate != null" >
+        #{retRate,jdbcType=DECIMAL},
+      </if>
+      <if test="retuKind != null" >
+        #{retuKind,jdbcType=VARCHAR},
+      </if>
+      <if test="retuKind2 != null" >
+        #{retuKind2,jdbcType=VARCHAR},
+      </if>
+      <if test="loanUsereMark != null" >
+        #{loanUsereMark,jdbcType=VARCHAR},
+      </if>
+      <if test="riskFlag != null" >
+        #{riskFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="riskRemark != null" >
+        #{riskRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="loanPrecond != null" >
+        #{loanPrecond,jdbcType=VARCHAR},
+      </if>
+      <if test="payPrecond != null" >
+        #{payPrecond,jdbcType=VARCHAR},
+      </if>
+      <if test="riskPrecautmeas != null" >
+        #{riskPrecautmeas,jdbcType=VARCHAR},
+      </if>
+      <if test="otherCond != null" >
+        #{otherCond,jdbcType=VARCHAR},
+      </if>
+      <if test="apprInfo != null" >
+        #{apprInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="operId != null" >
+        #{operId,jdbcType=VARCHAR},
+      </if>
+      <if test="bankId != null" >
+        #{bankId,jdbcType=VARCHAR},
+      </if>
+      <if test="apprvDate != null" >
+        #{apprvDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="apprVendDate != null" >
+        #{apprVendDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="apprvId != null" >
+        #{apprvId,jdbcType=VARCHAR},
+      </if>
+      <if test="apprvBankId != null" >
+        #{apprvBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="apprState != null" >
+        #{apprState,jdbcType=VARCHAR},
+      </if>
+      <if test="apprResult != null" >
+        #{apprResult,jdbcType=VARCHAR},
+      </if>
+      <if test="appBeginTime != null" >
+        #{appBeginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="appEndTime != null" >
+        #{appEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="apprAmount != null" >
+        #{apprAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="apprInte != null" >
+        #{apprInte,jdbcType=DECIMAL},
+      </if>
+      <if test="apprInfoExt != null" >
+        #{apprInfoExt,jdbcType=VARCHAR},
+      </if>
+      <if test="backToId != null" >
+        #{backToId,jdbcType=VARCHAR},
+      </if>
+      <if test="needInforCodes != null" >
+        #{needInforCodes,jdbcType=VARCHAR},
+      </if>
+      <if test="needReason != null" >
+        #{needReason,jdbcType=VARCHAR},
+      </if>
+      <if test="refuseCode != null" >
+        #{refuseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="passCode != null" >
+        #{passCode,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR}
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo" >
+    update t_credit_apply_aprv_info
+    <set >
+      <if test="custId != null" >
+        custId = #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="custName != null" >
+        custName = #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="prodId != null" >
+        prodId = #{prodId,jdbcType=VARCHAR},
+      </if>
+      <if test="prodName != null" >
+        prodName = #{prodName,jdbcType=VARCHAR},
+      </if>
+      <if test="appCredLevel != null" >
+        appCredLevel = #{appCredLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="appMaxCred != null" >
+        appMaxCred = #{appMaxCred,jdbcType=DECIMAL},
+      </if>
+      <if test="lowRiskType != null" >
+        lowRiskType = #{lowRiskType,jdbcType=VARCHAR},
+      </if>
+      <if test="currSign != null" >
+        currSign = #{currSign,jdbcType=VARCHAR},
+      </if>
+      <if test="apptcApi != null" >
+        apptcApi = #{apptcApi,jdbcType=DECIMAL},
+      </if>
+      <if test="termUnit != null" >
+        termUnit = #{termUnit,jdbcType=CHAR},
+      </if>
+      <if test="apptTerm != null" >
+        apptTerm = #{apptTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="assuKind != null" >
+        assuKind = #{assuKind,jdbcType=VARCHAR},
+      </if>
+      <if test="depositKind != null" >
+        depositKind = #{depositKind,jdbcType=VARCHAR},
+      </if>
+      <if test="depositRate != null" >
+        depositRate = #{depositRate,jdbcType=DECIMAL},
+      </if>
+      <if test="asDepositRate != null" >
+        asDepositRate = #{asDepositRate,jdbcType=DECIMAL},
+      </if>
+      <if test="inteType != null" >
+        inteType = #{inteType,jdbcType=VARCHAR},
+      </if>
+      <if test="inteAdjuKind != null" >
+        inteAdjuKind = #{inteAdjuKind,jdbcType=VARCHAR},
+      </if>
+      <if test="rateCode != null" >
+        rateCode = #{rateCode,jdbcType=VARCHAR},
+      </if>
+      <if test="rateNote != null" >
+        rateNote = #{rateNote,jdbcType=VARCHAR},
+      </if>
+      <if test="basicInteRate != null" >
+        basicInteRate = #{basicInteRate,jdbcType=DECIMAL},
+      </if>
+      <if test="floatInteRate != null" >
+        floatInteRate = #{floatInteRate,jdbcType=DECIMAL},
+      </if>
+      <if test="moreInteRate != null" >
+        moreInteRate = #{moreInteRate,jdbcType=DECIMAL},
+      </if>
+      <if test="inteRate != null" >
+        inteRate = #{inteRate,jdbcType=DECIMAL},
+      </if>
+      <if test="retRate != null" >
+        retRate = #{retRate,jdbcType=DECIMAL},
+      </if>
+      <if test="retuKind != null" >
+        retuKind = #{retuKind,jdbcType=VARCHAR},
+      </if>
+      <if test="retuKind2 != null" >
+        retuKind2 = #{retuKind2,jdbcType=VARCHAR},
+      </if>
+      <if test="loanUsereMark != null" >
+        loanUsereMark = #{loanUsereMark,jdbcType=VARCHAR},
+      </if>
+      <if test="riskFlag != null" >
+        riskFlag = #{riskFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="riskRemark != null" >
+        riskRemark = #{riskRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="loanPrecond != null" >
+        loanPrecond = #{loanPrecond,jdbcType=VARCHAR},
+      </if>
+      <if test="payPrecond != null" >
+        payPrecond = #{payPrecond,jdbcType=VARCHAR},
+      </if>
+      <if test="riskPrecautmeas != null" >
+        riskPrecautmeas = #{riskPrecautmeas,jdbcType=VARCHAR},
+      </if>
+      <if test="otherCond != null" >
+        otherCond = #{otherCond,jdbcType=VARCHAR},
+      </if>
+      <if test="apprInfo != null" >
+        apprInfo = #{apprInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="operId != null" >
+        operId = #{operId,jdbcType=VARCHAR},
+      </if>
+      <if test="bankId != null" >
+        bankId = #{bankId,jdbcType=VARCHAR},
+      </if>
+      <if test="apprvDate != null" >
+        apprvDate = #{apprvDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="apprVendDate != null" >
+        apprVendDate = #{apprVendDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="apprvId != null" >
+        apprvId = #{apprvId,jdbcType=VARCHAR},
+      </if>
+      <if test="apprvBankId != null" >
+        apprvBankId = #{apprvBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="apprState != null" >
+        apprState = #{apprState,jdbcType=VARCHAR},
+      </if>
+      <if test="apprResult != null" >
+        apprResult = #{apprResult,jdbcType=VARCHAR},
+      </if>
+      <if test="appBeginTime != null" >
+        appBeginTime = #{appBeginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="appEndTime != null" >
+        appEndTime = #{appEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="apprAmount != null" >
+        apprAmount = #{apprAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="apprInte != null" >
+        apprInte = #{apprInte,jdbcType=DECIMAL},
+      </if>
+      <if test="apprInfoExt != null" >
+        apprInfoExt = #{apprInfoExt,jdbcType=VARCHAR},
+      </if>
+      <if test="backToId != null" >
+        backToId = #{backToId,jdbcType=VARCHAR},
+      </if>
+      <if test="needInforCodes != null" >
+        needInforCodes = #{needInforCodes,jdbcType=VARCHAR},
+      </if>
+      <if test="needReason != null" >
+        needReason = #{needReason,jdbcType=VARCHAR},
+      </if>
+      <if test="refuseCode != null" >
+        refuseCode = #{refuseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="passCode != null" >
+        passCode = #{passCode,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where appNum = #{appNum,jdbcType=INTEGER}
+      and loanId = #{loanId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo" >
+    update t_credit_apply_aprv_info
+    set custId = #{custId,jdbcType=VARCHAR},
+      custName = #{custName,jdbcType=VARCHAR},
+      prodId = #{prodId,jdbcType=VARCHAR},
+      prodName = #{prodName,jdbcType=VARCHAR},
+      appCredLevel = #{appCredLevel,jdbcType=VARCHAR},
+      appMaxCred = #{appMaxCred,jdbcType=DECIMAL},
+      lowRiskType = #{lowRiskType,jdbcType=VARCHAR},
+      currSign = #{currSign,jdbcType=VARCHAR},
+      apptcApi = #{apptcApi,jdbcType=DECIMAL},
+      termUnit = #{termUnit,jdbcType=CHAR},
+      apptTerm = #{apptTerm,jdbcType=VARCHAR},
+      assuKind = #{assuKind,jdbcType=VARCHAR},
+      depositKind = #{depositKind,jdbcType=VARCHAR},
+      depositRate = #{depositRate,jdbcType=DECIMAL},
+      asDepositRate = #{asDepositRate,jdbcType=DECIMAL},
+      inteType = #{inteType,jdbcType=VARCHAR},
+      inteAdjuKind = #{inteAdjuKind,jdbcType=VARCHAR},
+      rateCode = #{rateCode,jdbcType=VARCHAR},
+      rateNote = #{rateNote,jdbcType=VARCHAR},
+      basicInteRate = #{basicInteRate,jdbcType=DECIMAL},
+      floatInteRate = #{floatInteRate,jdbcType=DECIMAL},
+      moreInteRate = #{moreInteRate,jdbcType=DECIMAL},
+      inteRate = #{inteRate,jdbcType=DECIMAL},
+      retRate = #{retRate,jdbcType=DECIMAL},
+      retuKind = #{retuKind,jdbcType=VARCHAR},
+      retuKind2 = #{retuKind2,jdbcType=VARCHAR},
+      loanUsereMark = #{loanUsereMark,jdbcType=VARCHAR},
+      riskFlag = #{riskFlag,jdbcType=VARCHAR},
+      riskRemark = #{riskRemark,jdbcType=VARCHAR},
+      loanPrecond = #{loanPrecond,jdbcType=VARCHAR},
+      payPrecond = #{payPrecond,jdbcType=VARCHAR},
+      riskPrecautmeas = #{riskPrecautmeas,jdbcType=VARCHAR},
+      otherCond = #{otherCond,jdbcType=VARCHAR},
+      apprInfo = #{apprInfo,jdbcType=VARCHAR},
+      operId = #{operId,jdbcType=VARCHAR},
+      bankId = #{bankId,jdbcType=VARCHAR},
+      apprvDate = #{apprvDate,jdbcType=TIMESTAMP},
+      apprVendDate = #{apprVendDate,jdbcType=TIMESTAMP},
+      apprvId = #{apprvId,jdbcType=VARCHAR},
+      apprvBankId = #{apprvBankId,jdbcType=VARCHAR},
+      apprState = #{apprState,jdbcType=VARCHAR},
+      apprResult = #{apprResult,jdbcType=VARCHAR},
+      appBeginTime = #{appBeginTime,jdbcType=TIMESTAMP},
+      appEndTime = #{appEndTime,jdbcType=TIMESTAMP},
+      apprAmount = #{apprAmount,jdbcType=DECIMAL},
+      apprInte = #{apprInte,jdbcType=DECIMAL},
+      apprInfoExt = #{apprInfoExt,jdbcType=VARCHAR},
+      backToId = #{backToId,jdbcType=VARCHAR},
+      needInforCodes = #{needInforCodes,jdbcType=VARCHAR},
+      needReason = #{needReason,jdbcType=VARCHAR},
+      refuseCode = #{refuseCode,jdbcType=VARCHAR},
+      passCode = #{passCode,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR}
+    where appNum = #{appNum,jdbcType=INTEGER}
+      and loanId = #{loanId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectMaxAppNumByLoanId" resultType="java.lang.Integer" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfoKey" >
+    select ifnull(max(appNum),0) appNum
+    from t_credit_apply_aprv_info
+    where loanid = #{loanid,jdbcType=VARCHAR}
+  </select>
+  <select id="selectBackToInfo" resultMap="BaseResultMap" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo" >
+    select distinct concat(caai.apprvId,':',caai.apprState) needInforCodes, concat(bd.itemName,':',ul.loginName) custName
+    from t_credit_apply_aprv_info caai
+    left join t_user_login ul on caai.apprvId = ul.userName
+    left join t_business_dictionary bd on bd.codeNo = 'ApplyStatus' and caai.apprState = bd.itemNo
+    where caai.loanId = #{loanId,jdbcType=VARCHAR}
+      and caai.appEndTime is not null
+      and caai.apprState in
+        <foreach item="item" index="index" collection="applyStatuses" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+      order by caai.appEndTime
+  </select>
+  <select id="selectInforAuditList" resultMap="BaseResultMap" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo" >
+    select caai.apprState,
+    	caai.appBeginTime, 
+    	caai.appEndTime,
+    	caai.apprInfo,
+    	caai.apprInfoExt,
+    	caai.apprState,
+    	caai.apprResult,
+    	caai.apprvId,
+    	caai.apprAmount,
+    	caai.apprInte,
+    	caai.remark
+    from t_credit_apply_aprv_info caai
+    where caai.loanId = #{loanId,jdbcType=VARCHAR}
+      and caai.appEndTime is not null
+      and caai.apprState in ('10','20','21','30','31','32','33','34','40','41','90','91','92')
+    order by caai.appEndTime
+  </select>
+  <select id="selectLastOne" resultMap="BaseResultMap" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo" >
+	select loanId,appNum,apprAmount,apprInte,needInforCodes,apprvId,apprState,apprResult,appBeginTime,needReason,apprInfo,apprInfoExt,refuseCode,passCode,retuKind,remark
+	from t_credit_apply_aprv_info
+	    where loanId = #{loanId,jdbcType=VARCHAR}
+	      and appEndTime is not null
+	      and apprState in ('20','21','30','31','32','33','34','41')
+    <if test="apprState != null">
+ 		and apprState = #{apprState}
+    </if>
+    <if test="apprResult != null">
+ 		and apprResult = #{apprResult}
+    </if>
+	order by appEndTime DESC
+	limit 0, 1
+  </select>
+  <select id="selectExecutor" resultMap="BaseResultMap" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfoKey" >
+	select loanId,appNum,apprAmount,apprInte,needInforCodes,apprvId,apprState,appBeginTime,refuseCode,passCode,retuKind,remark
+	from t_credit_apply_aprv_info
+	    where loanId = #{loanId,jdbcType=VARCHAR}
+	      and appEndTime is null
+	      and apprState in ('20','21','31','32','41')
+	limit 0, 1
+  </select>
+  <select id="selectLastSubbmitted" resultMap="BaseResultMap" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfoKey" >
+	select loanId,appNum,apprAmount,apprInte,apprvId,apprState,apprResult,apprInfo,apprInfoExt,appEndTime,refuseCode,passCode,retuKind,remark
+	  from t_credit_apply_aprv_info
+     where loanId = #{loanId,jdbcType=VARCHAR}
+	       and appEndTime is not null
+	 order by appEndTime DESC
+	 limit 0, 1
+  </select>
+   <update id="updateCreditApplyAprvInfoBySelective" parameterType="map" >
+    update t_credit_apply_aprv_info
+    <set >
+      <if test="custId != null" >
+        custId = #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="custName != null" >
+        custName = #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="prodId != null" >
+        prodId = #{prodId,jdbcType=VARCHAR},
+      </if>
+      <if test="prodName != null" >
+        prodName = #{prodName,jdbcType=VARCHAR},
+      </if>
+      <if test="appCredLevel != null" >
+        appCredLevel = #{appCredLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="appMaxCred != null" >
+        appMaxCred = #{appMaxCred,jdbcType=DECIMAL},
+      </if>
+      <if test="lowRiskType != null" >
+        lowRiskType = #{lowRiskType,jdbcType=VARCHAR},
+      </if>
+      <if test="currSign != null" >
+        currSign = #{currSign,jdbcType=VARCHAR},
+      </if>
+      <if test="apptcApi != null" >
+        apptcApi = #{apptcApi,jdbcType=DECIMAL},
+      </if>
+      <if test="termUnit != null" >
+        termUnit = #{termUnit,jdbcType=CHAR},
+      </if>
+      <if test="apptTerm != null" >
+        apptTerm = #{apptTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="assuKind != null" >
+        assuKind = #{assuKind,jdbcType=VARCHAR},
+      </if>
+      <if test="depositKind != null" >
+        depositKind = #{depositKind,jdbcType=VARCHAR},
+      </if>
+      <if test="depositRate != null" >
+        depositRate = #{depositRate,jdbcType=DECIMAL},
+      </if>
+      <if test="asDepositRate != null" >
+        asDepositRate = #{asDepositRate,jdbcType=DECIMAL},
+      </if>
+      <if test="inteType != null" >
+        inteType = #{inteType,jdbcType=VARCHAR},
+      </if>
+      <if test="inteAdjuKind != null" >
+        inteAdjuKind = #{inteAdjuKind,jdbcType=VARCHAR},
+      </if>
+      <if test="rateCode != null" >
+        rateCode = #{rateCode,jdbcType=VARCHAR},
+      </if>
+      <if test="rateNote != null" >
+        rateNote = #{rateNote,jdbcType=VARCHAR},
+      </if>
+      <if test="basicInteRate != null" >
+        basicInteRate = #{basicInteRate,jdbcType=DECIMAL},
+      </if>
+      <if test="floatInteRate != null" >
+        floatInteRate = #{floatInteRate,jdbcType=DECIMAL},
+      </if>
+      <if test="moreInteRate != null" >
+        moreInteRate = #{moreInteRate,jdbcType=DECIMAL},
+      </if>
+      <if test="inteRate != null" >
+        inteRate = #{inteRate,jdbcType=DECIMAL},
+      </if>
+      <if test="retRate != null" >
+        retRate = #{retRate,jdbcType=DECIMAL},
+      </if>
+      <if test="retuKind != null" >
+        retuKind = #{retuKind,jdbcType=VARCHAR},
+      </if>
+      <if test="retuKind2 != null" >
+        retuKind2 = #{retuKind2,jdbcType=VARCHAR},
+      </if>
+      <if test="loanUsereMark != null" >
+        loanUsereMark = #{loanUsereMark,jdbcType=VARCHAR},
+      </if>
+      <if test="riskFlag != null" >
+        riskFlag = #{riskFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="riskRemark != null" >
+        riskRemark = #{riskRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="loanPrecond != null" >
+        loanPrecond = #{loanPrecond,jdbcType=VARCHAR},
+      </if>
+      <if test="payPrecond != null" >
+        payPrecond = #{payPrecond,jdbcType=VARCHAR},
+      </if>
+      <if test="riskPrecautmeas != null" >
+        riskPrecautmeas = #{riskPrecautmeas,jdbcType=VARCHAR},
+      </if>
+      <if test="otherCond != null" >
+        otherCond = #{otherCond,jdbcType=VARCHAR},
+      </if>
+      <if test="apprInfo != null" >
+        apprInfo = #{apprInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="operId != null" >
+        operId = #{operId,jdbcType=VARCHAR},
+      </if>
+      <if test="bankId != null" >
+        bankId = #{bankId,jdbcType=VARCHAR},
+      </if>
+      <if test="apprvDate != null" >
+        apprvDate = #{apprvDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="apprVendDate != null" >
+        apprVendDate = #{apprVendDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="apprvId != null" >
+        apprvId = #{apprvId,jdbcType=VARCHAR},
+      </if>
+      <if test="apprvBankId != null" >
+        apprvBankId = #{apprvBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="apprState != null" >
+        apprState = #{apprState,jdbcType=VARCHAR},
+      </if>
+      <if test="apprResult != null" >
+        apprResult = #{apprResult,jdbcType=VARCHAR},
+      </if>
+      <if test="appBeginTime != null" >
+        appBeginTime = #{appBeginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="appEndTime != null" >
+        appEndTime = #{appEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="apprAmount != null" >
+        apprAmount = #{apprAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="apprInte != null" >
+        apprInte = #{apprInte,jdbcType=DECIMAL},
+      </if>
+      <if test="apprInfoExt != null" >
+        apprInfoExt = #{apprInfoExt,jdbcType=VARCHAR},
+      </if>
+      <if test="backToId != null" >
+        backToId = #{backToId,jdbcType=VARCHAR},
+      </if>
+      <if test="needInforCodes != null" >
+        needInforCodes = #{needInforCodes,jdbcType=VARCHAR},
+      </if>
+      <if test="needReason != null" >
+        needReason = #{needReason,jdbcType=VARCHAR},
+      </if>
+      <if test="refuseCode != null" >
+        refuseCode = #{refuseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="passCode != null" >
+        passCode = #{passCode,jdbcType=VARCHAR}
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where appEndTime is null 
+      and loanId = #{loanId,jdbcType=VARCHAR}
+  </update>
+  <select id="getApprIdByLessWork" resultType="java.lang.String" parameterType="java.lang.String">
+	SELECT
+		ul.userName
+	FROM
+		t_user_login ul
+	LEFT JOIN t_credit_apply_aprv_info ai ON ai.apprvId = ul.userName
+	AND ai.appEndTime IS NULL,
+	 t_user_role ur
+	WHERE
+		ul.userId = ur.userId
+	AND ul.locked = '0'
+	AND ur.roleId = #{roleId,jdbcType=VARCHAR}
+	GROUP BY
+		ul.userName
+	ORDER BY
+		count(ai.loanId),
+		ul.userName
+	LIMIT 0,1
+  </select>
+    <select id="getApprIdByRuleAndLessWork" resultType="java.lang.String" parameterType="java.util.List">
+	SELECT
+		ul.userName
+	FROM
+		t_user_login ul
+	LEFT JOIN t_credit_apply_aprv_info ai ON ai.apprvId = ul.userName left join t_user_role ur ON ul.userId = ur.userId
+	AND ai.appEndTime IS NULL
+	AND ul.locked = '0'
+	AND ur.roleId = 
+    case ai.apprState
+    when '20' then '10'
+    when '31' then '12'
+    when '33' then '13'
+    when '34' then '14'
+    when '35' then '41' 
+    END
+	AND ul.username IN
+	<foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+        #{item}   
+    </foreach>  
+	GROUP BY ul.userName ORDER BY count(ul.userName)
+	LIMIT 0,1
+  </select>
+  <select id="getReviewPersons" resultType="java.lang.String" parameterType="java.lang.String">
+	SELECT username from t_user_login WHERE userid in(SELECT userid from t_user_role 
+	WHERE roleid = #{roleid,jdbcType=VARCHAR})
+	and locked='0'
+  </select>
+  <select id="getReviewPersons2" resultType="java.lang.String" parameterType="java.lang.String">
+	SELECT username from t_user_login WHERE userid in
+	(SELECT userid from t_user_role WHERE 
+	<choose>
+	<when test="applystatus =='20' ">  
+                roleid='10'
+    </when >
+	<when test="applystatus =='31' ">  
+                roleid='12'
+    </when >
+    <when test="applystatus =='33' ">  
+                roleid='13'
+    </when >
+    <when test="applystatus =='34' ">  
+                roleid='14'
+    </when >
+    <when test="applystatus =='35' ">  
+                roleid='41'
+    </when >
+    <otherwise>  
+    </otherwise> 
+	</choose>
+	)
+	and locked='0' 
+	AND username IN
+	<foreach collection="idList" index="index" item="item" open="(" separator="," close=")">   
+        #{item}   
+    </foreach>  
+  </select>
+  <select id="getApprIdFromList" resultType="java.lang.String" parameterType="List">
+	SELECT apprvid from t_credit_apply_aprv_info WHERE appEndTime IS NULL and apprvid in
+	<foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+        #{item}   
+    </foreach>  
+	GROUP BY apprvid ORDER BY count(*) LIMIT 1
+  </select>
+  <select id="selectLoanIdByApprvBeginTime" parameterType="Date" resultType="java.lang.String">
+  select a.loanId from ( SELECT loanId,MAX(appNum) appNum FROM t_credit_apply_aprv_info GROUP BY loanId ) a,t_credit_apply_aprv_info c where c.loanId = a.loanId and c.appNum = a.appNum AND c.apprState in ('21','32') and c.appEndTime is null and c.appBeginTime &lt; #{timeout};
+  </select>
+</mapper>

@@ -1,0 +1,60 @@
+package com.hrbb.loan.pos.dao.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+import org.springframework.stereotype.Repository;
+
+import com.hrbb.loan.pos.dao.TRiskChannelConfigDao;
+import com.hrbb.loan.pos.dao.entity.TRiskChannelConfig;
+@Repository("tRiskChannelConfigDao")
+public class TRiskChannelConfigDaoImpl extends SqlSessionDaoSupport implements TRiskChannelConfigDao {
+
+	@Override
+	public int deleteByPrimaryKey(Integer id) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int insert(TRiskChannelConfig record) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int insertSelective(TRiskChannelConfig record) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public TRiskChannelConfig selectByPrimaryKey(Integer id) {
+		 return getSqlSession().selectOne("TRiskChannelConfigMapper.selectByPrimaryKey", id);
+	}
+
+	@Override
+	public int updateByPrimaryKeySelective(TRiskChannelConfig record) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int updateByPrimaryKey(TRiskChannelConfig record) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public long countListBySelective(Map<String, Object> reqMap) {
+		return getSqlSession().selectOne("TRiskChannelConfigMapper.countListBySelective",reqMap);
+	}
+
+	@Override
+	public List<TRiskChannelConfig> selectListBySelective(
+			Map<String, Object> reqMap) {
+		 return getSqlSession().selectList("TRiskChannelConfigMapper.selectListBySelective", reqMap);
+	}
+
+}

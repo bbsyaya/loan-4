@@ -1,0 +1,54 @@
+package com.hrbb.loan.pos.biz.backstage.inter.impl.withholder;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosContractManagementBiz;
+import com.hrbb.loan.pos.dao.TCfgFundingPoolDao;
+import com.hrbb.loan.pos.dao.entity.TCfgFundingPool;
+import com.hrbb.loan.pos.dao.entity.TContractManagement;
+import com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo;
+
+@Service("withholderFromAcct")
+public class WithholderFromAcct implements IWithholderService{
+	
+	@Autowired
+	private LoanPosContractManagementBiz loanPosContractManagementBiz;
+	
+	@Autowired
+	private TCfgFundingPoolDao tCfgFundingPoolDao;
+	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	@Override
+	public void withholder(TPaybackApplyInfo apply) {
+		//先查询出合同记录
+		TContractManagement contract = loanPosContractManagementBiz.getContractByContNo(apply.getContNo());
+		if(contract == null){
+			logger.error("没有该合同");
+			return;
+		}
+		//查询资金池模式配置表，获取过渡户账户及过渡户户名
+		Map<String, Object> p = new HashMap<>();
+		p.put("channel", contract.getChannel());
+		TCfgFundingPool cfp = tCfgFundingPoolDao.selectOneSelective(p);
+		if(cfp == null){
+			logger.error("没有该渠道的资金池配置信息");
+		}
+		
+		//从还款过度户中扣除还款金额
+		String repayAcct = cfp.getRepayAccount();
+		String repayAcctName = cfp.getRepayAccountName();
+		
+		
+		
+		//如果扣款失败要扣保证金
+		String bailAcct = cfp.getBailAccount();
+	}
+
+}

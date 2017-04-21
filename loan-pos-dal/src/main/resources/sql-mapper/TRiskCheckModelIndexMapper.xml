@@ -1,0 +1,648 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRiskCheckModelIndexMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TRiskCheckModelIndex" >
+    <id column="loanId" property="loanId" jdbcType="VARCHAR" />
+    <result column="modelIndex01" property="modelIndex01" jdbcType="INTEGER" />
+    <result column="modelIndex02" property="modelIndex02" jdbcType="INTEGER" />
+    <result column="modelIndex03" property="modelIndex03" jdbcType="INTEGER" />
+    <result column="modelIndex04" property="modelIndex04" jdbcType="DECIMAL" />
+    <result column="modelIndex05" property="modelIndex05" jdbcType="DECIMAL" />
+    <result column="modelIndex06" property="modelIndex06" jdbcType="DECIMAL" />
+    <result column="modelIndex07" property="modelIndex07" jdbcType="INTEGER" />
+    <result column="modelIndex08" property="modelIndex08" jdbcType="DECIMAL" />
+    <result column="modelIndex09" property="modelIndex09" jdbcType="INTEGER" />
+    <result column="modelIndex10" property="modelIndex10" jdbcType="DECIMAL" />
+    <result column="modelIndex11" property="modelIndex11" jdbcType="DECIMAL" />
+    <result column="modelIndex12" property="modelIndex12" jdbcType="DECIMAL" />
+    <result column="modelIndex13" property="modelIndex13" jdbcType="DECIMAL" />
+    <result column="modelIndex14" property="modelIndex14" jdbcType="DECIMAL" />
+    <result column="modelIndex15" property="modelIndex15" jdbcType="DECIMAL" />
+    <result column="modelIndex16" property="modelIndex16" jdbcType="DECIMAL" />
+    <result column="modelIndex17" property="modelIndex17" jdbcType="DECIMAL" />
+    <result column="modelIndex18" property="modelIndex18" jdbcType="DECIMAL" />
+    <result column="modelIndex19" property="modelIndex19" jdbcType="DECIMAL" />
+    <result column="modelIndex20" property="modelIndex20" jdbcType="INTEGER" />
+    <result column="modelIndex21" property="modelIndex21" jdbcType="INTEGER" />
+    <result column="modelIndex22" property="modelIndex22" jdbcType="INTEGER" />
+    <result column="modelIndex23" property="modelIndex23" jdbcType="DECIMAL" />
+    <result column="modelIndex24" property="modelIndex24" jdbcType="INTEGER" />
+    <result column="modelIndex25" property="modelIndex25" jdbcType="INTEGER" />
+    <result column="modelIndex26" property="modelIndex26" jdbcType="DECIMAL" />
+    <result column="modelIndex27" property="modelIndex27" jdbcType="DECIMAL" />
+    <result column="modelIndex28" property="modelIndex28" jdbcType="DECIMAL" />
+    <result column="modelIndex29" property="modelIndex29" jdbcType="INTEGER" />
+    <result column="modelIndex30" property="modelIndex30" jdbcType="INTEGER" />
+    <result column="modelIndex31" property="modelIndex31" jdbcType="DECIMAL" />
+    <result column="modelIndex32" property="modelIndex32" jdbcType="DECIMAL" />
+    <result column="modelIndex33" property="modelIndex33" jdbcType="INTEGER" />
+    <result column="modelIndex34" property="modelIndex34" jdbcType="DECIMAL" />
+    <result column="modelIndex35" property="modelIndex35" jdbcType="DECIMAL" />
+    <result column="modelIndex36" property="modelIndex36" jdbcType="DECIMAL" />
+    <result column="modelIndex37" property="modelIndex37" jdbcType="DECIMAL" />
+    <result column="modelIndex38" property="modelIndex38" jdbcType="DECIMAL" />
+    <result column="modelIndex39" property="modelIndex39" jdbcType="DECIMAL" />
+    <result column="modelIndex40" property="modelIndex40" jdbcType="INTEGER" />
+    <result column="modelIndex41" property="modelIndex41" jdbcType="INTEGER" />
+    <result column="modelIndex42" property="modelIndex42" jdbcType="DECIMAL" />
+    <result column="modelIndex43" property="modelIndex43" jdbcType="DECIMAL" />
+    <result column="modelIndex44" property="modelIndex44" jdbcType="CHAR" />
+    <result column="modelIndex45" property="modelIndex45" jdbcType="CHAR" />
+    <result column="modelIndex46" property="modelIndex46" jdbcType="INTEGER" />
+    <result column="modelIndex47" property="modelIndex47" jdbcType="INTEGER" />
+    <result column="modelIndex48" property="modelIndex48" jdbcType="DECIMAL" />
+    <result column="modelIndex49" property="modelIndex49" jdbcType="DECIMAL" />
+    <result column="modelIndex50" property="modelIndex50" jdbcType="DECIMAL" />
+    <result column="modelIndex51" property="modelIndex51" jdbcType="DECIMAL" />
+    <result column="modelIndex52" property="modelIndex52" jdbcType="INTEGER" />
+    <result column="modelIndex53" property="modelIndex53" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    loanId, modelIndex01, modelIndex02, modelIndex03, modelIndex04, modelIndex05, modelIndex06, 
+    modelIndex07, modelIndex08, modelIndex09, modelIndex10, modelIndex11, modelIndex12, 
+    modelIndex13, modelIndex14, modelIndex15, modelIndex16, modelIndex17, modelIndex18, 
+    modelIndex19, modelIndex20, modelIndex21, modelIndex22, modelIndex23, modelIndex24, 
+    modelIndex25, modelIndex26, modelIndex27, modelIndex28, modelIndex29, modelIndex30, 
+    modelIndex31, modelIndex32, modelIndex33, modelIndex34, modelIndex35, modelIndex36, 
+    modelIndex37, modelIndex38, modelIndex39, modelIndex40, modelIndex41, modelIndex42, 
+    modelIndex43, modelIndex44, modelIndex45, modelIndex46, modelIndex47, modelIndex48, 
+    modelIndex49, modelIndex50, modelIndex51, modelIndex52, modelIndex53
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_risk_check_modelindex
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_risk_check_modelindex
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TRiskCheckModelIndex" >
+    insert into t_risk_check_modelindex (loanId, modelIndex01, modelIndex02, 
+      modelIndex03, modelIndex04, modelIndex05, 
+      modelIndex06, modelIndex07, modelIndex08, 
+      modelIndex09, modelIndex10, modelIndex11, 
+      modelIndex12, modelIndex13, modelIndex14, 
+      modelIndex15, modelIndex16, modelIndex17, 
+      modelIndex18, modelIndex19, modelIndex20, 
+      modelIndex21, modelIndex22, modelIndex23, 
+      modelIndex24, modelIndex25, modelIndex26, 
+      modelIndex27, modelIndex28, modelIndex29, 
+      modelIndex30, modelIndex31, modelIndex32, 
+      modelIndex33, modelIndex34, modelIndex35, 
+      modelIndex36, modelIndex37, modelIndex38, 
+      modelIndex39, modelIndex40, modelIndex41, 
+      modelIndex42, modelIndex43, modelIndex44, 
+      modelIndex45, modelIndex46, modelIndex47,
+      modelIndex48, modelIndex49, modelIndex50, 
+      modelIndex51, modelIndex52)
+    values (#{loanId,jdbcType=VARCHAR}, #{modelIndex01,jdbcType=INTEGER}, #{modelIndex02,jdbcType=INTEGER}, 
+      #{modelIndex03,jdbcType=INTEGER}, #{modelIndex04,jdbcType=DECIMAL}, #{modelIndex05,jdbcType=DECIMAL}, 
+      #{modelIndex06,jdbcType=DECIMAL}, #{modelIndex07,jdbcType=INTEGER}, #{modelIndex08,jdbcType=DECIMAL}, 
+      #{modelIndex09,jdbcType=INTEGER}, #{modelIndex10,jdbcType=DECIMAL}, #{modelIndex11,jdbcType=DECIMAL}, 
+      #{modelIndex12,jdbcType=DECIMAL}, #{modelIndex13,jdbcType=DECIMAL}, #{modelIndex14,jdbcType=DECIMAL}, 
+      #{modelIndex15,jdbcType=DECIMAL}, #{modelIndex16,jdbcType=DECIMAL}, #{modelIndex17,jdbcType=DECIMAL}, 
+      #{modelIndex18,jdbcType=DECIMAL}, #{modelIndex19,jdbcType=DECIMAL}, #{modelIndex20,jdbcType=INTEGER}, 
+      #{modelIndex21,jdbcType=INTEGER}, #{modelIndex22,jdbcType=INTEGER}, #{modelIndex23,jdbcType=DECIMAL}, 
+      #{modelIndex24,jdbcType=INTEGER}, #{modelIndex25,jdbcType=INTEGER}, #{modelIndex26,jdbcType=DECIMAL}, 
+      #{modelIndex27,jdbcType=DECIMAL}, #{modelIndex28,jdbcType=DECIMAL}, #{modelIndex29,jdbcType=INTEGER}, 
+      #{modelIndex30,jdbcType=INTEGER}, #{modelIndex31,jdbcType=DECIMAL}, #{modelIndex32,jdbcType=DECIMAL}, 
+      #{modelIndex33,jdbcType=INTEGER}, #{modelIndex34,jdbcType=DECIMAL}, #{modelIndex35,jdbcType=DECIMAL}, 
+      #{modelIndex36,jdbcType=DECIMAL}, #{modelIndex37,jdbcType=DECIMAL}, #{modelIndex38,jdbcType=DECIMAL}, 
+      #{modelIndex39,jdbcType=DECIMAL}, #{modelIndex40,jdbcType=INTEGER}, #{modelIndex41,jdbcType=INTEGER}, 
+      #{modelIndex42,jdbcType=DECIMAL}, #{modelIndex43,jdbcType=DECIMAL}, #{modelIndex44,jdbcType=CHAR}, 
+      #{modelIndex45,jdbcType=CHAR}, #{modelIndex46,jdbcType=INTEGER}, #{modelIndex47,jdbcType=INTEGER},
+      #{modelIndex48,jdbcType=DECIMAL}, #{modelIndex49,jdbcType=DECIMAL}, #{modelIndex50,jdbcType=DECIMAL}, 
+      #{modelIndex51,jdbcType=DECIMAL}, #{modelIndex52,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TRiskCheckModelIndex" >
+    insert into t_risk_check_modelindex
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="loanId != null" >
+        loanId,
+      </if>
+      <if test="modelIndex01 != null" >
+        modelIndex01,
+      </if>
+      <if test="modelIndex02 != null" >
+        modelIndex02,
+      </if>
+      <if test="modelIndex03 != null" >
+        modelIndex03,
+      </if>
+      <if test="modelIndex04 != null" >
+        modelIndex04,
+      </if>
+      <if test="modelIndex05 != null" >
+        modelIndex05,
+      </if>
+      <if test="modelIndex06 != null" >
+        modelIndex06,
+      </if>
+      <if test="modelIndex07 != null" >
+        modelIndex07,
+      </if>
+      <if test="modelIndex08 != null" >
+        modelIndex08,
+      </if>
+      <if test="modelIndex09 != null" >
+        modelIndex09,
+      </if>
+      <if test="modelIndex10 != null" >
+        modelIndex10,
+      </if>
+      <if test="modelIndex11 != null" >
+        modelIndex11,
+      </if>
+      <if test="modelIndex12 != null" >
+        modelIndex12,
+      </if>
+      <if test="modelIndex13 != null" >
+        modelIndex13,
+      </if>
+      <if test="modelIndex14 != null" >
+        modelIndex14,
+      </if>
+      <if test="modelIndex15 != null" >
+        modelIndex15,
+      </if>
+      <if test="modelIndex16 != null" >
+        modelIndex16,
+      </if>
+      <if test="modelIndex17 != null" >
+        modelIndex17,
+      </if>
+      <if test="modelIndex18 != null" >
+        modelIndex18,
+      </if>
+      <if test="modelIndex19 != null" >
+        modelIndex19,
+      </if>
+      <if test="modelIndex20 != null" >
+        modelIndex20,
+      </if>
+      <if test="modelIndex21 != null" >
+        modelIndex21,
+      </if>
+      <if test="modelIndex22 != null" >
+        modelIndex22,
+      </if>
+      <if test="modelIndex23 != null" >
+        modelIndex23,
+      </if>
+      <if test="modelIndex24 != null" >
+        modelIndex24,
+      </if>
+      <if test="modelIndex25 != null" >
+        modelIndex25,
+      </if>
+      <if test="modelIndex26 != null" >
+        modelIndex26,
+      </if>
+      <if test="modelIndex27 != null" >
+        modelIndex27,
+      </if>
+      <if test="modelIndex28 != null" >
+        modelIndex28,
+      </if>
+      <if test="modelIndex29 != null" >
+        modelIndex29,
+      </if>
+      <if test="modelIndex30 != null" >
+        modelIndex30,
+      </if>
+      <if test="modelIndex31 != null" >
+        modelIndex31,
+      </if>
+      <if test="modelIndex32 != null" >
+        modelIndex32,
+      </if>
+      <if test="modelIndex33 != null" >
+        modelIndex33,
+      </if>
+      <if test="modelIndex34 != null" >
+        modelIndex34,
+      </if>
+      <if test="modelIndex35 != null" >
+        modelIndex35,
+      </if>
+      <if test="modelIndex36 != null" >
+        modelIndex36,
+      </if>
+      <if test="modelIndex37 != null" >
+        modelIndex37,
+      </if>
+      <if test="modelIndex38 != null" >
+        modelIndex38,
+      </if>
+      <if test="modelIndex39 != null" >
+        modelIndex39,
+      </if>
+      <if test="modelIndex40 != null" >
+        modelIndex40,
+      </if>
+      <if test="modelIndex41 != null" >
+        modelIndex41,
+      </if>
+      <if test="modelIndex42 != null" >
+        modelIndex42,
+      </if>
+      <if test="modelIndex43 != null" >
+        modelIndex43,
+      </if>
+      <if test="modelIndex44 != null" >
+        modelIndex44,
+      </if>
+      <if test="modelIndex45 != null" >
+        modelIndex45,
+      </if>
+      <if test="modelIndex46 != null" >
+        modelIndex46,
+      </if>
+      <if test="modelIndex47 != null" >
+        modelIndex47,
+      </if>
+      <if test="modelIndex48 != null" >
+        modelIndex48,
+      </if>
+      <if test="modelIndex49 != null" >
+        modelIndex49,
+      </if>
+      <if test="modelIndex50 != null" >
+        modelIndex50,
+      </if>
+      <if test="modelIndex51 != null" >
+        modelIndex51,
+      </if>
+      <if test="modelIndex52 != null" >
+        modelIndex52,
+      </if>
+      <if test="modelIndex53 != null" >
+        modelIndex53,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="loanId != null" >
+        #{loanId,jdbcType=VARCHAR},
+      </if>
+      <if test="modelIndex01 != null" >
+        #{modelIndex01,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex02 != null" >
+        #{modelIndex02,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex03 != null" >
+        #{modelIndex03,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex04 != null" >
+        #{modelIndex04,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex05 != null" >
+        #{modelIndex05,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex06 != null" >
+        #{modelIndex06,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex07 != null" >
+        #{modelIndex07,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex08 != null" >
+        #{modelIndex08,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex09 != null" >
+        #{modelIndex09,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex10 != null" >
+        #{modelIndex10,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex11 != null" >
+        #{modelIndex11,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex12 != null" >
+        #{modelIndex12,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex13 != null" >
+        #{modelIndex13,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex14 != null" >
+        #{modelIndex14,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex15 != null" >
+        #{modelIndex15,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex16 != null" >
+        #{modelIndex16,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex17 != null" >
+        #{modelIndex17,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex18 != null" >
+        #{modelIndex18,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex19 != null" >
+        #{modelIndex19,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex20 != null" >
+        #{modelIndex20,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex21 != null" >
+        #{modelIndex21,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex22 != null" >
+        #{modelIndex22,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex23 != null" >
+        #{modelIndex23,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex24 != null" >
+        #{modelIndex24,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex25 != null" >
+        #{modelIndex25,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex26 != null" >
+        #{modelIndex26,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex27 != null" >
+        #{modelIndex27,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex28 != null" >
+        #{modelIndex28,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex29 != null" >
+        #{modelIndex29,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex30 != null" >
+        #{modelIndex30,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex31 != null" >
+        #{modelIndex31,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex32 != null" >
+        #{modelIndex32,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex33 != null" >
+        #{modelIndex33,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex34 != null" >
+        #{modelIndex34,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex35 != null" >
+        #{modelIndex35,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex36 != null" >
+        #{modelIndex36,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex37 != null" >
+        #{modelIndex37,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex38 != null" >
+        #{modelIndex38,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex39 != null" >
+        #{modelIndex39,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex40 != null" >
+        #{modelIndex40,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex41 != null" >
+        #{modelIndex41,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex42 != null" >
+        #{modelIndex42,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex43 != null" >
+        #{modelIndex43,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex44 != null" >
+        #{modelIndex44,jdbcType=CHAR},
+      </if>
+      <if test="modelIndex45 != null" >
+        #{modelIndex45,jdbcType=CHAR},
+      </if>
+      <if test="modelIndex46 != null" >
+        #{modelIndex46,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex47 != null" >
+        #{modelIndex47,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex48 != null" >
+        #{modelIndex48,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex49 != null" >
+        #{modelIndex49,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex50 != null" >
+        #{modelIndex50,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex51 != null" >
+        #{modelIndex51,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex52 != null" >
+        #{modelIndex52,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex53 != null" >
+        #{modelIndex53,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TRiskCheckModelIndex" >
+    update t_risk_check_modelindex
+    <set >
+      <if test="modelIndex01 != null" >
+        modelIndex01 = #{modelIndex01,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex02 != null" >
+        modelIndex02 = #{modelIndex02,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex03 != null" >
+        modelIndex03 = #{modelIndex03,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex04 != null" >
+        modelIndex04 = #{modelIndex04,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex05 != null" >
+        modelIndex05 = #{modelIndex05,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex06 != null" >
+        modelIndex06 = #{modelIndex06,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex07 != null" >
+        modelIndex07 = #{modelIndex07,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex08 != null" >
+        modelIndex08 = #{modelIndex08,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex09 != null" >
+        modelIndex09 = #{modelIndex09,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex10 != null" >
+        modelIndex10 = #{modelIndex10,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex11 != null" >
+        modelIndex11 = #{modelIndex11,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex12 != null" >
+        modelIndex12 = #{modelIndex12,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex13 != null" >
+        modelIndex13 = #{modelIndex13,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex14 != null" >
+        modelIndex14 = #{modelIndex14,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex15 != null" >
+        modelIndex15 = #{modelIndex15,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex16 != null" >
+        modelIndex16 = #{modelIndex16,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex17 != null" >
+        modelIndex17 = #{modelIndex17,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex18 != null" >
+        modelIndex18 = #{modelIndex18,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex19 != null" >
+        modelIndex19 = #{modelIndex19,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex20 != null" >
+        modelIndex20 = #{modelIndex20,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex21 != null" >
+        modelIndex21 = #{modelIndex21,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex22 != null" >
+        modelIndex22 = #{modelIndex22,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex23 != null" >
+        modelIndex23 = #{modelIndex23,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex24 != null" >
+        modelIndex24 = #{modelIndex24,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex25 != null" >
+        modelIndex25 = #{modelIndex25,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex26 != null" >
+        modelIndex26 = #{modelIndex26,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex27 != null" >
+        modelIndex27 = #{modelIndex27,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex28 != null" >
+        modelIndex28 = #{modelIndex28,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex29 != null" >
+        modelIndex29 = #{modelIndex29,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex30 != null" >
+        modelIndex30 = #{modelIndex30,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex31 != null" >
+        modelIndex31 = #{modelIndex31,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex32 != null" >
+        modelIndex32 = #{modelIndex32,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex33 != null" >
+        modelIndex33 = #{modelIndex33,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex34 != null" >
+        modelIndex34 = #{modelIndex34,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex35 != null" >
+        modelIndex35 = #{modelIndex35,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex36 != null" >
+        modelIndex36 = #{modelIndex36,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex37 != null" >
+        modelIndex37 = #{modelIndex37,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex38 != null" >
+        modelIndex38 = #{modelIndex38,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex39 != null" >
+        modelIndex39 = #{modelIndex39,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex40 != null" >
+        modelIndex40 = #{modelIndex40,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex41 != null" >
+        modelIndex41 = #{modelIndex41,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex42 != null" >
+        modelIndex42 = #{modelIndex42,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex43 != null" >
+        modelIndex43 = #{modelIndex43,jdbcType=DECIMAL},
+      </if>
+      <if test="modelIndex44 != null" >
+        modelIndex44 = #{modelIndex44,jdbcType=CHAR},
+      </if>
+      <if test="modelIndex45 != null" >
+        modelIndex45 = #{modelIndex45,jdbcType=CHAR},
+      </if>
+      <if test="modelIndex46 != null" >
+        modelIndex46 = #{modelIndex46,jdbcType=INTEGER},
+      </if>
+      <if test="modelIndex47 != null" >
+        modelIndex47 = #{modelIndex47,jdbcType=INTEGER},
+      </if>
+    </set>
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TRiskCheckModelIndex" >
+    update t_risk_check_modelindex
+    set modelIndex01 = #{modelIndex01,jdbcType=INTEGER},
+      modelIndex02 = #{modelIndex02,jdbcType=INTEGER},
+      modelIndex03 = #{modelIndex03,jdbcType=INTEGER},
+      modelIndex04 = #{modelIndex04,jdbcType=INTEGER},
+      modelIndex05 = #{modelIndex05,jdbcType=INTEGER},
+      modelIndex06 = #{modelIndex06,jdbcType=INTEGER},
+      modelIndex07 = #{modelIndex07,jdbcType=INTEGER},
+      modelIndex08 = #{modelIndex08,jdbcType=DECIMAL},
+      modelIndex09 = #{modelIndex09,jdbcType=INTEGER},
+      modelIndex10 = #{modelIndex10,jdbcType=INTEGER},
+      modelIndex11 = #{modelIndex11,jdbcType=INTEGER},
+      modelIndex12 = #{modelIndex12,jdbcType=DECIMAL},
+      modelIndex13 = #{modelIndex13,jdbcType=DECIMAL},
+      modelIndex14 = #{modelIndex14,jdbcType=DECIMAL},
+      modelIndex15 = #{modelIndex15,jdbcType=DECIMAL},
+      modelIndex16 = #{modelIndex16,jdbcType=DECIMAL},
+      modelIndex17 = #{modelIndex17,jdbcType=DECIMAL},
+      modelIndex18 = #{modelIndex18,jdbcType=DECIMAL},
+      modelIndex19 = #{modelIndex19,jdbcType=INTEGER},
+      modelIndex20 = #{modelIndex20,jdbcType=INTEGER},
+      modelIndex21 = #{modelIndex21,jdbcType=INTEGER},
+      modelIndex22 = #{modelIndex22,jdbcType=INTEGER},
+      modelIndex23 = #{modelIndex23,jdbcType=DECIMAL},
+      modelIndex24 = #{modelIndex24,jdbcType=INTEGER},
+      modelIndex25 = #{modelIndex25,jdbcType=INTEGER},
+      modelIndex26 = #{modelIndex26,jdbcType=DECIMAL},
+      modelIndex27 = #{modelIndex27,jdbcType=INTEGER},
+      modelIndex28 = #{modelIndex28,jdbcType=DECIMAL},
+      modelIndex29 = #{modelIndex29,jdbcType=INTEGER},
+      modelIndex30 = #{modelIndex30,jdbcType=INTEGER},
+      modelIndex31 = #{modelIndex31,jdbcType=DECIMAL},
+      modelIndex32 = #{modelIndex32,jdbcType=DECIMAL},
+      modelIndex33 = #{modelIndex33,jdbcType=INTEGER},
+      modelIndex34 = #{modelIndex34,jdbcType=DECIMAL},
+      modelIndex35 = #{modelIndex35,jdbcType=DECIMAL},
+      modelIndex36 = #{modelIndex36,jdbcType=DECIMAL},
+      modelIndex37 = #{modelIndex37,jdbcType=DECIMAL},
+      modelIndex38 = #{modelIndex38,jdbcType=DECIMAL},
+      modelIndex39 = #{modelIndex39,jdbcType=DECIMAL},
+      modelIndex40 = #{modelIndex40,jdbcType=INTEGER},
+      modelIndex41 = #{modelIndex41,jdbcType=INTEGER},
+      modelIndex42 = #{modelIndex42,jdbcType=DECIMAL},
+      modelIndex43 = #{modelIndex43,jdbcType=DECIMAL},
+      modelIndex44 = #{modelIndex44,jdbcType=CHAR},
+      modelIndex45 = #{modelIndex45,jdbcType=CHAR},
+      modelIndex46 = #{modelIndex46,jdbcType=INTEGER},
+      modelIndex47 = #{modelIndex47,jdbcType=INTEGER}
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,61 @@
+package com.hrbb.loan.pos.entity.event.impl;
+
+import java.util.Date;
+
+import com.hrbb.loan.pos.dao.TMessageDao;
+import com.hrbb.loan.pos.dao.entity.TCreditApply;
+import com.hrbb.loan.pos.dao.entity.TMessage;
+import com.hrbb.loan.pos.entity.SpringBeans;
+import com.hrbb.loan.pos.entity.event.EventException;
+import com.hrbb.loan.pos.entity.event.ListenerEventAction;
+import com.hrbb.loan.pos.service.bean.ImageFileLostMessage;
+
+/**
+ * @author zhangwei5@hrbb.com.cn
+ * @date 2015年9月21日下午4:03:19 
+ */
+public class ImageMissingEventAdapter implements ListenerEventAction {
+    
+    public static final String ATTR_CONTNO = "contNo";
+    public static final String ATTR_TCREDITAPPLY = "tCreditApply";
+
+    public ImageMissingEventAdapter() {
+        super();
+    }
+
+    /**
+     * @param tCreditApply 授信申请信息
+     */
+    public ImageMissingEventAdapter(TCreditApply tCreditApply, String contNo) {
+        super();
+        this.tCreditApply = tCreditApply;
+        this.contNo = contNo;
+    }
+
+    private TCreditApply tCreditApply;
+    private String contNo;
+
+    /* 
+     *处理ftp影像文件丢失不存在
+     */
+    @Override
+    public void execute() throws EventException {
+        TMessage message = new TMessage();
+        message.setChannel(tCreditApply.getChannel());
+        message.setCreateTime(new Date());
+        message.setContNo(contNo);
+        message.setCustId(tCreditApply.getCustId());
+        message.setInChannelKind(tCreditApply.getInChannelKind());
+        ImageFileLostMessage messageInfo = new ImageFileLostMessage();
+        messageInfo.setImagefilepackagename(tCreditApply.getImageFilePackageName());
+        message.setLoanId(tCreditApply.getLoanId());
+        message.setMessageInfo(messageInfo.toString());
+        message.setMessageType("12"); //影像缺失
+        TMessageDao tMessage = (TMessageDao) SpringBeans.getBean("tMessageDao");
+        int flag = tMessage .insert(message);
+        if (flag <= 0) {
+            throw new EventException("insert fail");
+        }
+    }
+
+}

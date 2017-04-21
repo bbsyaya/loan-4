@@ -1,0 +1,26 @@
+package com.hrbb.loan.pos.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.hrbb.loan.pos.dao.entity.TBusinessDictionary;
+
+public interface BusinessDictionaryService {
+    int deleteByPrimaryKey(Integer id);
+
+    int insert(TBusinessDictionary record);
+
+    int insertSelective(TBusinessDictionary record);
+
+    TBusinessDictionary selectByPrimaryKey(Integer id);
+
+    int updateByPrimaryKeySelective(TBusinessDictionary record);
+
+    int updateByPrimaryKey(TBusinessDictionary record);
+    
+    public List<Map<String, Object>> getBusinessCode(Map<String, Object> reqMap);
+    
+    public TBusinessDictionary selectOne(TBusinessDictionary record);
+    
+	public String getApprInfoExtMsg(String apprInfoExt);
+}

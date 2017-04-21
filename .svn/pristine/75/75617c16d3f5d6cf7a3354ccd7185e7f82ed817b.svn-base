@@ -1,0 +1,1092 @@
+/**
+ * 
+ *哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.service.impl;
+
+import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import com.hrbb.loan.pos.dao.TCreditReportCreditCardBriefDao;
+import com.hrbb.loan.pos.dao.TCreditReportBriefDao;
+import com.hrbb.loan.pos.dao.TCreditReportCreditCardDao;
+import com.hrbb.loan.pos.dao.TCreditReportCreditInfoDao;
+import com.hrbb.loan.pos.dao.TCreditReportIdentityDao;
+import com.hrbb.loan.pos.dao.TCreditReportIndicatorDao;
+import com.hrbb.loan.pos.dao.TCreditReportLoanInfoDao;
+import com.hrbb.loan.pos.dao.TCreditReportNormalDao;
+import com.hrbb.loan.pos.dao.TCreditReportOverdueDao;
+import com.hrbb.loan.pos.dao.TCreditReportOverdueDetailDao;
+import com.hrbb.loan.pos.dao.TCreditReportProfessionDao;
+import com.hrbb.loan.pos.dao.TCreditReportQueryDetailDao;
+import com.hrbb.loan.pos.dao.TCreditReportSpecialDao;
+import com.hrbb.loan.pos.dao.TCreditReportSpouseDao;
+import com.hrbb.loan.pos.dao.entity.TCreditReportBrief;
+import com.hrbb.loan.pos.dao.entity.TCreditReportCreditCard;
+import com.hrbb.loan.pos.dao.entity.TCreditReportCreditCardBrief;
+import com.hrbb.loan.pos.dao.entity.TCreditReportCreditInfo;
+import com.hrbb.loan.pos.dao.entity.TCreditReportIdentity;
+import com.hrbb.loan.pos.dao.entity.TCreditReportIndicator;
+import com.hrbb.loan.pos.dao.entity.TCreditReportLoanInfo;
+import com.hrbb.loan.pos.dao.entity.TCreditReportNormal;
+import com.hrbb.loan.pos.dao.entity.TCreditReportOverdue;
+import com.hrbb.loan.pos.dao.entity.TCreditReportOverdueDetail;
+import com.hrbb.loan.pos.dao.entity.TCreditReportProfession;
+import com.hrbb.loan.pos.dao.entity.TCreditReportQueryDetail;
+import com.hrbb.loan.pos.dao.entity.TCreditReportSpecial;
+import com.hrbb.loan.pos.dao.entity.TCreditReportSpouse;
+import com.hrbb.loan.pos.service.LoanRiskCreditReportService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.ValidateUtil;
+import com.hrbb.loan.pos.util.constants.ReviewNoteConstants;
+
+/**
+ * 
+ * @author XLY
+ * @version $Id: TCreditReportServiceImpl.java, v 0.1 2015-3-11 上午9:42:58 XLY
+ *          Exp $
+ */
+@Service("loanRiskCreditReportService")
+public class LoanRiskCreditReportServiceImpl implements
+		LoanRiskCreditReportService {
+
+	private final Logger logger = LoggerFactory
+			.getLogger(LoanRiskCreditReportServiceImpl.class);
+
+	// 证件类型(0:身份证)
+	private final static String CERTTYPE_0 = "身份证";
+	// 账户状态
+	private final static String STATE_CLEAR = "结清";
+	private final static String STATE_CLEAR_1 = "已结清";
+	private final static String STATE_NORMAL = "正常";
+	private final static String STATE_CANCEL_0 = "未销户";
+	private final static String STATE_CANCEL = "销户";
+	private final static String STATE_CANCEL_1 = "已销户";
+	private final static String STATE_BAD_DEBT = "呆账（待核销） ";
+	private final static String STATE_FREEZE = "冻结";
+	private final static String STATE_FREEZE_1 = "已冻结";
+	// 担保方式
+	private final static String GUARANTYTYPE_CREDIT = "信用/免担保";
+	// 币种
+	private final static String CURRENCY_DOLLAR = "美元";
+	// Y
+	private final static String STRING_Y = "Y";
+	// N
+	private final static String STRING_N = "N";
+	// 贷款特殊信息.特殊交易类型
+	private final static String TYPE_ROLL_OVER = "展期（延期）";
+	// 五级分类
+	private final static String CLASS5STATE_FOCUS_ON = "关注";
+	private final static String CLASS5STATE_SECONDARY = "次级";
+	private final static String CLASS5STATE_SUSPICIOUS = "可疑";
+	private final static String CLASS5STATE_LOSS = "损失";
+
+	@Autowired
+	private TCreditReportIndicatorDao tCreditReportIndicatorDao;
+
+	@Autowired
+	private TCreditReportBriefDao tCreditReportBriefDao;
+	@Autowired
+	private TCreditReportIdentityDao tCreditReportIdentityDao;
+	@Autowired
+	private TCreditReportSpouseDao tCreditReportSpouseDao;
+	@Autowired
+	private TCreditReportCreditCardBriefDao tCreditReportCreditcardBriefDao;
+	@Autowired
+	private TCreditReportCreditCardDao tCreditReportCreditcardDao;
+	@Autowired
+	private TCreditReportCreditInfoDao tCreditReportCreditinfoDao;
+	@Autowired
+	private TCreditReportLoanInfoDao tCreditReportLoanInfoDao;
+	@Autowired
+	private TCreditReportNormalDao tCreditReportNormalDao;
+	@Autowired
+	private TCreditReportOverdueDao tCreditReportOverdueDao;
+	@Autowired
+	private TCreditReportOverdueDetailDao tCreditReportOverdueDetailDao;
+	@Autowired
+	private TCreditReportQueryDetailDao tCreditReportQueryDetailDao;
+	@Autowired
+	private TCreditReportSpecialDao tCreditReportSpecialDao;
+	@Autowired
+	private TCreditReportProfessionDao tCreditReportProfessionDao;
+
+	@Override
+	public TCreditReportIndicator queryAndInsertCreditReport(String paperId) {
+
+		logger.debug("queryAndInsertCreditReport begin");
+		TCreditReportIndicator cri = new TCreditReportIndicator();
+		// 报告信息
+		TCreditReportBrief crb = new TCreditReportBrief();
+		// 证件类型(0:身份证)
+		crb.setCertType(CERTTYPE_0);
+		crb.setCertNo(paperId);
+		crb = tCreditReportBriefDao.selectOne(crb);
+		// 报告编号
+		String reportNo = crb.getReportNo();
+		logger.debug("reportNo=" + reportNo);
+		String queryId = crb.getQueryId();
+		logger.debug("queryId=" + queryId);
+		// 删除
+		logger.debug("delete begin");
+		int delFlag = delete(queryId);
+		if (delFlag == 1) {
+			logger.debug("deleted one record");
+		} else {
+			logger.debug("no record for delete");
+		}
+		logger.debug("delete end");
+		cri.setCR001(queryId);
+		cri.setCR002(crb.getCreateTime());
+		cri.setCR003(crb.getName());
+		cri.setCR004(crb.getCertType());
+		cri.setCR005(crb.getCertNo());
+		// 身份信息
+		TCreditReportIdentity crid = tCreditReportIdentityDao
+				.selectByQueryId(queryId);
+		cri.setCR006(crid.getGender());
+		cri.setCR007(crid.getBirthDate());
+		cri.setCR008(crid.getMarital());
+		cri.setCR009(crid.getMobile());
+		cri.setCR010(crid.getOfficeTel());
+		cri.setCR011(crid.getHomeTel());
+		cri.setCR012(crid.getEducation());
+		cri.setCR013(crid.getDegree());
+		cri.setCR014(crid.getPostAddr());
+		cri.setCR015(crid.getRegiAddr());
+		// 配偶信息
+		TCreditReportSpouse crs = tCreditReportSpouseDao
+				.selectByQueryId(queryId);
+		if (crs != null) {
+			logger.debug("配偶信息=" + crs.getName());
+			cri.setCR016(crs.getName());
+			cri.setCR017(crs.getCertType());
+			cri.setCR018(crs.getCertNo());
+			cri.setCR019(crs.getEmployer());
+			cri.setCR020(crs.getPhoneNo());
+		} else {
+			logger.debug("没有配偶信息");
+		}
+		// 职业信息
+		TCreditReportProfession crp = new TCreditReportProfession();
+		// crp.setReportNo(queryId);
+		crp.setQueryId(queryId);
+		List<TCreditReportProfession> crpList = tCreditReportProfessionDao
+				.selectSelective(crp);
+		logger.debug("职业信息crpList.size()=" + crpList.size());
+		for (int i = 0; i < crpList.size(); i++) {
+			crp = crpList.get(i);
+			switch (i) {
+			case 0:
+				cri.setCR021(crp.getEmployer());
+				cri.setCR024(crp.getDuty());
+				break;
+			case 1:
+				cri.setCR022(crp.getEmployer());
+				cri.setCR025(crp.getDuty());
+				break;
+			case 2:
+				cri.setCR023(crp.getEmployer());
+				cri.setCR026(crp.getDuty());
+				break;
+			default:
+				break;
+			}
+			// 超过3条后结束，不做计算
+			if (i > 2) {
+				break;
+			}
+		}
+		// 信用提示
+		TCreditReportCreditInfo crci = tCreditReportCreditinfoDao
+				.selectByQueryId(queryId);
+		logger.debug("信用提示ReportNo=" + crci.getReportNo());
+		cri.setCR027(crci.getHouseLoans());
+		cri.setCR028(crci.getOtherLoans());
+
+		// 首笔贷款发放月份
+		TCreditReportLoanInfo crliFirstIssueMonth = new TCreditReportLoanInfo();
+		// crliFirstIssueMonth.setReportNo(queryId);
+		crliFirstIssueMonth.setQueryId(queryId);
+		crliFirstIssueMonth = tCreditReportLoanInfoDao
+				.selectFirstIssueMonth(crliFirstIssueMonth);
+		if (crliFirstIssueMonth != null
+				&& crliFirstIssueMonth.getOpenDate() != null) {
+			logger.debug("首笔贷款发放月份=" + crliFirstIssueMonth.getOpenDate());
+			cri.setCR029(crliFirstIssueMonth.getOpenDate());
+		} else {
+			logger.debug("没有首笔贷款发放月份");
+		}
+
+		cri.setCR030(crci.getCreditCards());
+		cri.setCR031(crci.getFirstIssueMonth2());
+		cri.setCR032(crci.getSemiCreidtCards());
+		cri.setCR033(crci.getFirstIssueMonth3());
+		cri.setCR034(crci.getAnnounceCount());
+		cri.setCR035(crci.getDissentCount());
+		// 逾期(透支)信息汇总
+		TCreditReportOverdue crod = tCreditReportOverdueDao
+				.selectByQueryId(queryId);
+		if (crod == null) {
+			logger.debug("没有逾期(透支)信息汇总");
+			cri.setCR036(0);
+			cri.setCR037(0);
+			cri.setCR038(BigDecimal.ZERO);
+			cri.setCR039(0);
+			cri.setCR040(0);
+			cri.setCR041(0);
+			cri.setCR042(BigDecimal.ZERO);
+			cri.setCR043(0);
+			cri.setCR044(0);
+			cri.setCR045(0);
+			cri.setCR046(BigDecimal.ZERO);
+			cri.setCR047(0);
+		} else {
+			logger.debug("逾期(透支)信息汇总=" + crod.getReportNo());
+			cri.setCR036(crod.getCount());
+			cri.setCR037(crod.getMonths());
+			cri.setCR038(crod.getNplHighestAmt());
+			cri.setCR039(crod.getMaxDuration());
+			cri.setCR040(crod.getCount2());
+			cri.setCR041(crod.getMonths2());
+			cri.setCR042(crod.getNplHighestAmt2());
+			cri.setCR043(crod.getMaxDuration2());
+			cri.setCR044(crod.getCount3());
+			cri.setCR045(crod.getMonths3());
+			cri.setCR046(crod.getNplHighestAmt3());
+			cri.setCR047(crod.getMaxDuration3());
+		}
+		// 未结清贷款信息汇总
+		TCreditReportNormal crn = tCreditReportNormalDao
+				.selectByQueryId(queryId);
+		if (crn == null) {
+			logger.debug("没有未结清贷款信息汇总");
+			cri.setCR048(0);
+			cri.setCR049(0);
+			cri.setCR050(0);
+			cri.setCR051(BigDecimal.ZERO);
+			cri.setCR052(BigDecimal.ZERO);
+			cri.setCR053(BigDecimal.ZERO);
+		} else {
+			logger.debug("未结清贷款信息汇总=" + crn.getReportNo());
+			cri.setCR048(crn.getFinanceCorps());
+			cri.setCR049(crn.getFinanceOrgs());
+			cri.setCR050(crn.getAccounts());
+			cri.setCR051(crn.getCreditLimit());
+			cri.setCR052(crn.getBalance());
+			cri.setCR053(crn.getAvgAmt6m());
+		}
+		// 未销户贷记卡信息汇总
+		TCreditReportCreditCardBrief crccb = tCreditReportCreditcardBriefDao
+				.selectByQueryId(queryId);
+		if (crccb == null) {
+			logger.debug("没有未销户贷记卡信息汇总");
+			cri.setCR054(0);
+			cri.setCR055(0);
+			cri.setCR056(0);
+			cri.setCR057(BigDecimal.ZERO);
+			cri.setCR058(BigDecimal.ZERO);
+			cri.setCR059(BigDecimal.ZERO);
+			cri.setCR060(BigDecimal.ZERO);
+			cri.setCR061(BigDecimal.ZERO);
+		} else {
+			logger.debug("未销户贷记卡信息汇总=" + crccb.getReportNo());
+			cri.setCR054(crccb.getFinanceCorps());
+			cri.setCR055(crccb.getFinanceOrgs());
+			cri.setCR056(crccb.getAccounts());
+			cri.setCR057(crccb.getCreditLimit());
+			cri.setCR058(crccb.getCreditMax());
+			cri.setCR059(crccb.getCreditMin());
+			cri.setCR060(crccb.getUsedCredit());
+			cri.setCR061(crccb.getAvgAmt6m());
+		}
+
+		// 贷款信息
+		TCreditReportLoanInfo crli = new TCreditReportLoanInfo();
+		// crli.setReportNo(queryId);
+		crli.setQueryId(queryId);
+		crli.setState(STATE_CLEAR);
+		crli.setState1(STATE_CLEAR_1);
+		crli.setGuarantyType(GUARANTYTYPE_CREDIT);
+		crli = tCreditReportLoanInfoDao.selectSum(crli);
+		// 合同金额
+		BigDecimal limitamt1 = crli.getLimitAmt();
+		logger.debug("贷款信息 合同金额=" + limitamt1);
+		// 结清笔数
+		int loanClearCount = crli.getCountSerialNo();
+		logger.debug("贷款信息 结清笔数=" + loanClearCount);
+		// 贷记卡信息
+		TCreditReportCreditCard crcc = new TCreditReportCreditCard();
+		// crcc.setReportNo(queryId);
+		crcc.setQueryId(queryId);
+		crcc.setState(STATE_CLEAR);
+		crcc.setState1(STATE_CLEAR_1);
+		crcc.setGuarantyType(GUARANTYTYPE_CREDIT);
+		crcc = tCreditReportCreditcardDao.selectSum(crcc);
+		// 授信额度
+		BigDecimal limitamt2 = crcc.getLimitAmt();
+		logger.debug("贷记卡信息 授信额度=" + limitamt2);
+		// 结清笔数
+		int creditCardClearCount = crcc.getCountSerialNo();
+		logger.debug("贷记卡信息 结清笔数=" + creditCardClearCount);
+		// 已结清信用无担保贷款总金额
+		cri.setCR062(limitamt1.add(limitamt2));
+		// 已结清信用无担保贷款总笔数
+		cri.setCR126(loanClearCount + creditCardClearCount);
+
+		// 历史最高信用无担保贷款金额
+		// crli.setReportNo(queryId);
+		crli.setQueryId(queryId);
+		crli.setGuarantyType(GUARANTYTYPE_CREDIT);
+		crli = tCreditReportLoanInfoDao.selectMax(crli);
+		logger.debug("历史最高信用无担保贷款金额=" + crli.getLimitAmt());
+		cri.setCR063(crli.getLimitAmt());
+
+		// 贷记卡最近一次逾期的月份
+		// crcc.setReportNo(queryId);
+		crcc.setQueryId(queryId);
+		crcc.setState(STATE_CANCEL_0);
+		List<TCreditReportCreditCard> crccList = tCreditReportCreditcardDao
+				.selectList(crcc);
+		logger.debug("贷记卡最近一次逾期的月份数据条数=" + crccList.size());
+		Date lastmonth = null;
+		Calendar cal = Calendar.getInstance();
+		for (TCreditReportCreditCard tCreditReportCreditcard : crccList) {
+			logger.debug("24个月还款状态="
+					+ tCreditReportCreditcard.getLatest24State());
+			// 有24个月还款状态时
+			if (!StringUtils
+					.isEmpty(tCreditReportCreditcard.getLatest24State())) {
+				// 找出最近的逾期月份
+				int lastmonthTemp = checkLastMonth(tCreditReportCreditcard
+						.getLatest24State());
+				logger.debug("逾期月份=" + lastmonthTemp);
+				// 找到逾期月份
+				if (lastmonthTemp >= 0) {
+					try {
+						// 还款截止月
+						Date endMonth = DateUtil
+								.getStrToDateYearMonth(tCreditReportCreditcard
+										.getEndMonth());
+						cal.setTime(endMonth);
+						// 取得距离报告生成日期的最近月份
+						cal.add(Calendar.MONTH, -lastmonthTemp);
+						// 更近的逾期月份
+						if (lastmonth == null || cal.getTime().after(lastmonth)) {
+							lastmonth = cal.getTime();
+						}
+					} catch (Exception e) {
+						logger.error("还款截止月="
+								+ tCreditReportCreditcard.getEndMonth()
+								+ "转换失败！");
+						logger.error(e.toString());
+						continue;
+					}
+				}
+			}
+		}
+		logger.debug("lastmonth=" + lastmonth);
+		// 有计算结果的时候
+		if (lastmonth != null) {
+			Calendar calLastmonth = Calendar.getInstance();
+			calLastmonth.setTime(lastmonth);
+			cri.setCR064(DateUtil.getDateToStringYearMonth(calLastmonth
+					.getTime()));
+		}
+
+		// 贷款最近一次逾期的月份
+		// crcc.setReportNo(queryId);
+		// crcc.setState(STATE_CLEAR);
+		// crcc.setState1(STATE_CLEAR_1);
+		// crccList.clear();
+		// crccList = tCreditReportCreditcardDao.selectListNot(crcc);
+		// crli.setReportNo(queryId);
+		crli.setQueryId(queryId);
+		crli.setState(STATE_CLEAR);
+		crli.setState1(STATE_CLEAR_1);
+		List<TCreditReportLoanInfo> crliList = tCreditReportLoanInfoDao
+				.selectListNot(crli);
+		logger.debug("贷款最近一次逾期的月份数据条数=" + crliList.size());
+		lastmonth = null;
+		for (TCreditReportLoanInfo tCreditReportLoanInfo : crliList) {
+			logger.debug("24个月还款状态=" + tCreditReportLoanInfo.getLatest24State());
+			// 有24个月还款状态时
+			if (!StringUtils.isEmpty(tCreditReportLoanInfo.getLatest24State())) {
+				// 找出最近的逾期月份
+				int lastmonthTemp = checkLastMonth(tCreditReportLoanInfo
+						.getLatest24State());
+				logger.debug("逾期月份=" + lastmonthTemp);
+				// 找到逾期月份
+				if (lastmonthTemp >= 0) {
+					try {
+						// 还款截止月
+						Date endMonth = DateUtil
+								.getDatePattern9(tCreditReportLoanInfo
+										.getStateEndMonth());
+						cal.setTime(endMonth);
+						// 取得距离报告生成日期的最近月份
+						cal.add(Calendar.MONTH, -lastmonthTemp);
+						// 更近的逾期月份
+						if (lastmonth == null || cal.getTime().after(lastmonth)) {
+							lastmonth = cal.getTime();
+						}
+					} catch (Exception e) {
+						logger.error("还款截止月="
+								+ tCreditReportLoanInfo.getEndMonth() + "转换失败！");
+						logger.error(e.toString());
+						continue;
+					}
+				}
+			}
+		}
+		logger.debug("lastmonth=" + lastmonth);
+		// 有计算结果的时候
+		if (lastmonth != null) {
+			cri.setCR065(DateUtil.getDateToStringYearMonth(lastmonth));
+		}
+
+		// 一年内到期贷款余额
+		// crli.setReportNo(queryId);
+		crli.setQueryId(queryId);
+		crli.setDays(365);
+		crli = tCreditReportLoanInfoDao.selectSumBalance(crli);
+		cri.setCR066(crli.getBalance());
+
+		// 美元贷记卡账户数
+		crcc.setQueryId(queryId);
+		crcc.setState(STATE_NORMAL);
+		crcc.setCurrency(CURRENCY_DOLLAR);
+		crcc = tCreditReportCreditcardDao.selectCount(crcc);
+		cri.setCR067(crcc.getCountSerialNo());
+
+		// 近6个月查询次数
+		TCreditReportQueryDetail crqd = new TCreditReportQueryDetail();
+		crqd.setQueryId(queryId);
+		crqd.setDays(183);
+		crqd = tCreditReportQueryDetailDao.selectCount(crqd);
+		cri.setCR068(crqd.getCountSerialNo());
+		// 近12个月查询次数
+		crqd.setQueryId(queryId);
+		crqd.setDays(365);
+		crqd = tCreditReportQueryDetailDao.selectCount(crqd);
+		cri.setCR069(crqd.getCountSerialNo());
+
+		// 各类欠费总和（税，社保，公积，公用事业，通讯）
+		// cri.setCR070("");
+		// 是否有正在进行的法律诉讼，民事纠纷，行政诉讼等
+		// cri.setCR071("");
+		// 历史上资产处置总金额
+		// cri.setCR072("");
+		// 有无非正常担保负债
+		// cri.setCR073("");
+		// 公司征信一年内到期贷款余额
+		// cri.setCR074("");
+		// 公司征信现有非正常类负债笔数
+		// cri.setCR075("");
+		// 公司征信历史上资产处置总金额
+		// cri.setCR076("");
+
+		// 最近6个月逾期30天以上贷款笔数
+		// crli.setReportNo(queryId);
+		// crli.setState(STATE_CLEAR);
+		// crli.setState1(STATE_CLEAR_1);
+		// List<TCreditReportLoanInfo> crliList = tCreditReportLoanInfoDao
+		// .selectListNot(crli);
+		logger.debug("最近6个月逾期30天以上贷款笔数数据条数=" + crliList.size());
+		int count6 = 0;
+		BigDecimal balance6 = new BigDecimal(0);
+		int count12 = 0;
+		BigDecimal balance12 = new BigDecimal(0);
+		for (TCreditReportLoanInfo tCreditReportLoanInfo : crliList) {
+			logger.debug("24个月还款状态=" + tCreditReportLoanInfo.getLatest24State());
+			// 最近6个月逾期30天以上贷款
+			if (countOverLimitDate(tCreditReportLoanInfo.getLatest24State(), 6)) {
+				count6++;
+				balance6 = balance6.add(tCreditReportLoanInfo.getBalance());
+			}
+			// 最近12个月逾期30天以上贷款
+			if (countOverLimitDate(tCreditReportLoanInfo.getLatest24State(), 12)) {
+				count12++;
+				balance12 = balance12.add(tCreditReportLoanInfo.getBalance());
+			}
+		}
+		cri.setCR077(count6);
+		// 最近6个月逾期30天以上贷款金额
+		cri.setCR078(balance6.setScale(6, BigDecimal.ROUND_HALF_UP));
+		// 最近12个月逾期30天以上贷款笔数
+		cri.setCR079(count12);
+		// 最近12个月逾期30天以上贷款金额
+		cri.setCR080(balance12.setScale(6, BigDecimal.ROUND_HALF_UP));
+
+		// 最近6个月逾期最差状态
+		crcc.setQueryId(queryId);
+		crcc.setState(STATE_CANCEL);
+		crcc.setState1(STATE_CANCEL_1);
+		crccList.clear();
+		// 贷记卡信息
+		crccList = tCreditReportCreditcardDao.selectListNot(crcc);
+		// 最长逾期天数
+		int longestDay = 0;
+		// 贷款信息
+		logger.debug("贷款数据条数=" + crccList.size());
+		for (TCreditReportLoanInfo tCreditReportLoanInfo : crliList) {
+			logger.debug("24个月还款状态=" + tCreditReportLoanInfo.getLatest24State());
+			// 有24个月还款状态时
+			if (!StringUtils.isEmpty(tCreditReportLoanInfo.getLatest24State())) {
+				// 找出最长逾期
+				int day = getLongestOverLimitDate(
+						tCreditReportLoanInfo.getLatest24State(), 6);
+				logger.debug("最长逾期=" + day + ";最长逾期天数=" + longestDay);
+				if (day > longestDay) {
+					longestDay = day;
+				}
+			}
+		}
+		// 贷记卡信息
+		logger.debug("贷记卡信息数据条数=" + crccList.size());
+		for (TCreditReportCreditCard tCreditReportCreditcard : crccList) {
+			logger.debug("24个月还款状态="
+					+ tCreditReportCreditcard.getLatest24State());
+			// 有24个月还款状态时
+			if (!StringUtils
+					.isEmpty(tCreditReportCreditcard.getLatest24State())) {
+				// 找出最长逾期
+				int day = getLongestOverLimitDate(
+						tCreditReportCreditcard.getLatest24State(), 6);
+				logger.debug("最长逾期=" + day + ";最长逾期天数=" + longestDay);
+				if (day > longestDay) {
+					longestDay = day;
+				}
+			}
+		}
+		// 有最长逾期
+		logger.debug("最终最长逾期=" + longestDay);
+		if (longestDay > 0) {
+			cri.setCR081(longestDay);
+		}
+
+		// 最近12个月逾期最差状态
+		// 最长逾期天数
+		longestDay = 0;
+		// 贷款信息
+		for (TCreditReportLoanInfo tCreditReportLoanInfo : crliList) {
+			// 有24个月还款状态时
+			if (!StringUtils.isEmpty(tCreditReportLoanInfo.getLatest24State())) {
+				// 找出最长逾期
+				int day = getLongestOverLimitDate(
+						tCreditReportLoanInfo.getLatest24State(), 12);
+				if (day > longestDay) {
+					longestDay = day;
+				}
+			}
+		}
+		// 贷记卡信息
+		for (TCreditReportCreditCard tCreditReportCreditcard : crccList) {
+			// 有24个月还款状态时
+			if (!StringUtils
+					.isEmpty(tCreditReportCreditcard.getLatest24State())) {
+				// 找出最长逾期
+				int day = getLongestOverLimitDate(
+						tCreditReportCreditcard.getLatest24State(), 12);
+				if (day > longestDay) {
+					longestDay = day;
+				}
+			}
+		}
+		// 有最长逾期
+		if (longestDay > 0) {
+			cri.setCR082(longestDay);
+		}
+
+		// 个人月应还款额
+		BigDecimal sumScheduledAmt = new BigDecimal(0);
+		// 个人总负债
+		BigDecimal sumBalance = new BigDecimal(0);
+		// 贷款当前逾期总金额
+		BigDecimal sumOverDueamtLoanInfo = new BigDecimal(0);
+		// 关注
+		cri.setCR088(STRING_N);
+		// 次级
+		cri.setCR089(STRING_N);
+		// 可疑
+		cri.setCR090(STRING_N);
+		// 损失
+		cri.setCR091(STRING_N);
+		// 贷款信息
+		for (TCreditReportLoanInfo tCreditReportLoanInfo : crliList) {
+			if (tCreditReportLoanInfo.getScheduledAmt() != null) {
+				sumScheduledAmt = sumScheduledAmt.add(tCreditReportLoanInfo
+						.getScheduledAmt());
+			}
+			if (tCreditReportLoanInfo.getBalance() != null) {
+				sumBalance = sumBalance.add(tCreditReportLoanInfo.getBalance());
+			}
+			if (tCreditReportLoanInfo.getOverdueAmt() != null) {
+				sumOverDueamtLoanInfo = sumOverDueamtLoanInfo
+						.add(tCreditReportLoanInfo.getOverdueAmt());
+			}
+			// 五级分类
+			logger.debug("五级分类=" + tCreditReportLoanInfo.getClass5State());
+			// 关注
+			if (CLASS5STATE_FOCUS_ON.equals(tCreditReportLoanInfo
+					.getClass5State())) {
+				cri.setCR088(STRING_Y);
+			}
+			// 次级
+			if (CLASS5STATE_SECONDARY.equals(tCreditReportLoanInfo
+					.getClass5State())) {
+				cri.setCR089(STRING_Y);
+			}
+			// 可疑
+			if (CLASS5STATE_SUSPICIOUS.equals(tCreditReportLoanInfo
+					.getClass5State())) {
+				cri.setCR090(STRING_Y);
+			}
+			// 损失
+			if (CLASS5STATE_LOSS.equals(tCreditReportLoanInfo.getClass5State())) {
+				cri.setCR091(STRING_Y);
+			}
+		}
+		// 贷款当前逾期总金额
+		BigDecimal sumOverDueamtCreditcard = new BigDecimal(0);
+		// 贷记卡.已用额度
+		BigDecimal sumUsedLimit = new BigDecimal(0);
+		// 贷记卡信息
+		for (TCreditReportCreditCard tCreditReportCreditcard : crccList) {
+			if (tCreditReportCreditcard.getScheduledAmt() != null) {
+				sumScheduledAmt = sumScheduledAmt.add(tCreditReportCreditcard
+						.getScheduledAmt());
+			}
+			if (tCreditReportCreditcard.getUsedLimit() != null) {
+				sumBalance = sumBalance.add(tCreditReportCreditcard
+						.getUsedLimit());
+				sumUsedLimit = sumUsedLimit.add(tCreditReportCreditcard
+						.getUsedLimit());
+			}
+			if (tCreditReportCreditcard.getOverdueAmt() != null) {
+				sumOverDueamtCreditcard = sumOverDueamtCreditcard
+						.add(tCreditReportCreditcard.getOverdueAmt());
+			}
+		}
+		cri.setCR083(sumScheduledAmt.setScale(6, BigDecimal.ROUND_HALF_UP));
+		cri.setCR084(sumBalance.setScale(6, BigDecimal.ROUND_HALF_UP));
+		cri.setCR110(sumUsedLimit);
+		// 贷款当前逾期总金额
+		cri.setCR085(sumOverDueamtLoanInfo
+				.setScale(6, BigDecimal.ROUND_HALF_UP));
+		// 贷记卡当前逾期总金额
+		cri.setCR086(sumOverDueamtCreditcard.setScale(6,
+				BigDecimal.ROUND_HALF_UP));
+
+		// 展期
+		TCreditReportSpecial crsps = new TCreditReportSpecial();
+		crsps.setQueryId(queryId);
+		crsps.setType(TYPE_ROLL_OVER);
+		crsps.setState(STATE_CLEAR);
+		crsps.setState1(STATE_CLEAR_1);
+		crsps = tCreditReportSpecialDao.selectSelective(crsps);
+		logger.debug("展期=" + crsps.getCountSerialNo());
+		// 账户状态 <>结清的数据存在 并且 账户状态 <>结清的数据不存在
+		if (crsps.getCountSerialNo() > 0) {
+			cri.setCR087(STRING_Y);
+		} else {
+			cri.setCR087(STRING_N);
+		}
+
+		// 前面计算过
+		// cri.setCR088("");
+		// cri.setCR089("");
+		// cri.setCR090("");
+		// cri.setCR091("");
+
+		// 呆账
+		crli.setQueryId(queryId);
+		crli.setState(STATE_BAD_DEBT);
+		crli = tCreditReportLoanInfoDao.selectCount(crli);
+		logger.debug("呆账=" + crli.getCountSerialNo());
+		// 贷款.账户状态 =呆账（待核销）的数据存在
+		if (crli.getCountSerialNo() > 0) {
+			cri.setCR092(STRING_Y);
+		} else {
+			crcc.setQueryId(queryId);
+			crcc.setState(STATE_BAD_DEBT);
+			crcc.setCurrency(null);
+			crcc = tCreditReportCreditcardDao.selectCount(crcc);
+			logger.debug("贷款.账户状态 =呆账（待核销）的数据条数=" + crli.getCountSerialNo());
+			// 贷款.账户状态 =呆账（待核销）的数据存在
+			if (crli.getCountSerialNo() > 0) {
+				cri.setCR092(STRING_Y);
+			} else {
+				cri.setCR092(STRING_N);
+			}
+		}
+
+		// 信用卡一年以内逾期的月份数
+		int countOverMonth12 = 0;
+		int countOverMonth24 = 0;
+		int countOverMonth6 = 0;
+		// 贷记卡信息
+		for (TCreditReportCreditCard tCreditReportCreditcard : crccList) {
+			// 有24个月还款状态时
+			if (!StringUtils
+					.isEmpty(tCreditReportCreditcard.getLatest24State())) {
+				// 信用卡一年以内逾期的月份数
+				int countOver12 = countOverLimitMonth(
+						tCreditReportCreditcard.getLatest24State(), 24, 12);
+				countOverMonth12 = countOverMonth12 + countOver12;
+				int countOver24 = countOverLimitMonth(
+						tCreditReportCreditcard.getLatest24State(), 12, 24);
+				countOverMonth24 = countOverMonth24 + countOver24;
+				int countOver6 = countOverLimitMonth(
+						tCreditReportCreditcard.getLatest24State(), 24, 6);
+				countOverMonth6 = countOverMonth6 + countOver6;
+			}
+		}
+		cri.setCR093(countOverMonth12);
+		cri.setCR094(countOverMonth24);
+		cri.setCR102(countOverMonth6);
+
+		// 逾期记录明细查询
+		TCreditReportOverdueDetail crodd = new TCreditReportOverdueDetail();
+		crodd.setQueryId(queryId);
+		crodd = tCreditReportOverdueDetailDao.selectByCreditCard(crodd);
+		// 信用卡两年之前逾期的月份数
+		cri.setCR095(crodd.getLastMonths());
+		// 信用卡两年之前单笔逾期最高金额
+		cri.setCR096(crodd.getAmount());
+
+		// 贷款一年以内逾期的月份数
+		countOverMonth12 = 0;
+		countOverMonth24 = 0;
+		countOverMonth6 = 0;
+		// 贷款信息
+		for (TCreditReportLoanInfo tCreditReportLoanInfo : crliList) {
+			// 有24个月还款状态时
+			if (!StringUtils.isEmpty(tCreditReportLoanInfo.getLatest24State())) {
+				// 贷款一年以内逾期的月份数
+				int countOver12 = countOverLimitMonth(
+						tCreditReportLoanInfo.getLatest24State(), 24, 12);
+				countOverMonth12 = countOverMonth12 + countOver12;
+				int countOver24 = countOverLimitMonth(
+						tCreditReportLoanInfo.getLatest24State(), 12, 24);
+				countOverMonth24 = countOverMonth24 + countOver24;
+				int countOver6 = countOverLimitMonth(
+						tCreditReportLoanInfo.getLatest24State(), 24, 6);
+				countOverMonth6 = countOverMonth6 + countOver6;
+			}
+		}
+		cri.setCR097(countOverMonth12);
+		cri.setCR098(countOverMonth24);
+		cri.setCR103(countOverMonth6);
+
+		// 逾期记录明细查询
+		crodd.setQueryId(queryId);
+		crodd = tCreditReportOverdueDetailDao.selectByLoanInfo(crodd);
+		// 贷款两年之前逾期的月份数
+		cri.setCR099(crodd.getLastMonths());
+		// 贷款两年之前单笔逾期最高金额
+		cri.setCR100(crodd.getAmount());
+
+		// 冻结
+		crcc.setQueryId(queryId);
+		crcc.setState(STATE_FREEZE);
+		crcc.setState1(STATE_FREEZE_1);
+		crcc.setCurrency(null);
+		crcc = tCreditReportCreditcardDao.selectCount(crcc);
+		logger.debug("冻结=" + crcc.getCountSerialNo());
+		// 贷记卡.账户状态 = 冻结
+		if (crcc.getCountSerialNo() > 0) {
+			cri.setCR101(STRING_Y);
+		} else {
+			cri.setCR101(STRING_N);
+		}
+
+		// CR102,CR103前面算了
+
+		// 6个月内新增信用贷款金额
+		crli.setQueryId(queryId);
+		crli.setState(STATE_CLEAR);
+		crli.setState1(STATE_CLEAR_1);
+		crli.setGuarantyType(GUARANTYTYPE_CREDIT);
+		crli.setFlag(1);
+		crli.setDays(182);
+		crli = tCreditReportLoanInfoDao.selectSumBalanceNew(crli);
+		cri.setCR104(crli.getBalance());
+		// 6个月到1年新增信用贷款金额
+		crli.setQueryId(queryId);
+		crli.setState(STATE_CLEAR);
+		crli.setState1(STATE_CLEAR_1);
+		crli.setGuarantyType(GUARANTYTYPE_CREDIT);
+		crli.setFlag(2);
+		crli.setDays(182);
+		crli.setDays2(365);
+		crli = tCreditReportLoanInfoDao.selectSumBalanceNew(crli);
+		cri.setCR105(crli.getBalance());
+
+		// 6个月内新增信用卡额度
+		crcc.setQueryId(queryId);
+		crcc.setState(STATE_CANCEL);
+		crcc.setState1(STATE_CANCEL_1);
+		crcc.setFlag(1);
+		crcc.setDays(182);
+		crcc = tCreditReportCreditcardDao.selectSumLimitAmtNew(crcc);
+		cri.setCR106(crcc.getLimitAmt());
+		// 6个月到1年新增信用卡额度
+		crcc.setQueryId(queryId);
+		crcc.setState(STATE_CANCEL);
+		crcc.setState1(STATE_CANCEL_1);
+		crcc.setFlag(2);
+		crcc.setDays(182);
+		crcc.setDays2(365);
+		crcc = tCreditReportCreditcardDao.selectSumLimitAmtNew(crcc);
+		cri.setCR107(crcc.getLimitAmt());
+
+		// 半年内到期贷款余额
+		crli.setQueryId(queryId);
+		crli.setDays(182);
+		crli = tCreditReportLoanInfoDao.selectSumBalance(crli);
+		cri.setCR108(crli.getBalance());
+		// 半年内到期贷款余额
+		crli.setQueryId(queryId);
+		crli.setDays(61);
+		crli = tCreditReportLoanInfoDao.selectSumBalance(crli);
+		cri.setCR109(crli.getBalance());
+		// 前面算了
+		// CR110
+
+		// CR111
+		crqd.setQueryId(queryId);
+		crqd.setDays(183);
+		crqd.setReason(ReviewNoteConstants.REASON_LOAN);
+		crqd = tCreditReportQueryDetailDao.selectCountMap(crqd);
+		cri.setCR111(crqd.getCount());
+
+		// CR112
+		crqd.setQueryId(queryId);
+		crqd.setDays(183);
+		crqd.setReason(ReviewNoteConstants.REASON_CREDITCARD);
+		crqd = tCreditReportQueryDetailDao.selectCountMap(crqd);
+		cri.setCR112(crqd.getCount());
+
+		// CR113
+		crqd.setQueryId(queryId);
+		crqd.setDays(92);
+		crqd.setReason(ReviewNoteConstants.REASON_LOAN);
+		crqd = tCreditReportQueryDetailDao.selectCountMap(crqd);
+		cri.setCR113(crqd.getCount());
+
+		// CR114
+		crqd.setQueryId(queryId);
+		crqd.setDays(92);
+		crqd.setReason(ReviewNoteConstants.REASON_CREDITCARD);
+		crqd = tCreditReportQueryDetailDao.selectCountMap(crqd);
+		cri.setCR114(crqd.getCount());
+
+		// CR115
+		crqd.setQueryId(queryId);
+		crqd.setDays(31);
+		crqd.setReason(ReviewNoteConstants.REASON_LOAN);
+		crqd = tCreditReportQueryDetailDao.selectCountMap(crqd);
+		cri.setCR115(crqd.getCount());
+
+		// CR116
+		crqd.setQueryId(queryId);
+		crqd.setDays(31);
+		crqd.setReason(ReviewNoteConstants.REASON_CREDITCARD);
+		crqd = tCreditReportQueryDetailDao.selectCountMap(crqd);
+		cri.setCR116(crqd.getCount());
+
+		// CR117
+		cri.setCR117(0);
+
+		// CR118
+		crqd.setQueryId(queryId);
+		crqd.setDays(92);
+		crqd.setReason(null);
+		crqd = tCreditReportQueryDetailDao.selectCountMap(crqd);
+		cri.setCR118(crqd.getCount());
+
+		// CR119
+		cri.setCR119(cri.getCR115() + cri.getCR116());
+
+		// CR120
+		crli.setQueryId(queryId);
+		crli.setFlag(1);
+		crli.setDays(365);
+		crli.setGuarantyType(GUARANTYTYPE_CREDIT);
+		crli = tCreditReportLoanInfoDao.selectSelectiveMax(crli);
+		cri.setCR120(crli.getLimitAmt());
+
+		// CR121
+		crcc.setQueryId(queryId);
+		crcc.setFlag(1);
+		crcc.setDays(365);
+		crcc = tCreditReportCreditcardDao.selectSelectiveMax(crcc);
+		cri.setCR121(crcc.getLimitAmt());
+
+		// CR122
+		crli.setQueryId(queryId);
+		crli.setFlag(2);
+		crli.setDays(365);
+		crli.setDays2(730);
+		crli.setGuarantyType(GUARANTYTYPE_CREDIT);
+		crli = tCreditReportLoanInfoDao.selectSelectiveMax(crli);
+		cri.setCR122(crli.getLimitAmt());
+
+		// CR123
+		crcc.setQueryId(queryId);
+		crcc.setFlag(2);
+		crcc.setDays(365);
+		crcc.setDays2(730);
+		crcc = tCreditReportCreditcardDao.selectSelectiveMax(crcc);
+		cri.setCR123(crcc.getLimitAmt());
+
+		// CR124
+		crli.setQueryId(queryId);
+		crli.setFlag(3);
+		crli.setDays(730);
+		crli.setGuarantyType(GUARANTYTYPE_CREDIT);
+		crli = tCreditReportLoanInfoDao.selectSelectiveMax(crli);
+		cri.setCR124(crli.getLimitAmt());
+		// CR125
+		crcc.setQueryId(queryId);
+		crcc.setFlag(3);
+		crcc.setDays(730);
+		crcc = tCreditReportCreditcardDao.selectSelectiveMax(crcc);
+		cri.setCR125(crcc.getLimitAmt());
+
+		// 插入
+		int flag = insert(cri);
+		// 插入失败
+		if (flag != 1) {
+			logger.debug("插入失败");
+			logger.debug("queryAndInsertCreditReport end");
+			return null;
+		}
+		logger.debug("插入成功");
+		logger.debug("queryAndInsertCreditReport end");
+		return cri;
+	}
+
+	/**
+	 * 删除征信报告指标
+	 * 
+	 * @param reportNo
+	 * @return
+	 */
+	@Override
+	public int delete(String queryId) {
+		return tCreditReportIndicatorDao.deleteByPrimaryKey(queryId);
+	}
+
+	/**
+	 * 插入征信报告指标表
+	 * 
+	 * @param record
+	 * @return
+	 */
+	@Override
+	public int insert(TCreditReportIndicator record) {
+		// 插入征信报告指标
+		return tCreditReportIndicatorDao.insertSelective(record);
+	}
+
+	/**
+	 * “24个月还款状态”最后一位为报告当月，从右向左遍历还款状态，找出为数字（即不是/N*#C）的月份即为最近逾期月份
+	 * 
+	 * @param months
+	 * @return
+	 */
+	private int checkLastMonth(String months) {
+		logger.debug("checkLastMonth:" + months);
+		String[] monthStrs = months.split("");
+		int length = monthStrs.length - 1;
+		int lastMonth = 25;
+		for (int i = length; i <= length && i > 0; i--) {
+			if (ValidateUtil.checkInteger(monthStrs[i])) {
+				lastMonth = i;
+				break;
+			}
+		}
+		return 24 - lastMonth;
+	}
+
+	/**
+	 * “24个月还款状态”最后一位为报告当月，从右向左遍历还款状态，找出为数字（即不是/N*#C）且大于1的贷款
+	 * 
+	 * @param months
+	 * @return
+	 */
+	private boolean countOverLimitDate(String months, int steps) {
+		logger.debug("countOverLimitDate:" + months + ";steps=" + steps);
+		String[] monthStrs = months.split("");
+		int length = monthStrs.length - 1;
+		for (int i = length; i > length - steps; i--) {
+			if (ValidateUtil.checkInteger(monthStrs[i])
+					&& Integer.parseInt(monthStrs[i]) > 1) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * 逾期最差状态
+	 * 
+	 * “24个月还款状态”最后一位为报告当月，从右向左遍历还款状态，找出为数字（即不是/N*#C）
+	 * 
+	 * @param months
+	 * @return
+	 */
+	private int getLongestOverLimitDate(String months, int steps) {
+		logger.debug("getLongestOverLimitDate:" + months + ";steps=" + steps);
+		String[] monthStrs = months.split("");
+		int length = monthStrs.length - 1;
+		int longestDay = 0;
+		for (int i = length; i > length - steps; i--) {
+			// 逾期记录
+			if (ValidateUtil.checkInteger(monthStrs[i])) {
+				// 逾期更长时间
+				int day = Integer.parseInt(monthStrs[i]);
+				if (day > longestDay) {
+					longestDay = day;
+				}
+			}
+		}
+		return longestDay;
+	}
+
+	/**
+	 * 信用卡一年以内逾期的月份数
+	 * 
+	 * “24个月还款状态”从右向左遍历12个月，SUM ( COUNT（一笔记录中满足条件的月份数）)
+	 * 
+	 * @param months
+	 * @return
+	 */
+	private int countOverLimitMonth(String months, int from, int steps) {
+		logger.debug("countOverLimitMonth:" + months + ";from=" + from
+				+ ";steps=" + steps);
+		String[] monthStrs = months.split("");
+		int length = monthStrs.length - 1;
+		int countMonth = 0;
+		for (int i = from; i > length - steps; i--) {
+			// 逾期记录
+			if (ValidateUtil.checkInteger(monthStrs[i])) {
+				// 逾期更长时间
+				// countMonth = countMonth + Integer.parseInt(monthStrs[i]);
+				countMonth++;
+			}
+		}
+		return countMonth;
+	}
+}

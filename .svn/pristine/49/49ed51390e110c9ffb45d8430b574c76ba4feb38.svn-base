@@ -1,0 +1,57 @@
+package com.hrbb.loan.pos.service;
+
+import java.util.Date;
+import java.util.Map;
+import java.util.List;
+
+public interface PoliceAndAICConnectService {
+	
+	
+	public List<Map<String, Object>> queryPoliceInfoList(Map<String, Object> reqMap);
+	
+	public Map<String, Object> queryOnePoliceInfo(String custName, String idNo, Date queryTime);
+	
+	public void insertPoliceInfo(Map<String, Object> reqMap);
+	
+	public void insertAICAlidebtInfo(Map<String, Object> reqMap);
+	
+	public void insertAICBasicInfo(Map<String, Object> reqMap);
+	
+	public void insertAICCaseInfo(Map<String, Object> reqMap);
+	
+	public void insertAICEntinvInfo(Map<String, Object> reqMap);
+	
+	public void insertAICOrderlistInfo(Map<String, Object> reqMap);
+	
+	public void insertAICPersonInfo(Map<String, Object> reqMap);
+	
+	public void insertAICPunishBreakInfo(Map<String, Object> reqMap);
+	
+	public void insertAICPunishedInfo(Map<String, Object> reqMap);
+	
+	public void insertAICShareHolder(Map<String, Object> reqMap);
+	
+	public void insertAICFrinvInfo(Map<String, Object> reqMap);
+	
+	public void insertAICFrpositionInfo(Map<String, Object> reqMap);
+	
+	public List<Map<String, Object>> queryAICOrderlist(Map<String, Object> reqMap);
+	
+	public Map<String, Object> queryOneAICOrderlist(String posCustName);
+	
+    /**
+     * 根据身份证号查询最新的公安信息
+     * 
+     * @param reqMap
+     * @return
+     */
+    public List<Map<String, Object>> selectByCertNo(Map<String, Object> reqMap);
+    
+    /**
+     * 查询商户工商信息
+     * 
+     * @param posCustId
+     * @return
+     */
+    public Map<String,List<Map<String,Object>>> queryAicInfo(String posCustName, String posCustId);
+}

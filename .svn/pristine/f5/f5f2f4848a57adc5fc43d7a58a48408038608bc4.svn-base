@@ -1,0 +1,57 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.biz.expressions.mult;
+
+import java.math.BigDecimal;
+
+import com.hrbb.loan.pos.biz.expressions.bean.MultResultBean;
+import com.hrbb.loan.pos.util.MathUtils;
+
+/**
+ * 1.2.2.3 模型综合评
+ * 
+ * @author XLY
+ * @version $Id: MultComputer.java, v 0.1 2015-3-10 下午2:41:43 XLY Exp $
+ */
+public class MultComputer {
+
+	public static MultResultBean computer(BigDecimal scoreProfile,
+			BigDecimal scoreBureau) {
+		MultResultBean bean = new MultResultBean();
+		BigDecimal rawModelScore = scoreProfile.add(scoreBureau);
+
+		BigDecimal num0 = MAX_SCORE.subtract(CUT_SCORE);
+		BigDecimal num1 = rawModelScore.subtract(CUT_SCORE);
+		BigDecimal num2 = MathUtils.div((new BigDecimal(100)).multiply(num1),
+				num0);
+		BigDecimal num3 = MathUtils.getMax(BigDecimal.ZERO, num2);
+		BigDecimal finalModelScore = MathUtils
+				.getMin(new BigDecimal(100), num3);
+
+		Integer no1 = MathUtils.div(finalModelScore, (new BigDecimal(10)))
+				.intValue();
+		BigDecimal no2 = RISK_MODEL_NUM.subtract(new BigDecimal(no1));
+
+		BigDecimal riskTier = MathUtils.getMax(BigDecimal.ZERO, no2);
+
+		bean.setRawModelScore(rawModelScore);
+		bean.setFinalModelScore(finalModelScore);
+		bean.setRiskTier(riskTier.intValue());
+		bean.setCutScore(CUT_SCORE);
+		bean.setMaxScore(MAX_SCORE);
+		return bean;
+	}
+
+	public static final BigDecimal CUT_SCORE;
+	public static final BigDecimal MAX_SCORE;
+	public static final BigDecimal RISK_MODEL_NUM;
+
+	static {
+		CUT_SCORE = new BigDecimal(30);
+		MAX_SCORE = new BigDecimal(65);
+		RISK_MODEL_NUM = new BigDecimal(9);
+	}
+}

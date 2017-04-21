@@ -1,0 +1,24 @@
+package com.hrbb.test;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+
+import com.hrbb.loan.pos.biz.backstage.inter.SynFileBiz;
+import com.hrbb.loan.pos.biz.constants.SynFileConstants;
+import com.hrbb.test.UnitTest;
+
+public class SynFileBizImplTest extends UnitTest {
+	
+	@Autowired
+	@Qualifier("synFileBiz")
+    private SynFileBiz biz;
+
+	@Test
+	public void testServe() {
+		biz.makeSynFile(SynFileConstants.NO_HB16);
+		biz.makeSynFile(SynFileConstants.NO_HB17);
+		biz.makeSynFile(SynFileConstants.NO_HB18);
+		biz.makeSynFile(SynFileConstants.NO_HB19);
+	}
+}

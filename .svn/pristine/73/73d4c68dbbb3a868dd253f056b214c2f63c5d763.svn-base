@@ -1,0 +1,515 @@
+package com.hrbb.loan.spi.ZZ;
+
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.biz.backstage.inter.IDueDiligenceBiz;
+import com.hrbb.loan.pos.dao.entity.TDueDiligence;
+import com.hrbb.loan.pos.service.LoanPosCreditApplyService;
+import com.hrbb.loan.pos.util.MapUtils;
+import com.hrbb.loan.pos.util.SignUtil;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.loan.spiconstants.CreditApplyHServiceConstants;
+import com.hrbb.loan.spiconstants.HServiceReturnCode;
+import com.hrbb.sh.framework.HRequest;
+import com.hrbb.sh.framework.HResponse;
+import com.hrbb.sh.framework.HService;
+import com.hrbb.sh.framework.HServiceException;
+
+/**
+ * TransType:AP0027 -> 尽职调查结果反馈通道.
+ * 
+ * @author xiongshaogang
+ * @version $Id: ZZAPPDueDiligenceResultBackServiceImpl.java, v 0.1 2015年4月21日 下午2:01:29 xiongshaogang Exp $
+ */
+@Service("zzAppDueDiligenceResultBack")
+public class ZZAPPDueDiligenceResultBackServiceImpl implements HService {
+
+	private final Logger logger = LoggerFactory
+			.getLogger(ZZAPPDueDiligenceResultBackServiceImpl.class);
+
+	@Autowired
+	private IDueDiligenceBiz iDueDiligenceBiz;
+	
+	@Autowired
+	private LoanPosCreditApplyService loanPosCreditApplyService;
+
+	/**
+	 * @see com.hrbb.sh.framework.HService#serve(com.hrbb.sh.framework.HRequest)
+	 */
+	@Override
+	public HResponse serve(HRequest request) throws HServiceException {
+
+		logger.debug("in ZZAPPDueDiligenceResultBackServiceImpl...");
+		
+		// 0. 接收请求包，解包
+        Map<String, String> headerMap = (Map<String, String>) request.getProperties().get("HrbbHeader");
+        Map<String, String> bodyMap = (Map<String, String>) request.getProperties().get("HrbbBody");
+        logger.info("headerMap : " + MapUtils.toString(headerMap));
+        logger.info("bodyMap : " + MapUtils.toString(bodyMap));
+        
+        // 1. 请求包校验
+        HResponse resp = new HResponse();
+        if (!validate(headerMap, bodyMap, resp)) {
+            resp.setRespTime(new Date());
+            return getBlankHResponse(resp, headerMap, bodyMap);
+        }
+
+        // 2. 验证数字签名,暂不实现
+        String signedMsg = SignUtil.getSignMsg((Map<String, Object>)request.getProperties().get("HrbbBody"), null);
+        logger.info("请求待签名串 signedMsg = [" + signedMsg + "]");
+//        if (!SignUtil.verifySign(SignUtil.MD5_ALG, signedMsg, headerMap.get("Mac"), SignUtil.getProperty("app_posloan_signkey"))) {
+//            logger.error("数字签名验证失败");
+//            bodyMap.put("respcode", HServiceReturnCode.OTHER_ERROR.getReturnCode());
+//            bodyMap.put("respmsg", HServiceReturnCode.OTHER_ERROR.getReturnMessage());
+//            resp.setRespCode(HServiceReturnCode.OTHER_ERROR.getReturnCode());
+//            resp.setRespMessage(HServiceReturnCode.OTHER_ERROR.getReturnMessage());
+//            resp.setRespTime(new Date());
+//            return getBlankHResponse(resp, headerMap, bodyMap);
+//        }
+        logger.info("数字签名验证通过!");
+		
+		// 3. 尽调报告入库
+        try {
+            TDueDiligence tDueDiligence = new TDueDiligence();
+            tDueDiligence.setLoanid(bodyMap.get(CreditApplyHServiceConstants.loanid));
+            tDueDiligence.setDuedilitaskno(StringUtil.trimToEmpty(bodyMap.get("duedilitaskno")));
+            tDueDiligence.setApplydate(StringUtil.trimToEmpty(bodyMap.get("applydate")));
+            tDueDiligence.setSurveydate(StringUtil.trimToEmpty(bodyMap.get("investigatedate")));
+            tDueDiligence.setEnterprisename(StringUtil.trimToEmpty(bodyMap.get("poscustname")));
+            tDueDiligence.setApplicantname(StringUtil.trimToEmpty(bodyMap.get("custname")));
+            tDueDiligence.setApplicantid(StringUtil.trimToEmpty(bodyMap.get("paperkind")) + StringUtil.trimToEmpty(bodyMap.get("paperid")));
+            tDueDiligence.setAnnualturnover(StringUtil.trimToEmpty(bodyMap.get("annualvolume")));
+            tDueDiligence.setSeasonal(StringUtil.trimToEmpty(bodyMap.get("isseason")));
+            tDueDiligence.setPeakseason(StringUtil.trimToEmpty(bodyMap.get("busyseason")));
+            tDueDiligence.setOffseason(StringUtil.trimToEmpty(bodyMap.get("offseason")));
+            tDueDiligence.setChecklicense(StringUtil.trimToEmpty(bodyMap.get("regicon")));
+            tDueDiligence.setCheckpos(StringUtil.trimToEmpty(bodyMap.get("acquirercon")));
+            if ("1".equals(bodyMap.get("custcon")) && "1".equals(bodyMap.get("matecon"))) {
+                tDueDiligence.setCheckid("3");
+            } else if ("1".equals(bodyMap.get("custcon")) && "0".equals(bodyMap.get("matecon"))) {
+                tDueDiligence.setCheckid("1");
+            } else if ("0".equals(bodyMap.get("custcon")) && "1".equals(bodyMap.get("matecon"))) {
+                tDueDiligence.setCheckid("2");
+            } else {
+                tDueDiligence.setCheckid("0");
+            }
+            tDueDiligence.setCheckpremises(StringUtil.trimToEmpty(bodyMap.get("operaddcon")));
+            tDueDiligence.setCheckhouse(StringUtil.trimToEmpty(bodyMap.get("housepropcon")));
+            tDueDiligence.setCheckphotoatdoor(StringUtil.trimToEmpty(bodyMap.get("custphotowdue")));
+            tDueDiligence.setCheckagreement(StringUtil.trimToEmpty(bodyMap.get("creditagreement")));
+            tDueDiligence.setCheckphotoinpremises(StringUtil.trimToEmpty(bodyMap.get("operaddphoto")));
+            tDueDiligence.setCheckform(StringUtil.trimToEmpty(bodyMap.get("usecreditapp")));
+            tDueDiligence.setCheckphotosign(StringUtil.trimToEmpty(bodyMap.get("custsignphoto")));
+            tDueDiligence.setNote(StringUtil.trimToEmpty(bodyMap.get("notes")));
+            tDueDiligence.setOpinion(StringUtil.trimToEmpty(bodyMap.get("reliabledetail")));
+            tDueDiligence.setCheckreliable(StringUtil.trimToEmpty(bodyMap.get("isreliable")));
+            tDueDiligence.setPreappmaxcred(StringUtil.trimToEmpty(bodyMap.get("preappmaxcred")));
+            tDueDiligence.setPreapptterm(StringUtil.trimToEmpty(bodyMap.get("preapptterm")));
+            tDueDiligence.setInterate(StringUtil.trimToEmpty(bodyMap.get("interate")));
+            tDueDiligence.setCheckaccept(StringUtil.trimToEmpty(bodyMap.get("isaccept")));
+            tDueDiligence.setRefusereason(StringUtil.trimToEmpty(bodyMap.get("refusereason")));
+            tDueDiligence.setDuedilitaskno(StringUtil.trimToEmpty(bodyMap.get("duedilitaskno")));
+            if (!iDueDiligenceBiz.insertDueDiligence(tDueDiligence)) {
+                logger.error(StringUtil.isEmpty(iDueDiligenceBiz.getRespmsg()) ? HServiceReturnCode.DB_ERROR_ERROR.getReturnMessage() : iDueDiligenceBiz.getRespmsg());
+                bodyMap.put("respcode", HServiceReturnCode.DB_ERROR_ERROR.getReturnCode());
+                bodyMap.put("respmsg", StringUtil.isEmpty(iDueDiligenceBiz.getRespmsg()) ? HServiceReturnCode.DB_ERROR_ERROR.getReturnMessage() : iDueDiligenceBiz.getRespmsg());
+                resp.setRespCode(HServiceReturnCode.DB_ERROR_ERROR.getReturnCode());
+                resp.setRespMessage(HServiceReturnCode.DB_ERROR_ERROR.getReturnMessage());
+                return getBlankHResponse(resp, headerMap, bodyMap);
+            }
+            
+            // 4. 更新申请状态
+            Map<String, Object> updateMap = Maps.newHashMap();
+            updateMap.put("applyStatus", "41");
+            updateMap.put("lastOperTime", new Date());
+            updateMap.put("lastOperId", "system");
+            updateMap.put("loanId", bodyMap.get(CreditApplyHServiceConstants.loanid));
+            if (1 != loanPosCreditApplyService.updateApplyStatus(updateMap)) {
+                logger.error("更新申请状态失败:[]", "");
+                bodyMap.put("respcode", HServiceReturnCode.DB_ERROR_ERROR.getReturnCode());
+                bodyMap.put("respmsg", HServiceReturnCode.DB_ERROR_ERROR.getReturnMessage());
+                resp.setRespCode(HServiceReturnCode.DB_ERROR_ERROR.getReturnCode());
+                resp.setRespMessage(HServiceReturnCode.DB_ERROR_ERROR.getReturnMessage());
+                return getBlankHResponse(resp, headerMap, bodyMap);
+            }
+        } catch (Exception e) {
+            logger.error("入库异常:[]", "");
+            bodyMap.put("respcode", HServiceReturnCode.DB_ERROR_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.DB_ERROR_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.DB_ERROR_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.DB_ERROR_ERROR.getReturnMessage());
+            return getBlankHResponse(resp, headerMap, bodyMap);
+        }
+        
+		// 5. 回写成功
+		Map<String, Object> rootMap = Maps.newHashMap();
+		bodyMap = Maps.newHashMap();
+		bodyMap.put("respcode", HServiceReturnCode.SUCCESS.getReturnCode());
+		bodyMap.put("respmsg", HServiceReturnCode.SUCCESS.getReturnMessage());
+		
+		// 5.1 签名处理
+        Map<String, Object> signMap = Maps.newHashMap();
+        for (Iterator<String> it = bodyMap.keySet().iterator(); it.hasNext();) {
+            String key = it.next();
+            signMap.put(key, bodyMap.get(key));
+        }
+        headerMap.put("Mac", sign(signMap, null));
+		
+        rootMap.put("HrbbHeader", headerMap);
+        rootMap.put("HrbbBody", bodyMap);
+        resp.setRespCode(HServiceReturnCode.SUCCESS.getReturnCode());
+        resp.setRespMessage(HServiceReturnCode.SUCCESS.getReturnMessage());
+        resp.setRespTime(new Date());
+        resp.setProperties(rootMap);
+        logger.info("回写数据: " + resp.toString());
+        logger.debug("out ZZAPPDueDiligenceResultBackServiceImpl...");
+		return resp;
+	}
+	
+	/**
+     * 请求包校验处理.
+     * 
+     * @param headerMap
+     * @param bodyMap
+     * @return
+     * @throws Exception 
+     */
+    protected boolean validate(Map<String, String> headerMap, Map<String, String> bodyMap,
+                             HResponse resp) throws HServiceException {
+        // 版本号
+        if (StringUtil.isEmpty(headerMap.get("Version"))
+            || !"20150415".equals(headerMap.get("Version"))) {
+            logger.error("接口版本号为空或不合法:[]", headerMap.get("Version"));
+            bodyMap.put("respcode", HServiceReturnCode.VERSION_ERRO_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.VERSION_ERRO_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.VERSION_ERRO_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.VERSION_ERRO_ERROR.getReturnMessage());
+            return false;
+        }
+        
+        // 申请编号
+        if (StringUtil.isEmpty(bodyMap.get("loanid"))) {
+            logger.error("申请编号为空:[]", bodyMap.get("loanid"));
+            bodyMap.put("respcode", HServiceReturnCode.LOANID_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.LOANID_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.LOANID_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.LOANID_ERROR.getReturnMessage());
+            return false;
+        }
+        
+        // 尽调任务编号
+        if (StringUtil.isEmpty(bodyMap.get("duedilitaskno"))) {
+            logger.error("尽调任务编号为空:[]", bodyMap.get("duedilitaskno"));
+            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.DUE_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.DUE_ERROR.getReturnMessage());
+            return false;
+        }
+        
+        // 申请日期
+        if (StringUtil.isEmpty(bodyMap.get("applydate"))) {
+            logger.error("申请日期为空:[]", bodyMap.get("applydate"));
+            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", "申请日期为空");
+            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+            resp.setRespMessage("申请日期为空");
+            return false;
+        }
+        
+        // 调查日期
+        if (StringUtil.isEmpty(bodyMap.get("investigatedate"))) {
+            logger.error("调查日期为空:[]", bodyMap.get("investigatedate"));
+            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", "调查日期为空");
+            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+            resp.setRespMessage("调查日期为空");
+            return false;
+        }
+        
+        // 企业名称/商户名称
+        if (StringUtil.isEmpty(bodyMap.get("poscustname"))) {
+            logger.error("企业名称/商户名称为空:[]", bodyMap.get("poscustname"));
+            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", "企业名称/商户名称为空");
+            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+            resp.setRespMessage("企业名称/商户名称为空");
+            return false;
+        }
+        
+        // 客户姓名/申请人姓名
+        if (StringUtil.isEmpty(bodyMap.get("custname"))) {
+            logger.error("客户姓名/申请人姓名为空:[]", bodyMap.get("custname"));
+            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", "客户姓名/申请人姓名为空");
+            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+            resp.setRespMessage("客户姓名/申请人姓名为空");
+            return false;
+        }
+        
+        // 证件类型
+        if (StringUtil.isEmpty(bodyMap.get("paperkind"))) {
+            logger.error("证件类型为空:[]", bodyMap.get("paperkind"));
+            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", "证件类型为空");
+            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+            resp.setRespMessage("证件类型为空");
+            return false;
+        }
+        
+        // 证件号码
+        if (StringUtil.isEmpty(bodyMap.get("paperid"))) {
+            logger.error("证件号码为空:[]", bodyMap.get("paperid"));
+            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", "证件号码为空");
+            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+            resp.setRespMessage("证件号码为空");
+            return false;
+        }
+        
+        // 年营业额
+        if (StringUtil.isEmpty(bodyMap.get("annualvolume"))) {
+            logger.error("年营业额为空:[]", bodyMap.get("annualvolume"));
+            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", "年营业额为空");
+            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+            resp.setRespMessage("年营业额为空");
+            return false;
+        }
+        
+        // 生意是否有季节性
+        if (StringUtil.isEmpty(bodyMap.get("isseason"))) {
+            logger.error("生意是否有季节性为空:[]", bodyMap.get("isseason"));
+            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", "生意是否有季节性为空");
+            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+            resp.setRespMessage("生意是否有季节性为空");
+            return false;
+        }
+        
+        // 旺季月份
+        if (StringUtil.isEmpty(bodyMap.get("busyseason"))) {
+            logger.error("旺季月份为空:[]", bodyMap.get("busyseason"));
+            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", "旺季月份为空");
+            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+            resp.setRespMessage("旺季月份为空");
+            return false;
+        }
+        
+        // 淡季月份
+        if (StringUtil.isEmpty(bodyMap.get("offseason"))) {
+            logger.error("淡季月份为空:[]", bodyMap.get("offseason"));
+            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", "淡季月份为空");
+            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+            resp.setRespMessage("淡季月份为空");
+            return false;
+        }
+        
+        // 营业执照是否相符
+        if (StringUtil.isEmpty(bodyMap.get("regicon"))) {
+            logger.error("营业执照是否相符为空:[]", bodyMap.get("regicon"));
+            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", "营业执照是否相符为空");
+            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+            resp.setRespMessage("营业执照是否相符为空");
+            return false;
+        }
+        
+        // POS机收单机构是否相符
+        if (StringUtil.isEmpty(bodyMap.get("acquirercon"))) {
+            logger.error("POS机收单机构是否相符为空:[]", bodyMap.get("acquirercon"));
+            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", "POS机收单机构是否相符为空");
+            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+            resp.setRespMessage("POS机收单机构是否相符为空");
+            return false;
+        }
+        
+        // 借款人身份是否相符
+        if (StringUtil.isEmpty(bodyMap.get("custcon"))) {
+            logger.error("借款人身份是否相符为空:[]", bodyMap.get("custcon"));
+            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", "借款人身份是否相符为空");
+            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+            resp.setRespMessage("借款人身份是否相符为空");
+            return false;
+        }
+        
+        // 配偶身份是否相符
+        if (StringUtil.isEmpty(bodyMap.get("matecon"))) {
+            logger.error("配偶身份是否相符为空:[]", bodyMap.get("matecon"));
+            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", "配偶身份是否相符为空");
+            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+            resp.setRespMessage("配偶身份是否相符为空");
+            return false;
+        }
+        
+        // 经营场所是否相符
+        if (StringUtil.isEmpty(bodyMap.get("operaddcon"))) {
+            logger.error("经营场所是否相符为空:[]", bodyMap.get("operaddcon"));
+            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", "经营场所是否相符为空");
+            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+            resp.setRespMessage("经营场所是否相符为空");
+            return false;
+        }
+        
+        // 房产证是否相符
+//        if (StringUtil.isEmpty(bodyMap.get("housepropcon"))) {
+//            logger.error("房产证是否相符为空:[]", bodyMap.get("housepropcon"));
+//            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+//            bodyMap.put("respmsg", "房产证是否相符为空");
+//            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+//            resp.setRespMessage("房产证是否相符为空");
+//            return false;
+//        }
+        
+        // 申请人与尽调人员经营场所门口的照片
+        if (StringUtil.isEmpty(bodyMap.get("custphotowdue"))) {
+            logger.error("申请人与尽调人员经营场所门口的照片为空:[]", bodyMap.get("custphotowdue"));
+            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", "申请人与尽调人员经营场所门口的照片为空");
+            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+            resp.setRespMessage("申请人与尽调人员经营场所门口的照片为空");
+            return false;
+        }
+        
+        // 授信协议书
+        if (StringUtil.isEmpty(bodyMap.get("creditagreement"))) {
+            logger.error("授信协议书为空:[]", bodyMap.get("creditagreement"));
+            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", "授信协议书为空");
+            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+            resp.setRespMessage("授信协议书为空");
+            return false;
+        }
+        
+        // 经营场所内照片
+        if (StringUtil.isEmpty(bodyMap.get("operaddphoto"))) {
+            logger.error("经营场所内照片为空:[]", bodyMap.get("operaddphoto"));
+            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", "经营场所内照片为空");
+            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+            resp.setRespMessage("经营场所内照片为空");
+            return false;
+        }
+        
+        // 用款申请书
+//        if (StringUtil.isEmpty(bodyMap.get("usecreditapp"))) {
+//            logger.error("用款申请书为空:[]", bodyMap.get("usecreditapp"));
+//            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+//            bodyMap.put("respmsg", "用款申请书为空");
+//            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+//            resp.setRespMessage("用款申请书为空");
+//            return false;
+//        }
+        
+        // 客户签写授信协议书照片
+//        if (StringUtil.isEmpty(bodyMap.get("custsignphoto"))) {
+//            logger.error("客户签写授信协议书照片为空:[]", bodyMap.get("custsignphoto"));
+//            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+//            bodyMap.put("respmsg", "客户签写授信协议书照片为空");
+//            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+//            resp.setRespMessage("客户签写授信协议书照片为空");
+//            return false;
+//        }
+        
+        // 备注
+        if (StringUtil.isEmpty(bodyMap.get("notes"))) {
+            logger.error("备注为空:[]", bodyMap.get("notes"));
+            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", "备注为空");
+            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+            resp.setRespMessage("备注为空");
+            return false;
+        }
+        
+        // 尽职调查员对客户现场调查的可信度意见/表决
+        if (StringUtil.isEmpty(bodyMap.get("isreliable"))) {
+            logger.error("尽职调查员对客户现场调查的可信度意见/表决为空:[]", bodyMap.get("isreliable"));
+            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", "尽职调查员对客户现场调查的可信度意见/表决为空");
+            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+            resp.setRespMessage("尽职调查员对客户现场调查的可信度意见/表决为空");
+            return false;
+        }
+        
+        // 尽职调查员对客户现场调查的可信度意见/表决描述
+        if (StringUtil.isEmpty(bodyMap.get("reliabledetail"))) {
+            logger.error("尽职调查员对客户现场调查的可信度意见/表决描述为空:[]", bodyMap.get("reliabledetail"));
+            bodyMap.put("respcode", HServiceReturnCode.DUE_ERROR.getReturnCode());
+            bodyMap.put("respmsg", "尽职调查员对客户现场调查的可信度意见/表决描述为空");
+            resp.setRespCode(HServiceReturnCode.DUE_ERROR.getReturnCode());
+            resp.setRespMessage("尽职调查员对客户现场调查的可信度意见/表决描述为空");
+            return false;
+        }
+        
+        // 影像文件包名
+        
+        // 预授信额度
+        
+        // 预授信期限
+        
+        // 贷款利率
+        
+        // 预授信结果是否接受
+        
+        // 预授信结果不接受说明
+        
+        // 尽调机构号
+        
+        // 尽调人员
+        
+        return true;
+    }
+    
+    /**
+     * 失败应答.
+     * 
+     * @param response
+     * @return
+     */
+    protected HResponse getBlankHResponse(HResponse response, Map<String, String> headerMap, Map<String, String> bodyMap) {
+        Map<String, Object> respMap = Maps.newHashMap();
+        
+        // 签名处理
+        Map<String, Object> signMap = Maps.newHashMap();
+        for (Iterator<String> it = bodyMap.keySet().iterator(); it.hasNext();) {
+            String key = it.next();
+            signMap.put(key, bodyMap.get(key));
+        }
+        headerMap.put("Mac", sign(signMap, null));
+        
+        respMap.put("HrbbHeader", headerMap);
+        respMap.put("HrbbBody", bodyMap);
+        response.setProperties(respMap);
+        return response;
+    }
+    
+    /**
+     * 回写签名处理.
+     * 
+     * @param signMap
+     * @param ignoreSet
+     * @return
+     */
+    protected String sign(Map<String, Object> signMap, Set<String> ignoreSet) {
+        String signedMsg = SignUtil.getSignMsg(signMap, ignoreSet);
+        logger.info("应答待签名串 signedMsg = [" + signedMsg + "]");
+        String signRet = SignUtil.sign(SignUtil.MD5_ALG, signedMsg, SignUtil.getProperty("app_posloan_signkey"));
+        logger.info("应答签名 Mac = [" + signRet + "]");
+        return signRet;
+    }
+}

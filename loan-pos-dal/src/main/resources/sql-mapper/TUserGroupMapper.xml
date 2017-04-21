@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TUserGroupMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TUserGroupKey" >
+    <id column="groupId" property="groupId" jdbcType="VARCHAR" />
+    <id column="userId" property="userId" jdbcType="VARCHAR" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TUserGroupKey" >
+    delete from t_user_group
+    where groupId = #{groupId,jdbcType=VARCHAR}
+      and userId = #{userId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TUserGroupKey" >
+    insert into t_user_group (groupId, userId)
+    values (#{groupId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TUserGroupKey" >
+    insert into t_user_group
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="groupId != null" >
+        groupId,
+      </if>
+      <if test="userId != null" >
+        userId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="groupId != null" >
+        #{groupId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <select id="selectSelective" parameterType="Map" resultMap="BaseResultMap">
+  	select a.groupId, a.userId from t_user_group a, t_credit_group b where 1=1 and a.groupId = b.groupId 
+  	<if test="groupId != null">
+  		AND a.groupId = #{groupId}
+  	</if>
+  	<if test="userId != null">
+  		AND a.userId = #{userId}
+  	</if>
+  	<if test="step != null">
+  		AND b.step = #{step}
+  	</if>
+  </select>
+  
+  <select id="selectGroupChief" parameterType="Map" resultType="Map">
+  	select a.userName from t_user_login a, t_user_group b, t_credit_group c 
+  	
+  	where a.userId = c.chief and c.groupId = b.groupId
+  	<if test="userId != null">
+  		AND b.userId = #{userId}
+  	</if>
+  	<if test="step != null">
+  		AND c.step = #{step}
+  	</if>
+  	<if test="groupId != null">
+  		AND c.groupId = #{groupId}
+  	</if>
+  	<if test="status != null">
+  		AND c.status = #{status}
+  	</if>
+  </select>
+</mapper>

@@ -1,0 +1,97 @@
+package com.hrbb.loan.pos.factory.thirdPayChannel.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.factory.thirdPayChannel.inter.IThirdPayment;
+import com.hrbb.loan.pos.service.ChannelMapperDictionaryService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.yjrpay.api.PayCollectQueryFacade;
+import com.hrbb.loan.yjrpay.constants.AccountType;
+import com.hrbb.loan.yjrpay.constants.CertType;
+import com.hrbb.loan.yjrpay.constants.ProductCode;
+import com.hrbb.loan.yjrpay.request.BillPCRequest;
+import com.hrbb.loan.yjrpay.response.GenericResponse;
+
+/**
+ * 
+ * @author cjq
+ * @version $Id: YJFPayChannelImpl.java, v 0.1 2015年8月6日 下午1:02:39 cjq Exp $
+ */
+public class YJFPaymentImpl implements IThirdPayment {
+    
+    private Logger logger =LoggerFactory.getLogger(YJFPaymentImpl.class);
+
+    @Autowired
+    private PayCollectQueryFacade payCollectQueryFacade;
+    
+    @Autowired
+    private ChannelMapperDictionaryService channelMapperDictionaryService;
+    
+    @Override
+    public Map<String, Object> pay(Map<String, Object> payMap) throws Exception{
+        Map<String,Object> respMap = Maps.newHashMap();
+        BillPCRequest request = new BillPCRequest();
+        request.setProductCode(ProductCode.CASH_FLOW.getValue());//产品编号
+        request.setAccName((String)payMap.get("custName"));//账户名
+        request.setAccNum((String)payMap.get("bankAccNo"));//账号
+        request.setAccType(AccountType.DEBIT.getValue());//银行卡类型
+        request.setCertType(CertType.CIVI_ID_CARD.getValue());//证件类型
+        request.setCertNo((String)payMap.get("paperId"));//证件号
+        request.setTransAmt((String)payMap.get("amount"));
+        request.setTransDate(DateUtil.getNowTime());
+        String bankName = (String)payMap.get("bankName");
+        Map<String,Object> bankReqMap = Maps.newHashMap();
+        bankReqMap.put("type", "BankInfo");
+        bankReqMap.put("channel", "YJF");
+        bankReqMap.put("innerCode", bankName);
+        List<Map<String, Object>> bankRespMap = channelMapperDictionaryService.getCode(bankReqMap);
+        String outerCode = (String)bankRespMap.get(0).get("outerCode");
+        request.setBankCode(outerCode);
+        logger.info("开始 易极付扣,请求request="+request);
+        GenericResponse response = payCollectQueryFacade.pay(request);
+        logger.info("完成 易极付代扣,返回response="+response);
+        respMap.put("status", response.getStatus());
+        respMap.put("orderNo", response.getOrderNo());
+        return respMap;
+    }
+
+    @Override
+    public Map<String, Object> collection(Map<String, Object> collectionMap) throws Exception{
+        Map<String,Object> respMap = Maps.newHashMap();
+        BillPCRequest request = new BillPCRequest();
+        request.setProductCode(ProductCode.CASH_FLOW.getValue());//产品编号
+        request.setAccName((String)collectionMap.get("custName"));//账户名
+        request.setAccNum((String)collectionMap.get("bankAccNo"));//账号
+        request.setAccType(AccountType.DEBIT.getValue());//银行卡类型
+        request.setCertType(CertType.CIVI_ID_CARD.getValue());//证件类型
+        request.setCertNo((String)collectionMap.get("paperId"));//证件号
+        request.setTransAmt((String)collectionMap.get("amount"));
+        request.setTransDate(DateUtil.getNowTime());
+        String bankName = (String)collectionMap.get("bankName");
+        Map<String,Object> bankReqMap = Maps.newHashMap();
+        bankReqMap.put("type", "BankInfo");
+        bankReqMap.put("channel", "YJF");
+        bankReqMap.put("innerCode", bankName);
+        List<Map<String, Object>> bankRespMap = channelMapperDictionaryService.getCode(bankReqMap);
+        String outerCode = (String)bankRespMap.get(0).get("outerCode");
+        request.setBankCode(outerCode);
+        logger.info("开始 易极付代收,请求request="+request);
+        GenericResponse response = payCollectQueryFacade.collect(request);
+        logger.info("完成 易极付代收,返回response="+response);
+        respMap.put("status", response.getStatus());
+        respMap.put("orderNo", response.getOrderNo());
+        return respMap;
+    }
+
+    @Override
+    public Map<String, Object> QueryOrder(Map<String, Object> queryOrderMap) throws Exception{
+        return null;
+    }
+
+}

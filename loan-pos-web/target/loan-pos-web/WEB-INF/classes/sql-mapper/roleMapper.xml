@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hrbb.loan.web.security.entity.Role">
+                  
+    <resultMap type="com.hrbb.loan.web.security.entity.Role" id="roleResult">	
+        <result column="roleId" property="roleId"  jdbcType="INTEGER"/>
+		<result column="roleName" property="roleName"/>
+		<result column="remark" property="remark"/>
+        <result column="locked" property="locked"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		roleId, roleName, remark, locked
+	</sql>	
+	<sql id="Base_Where_Clause">
+		<where>
+			<trim prefixOverrides="and">
+				<if test="roleId != null"> and roleId = #{roleId}</if>
+				<if test="roleName != null">and roleName = #{roleName}</if>
+				<if test="remark != null">and remark = #{remark}</if>
+				<if test="locked != null">and locked = #{locked}</if>
+				<!-- 模糊查询 -->
+				<if test="roleNameLike != null">and roleName like CONCAT("%",#{roleNameLike},"%")</if>
+			</trim>
+		</where>
+		<if test="sorting != null">order by ${sorting}</if>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</sql>
+	<insert id="insert">
+		insert into t_role(roleId, locked, roleName,remark) 
+		 values(nextVal('t_role.roleId'),'0',#{roleName},#{remark})
+	</insert>
+	
+	<update id="updateByIdSelective" parameterType="com.hrbb.loan.web.security.entity.Role">
+		update t_role
+		<set> 
+		   <if test="remark!=null">remark = #{remark},</if>
+		   <if test="roleName">roleName = #{roleName},</if>
+		   <if test="locked!=null">locked = #{locked},</if>
+		</set>
+		where roleId = #{roleId}
+	</update>
+	<update id="updateById" parameterType="com.hrbb.loan.web.security.entity.Role">
+		update t_role
+		<set> 
+		   <if test="remark!=null">remark = #{remark},</if>
+		   <if test="roleName!=null">roleName = #{roleName},</if>
+		   <if test="locked!=null">locked = #{locked},</if>
+		</set>
+		where roleId = #{roleId}
+	</update>	
+	<delete id="delete" parameterType="java.util.Map">
+		delete from t_role
+		<include refid="Base_Where_Clause" />
+	</delete>
+	<!-- 根据ID删除 -->
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from t_role
+		where roleId = #{roleId}
+	</delete>
+	<select id="selectById" resultMap="roleResult" parameterType="java.lang.Integer">
+		select 
+		<include refid="Base_Column_List" />
+		from t_role
+		where roleId = #{roleId}
+	</select>
+	<select id="selectByName" resultMap="roleResult" parameterType="java.lang.String">
+		select 
+		<include refid="Base_Column_List" />
+		from t_role
+		where roleName = #{roleName}
+	</select>	
+	<select id="select" resultMap="roleResult">
+		select 
+		<include refid="Base_Column_List" />
+		from t_role
+		<include refid="Base_Where_Clause" />
+	</select>
+
+	<select id="selectCount" resultType="java.lang.Long" parameterType="java.util.Map">
+		select count(roleId)
+		from t_role
+		<include refid="Base_Where_Clause" />
+	</select>
+	
+	<select id="selectByUserId" resultMap="roleResult">
+		select * from t_role where roleId in (select roleId from t_user_role where userId = #{userId});
+	</select> 
+	<update id="lockById" parameterType="java.lang.Integer">
+		update t_role set locked = '1' where roleId = #{roleId}
+	</update>	
+	<update id="unlockById" parameterType="java.lang.Integer">
+		update t_role set locked = '0' where roleId = #{roleId}
+	</update>	
+	<insert id="insertRolePrivilege">
+		insert into t_role_privilege(roleId, privilegeId) 
+		 values(#{roleId}, #{privilegeId})
+	</insert>
+	<delete id="deleteRolePrivilege">
+		delete from t_role_privilege
+		<where>
+			<trim prefixOverrides="and">
+				<if test="privilegeId != 0"> and privilegeId = #{privilegeId}</if>
+				<if test="roleId != 0">and roleId = #{roleId}</if>
+			</trim>
+		</where>
+	</delete>
+	
+</mapper>

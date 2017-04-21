@@ -1,0 +1,30 @@
+package com.hrbb.loan.pos.biz.backstage.inter;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+
+public interface LoanPosPaybackApplyBiz {
+	List<TPaybackApplyInfo> queryPaybackApplyInfo(Map<String, Object> reqMap);
+
+	int updatePaybackStatus(Map<String, Object> updateMap);
+	
+	List<Map<String, Object>> queryPaybackDetailsByMaps(Map<String, Object> map);
+	
+	List<Map<String, Object>> queryPaybackDetailsBySlApp(Map<String, Object> map);
+	
+	/**
+	 * 校验还款申请合法性
+	 * @param receiptId
+	 * @param expectPaybackDate
+	 * @param paybackPrincipal
+	 * @param paybackInterest
+	 * @param paybackTotalAmount
+	 * @return
+	 */
+	public Map<String,Object> validatePaybackApply(TReceiptInfo receipt,Date expectPaybackDate,BigDecimal paybackPrincipal,BigDecimal paybackInterest,BigDecimal paybackTotalAmount);
+}

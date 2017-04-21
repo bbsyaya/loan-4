@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd
+        http://cxf.apache.org/jaxws
+        http://cxf.apache.org/schemas/jaxws.xsd" default-autowire="byName">
+
+    <import resource="classpath:META-INF/cxf/cxf.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml"/>
+
+    <bean id="transactionPay"
+          class="com.pinganfu.transcore.framework.facade.TransactionPayFacadeImpl">
+        <property name="payInvokerMapping">
+            <util:map>
+                <entry key="01" value-ref="rechargePiplelineFactory"/><!-- 充值 -->
+                <entry key="04" value-ref="transferPiplelineFactory"/><!-- 转账 -->
+                <entry key="03" value-ref="consumePiplelineFactory"/><!-- 消费 -->
+                <entry key="75" value-ref="consumePiplelineFactory"/><!-- 还款 -->
+                <entry key="10" value-ref="proxyWitholdPiplelineFactory"/><!-- 代扣（代收） -->
+                <entry key="10-w" value-ref="consumePiplelineFactory"/><!-- 通用代扣（代收） -->
+                <entry key="11" value-ref="proxyPayoffPipelineFactory"/><!-- 代发（代付） -->
+                <entry key="11-fast" value-ref="fastProxyPayoffPipelineFactory"/><!-- 代发（代付） -->
+                <entry key="13" value-ref="transferPiplelineFactory"/><!-- 佣金-->
+                <entry key="80" value-ref="transferPiplelineFactory"/><!-- 归集-->
+                <entry key="07" value-ref="transferPiplelineFactory"/><!-- 授权/冻结-->
+                <entry key="83" value-ref="transferPiplelineFactory"/><!-- 批量分润 -->
+				<entry key="06" value-ref="provisionTransferPipelineFactory"/>
+                <entry key="04-m" value-ref="transferMerchantPiplelineFactory"/> <!--商户转账-->
+            </util:map>
+        </property>
+
+        <property name="refundInvokerMapping">
+            <util:map>
+                <entry key="20" value-ref="refundPiplelineFactory"/>
+            </util:map>
+        </property>
+         
+        <property name="refundByDetailInvokerMapping">
+            <util:map>
+                <entry key="20-detail" value-ref="refundByDetailPiplelineFactory"/>
+            </util:map>
+        </property>
+         
+        <property name="withdrawInvokerMapping">
+            <util:map>
+                <entry key="05" value-ref="withdrawPiplelineFactory"/><!-- 提现 -->
+                <entry key="11" value-ref="proxyPayoffPipelineFactory"/>
+            </util:map>
+        </property>
+        <property name="feeSplitInvokerMapping">
+            <util:map>
+                <entry key="12" value-ref="feeSplitPiplelineFactory"/><!-- 分润 -->
+            </util:map>
+        </property>
+        <property name="syncCommissionInvokerMapping">
+            <util:map>
+                <entry key="70" value-ref="syncCommissionPiplelineFactory"/><!-- 分润 -->
+            </util:map>
+        </property>
+        <property name="tranCustomerMapping">
+            <util:map>
+                <entry key="00" value-ref="customerUpdateFactory"/><!-- 更新  -->
+            </util:map>
+        </property>
+        <property name="payConfrimOrCancelInvokerMapping">
+            <util:map>
+                <!-- 商户消费确认或 撤销-->
+                <entry key="03" value-ref="payConfirmOrCancelFactory"/>
+                <!-- 商户消费确认或 撤销-->
+                <entry key="04" value-ref="payConfirmOrCancelFactory"/>
+                <entry key="11" value-ref="payConfirmOrCancelFactory"/>
+                <entry key="07" value-ref="payConfirmOrCancelFactory"/>
+            </util:map>
+        </property>
+        <property name="offlineRevInvokerMapping">
+            <util:map>
+                <!-- 线下交易逆操作 -->
+                <entry key="45" value-ref="offlineRevPiplelineFactory"/>
+            </util:map>
+        </property>
+        <property name="statusCtrlMapping">
+            <util:map>
+                <!-- 担保交易确认和撤销操作 -->
+                <entry key="00" value-ref="batchTransStatusCtrlTransPipelineFactory"/>
+                <entry key="02" value-ref="payConfirmOrCancelFactory"/>
+            </util:map>
+        </property>
+        <property name="feeRefundInvokerMapping">
+            <util:map>
+                <!-- 中间费用（“分润”、“实时手续费”）退款 -->
+                <entry key="00" value-ref="feeRefundPiplelineFactory"/>
+            </util:map>
+        </property>
+   		<property name="reverseTransactionInvokerMapping">
+            <util:map>
+                <!-- 充退 -->
+                <entry key="45" value-ref="reverseTransactionPiplineFactory"/>
+            </util:map>
+        </property>
+        <property name="revokeTransactionInvokerMapping">
+            <util:map>
+                <!-- 充退 -->
+                <entry key="48" value-ref="revokeTransactionPiplineFactory"/>
+            </util:map>
+        </property>            
+        <property name="proceedTransactionInvokerMapping">
+            <util:map>
+                <entry key="05" value-ref="withdrawProceedPipelineFactory"/><!-- 提现审核 -->
+                <entry key="11" value-ref="withdrawProceedPipelineFactory"/><!-- 基金提现 -->
+                <entry key="04" value-ref="withdrawProceedPipelineFactory"/><!-- 基金提现 -->
+            </util:map>
+        </property>
+        <property name="standardWitholdMapping">
+            <util:map>
+                <!-- 充退 -->
+                <entry key="10" value-ref="standardWitholdPiplineFactory"/>
+            </util:map>
+        </property>  
+    </bean>
+    
+    <jaxws:server id="transactionPayFacade"
+                  serviceClass="com.pinganfu.transcore.common.facade.framework.TransactionPayFacade"
+                  address="/transactionPayFacade">
+        <jaxws:serviceBean>
+            <ref bean="transactionPay"/>
+        </jaxws:serviceBean>
+    </jaxws:server>
+
+    <bean id = "transactionCheckIn"
+          class="com.pinganfu.transcore.framework.facade.TransactionCheckInFacadeImpl">
+        <property name="transPipelineFactory" ref="checkInPiplelineFactory"/>
+        <property name="transPipelineBatchFactory" ref="checkInBatchPiplelineFactory"/>
+    </bean>
+
+    <jaxws:server id="transactionCheckInFacade"
+                  serviceClass="com.pinganfu.transcore.common.facade.framework.TransactionCheckInFacade"
+                  address="/transactionCheckInFacade">
+        <jaxws:serviceBean>
+            <ref bean="transactionCheckIn"/>
+        </jaxws:serviceBean>
+    </jaxws:server>
+    
+    <!--订单信息查询接口  -->
+    <bean id = "transactionQuery"
+          class="com.pinganfu.transcore.framework.facade.TransactionQueryFacadeImpl">
+    </bean>
+
+    <jaxws:server id="transactionQueryFacade"
+                  serviceClass="com.pinganfu.transcore.common.facade.framework.TransactionQueryFacade"
+                  address="/transactionQueryFacade">
+        <jaxws:serviceBean>
+            <ref bean="transactionQuery"/>
+        </jaxws:serviceBean>
+    </jaxws:server>
+    
+    <!-- 内部交易转账 -->
+     <bean id = "internalTransactionServiceFacadeImpl"
+          class="com.pinganfu.transcore.framework.facade.InternalTransactionServiceFacadeImpl">
+        <property name="transPipelineFactory" ref="internalTransferPiplelineFactory"/>
+    </bean>
+    
+        <jaxws:server id="internalTransactionServiceFacade"
+                  serviceClass="com.pinganfu.transcore.common.facade.framework.InternalTransactionServiceFacade"
+                  address="/internalTransactionServiceFacade">
+        <jaxws:serviceBean>
+            <ref bean="internalTransactionServiceFacadeImpl"/>
+        </jaxws:serviceBean>
+    </jaxws:server>
+    
+    <!-- 订单状态更新接口  -->
+    <bean id = "transactionStatus"
+          class="com.pinganfu.transcore.framework.facade.TransactionStatusFacadeImpl">
+          <property name="transactionService" ref="transactionService"/>
+    </bean>
+    <jaxws:server id="transactionStatusFacade"
+                  serviceClass="com.pinganfu.transcore.common.facade.framework.TransactionStatusFacade"
+                  address="/transactionStatusFacade">
+        <jaxws:serviceBean>
+            <ref bean="transactionStatus"/>
+        </jaxws:serviceBean>
+    </jaxws:server>
+</beans>

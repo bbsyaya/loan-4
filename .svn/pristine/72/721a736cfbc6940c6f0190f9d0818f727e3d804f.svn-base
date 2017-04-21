@@ -1,0 +1,8 @@
+package com.hrbb.loan.pos.service;
+
+import java.util.List;
+import java.util.Map;
+
+public interface loanPosCreditApplyUpdateSyncService {
+	public Map<String, Object> getCreditApplyUpdateSyncInfo(String loanId);
+}

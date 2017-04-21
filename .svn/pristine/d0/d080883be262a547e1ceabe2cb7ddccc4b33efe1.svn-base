@@ -1,0 +1,11 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+/**
+ * 
+ * @author xiongshaogang
+ * @version $Id: package-info.java, v 0.1 2015年5月12日 下午5:29:41 xiongshaogang Exp $
+ */
+package com.hrbb.loan.spi.SALE;

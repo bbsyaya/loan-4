@@ -1,0 +1,38 @@
+package com.hrbb.loan.pos.biz.backstage.inter.impl;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosPaybackRunningBiz;
+import com.hrbb.loan.pos.dao.entity.TApproveResult;
+import com.hrbb.loan.pos.dao.entity.TPaybackImportInfo;
+import com.hrbb.loan.pos.service.LoanPosPaybackImportService;
+import com.hrbb.loan.pos.service.LoanPosPaybackRunningRecordService;
+import com.hrbb.loan.pos.util.DateUtil;
+@Component("loanPosPaybackRunningBiz")
+public class LoanPosPaybackRunningBizImpl implements LoanPosPaybackRunningBiz {
+	@Autowired
+	private LoanPosPaybackRunningRecordService loanPosPaybackRunningRecordService;
+	@Override
+	public List<Map<String, Object>> queryPaybackRunningInfo(Map<String, Object> reqMap) {
+		List<Map<String, Object>> l =  loanPosPaybackRunningRecordService.queryPaybackRunningInfo(reqMap);
+		for (Map<String, Object> r : l){
+			Date a = (Date)r.get("actualPaybackDate");
+			String b = DateUtil.getDateToString3(a);
+			r.put("actualPaybackDate", b);
+	}
+		return l;
+	}
+	@Override
+	public List<Map<String, Object>> queryPaybackRunnigRecordByReceiptId(
+			Map<String, Object> reqMap) {
+		// TODO Auto-generated method stub
+		List<Map<String, Object>> l =  loanPosPaybackRunningRecordService.queryPaybackRunnigRecordByReceiptId(reqMap);
+		return l;
+	}
+
+}

@@ -1,0 +1,25 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.biz.constants;
+
+/**
+ * 台账数据同步接口
+ * 
+ * @author marco
+ * @version $Id: LedgerConstants.java, v 0.1 2015-3-10 下午5:31:14 marco Exp $
+ */
+public class SynFileConstants {
+
+	public final static String CLEARSTATUS_01 = "01";// 已结清
+	public final static String CLEARSTATUS_02 = "02";// 正常
+	public final static String CLEARSTATUS_03 = "03";// 逾期
+	public final static String NO_HB16 = "HB16";// 台账
+	public final static String NO_HB17 = "HB17";// 还款
+	public final static String NO_HB18 = "HB18";// 放款
+	public final static String NO_HB19 = "HB19";// 佣金代收
+	public final static String STRING_UNDERLINE = "_";
+	public final static String KEY_CUSTID_UM = "UMI";
+}

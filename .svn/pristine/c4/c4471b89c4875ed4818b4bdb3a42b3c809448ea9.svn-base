@@ -1,0 +1,73 @@
+package com.hrbb.loan.pos.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.hrbb.loan.pos.dao.TBusinessDictionaryDao;
+import com.hrbb.loan.pos.dao.entity.TBusinessDictionary;
+import com.hrbb.loan.pos.service.BusinessDictionaryService;
+
+/**
+ *<h1></h1>
+ *@author marco
+ *@version Id: BusinessDictionaryServiceImpl.java, v 1.0 2015-3-9 下午3:46:36 marco Exp
+ */
+@Service("businessDictionaryService")
+public class BusinessDictionaryServiceImpl implements BusinessDictionaryService{
+
+	@Autowired
+	private TBusinessDictionaryDao tBusinessDictionaryDao;
+	
+	@Override
+	public int deleteByPrimaryKey(Integer id) {
+		return 0;
+	}
+
+	@Override
+	public int insert(TBusinessDictionary record) {
+		return 0;
+	}
+
+	@Override
+	public int insertSelective(TBusinessDictionary record) {
+		return 0;
+	}
+
+	@Override
+	public TBusinessDictionary selectByPrimaryKey(Integer id) {
+		return null;
+	}
+
+	@Override
+	public int updateByPrimaryKeySelective(TBusinessDictionary record) {
+		return 0;
+	}
+
+	@Override
+	public int updateByPrimaryKey(TBusinessDictionary record) {
+		return 0;
+	}
+
+	@Override
+	public List<Map<String, Object>> getBusinessCode(Map<String, Object> reqMap) {
+		return tBusinessDictionaryDao.getBusinessCode(reqMap);
+	}
+	
+	@Override
+	public TBusinessDictionary selectOne(TBusinessDictionary record) {
+		return tBusinessDictionaryDao.selectOne(record);
+	}
+	
+	@Override
+	public String getApprInfoExtMsg(String apprInfoExt){
+		return tBusinessDictionaryDao.getApprInfoExtMsg(apprInfoExt);
+	}
+	
+	@Override
+	public List<Map<String, Object>> selectRefuseReaonMap(Map<String, Object> reqMap) {
+		return tBusinessDictionaryDao.selectRefuseReaonMap(reqMap);
+	}
+}

@@ -1,0 +1,67 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<!-- 展业机构信息 -->
+<div title="机构信息" style="padding:20px; margin:auto;width: 90%">
+   	<table style = "width:100%">
+   		<tr>
+	   		<td style="width:15%;word-break;" class="tdtitle">产品代码:</td>
+	   		<td style="width:35%;word-break;"><input type="text" class="prodId" name="prodId" value="${tApprovingAmountRateUplimitConfig.prodId}" size="30"></td>
+	   		<td class="tdtitle">渠道风险类型:</td>
+	   		<td><input type="text" class="channel_rtype_code" name="channel_rtype_code" value="${tApprovingAmountRateUplimitConfig.channel_rtype_code}" size="30"></td>
+   		</tr>
+   		<tr>
+	   		<td class="tdtitle">地区风险类型:</td>
+	   		<td><input type="text" class="region_rtype_code" name="region_rtype_code" value="${tApprovingAmountRateUplimitConfig.region_rtype_code}" size="30"></td>
+	   		<td class="tdtitle">逾期30天分数:</td>
+	   		<td><input type="text" class="score1" name="score1" value="${tApprovingAmountRateUplimitConfig.score1}" size="30"></td>
+   		</tr>
+   		<tr>
+	   		<td class="tdtitle">逾期3天分数:</td>
+	   		<td><input type="text" class="score2" name="score2"  value="${tApprovingAmountRateUplimitConfig.score2}"/></td>
+	   		<td class="tdtitle">模型1授信额度:</td>
+	   		<td><input type="text" class="model1_ap_amt" name="model1_ap_amt" value="${tApprovingAmountRateUplimitConfig.model1_ap_amt}" size="30"></td>
+   		</tr>
+   		<tr>
+	   		<td class="tdtitle">模型2授信额度:</td>
+	   		<td><input type="text" class="model2_ap_amt" name="model2_ap_amt"  value="${tApprovingAmountRateUplimitConfig.model2_ap_amt}"/></td>
+	   		<td class="tdtitle">模型1授信利率:</td>
+	   		<td><input type="text" class="model1_ap_rate" name="model1_ap_rate" value="${tApprovingAmountRateUplimitConfig.model1_ap_rate}" size="30"></td>
+   		</tr>
+   		<tr>
+	   		<td class="tdtitle">模型2授信利率:</td>
+	   		<td><input type="text" class="model2_ap_rate" name="model2_ap_rate"  value="${tApprovingAmountRateUplimitConfig.model2_ap_rate}"/></td>
+	   		<td class="tdtitle">最终授信额度:</td>
+	   		<td><input type="text" class="final_ap_amt" name="final_ap_amt" value="${tApprovingAmountRateUplimitConfig.final_ap_amt}" size="30"></td>
+   		</tr>
+   		<tr>
+	   		<td class="tdtitle">最终授信利率:</td>
+	   		<td><input type="text" class="final_ap_rate" name="final_ap_rate"  value="${tApprovingAmountRateUplimitConfig.final_ap_rate}"/></td>
+	   		<td class="tdtitle">还款方式:</td>
+	   		<td><input type="text" class="repay_type" name="repay_type" value="${tApprovingAmountRateUplimitConfig.repay_type}" size="30"></td>
+   		</tr>
+   		<tr>
+	   		<td class="tdtitle">还款期限:</td>
+	   		<td><input type="text" class="maturity" name="maturity"  value="${tApprovingAmountRateUplimitConfig.maturity}"/></td>
+	   		<td class="tdtitle">是否生效:</td>
+	   		<td><input type="text" class="deleted_flag" name="deleted_flag" value="${tApprovingAmountRateUplimitConfig.deleted_flag}" size="30"></td>
+   		</tr>
+   		<tr>
+	   		<td class="tdtitle">生效时间:</td>
+	   		<td><input type="text" class="valid_date" name="valid_date"  value="${tApprovingAmountRateUplimitConfig.valid_date}"/></td>
+	   		<td class="tdtitle">失效时间:</td>
+	   		<td><input type="text" class="invalid_date" name="invalid_date" value="${tApprovingAmountRateUplimitConfig.invalid_date}" size="30"></td>
+   		</tr>
+   		<tr>
+	   		<td class="tdtitle">创建时间:</td>
+	   		<td><input type="text" class="create_date" name="create_date"  value="${tApprovingAmountRateUplimitConfig.create_date}"/></td>
+   		</tr>
+   	</table>
+   	<br/><br/>
+   	<div style="text-align: center">
+   		<input type="hidden" id="orgId" value="${institution.orgId}"/>
+	   	<a href="javascript:void(0)" id="save" width="100px" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveApprovingAmountRateUplimitConfig(${oprFlag})">保存</a>&nbsp;&nbsp;
+	   	<a href="javascript:void(0)" id="cancel" width="100px" class="easyui-linkbutton" iconCls="icon-no" onclick="cancelApprovingAmountRateUplimitConfig(${oprFlag})">返回</a>
+   	</div>
+</div>

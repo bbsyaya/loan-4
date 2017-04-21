@@ -1,0 +1,116 @@
+package com.hrbb.loan.channel.user;
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.hrbb.loan.channel.Processer;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.ump.facade.bean.requests.message.MessageCreateRequest;
+import com.hrbb.ump.facade.bean.requests.user.UserInformationQueryRequest;
+import com.hrbb.ump.facade.bean.requests.user.UserSensitiveInformationUpdateRequest;
+import com.hrbb.ump.facade.bean.responses.message.MessageCreateResponse;
+import com.hrbb.ump.facade.bean.responses.user.UserInfoQueryResponse;
+import com.hrbb.ump.facade.bean.responses.user.UserSensitiveInformationUpdateResponse;
+import com.hrbb.ump.facade.general.message.MessageFacade;
+import com.hrbb.ump.facade.general.user.UserFacade;
+
+
+
+
+/**
+ * 调用用户系统查询相关信息 
+ * @author litengfeng
+ * @version $Id: UserProcesser.java, v 0.1 2015年5月12日 下午9:01:24 litengfeng Exp $
+ */
+@Service("userProcesser")
+public class UserProcesser extends Processer{
+    private static Logger logger  = LoggerFactory.getLogger(UserProcesser.class);
+    
+    @Autowired
+    private UserFacade umpUserService;
+    
+    @Autowired
+    private MessageFacade umpMessageFacade;
+    
+    /**
+     * 查询用户信息
+     */
+    public UserInfoQueryResponse  queryUserInfo(UserInformationQueryRequest request){
+        logger.info("in UserProcesser ...");
+        UserInfoQueryResponse response = umpUserService.queryUserInfomation(request);
+        if(!response.getResponseCode().equals("UMP000000")){
+            logger.info("查询用户系统用户信息失败[] ",response.getResponseCode()+response.getResponseMessage());
+            return null;
+        }
+        logger.info("out UserProcesser ...");
+        return response;
+    }
+    
+    /**
+     * 查询用户登录状态
+     */
+    public boolean CheckUserLoginStatus(String userId, String sessionId){
+        logger.info("in UserProcesser CheckUserLoginStatus...");
+        if(StringUtil.isEmpty(userId)){
+            logger.error("查询用户登录状态，传入参数用户Id为空");
+            return false;
+        }
+        if(StringUtil.isEmpty(sessionId)){
+            logger.error("查询用户登录状态，传入参数会话Id为空");
+            return false;
+        }
+        int id =  Integer.parseInt(userId);
+        return umpUserService.logined(id,sessionId);
+    }
+    
+    /**
+     * 消息创建
+     * 
+     * type: 1. 站内消息  2. 公告
+     * bizType： 0-未知类型 1-资料审核结果通知 2-预授信结果确认通知  3-电子签约通知  4-放款通知 5-到期还款通知 6-逾期催收通知  
+     * header： 消息标题
+     * content： 消息内容
+     * status： 消息状态   1-有效 2-无效
+     * readFlag: 阅读标记: 1-已阅读  2-未阅读  默认值为2
+     * userId: 客户号
+     * memo： 消息备注
+     */
+    public boolean createMessage(int type, int bizType, String header, String content, int status,
+                                 int readFlag, int userId, String memo) {
+        logger.info("in method createMessage...");
+
+        MessageCreateRequest messageCreateRequest = new MessageCreateRequest();
+        messageCreateRequest.setType(type);
+        messageCreateRequest.setBizType(bizType);
+        messageCreateRequest.setHeader(header);
+        messageCreateRequest.setContent(content);
+        messageCreateRequest.setStatus(status);
+        messageCreateRequest.setReadFlag(readFlag);
+        messageCreateRequest.setUserId(userId);
+        messageCreateRequest.setMemo(memo);
+        MessageCreateResponse messageCreateResponse = umpMessageFacade
+            .createMessage(messageCreateRequest);
+        if (messageCreateRequest == null || !"UMP000000".equals(messageCreateResponse.getResponseCode())) {
+            return false;
+        }
+
+        logger.info("out method createMessage!");
+        return true;
+    }
+    
+    /**
+     * 
+     * 用于实名信息更新
+     * @param request
+     * @return
+     */
+    public UserSensitiveInformationUpdateResponse  updateUserSensitiveInfo(UserSensitiveInformationUpdateRequest request){
+        logger.info("开始向用户系统发送更新实名信息请求...");
+        UserSensitiveInformationUpdateResponse response = umpUserService.updateUserSensitiveInformation(request);
+        logger.info("开始接收用户系统实名信息更新应答!");
+        return response;
+    }
+}

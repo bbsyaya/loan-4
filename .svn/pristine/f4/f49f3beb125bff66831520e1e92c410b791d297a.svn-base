@@ -1,0 +1,19 @@
+#############POLICE##############
+SBM=111111111111111
+#police filePath
+license=/home/connectPolice/aaa.txt
+url=https\://xxx.xxx.xxx.xxx/queryEntInfoForXml
+
+#############AIC################
+uid=3A5056E42089465C
+upwd=rongxingtongdaceshizhanghao
+aicUrl=http://115.182.16.72:8088/gsinfo_internet/services/entInfo
+
+######bankCardCheck#######
+BANKCHECKURL=https://openapi.yiji.com/gateway.html
+SERVICENAME=bankCardElementsCheck
+PARTNERID=20150518000005461689
+SAFECODE=4ae04d997a529600dfbb9f68ce1b9a01
+
+
+beforeDate=20

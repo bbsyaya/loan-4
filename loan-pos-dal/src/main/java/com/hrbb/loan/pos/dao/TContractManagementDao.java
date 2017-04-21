@@ -1,0 +1,86 @@
+package com.hrbb.loan.pos.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import com.hrbb.loan.pos.dao.entity.TApproveReject;
+import com.hrbb.loan.pos.dao.entity.TApproveResult;
+import com.hrbb.loan.pos.dao.entity.TContractManagement;
+
+public interface TContractManagementDao {
+    int deleteByPrimaryKey(String contNo);
+
+    int insert(TContractManagement record);
+
+    int insertSelective(TContractManagement record);
+
+    TContractManagement selectByPrimaryKey(String contNo);
+
+    int updateByPrimaryKeySelective(TContractManagement record);
+
+    int updateByPrimaryKey(TContractManagement record);
+
+	Long countContractManagement(Map<String, Object> map);
+
+	List<Map<String, Object>> selectSelectiveMap(Map<String, Object> map);
+
+	int insertSelectiveMap(Map<String, Object> map);
+
+	int updateByPrimaryKey(Map<String, Object> updateMap);
+
+//	TContractManagement getContractInfoById(String loanId);
+
+	int insertApproveReject(Map<String, Object> map);
+
+	int selectRejectMaxApproveNumByApproveId(String approveId);
+
+	int selectAdjustMaxApproveNumByApproveId(String approveId);
+
+	TApproveReject selectByPrimaryKey(Map<String, Object> updateMap);
+
+	int updateByPrimaryKeySelective(Map<String, Object> updateMap);
+
+	int insertRejectReason(Map<String, Object> reqMap);
+
+	int updateApproveChange(Map<String, Object> updateMap);
+
+	int insertApproveAdjust(Map<String, Object> map);
+
+	TApproveResult getApproveInfo(String approveId);
+
+	TContractManagement getContractInfoByLoanId(String loanId);
+
+	String getcustIdByContNo(String contNo);
+
+	TContractManagement getContractInfoByContNo(String contNo);
+
+	TApproveResult getApproveResultInfoByLoanId(String loanId);
+
+	int updateContractStatus(Map<String, Object> updateMap);
+
+    /**
+     * 查询已确认未签约的批复列表 
+     * 
+     * @param map
+     * @return
+     */
+    List<TApproveResult> selectAvailableSelectiveMap(Map<String, Object> map);
+
+    /**
+     * 查询已确认未签约的批复总数
+     * @param map
+     * @return
+     */
+    Long countAvailableContractManagement(Map<String, Object> map);
+
+	int updateContractInfo(Map<String, Object> contractMap);
+
+	long countApprove(Map<String, Object> reqMap);
+
+	TContractManagement getContractInfoByPayApplyId(String payApplyId);
+
+//	TContractManagement selectContractFetchReceipt(String contno);
+	
+	public List<TContractManagement> selectContractForPaymentAuto(List<String> list);
+
+}

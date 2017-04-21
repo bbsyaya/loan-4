@@ -1,0 +1,595 @@
+package com.hrbb.loan.controller;
+
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.acct.facade.MadeLoanProcessBizHession;
+import com.hrbb.loan.acct.facade.bean.BusiPropQueryReq;
+import com.hrbb.loan.acct.facade.bean.BusiPropQueryRes;
+import com.hrbb.loan.acct.facade.bean.CalcRamtReq;
+import com.hrbb.loan.acct.facade.bean.CalcRamtRes;
+import com.hrbb.loan.acct.facade.bean.MadeLoanLoanLedgerBean;
+import com.hrbb.loan.controller.helper.ControllerHelper;
+import com.hrbb.loan.pos.biz.backstage.inter.ILoanPosCreditApplyBackStageBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosContractManagementBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosPaybackBiz;
+import com.hrbb.loan.pos.dao.entity.TContractManagement;
+import com.hrbb.loan.pos.dao.entity.TCustomer;
+import com.hrbb.loan.pos.dao.entity.TPaybackImportInfo;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+import com.hrbb.loan.pos.facade.LoanPosCustomerBizFacade;
+import com.hrbb.loan.pos.service.LoanPosBusinessCodeService;
+import com.hrbb.loan.pos.service.LoanPosHistoryPaybackAccountService;
+import com.hrbb.loan.pos.service.LoanPosPaybackAllocateService;
+import com.hrbb.loan.pos.service.LoanPosPaybackImportService;
+import com.hrbb.loan.pos.service.LoanPosPaybackRunningRecordService;
+import com.hrbb.loan.pos.service.LoanPosPaybackService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.IdUtil;
+@Controller
+@RequestMapping("/payback")
+public class PaybackController {
+	Logger logger = LoggerFactory.getLogger(PaybackController.class);
+	@Autowired
+    private LoanPosPaybackBiz loanPosPaybackBiz ;
+	@Autowired
+	private LoanPosCustomerBizFacade<TCustomer> loanPosCustomerBizFacade;
+    @Autowired
+    private LoanPosContractManagementBiz loanPosContractManagementBiz ;
+    @Autowired
+  	private ILoanPosCreditApplyBackStageBiz loanPosCreditApplyBackStageBiz;
+    @Autowired
+    private MadeLoanProcessBizHession service;
+	@Autowired
+	private LoanPosPaybackService loanPosPaybackService;
+	@Autowired
+	private LoanPosPaybackImportService loanPosPaybackImportService;
+	@Autowired
+	private LoanPosPaybackAllocateService loanPosPaybackAllocateService;
+	@Autowired
+	private LoanPosPaybackRunningRecordService loanPosPaybackRunningRecordService;
+	@Autowired
+	private LoanPosHistoryPaybackAccountService loanPosHistoryPaybackAccountService;
+	@Autowired
+	private LoanPosBusinessCodeService loanPosBusinessCodeService;
+	private List<TReceiptInfo> receiptList;
+	public List<TReceiptInfo> getReceiptList() {
+		return receiptList;
+	}
+
+
+	public void setReceiptList(List<TReceiptInfo> receiptList) {
+		this.receiptList = receiptList;
+	}
+
+
+	@RequestMapping("/queryPaybackInfo")
+	public ModelAndView queryPaybackInfo(@RequestParam(value="rows", required = false)Integer pageSize, @RequestParam(value="page", required = false)Integer pageNo,HttpServletRequest request, PrintWriter out){
+		Map<String, Object> reqMap = Maps.newHashMap();
+		if(!StringUtils.isEmpty(request.getParameter("ReceiptIdLike"))){
+			reqMap.put("ReceiptIdLike",ControllerHelper.getLikeString(request.getParameter("ReceiptIdLike")));
+		}
+		String a = request.getParameter("custNameLike");
+		if(!StringUtils.isEmpty(a)){
+			reqMap.put("custNameLike", ControllerHelper.getLikeString(a));
+		}
+		if(!StringUtils.isEmpty(request.getParameter("merchantNameLike"))){
+			reqMap.put("merchantNameLike", ControllerHelper.getLikeString(request.getParameter("merchantNameLike")));
+		}
+		if(!StringUtils.isEmpty(request.getParameter("custIdNoLike"))){
+			reqMap.put("custIdNoLike", ControllerHelper.getLikeString(request.getParameter("custIdNoLike")));
+		}
+	    String clearStatus = request.getParameter("clearStatus");
+		if(!StringUtils.isEmpty(clearStatus) && !clearStatus.equals("99") ){
+			reqMap.put("clearStatus", clearStatus);
+		}
+	    reqMap.put("startPage", (pageNo - 1)*pageSize);
+		reqMap.put("limit", pageSize);
+	    List<TReceiptInfo> lists = loanPosPaybackBiz.queryPaybackInfo(reqMap);
+//	    long n = loanPosPaybackBiz.getReceiptNumber();
+	    JSONObject aaJson =  new JSONObject();
+		aaJson.put("rows", lists);	
+		aaJson.put("total", lists.size());
+		String aa = aaJson.toJSONString();
+		out.write(aa);
+		return null;	
+	}
+	
+	
+	@RequestMapping("/getCustomerInfo")
+	public ModelAndView getCustomerInfo(HttpServletRequest request, PrintWriter out){
+		
+	    String contNo = request.getParameter("contNo");
+	    String custId = loanPosContractManagementBiz.getcustId(contNo);
+	    TCustomer cust =  loanPosCustomerBizFacade.selectByPrimaryKey(custId);
+	    
+		cust.setBirtDateStr(DateUtil.getDateToString3(cust.getBirtDate()));
+	  
+	    String a = cust.getPaperKind();
+		String b = loanPosBusinessCodeService.getItemNameByNo("CertType",a);
+		cust.setPaperKind(b);
+		
+		 String c = cust.getSexSign();
+		 String d = loanPosBusinessCodeService.getItemNameByNo("Sex",c);
+		 cust.setSexSign(d);
+		 
+		 String e = cust.getEducSign();
+		 String f = loanPosBusinessCodeService.getItemNameByNo("Education",e);
+		 cust.setEducSign(f);
+		 
+		 String g = cust.getMarrSign();
+		 String h = loanPosBusinessCodeService.getItemNameByNo("Marital",g);
+		 cust.setMarrSign(h);
+		 
+		 String j = cust.getResidentProv();
+		 String k = loanPosBusinessCodeService.getItemNameByNo("AdminDivision",j);
+		 cust.setResidentProv(k);
+	 
+		 
+		 String m = cust.getResidentCity();
+		 String n = loanPosBusinessCodeService.getItemNameByNo("AdminDivision",m);
+		 cust.setResidentCity(n);
+		 
+		 String x = cust.getResidentDivision();
+		 String y = loanPosBusinessCodeService.getItemNameByNo("AdminDivision",x);
+		 cust.setResidentDivision(y);
+		 
+		 String custjson = JSON.toJSONString(cust);
+		 out.write(custjson);
+		return null;	
+	}
+	
+	@RequestMapping("/getContractInfo")
+	public ModelAndView getContractInfo(HttpServletRequest request, PrintWriter out){
+	    String contNo = request.getParameter("contNo");
+	    TContractManagement cont =  loanPosContractManagementBiz.getContractInfoByContNo(contNo);
+		if (cont != null) {
+			out.print(JSON.toJSONString(cont));
+		};
+		return null;	
+	}
+	
+	
+	@RequestMapping("/paybackCalculate")
+	public ModelAndView paybackCalculate(HttpServletRequest request, PrintWriter out){
+		try{
+			CalcRamtRes res = new CalcRamtRes();
+	        CalcRamtReq req = new CalcRamtReq();
+		    String amount = request.getParameter("amount");
+		    Double amt = Double.valueOf(amount);
+		    String paybackCapitalType = request.getParameter("paybackCapitalType");
+		    String receiptId = request.getParameter("receiptId");
+		    String paybackDate = request.getParameter("paybackDate");
+		    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+		    Date d = sdf.parse(paybackDate);
+		    TReceiptInfo R = loanPosPaybackService.getReceiptInfoByReceiptId(receiptId);
+		    if(paybackCapitalType.equals("1")){
+		    	  logger.info("还本付息试算接口计算利息");
+		    	  
+		    	  
+		    	  req.setAheakind("1");//还款类型
+		          req.setSsubsamt(amt);//应放金额
+		          req.setWorkDate(d);
+		          req.setAheaamtkind("2");
+		          MadeLoanLoanLedgerBean bean = new MadeLoanLoanLedgerBean();
+		          bean.setInterestRate(R.getLoanInterest()); //贷款利率
+		          logger.info("贷款利率为"+R.getLoanInterest());
+		          bean.setBeginDate(R.getBeginDate());
+		          bean.setLastInteDate(R.getBeginDate());
+		          logger.info("开始计息日为"+R.getBeginDate());
+		          bean.setRepayMethod(R.getPaybackWay());//还款方式
+		          bean.setProdId("1001020306");
+		          bean.setPayMethod("90");
+		          bean.setaBal(R.getLoanTotalBalance());
+		          req.setBean(bean);
+		    	  res = service.calcRamtWithBean(req);
+		    	  Map<String,Object> resMap = res.getRes();
+		    	  logger.info("核算接口返回的map为"+resMap);
+		    	  String capital = (String) resMap.get("rcapi");
+		    	  logger.info("计算出来的本金为"+capital);
+		    	  String interest = (String) resMap.get("rInte");
+		    	  logger.info("计算出来的利息为"+interest);
+		    	  JSONObject a =  new JSONObject();
+			      a.put("totalAmount",amt);
+			      a.put("capital",capital);
+			      a.put("interest",interest);
+			      logger.info("返回给前台页面的map为"+a);
+			      String b = a.toJSONString();
+			      out.write(b);
+		    }else{
+		    	  logger.info("提前结清试算接口计算利息");
+		    	  req.setAheakind("1");
+		          req.setSsubsamt(new Double("0"));//应放金额
+		          req.setWorkDate(d);
+		          req.setLoanAcNo(R.getLoanAcNo());
+		          logger.info("核心借据号为"+R.getLoanAcNo());
+		          req.setrCapi(R.getLoanTotalBalance().doubleValue());
+		          logger.info("借据余额为"+R.getLoanTotalBalance());
+		          req.setAheaamtkind("1");
+		          MadeLoanLoanLedgerBean bean = new MadeLoanLoanLedgerBean();
+		          bean.setInterestRate(R.getLoanInterest()); //贷款利率
+		          logger.info("贷款利率为"+R.getLoanInterest());
+		          bean.setLastInteDate(R.getBeginDate());
+		          logger.info("开始计息日为"+R.getBeginDate());
+		          bean.setBeginDate(R.getBeginDate());
+		          bean.setRepayMethod(R.getPaybackWay());//还款方式
+		          bean.setProdId("1001020306");
+		          bean.setPayMethod("90");
+		          bean.setaBal(R.getLoanTotalBalance());
+		          req.setBean(bean);
+		    	  res = service.calcRamtWithBean(req);
+		    	  Map<String,Object> resMap = res.getRes();
+		    	  logger.info("核算接口返回的map为"+resMap);
+		    	  String capital = (String) resMap.get("rcapi");
+		    	  logger.info("计算出来的本金为"+capital);
+		    	  BigDecimal capital1= new BigDecimal(capital);
+		    	  String interest = (String) resMap.get("rInte");
+		    	  logger.info("计算出来的利息为"+interest);
+		    	  BigDecimal interest1= new BigDecimal(interest);
+		    	  double tamt = capital1.add(interest1).doubleValue();
+		    	  JSONObject a =  new JSONObject();
+			      a.put("totalAmount",tamt);
+			      a.put("capital",capital1);
+			      a.put("interest",interest1);
+			      logger.info("返回给前台页面的map为"+a);
+			      String b = a.toJSONString();
+			      out.write(b);
+		    }
+		}catch(Exception e){
+			logger.error("还款试算失败",e);
+		}
+		return null;
+	
+	}
+	
+	
+	
+	@RequestMapping("/manageImport")
+	public ModelAndView manageImport(HttpServletRequest request, PrintWriter out){
+		int n=0;
+	    String importRunningId = request.getParameter("importRunningId");
+	    TPaybackImportInfo t = loanPosPaybackImportService.getPaybackImportInfo(importRunningId);
+	    String account = t.getPaybackPersonAcount();
+	    String receiptId = request.getParameter("receiptId");
+	    TReceiptInfo receipt = loanPosPaybackService.getReceiptInfoByReceiptId(receiptId);
+	    receiptList = getReceiptList();
+	    
+	    for(TReceiptInfo r : receiptList){
+	    	if(r.getPayAccount().equals(account)){
+	    		n++;
+	    	}
+	    }
+	    if(n==0){
+	    	//	当进项流水的付款人账号不可以匹配到未结清贷款借据的银行账号时
+	    	JSONObject map =  new JSONObject();
+	    	map.put("rule","1");
+        	map.put("number","b");
+	    }else if(n==1){
+	    	JSONObject map =  new JSONObject();
+	    	String custId = receipt.getCustId();
+	    	map.put("matchedCustId",custId);
+	    	Date t2 = t.getImportRunningDate();
+	    	BigDecimal receiptBalance = receipt.getLoanTotalBalance();
+		      CalcRamtRes res = new CalcRamtRes();
+		      CalcRamtReq req = new CalcRamtReq();
+	    	  req.setAheakind("1");
+	          req.setSsubsamt(new Double("0"));//应放金额
+	          req.setWorkDate(t2);
+	          req.setLoanAcNo(receipt.getLoanAcNo());
+	          req.setrCapi(receipt.getLoanTotalBalance().doubleValue());
+	          req.setAheaamtkind("1");
+	          MadeLoanLoanLedgerBean bean = new MadeLoanLoanLedgerBean();
+	          bean.setInterestRate(receipt.getLoanInterest()); //贷款利率
+	          bean.setLastInteDate(receipt.getBeginDate());
+	          bean.setBeginDate(receipt.getBeginDate());
+	          bean.setRepayMethod(receipt.getPaybackWay());//还款方式
+	          bean.setProdId("1001020306");
+	          bean.setPayMethod("90");
+	          bean.setaBal(receipt.getLoanTotalBalance());
+	          req.setBean(bean);
+	    	  res = service.calcRamtWithBean(req);
+	    	  Map<String,Object> resMap = res.getRes();
+	    	  String capital1 = (String) resMap.get("rcapi");
+	    	  String interest1 = (String) resMap.get("rInte");
+	    	  BigDecimal rit = new BigDecimal(interest1);
+	    	  
+	        DecimalFormat df = new DecimalFormat("#.00");     //格式化本金利息金额为decimal 类型带两位小数数据
+	        BigDecimal totalamount = receiptBalance.add(rit);
+	        BigDecimal importAmt = t.getImportAmount();
+	        BigDecimal a = importAmt.subtract(totalamount);
+	        int b = a.compareTo(BigDecimal.ZERO);
+	        Map<String, Object> allocateMap = Maps.newHashMap();	
+	        Map<String, Object> runnningMap = Maps.newHashMap();
+			        if(b>=0){
+			        	logger.info("进项金额足够提前结清借据余额");
+			        	//新增一笔还款分配信息
+			        	Object obj = request.getSession().getAttribute("USER");
+			    		com.hrbb.loan.web.security.entity.User user = (com.hrbb.loan.web.security.entity.User)obj;
+			    		String userName = user.getUserName();
+			    		String paybackAllocateId = IdUtil.getId("pa");
+			    		allocateMap.put("paybackAllocateId",paybackAllocateId);
+			          	allocateMap.put("importRunningId",t.getImportRunningId());
+			        	allocateMap.put("matchedReceiptId",custId);
+			        	allocateMap.put("allocateTotalAmt",totalamount);
+			        	allocateMap.put("allocateCaptital", receiptBalance);
+			        	allocateMap.put("allocateInterest",rit);
+			        	allocateMap.put("allocateDate",new Date());
+			        	allocateMap.put("allocatePerson",userName);
+			        	logger.info("还款分配信息为"+allocateMap);
+			        	int abc = loanPosPaybackAllocateService.insertPaybackAllocate(allocateMap);
+			        	logger.info("新增一笔还款分配信息成功");
+			        	//更新分配信息
+			        	BigDecimal naa = t.getImportAmount().subtract(totalamount);
+			        	String nallocateamt = df.format(naa);
+			        	map.put("notAllocateAmount",nallocateamt);
+			        	//生成还款流水记录
+			        	String paybackRunningRecordId = IdUtil.getId("pr");
+			        	runnningMap.put("paybackRunningRecordId",paybackRunningRecordId);
+			        	runnningMap.put("receiptId",receipt.getReceiptId());
+			        	runnningMap.put("supposedPaybackDate",t.getImportRunningDate());
+			        	runnningMap.put("supposedTotalAmount",totalamount);
+			        	runnningMap.put("supposedCapital",receiptBalance);
+			        	runnningMap.put("supposedInterest",rit);
+			        	runnningMap.put("actualPaybackDate",t.getImportRunningDate());
+			        	runnningMap.put("actualTotalAmount",totalamount);
+			        	runnningMap.put("actualCapital",receiptBalance);
+			        	runnningMap.put("actualInterest",rit);
+			        	runnningMap.put("paybackChannel","01");
+			        	runnningMap.put("paybackImportId",t.getImportRunningId());
+			        	logger.info("还款流水记录信息为"+runnningMap);
+			        	int ab = loanPosPaybackRunningRecordService.insertPaybackRunningInfo(runnningMap);
+			        	logger.info("生成还款流水记录成功");
+			        	//保存记录该账户的历史还款账号
+					        	if(!t.getPaybackPersonAcount().equals(receipt.getPayAccount())){
+					        		Map<String, Object> accountMap = Maps.newHashMap();
+					        		accountMap.put("custId",custId);
+					        		accountMap.put("paybackAccount",t.getPaybackPersonAcount());
+					        		logger.info("历史还款记录信息为"+accountMap);
+					        		int an =  loanPosHistoryPaybackAccountService.getHistroyAccountNumber(accountMap);
+					        		logger.info("保存客户历史还款账号成功");
+					        	}
+					        	//更新进项流水表分配信息
+					        	Map<String, Object> updateImportMap = Maps.newHashMap();
+					        	updateImportMap.put("importRunningId",t.getImportRunningId());
+					        	updateImportMap.put("matchedCustId",custId);
+					        	updateImportMap.put("notAllocateAmount",naa);
+					        	logger.info("更新进项流水信息map为"+updateImportMap);
+					        	int p = loanPosPaybackImportService.updateImportInfo(updateImportMap);
+					        	//返回给前台页面的进项分配信息json数据
+					        	String alloamt = df.format(totalamount);
+					        	String cpit = df.format(receiptBalance);
+					        	String intst = df.format(rit);
+					        	map.put("rule","1");
+					        	map.put("number","a");
+					        	map.put("importDate",t.getImportRunningDate());
+					        	map.put("paybackPersonName",t.getPaybackPersonName());
+					        	map.put("receiptBalance",receipt.getLoanTotalBalance());
+					        	map.put("importTotalAmount",t.getImportAmount());
+					        	map.put("allocatePaybackAmount",alloamt);
+					        	map.put("allocatePaybackCapital",cpit);
+					        	map.put("allocatePaybackInterest",intst);
+					        	String bbb = map.toJSONString();
+					        	out.write(bbb);
+			        }else{
+			        	//不够提前全部结清，只能还本付息部分结清
+			        	logger.info("不够提前全部结清，只能还本付息部分结清");
+			        	Object obj = request.getSession().getAttribute("USER");
+			    		com.hrbb.loan.web.security.entity.User user = (com.hrbb.loan.web.security.entity.User)obj;
+			    		String userName = user.getUserName();
+			    		
+			    		  req.setAheakind("1");//还款类型
+				          req.setSsubsamt(importAmt.doubleValue());//应放金额
+				          req.setWorkDate(t2);
+				          req.setAheaamtkind("2");
+				          MadeLoanLoanLedgerBean bean2 = new MadeLoanLoanLedgerBean();
+				          bean2.setInterestRate(receipt.getLoanInterest()); //贷款利率
+				          bean2.setBeginDate(receipt.getBeginDate());
+				          bean2.setLastInteDate(receipt.getBeginDate());
+				          bean2.setRepayMethod(receipt.getPaybackWay());//还款方式
+				          bean2.setProdId("1001020306");
+				          bean2.setPayMethod("90");
+				          bean2.setaBal(receipt.getLoanTotalBalance());
+				          req.setBean(bean2);
+				    	  res = service.calcRamtWithBean(req);
+				    	  Map<String,Object> resMap2 = res.getRes();
+				    	  String capital2 = (String) resMap2.get("rcapi");
+				    	  double cp = Double.valueOf(capital2);
+				    	  String interest2 = (String) resMap2.get("rInte");
+				    	  double ist = Double.valueOf(interest2);
+			    		
+			  	  	        
+			  	        String paybackAllocateId = IdUtil.getId("pa");
+			  	        allocateMap.put("paybackAllocateId",paybackAllocateId);
+			          	allocateMap.put("importRunningId",t.getImportRunningId());
+			        	allocateMap.put("matchedReceiptId",custId);
+			        	allocateMap.put("allocateTotalAmt",importAmt);
+			        	allocateMap.put("allocateCaptital", cp);
+			        	allocateMap.put("allocateInterest",ist);
+			        	allocateMap.put("allocateDate",new Date());
+			        	allocateMap.put("allocatePerson",userName);
+			        	logger.info("还款分配信息为"+allocateMap);
+			        	int abc = loanPosPaybackAllocateService.insertPaybackAllocate(allocateMap);
+			        	logger.info("新增一笔还款分配信息成功");
+			        	//更新分配信息
+			        	BigDecimal naa = t.getImportAmount().subtract(importAmt);
+			        	map.put("notAllocateAmount",naa);
+			        	//生成还款流水记录
+			        	String paybackRunningRecordId = IdUtil.getId("pr");
+			        	runnningMap.put("paybackRunningRecordId",paybackRunningRecordId);
+			        	runnningMap.put("receiptId",receipt.getReceiptId());
+			        	runnningMap.put("supposedPaybackDate",t.getImportRunningDate());
+			        	runnningMap.put("supposedTotalAmount",importAmt);
+			        	runnningMap.put("supposedCapital",cp);
+			        	runnningMap.put("supposedInterest",ist);
+			        	runnningMap.put("actualPaybackDate",t.getImportRunningDate());
+			        	runnningMap.put("actualTotalAmount",importAmt);
+			        	runnningMap.put("actualCapital",cp);
+			        	runnningMap.put("actualInterest",ist);
+			        	runnningMap.put("paybackChannel","01");
+			        	runnningMap.put("paybackImportId",t.getImportRunningId());
+			        	logger.info("还款流水记录信息为"+runnningMap);
+			        	int ab = loanPosPaybackRunningRecordService.insertPaybackRunningInfo(runnningMap);
+			        	logger.info("生成还款流水记录成功");
+			        	//保存记录该账户的历史还款账号
+					        	if(!t.getPaybackPersonAcount().equals(receipt.getPayAccount())){
+					        		Map<String, Object> accountMap = Maps.newHashMap();
+					        		accountMap.put("custId",custId);
+					        		accountMap.put("paybackAccount",t.getPaybackPersonAcount());
+					        		logger.info("历史还款记录信息为"+accountMap);
+					        		int an =  loanPosHistoryPaybackAccountService.getHistroyAccountNumber(accountMap);
+					        		logger.info("保存客户历史还款账号成功");
+					        	}
+					        	//更新进项流水表分配信息
+					        	Map<String, Object> updateImportMap = Maps.newHashMap();
+					        	updateImportMap.put("importRunningId",t.getImportRunningId());
+					        	updateImportMap.put("matchedCustId",custId);
+					        	updateImportMap.put("notAllocateAmount",naa);
+					        	logger.info("更新进项流水信息map为"+updateImportMap);
+					        	int p = loanPosPaybackImportService.updateImportInfo(updateImportMap);
+					        	//返回给前台页面的进项分配信息json数据
+					        	String cpit = df.format(cp);
+					        	String intst = df.format(ist);
+					        	map.put("rule","1");
+					        	map.put("number","a");
+					        	map.put("importDate",t.getImportRunningDate());
+					        	map.put("paybackPersonName",t.getPaybackPersonName());
+					        	map.put("receiptBalance",receipt.getLoanTotalBalance());
+					        	map.put("importTotalAmount",t.getImportAmount());
+					        	map.put("allocatePaybackAmount",importAmt);
+					        	map.put("allocatePaybackCapital",cpit);
+					        	map.put("allocatePaybackInterest",intst);
+					        	String bbb = map.toJSONString();
+					        	out.write(bbb);
+			        }
+	    }else{
+	    	JSONObject map =  new JSONObject();
+	    	Boolean flag = false;
+	    	Map<String,Object> a = Maps.newHashMap();
+	    	String custId1 = "";
+	    	  for(TReceiptInfo r : receiptList){
+	  	    	if(r.getPayAccount().equals(account)){
+	  	    		custId1 = r.getCustId();
+	  	    		if(a.containsKey(r.getPayAccount())) {
+	  	    			if(a.get(r.getPayAccount()).equals(r.getCustId())) {
+	  	    				flag = true;
+	  	    			} else {
+	  	    				flag =false;
+	  	    				break;
+	  	    			}
+	  	    		} else {
+		  	    		a.put(account,r.getCustId());
+	  	    		}
+	              }
+	    	  }
+	    	if(flag==true){
+	    		//更新进项流水表分配信息
+	        	Map<String, Object> updateImportMap = Maps.newHashMap();
+	        	updateImportMap.put("importRunningId",t.getImportRunningId());
+	        	updateImportMap.put("matchedCustId",custId1);
+	        	logger.info("更新进项流水信息map为"+updateImportMap);
+	        	int p = loanPosPaybackImportService.updateImportInfo(updateImportMap);
+	        	map.put("rule","1");
+	        	map.put("number","b");
+	        	String bbb = map.toJSONString();
+	        	out.write(bbb);
+	    	}else{
+	    		map.put("rule","1");
+	        	map.put("number","c");
+	        	String bbb = map.toJSONString();
+	        	out.write(bbb);
+	    	}
+	    	
+	    }
+	    
+	    	
+	    	
+	    	
+	    	
+		return null;	
+	}
+	
+	
+	@RequestMapping("/queryReceipt")
+	public ModelAndView getReceiptInfo(@RequestParam(value="rows", required = false)Integer pageSize, @RequestParam(value="page", required = false)Integer pageNo,HttpServletRequest request, PrintWriter out){
+  		    Map<String, Object> reqMap = Maps.newHashMap();
+			String a = request.getParameter("custNameLike");
+			if(!StringUtils.isEmpty(a)){
+				reqMap.put("custNameLike", ControllerHelper.getLikeString(a));
+			}
+			if(!StringUtils.isEmpty(request.getParameter("merchantNameLike"))){
+				reqMap.put("merchantNameLike", ControllerHelper.getLikeString(request.getParameter("merchantNameLike")));
+			}
+	    reqMap.put("startPage", (pageNo - 1)*pageSize);
+		reqMap.put("limit", pageSize);
+	    String custId = request.getParameter("custId");
+	    List<TReceiptInfo> receiptList = null;
+	    if(custId==null||custId.equals("")){
+	    	receiptList = loanPosPaybackService.getAllReceipts(reqMap);
+	    }else{
+	    	reqMap.put("custId",custId);
+	    	receiptList = loanPosPaybackService.getReceiptList(reqMap);
+	    }
+	    setReceiptList(receiptList);
+	    JSONObject aaJson =  new JSONObject();
+		aaJson.put("rows", receiptList);	
+		aaJson.put("total", receiptList.size());
+	    String aa = aaJson.toJSONString();
+		out.write(aa);
+        return null;
+	}
+	
+	
+	@RequestMapping("/getReceiptInfo")
+	public ModelAndView getReceiptInfo(HttpServletRequest request, PrintWriter out){
+		
+			   String receiptId = request.getParameter("receiptId");
+
+				
+				Map<String,Object> map = loanPosPaybackService.getReceiptMapByReceiptId(receiptId);
+				Date bd = (Date) map.get("beginDate");
+				String bd1 = DateUtil.getDateToString3(bd);
+				map.put("beginDate",bd1);
+				
+				Date ed = (Date) map.get("endDate");
+				String ed1 = DateUtil.getDateToString3(ed);
+				map.put("endDate",ed1);
+				 
+			    String channel = (String) map.get("channel");
+			    channel = loanPosBusinessCodeService.getItemNameByNo("BizChannel",channel);
+			    map.put("channel",channel);
+				
+			    String paybackMethod = (String) map.get("paybackWay");
+			    paybackMethod = loanPosBusinessCodeService.getItemNameByNo("AccrualType",paybackMethod);
+			    map.put("paybackMethod",paybackMethod);
+			    
+			    String loanUsage = (String) map.get("loanUsage");
+			    loanUsage = loanPosBusinessCodeService.getItemNameByNo("Purpose",loanUsage);
+			    map.put("loanUsage",loanUsage);
+			    
+			    
+			    
+				String b = JSON.toJSONString(map);
+				out.write(b);
+		
+	   
+		return null;	
+	}
+	
+}

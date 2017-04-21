@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditReportJudgmentMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditReportJudgment" >
+    <id column="serialNo" property="serialNo" jdbcType="VARCHAR" />
+    <result column="reportNo" property="reportNo" jdbcType="VARCHAR" />
+    <result column="court" property="court" jdbcType="VARCHAR" />
+    <result column="caseReason" property="caseReason" jdbcType="VARCHAR" />
+    <result column="registerDate" property="registerDate" jdbcType="VARCHAR" />
+    <result column="closedType" property="closedType" jdbcType="VARCHAR" />
+    <result column="caseResult" property="caseResult" jdbcType="VARCHAR" />
+    <result column="effectiveDate" property="effectiveDate" jdbcType="VARCHAR" />
+    <result column="suitObj" property="suitObj" jdbcType="VARCHAR" />
+    <result column="suitAmt" property="suitAmt" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    serialNo, reportNo, court, caseReason, registerDate, closedType, caseResult, effectiveDate, 
+    suitObj, suitAmt
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_report_judgment
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_credit_report_judgment
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportJudgment" >
+    insert into t_credit_report_judgment (serialNo, reportNo, court, 
+      caseReason, registerDate, closedType, 
+      caseResult, effectiveDate, suitObj, 
+      suitAmt)
+    values (#{serialNo,jdbcType=VARCHAR}, #{reportNo,jdbcType=VARCHAR}, #{court,jdbcType=VARCHAR}, 
+      #{caseReason,jdbcType=VARCHAR}, #{registerDate,jdbcType=VARCHAR}, #{closedType,jdbcType=VARCHAR}, 
+      #{caseResult,jdbcType=VARCHAR}, #{effectiveDate,jdbcType=VARCHAR}, #{suitObj,jdbcType=VARCHAR}, 
+      #{suitAmt,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportJudgment" >
+    insert into t_credit_report_judgment
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="court != null" >
+        court,
+      </if>
+      <if test="caseReason != null" >
+        caseReason,
+      </if>
+      <if test="registerDate != null" >
+        registerDate,
+      </if>
+      <if test="closedType != null" >
+        closedType,
+      </if>
+      <if test="caseResult != null" >
+        caseResult,
+      </if>
+      <if test="effectiveDate != null" >
+        effectiveDate,
+      </if>
+      <if test="suitObj != null" >
+        suitObj,
+      </if>
+      <if test="suitAmt != null" >
+        suitAmt,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="court != null" >
+        #{court,jdbcType=VARCHAR},
+      </if>
+      <if test="caseReason != null" >
+        #{caseReason,jdbcType=VARCHAR},
+      </if>
+      <if test="registerDate != null" >
+        #{registerDate,jdbcType=VARCHAR},
+      </if>
+      <if test="closedType != null" >
+        #{closedType,jdbcType=VARCHAR},
+      </if>
+      <if test="caseResult != null" >
+        #{caseResult,jdbcType=VARCHAR},
+      </if>
+      <if test="effectiveDate != null" >
+        #{effectiveDate,jdbcType=VARCHAR},
+      </if>
+      <if test="suitObj != null" >
+        #{suitObj,jdbcType=VARCHAR},
+      </if>
+      <if test="suitAmt != null" >
+        #{suitAmt,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="map" >
+    insert into t_credit_report_judgment
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="court != null" >
+        court,
+      </if>
+      <if test="caseReason != null" >
+        caseReason,
+      </if>
+      <if test="registerDate != null" >
+        registerDate,
+      </if>
+      <if test="closedType != null" >
+        closedType,
+      </if>
+      <if test="caseResult != null" >
+        caseResult,
+      </if>
+      <if test="effectiveDate != null" >
+        effectiveDate,
+      </if>
+      <if test="suitObj != null" >
+        suitObj,
+      </if>
+      <if test="suitAmt != null" >
+        suitAmt,
+      </if>
+       <if test="queryId != null">
+      	queryId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="court != null" >
+        #{court,jdbcType=VARCHAR},
+      </if>
+      <if test="caseReason != null" >
+        #{caseReason,jdbcType=VARCHAR},
+      </if>
+      <if test="registerDate != null" >
+        #{registerDate,jdbcType=VARCHAR},
+      </if>
+      <if test="closedType != null" >
+        #{closedType,jdbcType=VARCHAR},
+      </if>
+      <if test="caseResult != null" >
+        #{caseResult,jdbcType=VARCHAR},
+      </if>
+      <if test="effectiveDate != null" >
+        #{effectiveDate,jdbcType=VARCHAR},
+      </if>
+      <if test="suitObj != null" >
+        #{suitObj,jdbcType=VARCHAR},
+      </if>
+      <if test="suitAmt != null" >
+        #{suitAmt,jdbcType=DECIMAL},
+      </if>
+       <if test="queryId != null">
+      	#{queryId},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportJudgment" >
+    update t_credit_report_judgment
+    <set >
+      <if test="reportNo != null" >
+        reportNo = #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="court != null" >
+        court = #{court,jdbcType=VARCHAR},
+      </if>
+      <if test="caseReason != null" >
+        caseReason = #{caseReason,jdbcType=VARCHAR},
+      </if>
+      <if test="registerDate != null" >
+        registerDate = #{registerDate,jdbcType=VARCHAR},
+      </if>
+      <if test="closedType != null" >
+        closedType = #{closedType,jdbcType=VARCHAR},
+      </if>
+      <if test="caseResult != null" >
+        caseResult = #{caseResult,jdbcType=VARCHAR},
+      </if>
+      <if test="effectiveDate != null" >
+        effectiveDate = #{effectiveDate,jdbcType=VARCHAR},
+      </if>
+      <if test="suitObj != null" >
+        suitObj = #{suitObj,jdbcType=VARCHAR},
+      </if>
+      <if test="suitAmt != null" >
+        suitAmt = #{suitAmt,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportJudgment" >
+    update t_credit_report_judgment
+    set reportNo = #{reportNo,jdbcType=VARCHAR},
+      court = #{court,jdbcType=VARCHAR},
+      caseReason = #{caseReason,jdbcType=VARCHAR},
+      registerDate = #{registerDate,jdbcType=VARCHAR},
+      closedType = #{closedType,jdbcType=VARCHAR},
+      caseResult = #{caseResult,jdbcType=VARCHAR},
+      effectiveDate = #{effectiveDate,jdbcType=VARCHAR},
+      suitObj = #{suitObj,jdbcType=VARCHAR},
+      suitAmt = #{suitAmt,jdbcType=DECIMAL}
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

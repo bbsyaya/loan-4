@@ -1,0 +1,127 @@
+package com.hrbb.loan.pos.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.dao.TChannelBankInfoDao;
+import com.hrbb.loan.pos.dao.TCreditApplyDao;
+import com.hrbb.loan.pos.dao.entity.TCreditApply;
+import com.hrbb.loan.pos.service.LoanRiskCreditApplyService;
+
+/**
+ *<h1>业务申请服务层实现</h1>
+ *@author Johnson Song
+ *@version Id: CreditApplyServiceImpl.java, v 1.0 2015-2-15 下午7:30:56 Johnson Song Exp
+ */
+@Service("loanRiskCreditApplyService")
+public class LoanRiskCreditApplyServiceImpl implements LoanRiskCreditApplyService{
+	
+	
+	public static final String POS_CUST_NAME = "posCustName";
+	
+	public static final String LOAN_ID = "loanId";
+	
+	public static final String BANK_ACC_NO = "bankAccno";
+
+	
+	@Autowired
+	private TCreditApplyDao tCreditApplyDao;
+	
+	
+	
+	/**
+	 * <h2>根据条件获取记录</h2>
+	 * @param Map
+	 * @return List
+	 */
+
+	@Override
+	public List<TCreditApply> getCreditApply(Map<String, Object> reqMap) {
+		return tCreditApplyDao.selectSelective(reqMap);
+
+	}
+	/**
+	 * <h2>根据id获取记录</h2>
+	 * @param String
+	 * @return TCreditApply
+	 */
+	@Override
+	public TCreditApply getCreditApplyById(String loanId) {
+		return tCreditApplyDao.selectByPrimaryKey(loanId);
+	}
+	
+	/**
+	 * <h2>更新记录</h2>
+	 * @param TCreditApply
+	 * @return int
+	 */
+	@Override
+	public int updateCreditApply(TCreditApply tCreditApply) {
+		return tCreditApplyDao.updateByPrimaryKeySelective(tCreditApply);
+	}
+
+	/**
+	 * <h2>删除记录</h2>
+	 * @param String
+	 * @return int
+	 */
+	@Override
+	public int delCreditApply(String loanId) {
+		return tCreditApplyDao.deleteByPrimaryKey(loanId);
+	}
+
+	/**
+	 * <h2>插入记录</h2>
+	 * @param TCreditApply
+	 * @return int
+	 */
+	@Override
+	public int insertCreditApply(TCreditApply tCreditApply) {
+		return tCreditApplyDao.insertSelective(tCreditApply);
+	}
+	@Override
+	public List<Map<String, Object>> getCreditApplyMap(
+			Map<String, Object> reqMap) {
+		return tCreditApplyDao.selectSelectiveMap(reqMap);
+	}
+	
+	@Override
+	public Long countCreditApply(Map<String, Object> reqMap) {
+		return tCreditApplyDao.countCreitApply(reqMap);
+	}
+	
+	
+	@Override
+	public int deleteBatch(List<String> loanIds) {
+		return tCreditApplyDao.deleteBatch(loanIds);
+	}
+	@Override
+	public int updateCreditApplyMap(Map<String, Object> map) {
+		return tCreditApplyDao.updateByPrimaryKeySelectiveMap(map);
+	}
+	@Override
+	public int insertCreditApplyMap(Map<String, Object> reqMap) {
+		return tCreditApplyDao.insertSelectiveMap(reqMap);
+	}
+	@Override
+	public Map<String, Object> getOneCreditApply(String loanId) {
+		if(loanId != null){
+			Map<String, Object> reqMap = Maps.newHashMap();
+			reqMap.put(LOAN_ID, loanId);
+			List<Map<String, Object>> resList = getCreditApplyMap(reqMap);
+			if(resList != null && resList.size() != 0){
+				return resList.get(0);
+			}else{
+				return null;
+			}
+		}else{
+			return null;
+		}
+	}
+	
+}

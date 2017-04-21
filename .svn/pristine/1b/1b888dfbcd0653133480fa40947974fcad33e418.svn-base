@@ -1,0 +1,281 @@
+package com.hrbb.loan.spi.TC;
+
+import java.util.Date;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.constants.PaymentApplyConstants;
+import com.hrbb.loan.pos.biz.backstage.inter.IPaymentApplyBiz;
+import com.hrbb.loan.pos.dao.TContractManagementDao;
+import com.hrbb.loan.pos.service.LoanPosContractManagementService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.loan.pos.util.ValidateUtil;
+import com.hrbb.loan.pos.util.constants.BusinessDictionaryConstants;
+import com.hrbb.loan.spiconstants.HServiceReturnCode;
+import com.hrbb.loan.spiconstants.PaymentApplyHServiceConstants;
+import com.hrbb.sh.framework.HRequest;
+import com.hrbb.sh.framework.HResponse;
+import com.hrbb.sh.framework.HServiceException;
+
+@Service("tcPaymentApply")
+public class TCPaymentApplyServiceImpl extends AbsTCPaymentApplyQueryService{
+	
+//	Logger logger = LoggerFactory.getLogger(TCPaymentApplyServiceImpl.class);
+	
+	private static final String HASNO_CONT = "HASNO_CONT";
+	private static final String OVER_PAY_LIMIT = "OVER_PAY_LIMIT";
+	
+	@Autowired
+	IPaymentApplyBiz paymentApplyBiz;
+	
+	@Autowired
+	LoanPosContractManagementService loanPosContractManagementService;
+	
+	@Autowired
+	private TContractManagementDao tContractManagementDao;
+	
+	@Override
+	public HResponse serve(HRequest request) throws HServiceException{
+		logger.info("executing "+this.getClass().getName()+"...");
+		
+		Map<String, Object> props = request.getProperties();
+		Map<String, Object> reqMap = Maps.newHashMap();
+		HResponse resp = new HResponse();
+		//用款申请流水号（合作机构）
+		String stdisno = (String)props.get(PaymentApplyHServiceConstants.stdisno);
+		if(StringUtil.isEmpty(stdisno)){
+			resp.setRespCode(HServiceReturnCode.STDISNO_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.STDISNO_ERROR.getReturnMessage());
+			resp.setRespTime(new Date());
+			return getBlankResponse(resp);
+		}
+		reqMap.put(PaymentApplyConstants.stdisno, stdisno);
+		
+		String contNo = (String)props.get(PaymentApplyHServiceConstants.contno);
+		if(StringUtil.isEmpty(contNo)){
+			resp.setRespCode(HServiceReturnCode.CONTNO_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.CONTNO_ERROR.getReturnMessage());
+			resp.setRespTime(new Date());
+			return getBlankResponse(resp);
+		}
+		reqMap.put("channelType", this.getChannel());
+		reqMap.put(PaymentApplyConstants.contNo, contNo);
+		Map<String, Object> contMap = loanPosContractManagementService
+				.selectOneMapById(contNo);
+		//用款额度
+		String payApplyAmt = (String)props.get(PaymentApplyHServiceConstants.tcapi);
+		if(StringUtil.isEmpty(payApplyAmt) || !(ValidateUtil.checkInteger(payApplyAmt) || ValidateUtil.checkDouble(payApplyAmt))){
+			resp.setRespCode(HServiceReturnCode.TCAPI_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.TCAPI_ERROR.getReturnMessage());
+			resp.setRespTime(new Date());
+			return getBlankResponse(resp);
+		}
+		reqMap.put(PaymentApplyConstants.payApplyAmt, payApplyAmt);
+		//用款期限
+		String payApplyTerm = (String)props.get(PaymentApplyHServiceConstants.tterm);
+		if(StringUtil.isEmpty(payApplyTerm) || !ValidateUtil.checkInteger(payApplyTerm)){
+			resp.setRespCode(HServiceReturnCode.TTERM_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.TTERM_ERROR.getReturnMessage());
+			resp.setRespTime(new Date());
+			return getBlankResponse(resp);
+		}
+		if(payApplyTerm.startsWith("0")){
+			payApplyTerm = payApplyTerm.replaceFirst("0", "");
+		}
+		reqMap.put(PaymentApplyConstants.payApplyTerm, payApplyTerm);
+		/*  期限单位
+		String termunit = (String)props.get(PaymentApplyHServiceConstants.termunit);
+		if(StringUtil.isEmpty(termunit)){
+			resp.setRespCode(HServiceReturnCode.TERMUNIT_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.TERMUNIT_ERROR.getReturnMessage());
+			resp.setRespTime(new Date());
+			return getBlankResponse(resp);
+		}*/
+		//还款方式
+		String returnType = (String)props.get(PaymentApplyHServiceConstants.retukind);
+		if(StringUtil.isEmpty(returnType)){
+			resp.setRespCode(HServiceReturnCode.RETUKIND_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.RETUKIND_ERROR.getReturnMessage());
+			resp.setRespTime(new Date());
+			return getBlankResponse(resp);
+		}
+		reqMap.put(PaymentApplyConstants.returnType, returnType);
+		/*   放款账号
+		String accNo	= (String)props.get(PaymentApplyHServiceConstants.INDESUBSACNO);
+		if(StringUtil.isEmpty(accNo)){
+			resp.setRespCode(HServiceReturnCode.INDESUBSACNO_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.INDESUBSACNO_ERROR.getReturnMessage());
+			resp.setRespTime(new Date());
+			return getBlankResponse(resp);
+		}*/
+		String accNo = (String)props.get(PaymentApplyHServiceConstants.loanbankacno);
+		reqMap.put(PaymentApplyConstants.accNo, accNo);
+		//银行账户开户行
+		String loanbankname = (String)props.get(PaymentApplyHServiceConstants.loanbankname); 
+		if(StringUtil.isEmpty(loanbankname)){
+			resp.setRespCode(HServiceReturnCode.BANKNAME_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.BANKNAME_ERROR.getReturnMessage());
+			resp.setRespTime(new Date());
+			return getBlankResponse(resp);
+		}
+		
+		//期望用款日期
+		String expectedDate = (String)props.get(PaymentApplyHServiceConstants.desireddate); 
+		if(StringUtil.isEmpty(expectedDate)){
+			resp.setRespCode(HServiceReturnCode.DESIREDDATE_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.DESIREDDATE_ERROR.getReturnMessage());
+			resp.setRespTime(new Date());
+			return getBlankResponse(resp);
+		}
+		
+		try{
+			Date expectDateStr = DateUtil.getStrToDate1(expectedDate);
+			//到期日,利随本清要减一天，等额本息不用减
+			//利随本清
+			if("90".equals((String)contMap.get("paybackMethod"))){
+				reqMap.put(PaymentApplyConstants.expectedEndDate, DateUtil.getDatePattern3(DateUtil.getRelativeDate(expectDateStr, 0, Integer.valueOf(payApplyTerm), -1)));
+				
+			}else if("10".equals((String)contMap.get("paybackMethod"))){
+				reqMap.put(PaymentApplyConstants.expectedEndDate, DateUtil.getDatePattern3(DateUtil.getRelativeDate(expectDateStr, 0, Integer.valueOf(payApplyTerm), 0)));
+			}
+			reqMap.put(PaymentApplyConstants.expectedDate, expectDateStr);
+		}catch(Exception e){
+			logger.error("日期转换异常[]", e.getMessage());
+		}
+		//资金用途
+		String applyMemo = (String)props.get(PaymentApplyHServiceConstants.loanuse);
+		if(StringUtil.isEmpty(applyMemo)){
+			resp.setRespCode(HServiceReturnCode.LOANUSE_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.LOANUSE_ERROR.getReturnMessage());
+			resp.setRespTime(new Date());
+			return getBlankResponse(resp);
+		}
+		reqMap.put(PaymentApplyConstants.applyMemo, applyMemo);
+		//申请日期
+		String applyDate = (String)props.get(PaymentApplyHServiceConstants.begindate);
+		if(StringUtil.isEmpty(applyDate)){
+			resp.setRespCode(HServiceReturnCode.BEGINDATE_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.BEGINDATE_ERROR.getReturnMessage());
+			resp.setRespTime(new Date());
+			return getBlankResponse(resp);
+		}
+		try{
+			reqMap.put(PaymentApplyConstants.applyDate, DateUtil.getStrToDate1(applyDate));
+		}catch(Exception e){
+			logger.error("日期转换异常[]", e.getMessage());
+		}
+		/*  商户id
+		String stdmerno = (String)props.get(PaymentApplyHServiceConstants.stdmerno);
+		if(StringUtil.isEmpty(stdmerno)){
+			resp.setRespCode(HServiceReturnCode.STDMERNO_PAY_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.STDMERNO_PAY_ERROR.getReturnMessage());
+			resp.setRespTime(new Date());
+			return getBlankResponse(resp);
+		}
+		reqMap.put(CreditApplyHServiceConstants.merchantNo, stdmerno);
+		*/
+		//卡验真
+		if (!checkBankCardStatus(accNo)){
+			resp.setRespCode(HServiceReturnCode.BANKCHECK_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.BANKCHECK_ERROR.getReturnMessage());
+			resp.setRespTime(new Date());
+			return getBlankResponse(resp);
+		}
+		//检查保证金配置信息
+		if (!checkCfgFundingPool()){
+			resp.setRespCode(HServiceReturnCode.FUNDINGPOOL_EXIST_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.FUNDINGPOOL_EXIST_ERROR.getReturnMessage());
+			resp.setRespTime(new Date());
+			return getBlankResponse(resp);
+		}
+		
+		reqMap.put("status", BusinessDictionaryConstants.ISSUE_APPLY_APR);
+		Map<String, Object> respMap = paymentApplyBiz.insertPaymentApply(reqMap);
+		logger.info("用款申请返回的map为"+respMap);
+		if(respMap.isEmpty()){
+			respMap.put(PaymentApplyConstants.ISSUE_ID, "");
+			resp.setRespCode(HServiceReturnCode.OTHER_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.OTHER_ERROR.getReturnMessage());
+			return resp;
+		}else{
+			if(respMap.get(HASNO_CONT) != null){
+				respMap.put(PaymentApplyConstants.ISSUE_ID, "");
+				resp.setRespCode(HServiceReturnCode.HASNO_CONT.getReturnCode());
+				resp.setRespMessage(HServiceReturnCode.HASNO_CONT.getReturnMessage());
+				return resp;
+			}
+			if(respMap.get(OVER_PAY_LIMIT) != null){
+				respMap.put(PaymentApplyConstants.ISSUE_ID, "");
+				resp.setRespCode(HServiceReturnCode.OVER_PAY_LIMIT.getReturnCode());
+				resp.setRespMessage(HServiceReturnCode.OVER_PAY_LIMIT.getReturnMessage());
+				return resp;
+			}
+			if(respMap.get("overTerm") != null){
+				respMap.put(PaymentApplyConstants.ISSUE_ID, "");
+				resp.setRespCode(HServiceReturnCode.OVER_TERM.getReturnCode());
+				resp.setRespMessage(HServiceReturnCode.OVER_TERM.getReturnMessage());
+				return resp;
+			}
+		}
+		logger.info("开始校验保证金");
+		//校验保证金
+		respMap.put(PaymentApplyConstants.payApplyAmt, payApplyAmt);
+		if (!checkCautionMoney(respMap)){
+			respMap.put(PaymentApplyConstants.ISSUE_ID, "");
+			resp.setRespCode(HServiceReturnCode.OTHER_ERROR.getReturnCode());
+			resp.setRespMessage(HServiceReturnCode.OTHER_ERROR.getReturnMessage());
+			resp.setRespTime(new Date());
+			return resp;
+		}
+		logger.info("校验保证金结束");
+		resp.setRespCode(HServiceReturnCode.SUCCESS.getReturnCode());
+		resp.setRespMessage(HServiceReturnCode.SUCCESS.getReturnMessage());
+		resp.setRespTime(new Date());
+		resp.setProperties(respMap);
+		logger.info("接口返回的信息为"+resp);
+		return resp;
+	}
+	
+	private HResponse getBlankResponse(HResponse resp){
+		Map<String, Object> reqMap = Maps.newHashMap();
+		reqMap.put(PaymentApplyConstants.ISSUE_ID, "");
+		resp.setProperties(reqMap);
+		return resp;
+	}
+	
+	/**
+	 * 卡验真
+	 * 
+	 * @param accNo 卡号
+	 * @return
+	 */
+	@Override
+	protected boolean checkBankCardStatus(String accNo){
+		return true;
+	}
+	
+	/**
+	 * 检查保证金配置信息
+	 * 
+	 * @return
+	 */
+	@Override
+	protected boolean checkCfgFundingPool(){
+		return true;
+	}
+	
+	/**
+	 * 校验保证金
+	 * 
+	 * @param reqMap
+	 * @return
+	 */
+	@Override
+	protected boolean checkCautionMoney(Map<String, Object> reqMap){
+		return true;
+	}
+}

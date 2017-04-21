@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TRelativeInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TRelativeInfo" >
+    <id column="relativeId" property="relativeId" jdbcType="VARCHAR" />
+    <result column="custId" property="custId" jdbcType="VARCHAR" />
+    <result column="relaCustName" property="relaCustName" jdbcType="VARCHAR" />
+    <result column="relaKind" property="relaKind" jdbcType="VARCHAR" />
+    <result column="relaMobilePhone" property="relaMobilePhone" jdbcType="VARCHAR" />
+    <result column="relaTel" property="relaTel" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    relativeId, custId, relaCustName, relaKind, relaMobilePhone, relaTel
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_relative_info
+    where relativeId = #{relativeId,jdbcType=VARCHAR}
+  </select>
+  
+  
+  <select id="selectMap" resultType="map" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_relative_info
+    where 1=1
+    <if test="relaCustName != null">
+		and relaCustName = #{relaCustName,jdbcType=VARCHAR}
+	</if>
+	<if test="relativeId != null">
+		and relativeId = #{relativeId,jdbcType=VARCHAR}
+	</if>
+	<if test="custId != null">
+    	AND custId =  #{custId}
+    </if>
+    <if test="startPage != null">
+    	LIMIT #{startPage}, #{limit} 
+    </if>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_relative_info
+    where relativeId = #{relativeId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TRelativeInfo" >
+    insert into t_relative_info (relativeId, custId, relaCustName, 
+      relaKind, relaMobilePhone, relaTel
+      )
+    values (#{relativeId,jdbcType=VARCHAR}, #{custId,jdbcType=VARCHAR}, #{relaCustName,jdbcType=VARCHAR}, 
+      #{relaKind,jdbcType=VARCHAR}, #{relaMobilePhone,jdbcType=VARCHAR}, #{relaTel,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TRelativeInfo" >
+    insert into t_relative_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="relativeId != null" >
+        relativeId,
+      </if>
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="relaCustName != null" >
+        relaCustName,
+      </if>
+      <if test="relaKind != null" >
+        relaKind,
+      </if>
+      <if test="relaMobilePhone != null" >
+        relaMobilePhone,
+      </if>
+      <if test="relaTel != null" >
+        relaTel,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="relativeId != null" >
+        #{relativeId,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="relaCustName != null" >
+        #{relaCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="relaKind != null" >
+        #{relaKind,jdbcType=VARCHAR},
+      </if>
+      <if test="relaMobilePhone != null" >
+        #{relaMobilePhone,jdbcType=VARCHAR},
+      </if>
+      <if test="relaTel != null" >
+        #{relaTel,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="map" >
+    insert into t_relative_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="relativeId != null" >
+        relativeId,
+      </if>
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="relaCustName != null" >
+        relaCustName,
+      </if>
+      <if test="relaKind != null" >
+        relaKind,
+      </if>
+      <if test="relaMobilePhone != null" >
+        relaMobilePhone,
+      </if>
+      <if test="relaTel != null" >
+        relaTel,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="relativeId != null" >
+        #{relativeId,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="relaCustName != null" >
+        #{relaCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="relaKind != null" >
+        #{relaKind,jdbcType=VARCHAR},
+      </if>
+      <if test="relaMobilePhone != null" >
+        #{relaMobilePhone,jdbcType=VARCHAR},
+      </if>
+      <if test="relaTel != null" >
+        #{relaTel,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TRelativeInfo" >
+    update t_relative_info
+    <set >
+      <if test="custId != null" >
+        custId = #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="relaCustName != null" >
+        relaCustName = #{relaCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="relaKind != null" >
+        relaKind = #{relaKind,jdbcType=VARCHAR},
+      </if>
+      <if test="relaMobilePhone != null" >
+        relaMobilePhone = #{relaMobilePhone,jdbcType=VARCHAR},
+      </if>
+      <if test="relaTel != null" >
+        relaTel = #{relaTel,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where relativeId = #{relativeId,jdbcType=VARCHAR}
+  </update>
+  
+  <update id="updateByPrimaryKeySelectiveMap" parameterType="map" >
+    update t_relative_info
+    <set >
+      <if test="custId != null" >
+        custId = #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="relaCustName != null" >
+        relaCustName = #{relaCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="relaKind != null" >
+        relaKind = #{relaKind,jdbcType=VARCHAR},
+      </if>
+      <if test="relaMobilePhone != null" >
+        relaMobilePhone = #{relaMobilePhone,jdbcType=VARCHAR},
+      </if>
+      <if test="relaTel != null" >
+        relaTel = #{relaTel,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where relativeId = #{relativeId,jdbcType=VARCHAR}
+  </update>
+  
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TRelativeInfo" >
+    update t_relative_info
+    set custId = #{custId,jdbcType=VARCHAR},
+      relaCustName = #{relaCustName,jdbcType=VARCHAR},
+      relaKind = #{relaKind,jdbcType=VARCHAR},
+      relaMobilePhone = #{relaMobilePhone,jdbcType=VARCHAR},
+      relaTel = #{relaTel,jdbcType=VARCHAR}
+    where relativeId = #{relativeId,jdbcType=VARCHAR}
+  </update>
+</mapper>

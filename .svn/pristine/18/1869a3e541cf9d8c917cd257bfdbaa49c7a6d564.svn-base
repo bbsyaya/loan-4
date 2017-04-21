@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TPaybackAllocateMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TPaybackAllocate" >
+    <id column="importRunningId" property="importRunningId" jdbcType="VARCHAR" />
+    <result column="matchedReceiptId" property="matchedReceiptId" jdbcType="VARCHAR" />
+    <result column="allocateTotalAmt" property="allocateTotalAmt" jdbcType="DECIMAL" />
+    <result column="allocateCaptital" property="allocateCaptital" jdbcType="DECIMAL" />
+    <result column="allocateInterest" property="allocateInterest" jdbcType="DECIMAL" />
+    <result column="allocateDate" property="allocateDate" jdbcType="DATE" />
+    <result column="allocatePerson" property="allocatePerson" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    importRunningId, matchedReceiptId, allocateTotalAmt, allocateCaptital, allocateInterest, 
+    allocateDate, allocatePerson
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_payback_allocate
+    where importRunningId = #{importRunningId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_payback_allocate
+    where importRunningId = #{importRunningId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TPaybackAllocate" >
+    insert into t_payback_allocate (importRunningId, matchedReceiptId, 
+      allocateTotalAmt, allocateCaptital, allocateInterest, 
+      allocateDate, allocatePerson)
+    values (#{importRunningId,jdbcType=VARCHAR}, #{matchedReceiptId,jdbcType=VARCHAR}, 
+      #{allocateTotalAmt,jdbcType=DECIMAL}, #{allocateCaptital,jdbcType=DECIMAL}, #{allocateInterest,jdbcType=DECIMAL}, 
+      #{allocateDate,jdbcType=DATE}, #{allocatePerson,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertPaybackAllocate" parameterType="Map" >
+    insert into t_payback_allocate
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="paybackAllocateId != null" >
+        paybackAllocateId,
+      </if>
+      <if test="importRunningId != null" >
+        importRunningId,
+      </if>
+      <if test="matchedReceiptId != null" >
+        matchedReceiptId,
+      </if>
+      <if test="allocateTotalAmt != null" >
+        allocateTotalAmt,
+      </if>
+      <if test="allocateCaptital != null" >
+        allocateCaptital,
+      </if>
+      <if test="allocateInterest != null" >
+        allocateInterest,
+      </if>
+      <if test="allocateDate != null" >
+        allocateDate,
+      </if>
+      <if test="allocatePerson != null" >
+        allocatePerson,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="paybackAllocateId != null" >
+        #{paybackAllocateId,jdbcType=VARCHAR},
+      </if>
+      <if test="importRunningId != null" >
+        #{importRunningId,jdbcType=VARCHAR},
+      </if>
+      <if test="matchedReceiptId != null" >
+        #{matchedReceiptId,jdbcType=VARCHAR},
+      </if>
+      <if test="allocateTotalAmt != null" >
+        #{allocateTotalAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="allocateCaptital != null" >
+        #{allocateCaptital,jdbcType=DECIMAL},
+      </if>
+      <if test="allocateInterest != null" >
+        #{allocateInterest,jdbcType=DECIMAL},
+      </if>
+      <if test="allocateDate != null" >
+        #{allocateDate,jdbcType=DATE},
+      </if>
+      <if test="allocatePerson != null" >
+        #{allocatePerson,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TPaybackAllocate" >
+    update t_payback_allocate
+    <set >
+      <if test="matchedReceiptId != null" >
+        matchedReceiptId = #{matchedReceiptId,jdbcType=VARCHAR},
+      </if>
+      <if test="allocateTotalAmt != null" >
+        allocateTotalAmt = #{allocateTotalAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="allocateCaptital != null" >
+        allocateCaptital = #{allocateCaptital,jdbcType=DECIMAL},
+      </if>
+      <if test="allocateInterest != null" >
+        allocateInterest = #{allocateInterest,jdbcType=DECIMAL},
+      </if>
+      <if test="allocateDate != null" >
+        allocateDate = #{allocateDate,jdbcType=DATE},
+      </if>
+      <if test="allocatePerson != null" >
+        allocatePerson = #{allocatePerson,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where importRunningId = #{importRunningId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TPaybackAllocate" >
+    update t_payback_allocate
+    set matchedReceiptId = #{matchedReceiptId,jdbcType=VARCHAR},
+      allocateTotalAmt = #{allocateTotalAmt,jdbcType=DECIMAL},
+      allocateCaptital = #{allocateCaptital,jdbcType=DECIMAL},
+      allocateInterest = #{allocateInterest,jdbcType=DECIMAL},
+      allocateDate = #{allocateDate,jdbcType=DATE},
+      allocatePerson = #{allocatePerson,jdbcType=VARCHAR}
+    where importRunningId = #{importRunningId,jdbcType=VARCHAR}
+  </update>
+</mapper>

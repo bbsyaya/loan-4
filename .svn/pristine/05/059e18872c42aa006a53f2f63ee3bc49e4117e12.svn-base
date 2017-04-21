@@ -1,0 +1,502 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TPaybackApplyInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo" >
+    <id column="paybackApplyId" property="paybackApplyId" jdbcType="VARCHAR" />
+    <result column="receiptId" property="receiptId" jdbcType="VARCHAR" />
+    <result column="loanBalance" property="loanBalance" jdbcType="DECIMAL" />
+    <result column="paybackWay" property="paybackWay" jdbcType="VARCHAR" />
+    <result column="loanPaybackWay" property="loanPaybackWay" jdbcType="VARCHAR" />
+    <result column="expectPaybackDate" property="expectPaybackDate" jdbcType="DATE" />
+    <result column="returnPrincipalType" property="returnPrincipalType" jdbcType="VARCHAR" />
+    <result column="paybackAmount" property="paybackAmount" jdbcType="DECIMAL" />
+    <result column="paybackInterest" property="paybackInterest" jdbcType="DECIMAL" />
+    <result column="paybackPenalty" property="paybackPenalty" jdbcType="DECIMAL" />
+    <result column="paybackTotalAmount" property="paybackTotalAmount" jdbcType="DECIMAL" />
+    <result column="term" property="term" jdbcType="VARCHAR" />
+    <result column="advancedPaybackType" property="advancedPaybackType" jdbcType="VARCHAR" />
+    <result column="paybackStatus" property="paybackStatus" jdbcType="VARCHAR" />
+    <result column="operatePerson" property="operatePerson" jdbcType="VARCHAR" />
+    <result column="paybackApplyDate" property="paybackApplyDate" jdbcType="DATE" />
+    <result column="contNo" property="contNo" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="accNo" property="accNo" jdbcType="VARCHAR" />
+    <result column="merchantNo" property="merchantNo" jdbcType="VARCHAR" />
+    <result column="contNo" property="contNo" jdbcType="VARCHAR" />
+    <result column="custId" property="custId" jdbcType="VARCHAR" />
+    <result column="paybackRunningRecordId" property="paybackRunningRecordId" jdbcType="VARCHAR" />
+    <result column="prepaymentId" property="prepaymentId" jdbcType="VARCHAR" />
+    <result column="stdrpno" property="stdrpno" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    paybackApplyId, receiptId, loanBalance, paybackWay, loanPaybackWay, expectPaybackDate, 
+    returnPrincipalType, paybackAmount, paybackInterest, paybackPenalty, paybackTotalAmount, term, advancedPaybackType, 
+    paybackStatus, operatePerson, paybackApplyDate,type,accNo,merchantNo,contNo,custId,paybackRunningRecordId
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_payback_apply_info
+    where paybackApplyId = #{paybackApplyId,jdbcType=VARCHAR}
+  </select>
+ <select id="countNumber" resultType="java.lang.Long" parameterType="Map">
+    select count(*) from t_payback_apply_info t1,t_receipt_info t2,t_customer_info t3 
+    WHERE t1.receiptId=t2.receiptId and t2.custId=t3.custId
+    <if test="paybackStatus != null">
+    	AND t1.paybackStatus = #{paybackStatus}
+    </if>
+	 <if test="ReceiptIdLike != null">
+	    AND t2.receiptId like #{ReceiptIdLike}
+	 </if>
+     <if test="custNameLike != null">
+    	AND t2.custName like #{custNameLike}
+    </if>
+    <if test="merchantNameLike != null">
+    	AND t2.posCustName like #{merchantNameLike}
+    </if> 
+    <if test="paperIdNoLike != null">
+	    AND t3.paperId like #{paperIdNoLike}
+	 </if>   
+  </select>
+  <select id="getPaybackApplyInfo" resultMap="BaseResultMap" parameterType="Map" >
+    select 
+    t1.paybackApplyId,t1.receiptId,t1.loanBalance,t1.paybackWay,t1.loanPaybackWay,t1.expectPaybackDate,t1.returnPrincipalType,t1.paybackAmount,t1.paybackInterest,t1.paybackPenalty,t1.paybackTotalAmount,t1.term,t1.advancedPaybackType,t1.paybackStatus,t1.operatePerson,t1.paybackApplyDate,
+    t2.custName
+    from t_payback_apply_info t1, t_receipt_info t2,t_customer_info t3
+    where t1.receiptId=t2.receiptId and t2.custId=t3.custId
+    <if test="paybackApplyId != null">
+    	AND t1.paybackApplyId = #{paybackApplyId}
+    </if>
+    <if test="paybackStatus != null">
+    	AND t1.paybackStatus = #{paybackStatus}
+    </if>
+	 <if test="ReceiptIdLike != null">
+	    AND t2.receiptId like #{ReceiptIdLike}
+	 </if>
+     <if test="custNameLike != null">
+    	AND t2.custName like #{custNameLike}
+    </if>
+    <if test="merchantNameLike != null">
+    	AND t2.posCustName like #{merchantNameLike}
+    </if>
+    <if test="paperIdNoLike != null">
+    	AND t3.paperId like #{paperIdNoLike}
+    </if>
+    <if test="startPage != null">
+    	LIMIT #{startPage}, #{limit}
+    </if>
+    </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_payback_apply_info
+    where paybackApplyId = #{paybackApplyId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo" >
+    insert into t_payback_apply_info (paybackApplyId, receiptId, loanBalance, 
+      paybackWay, loanPaybackWay, expectPaybackDate, 
+      returnPrincipalType, paybackAmount, paybackInterest, paybackPenalty,
+      paybackTotalAmount, term, advancedPaybackType, type,accNo,paybackRunningRecordId,
+      paybackStatus, operatePerson, paybackApplyDate,merchantNo,contNo,custId
+      )
+    values (#{paybackApplyId,jdbcType=VARCHAR}, #{receiptId,jdbcType=VARCHAR}, #{loanBalance,jdbcType=DECIMAL}, 
+      #{paybackWay,jdbcType=VARCHAR}, #{loanPaybackWay,jdbcType=VARCHAR}, #{expectPaybackDate,jdbcType=DATE}, 
+      #{returnPrincipalType,jdbcType=VARCHAR}, #{paybackAmount,jdbcType=DECIMAL}, #{paybackInterest,jdbcType=DECIMAL}, #{paybackPenalty,jdbcType=DECIMAL},
+      #{paybackTotalAmount,jdbcType=DECIMAL}, #{term,jdbcType=VARCHAR}, #{advancedPaybackType,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR},#{accNo,jdbcType=VARCHAR},#{paybackRunningRecordId,jdbcType=VARCHAR},
+      #{paybackStatus,jdbcType=VARCHAR}, #{operatePerson,jdbcType=VARCHAR}, #{paybackApplyDate,jdbcType=DATE},#{merchantNo,jdbcType=VARCHAR},#{contNo,jdbcType=VARCHAR},#{custId,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo" >
+    insert into t_payback_apply_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="paybackApplyId != null" >
+        paybackApplyId,
+      </if>
+      <if test="receiptId != null" >
+        receiptId,
+      </if>
+      <if test="loanBalance != null" >
+        loanBalance,
+      </if>
+      <if test="paybackWay != null" >
+        paybackWay,
+      </if>
+      <if test="loanPaybackWay != null" >
+        loanPaybackWay,
+      </if>
+      <if test="expectPaybackDate != null" >
+        expectPaybackDate,
+      </if>
+      <if test="returnPrincipalType != null" >
+        returnPrincipalType,
+      </if>
+      <if test="paybackAmount != null" >
+        paybackAmount,
+      </if>
+      <if test="paybackInterest != null" >
+        paybackInterest,
+      </if>
+      <if test="paybackPenalty != null">
+      	paybackPenalty,
+      </if>
+      <if test="paybackTotalAmount != null" >
+        paybackTotalAmount,
+      </if>
+      <if test="term != null">
+      	term,
+      </if>
+      <if test="advancedPaybackType != null" >
+        advancedPaybackType,
+      </if>
+      <if test="paybackStatus != null" >
+        paybackStatus,
+      </if>
+      <if test="operatePerson != null" >
+        operatePerson,
+      </if>
+      <if test="paybackApplyDate != null" >
+        paybackApplyDate,
+      </if>
+      <if test="accNo != null" >
+        accNo,
+      </if>
+      <if test="merchantNo != null" >
+        merchantNo,
+      </if>
+      <if test="contNo != null" >
+        contNo,
+      </if>
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="stdrpno != null" >
+        stdrpno,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="paybackApplyId != null" >
+        #{paybackApplyId,jdbcType=VARCHAR},
+      </if>
+      <if test="receiptId != null" >
+        #{receiptId,jdbcType=VARCHAR},
+      </if>
+      <if test="loanBalance != null" >
+        #{loanBalance,jdbcType=DECIMAL},
+      </if>
+      <if test="paybackWay != null" >
+        #{paybackWay,jdbcType=VARCHAR},
+      </if>
+      <if test="loanPaybackWay != null" >
+        #{loanPaybackWay,jdbcType=VARCHAR},
+      </if>
+      <if test="expectPaybackDate != null" >
+        #{expectPaybackDate,jdbcType=DATE},
+      </if>
+      <if test="returnPrincipalType != null" >
+        #{returnPrincipalType,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackAmount != null" >
+        #{paybackAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="paybackInterest != null" >
+        #{paybackInterest,jdbcType=DECIMAL},
+      </if>
+      <if test="paybackPenalty != null">
+      	#{paybackPenalty,jdbcType=DECIMAL},
+      </if>
+      <if test="paybackTotalAmount != null" >
+        #{paybackTotalAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="term != null">
+      	#{term,jdbcType=VARCHAR},
+      </if>
+      <if test="advancedPaybackType != null" >
+        #{advancedPaybackType,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackStatus != null" >
+        #{paybackStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="operatePerson != null" >
+        #{operatePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackApplyDate != null" >
+        #{paybackApplyDate,jdbcType=DATE},
+      </if>
+       <if test="accNo != null" >
+         #{accNo,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantNo != null" >
+        #{merchantNo,jdbcType=VARCHAR},
+      </if>
+      <if test="contNo != null" >
+        #{contNo,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="stdrpno != null" >
+        #{stdrpno,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updatePaybackApply" parameterType="Map" >
+    update t_payback_apply_info
+    <set >
+      <if test="loanBalance != null" >
+        loanBalance = #{loanBalance,jdbcType=DECIMAL},
+      </if>
+      <if test="paybackWay != null" >
+        paybackWay = #{paybackWay,jdbcType=VARCHAR},
+      </if>
+      <if test="loanPaybackWay != null" >
+        loanPaybackWay = #{loanPaybackWay,jdbcType=VARCHAR},
+      </if>
+      <if test="exceptPaybackDate != null" >
+        exceptPaybackDate = #{exceptPaybackDate,jdbcType=DATE},
+      </if>
+      <if test="returnPrincipalType != null" >
+        returnPrincipalType = #{returnPrincipalType,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackAmount != null" >
+        paybackAmount = #{paybackAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="paybackInterest != null" >
+        paybackInterest = #{paybackInterest,jdbcType=DECIMAL},
+      </if>
+      <if test="paybackPenalty != null ">
+      	paybackPenalty = #{paybackPenalty,jdbcType=DECIMAL},
+      </if>
+      <if test="paybackTotalAmount != null" >
+        paybackTotalAmount = #{paybackTotalAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="term != null">
+      	term = #{term,jdbcType=VARCHAR},
+      </if>
+      <if test="advancedPaybackType != null" >
+        advancedPaybackType = #{advancedPaybackType,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackStatus != null" >
+        paybackStatus = #{paybackStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="operatePerson != null" >
+        operatePerson = #{operatePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackApplyDate != null" >
+        paybackApplyDate = #{paybackApplyDate,jdbcType=DATE},
+      </if>
+      <if test="prepaymentId != null" >
+        prepaymentId = #{prepaymentId,jdbcType=DATE},
+      </if>
+    </set>
+    where paybackApplyId = #{paybackApplyId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo" >
+    update t_payback_apply_info
+    <set >
+    <!-- 
+      <if test="receiptId != null" >
+        receiptId = #{receiptId,jdbcType=VARCHAR},
+      </if> -->
+      <if test="loanBalance != null" >
+        loanBalance = #{loanBalance,jdbcType=DECIMAL},
+      </if>
+      <if test="paybackWay != null" >
+        paybackWay = #{paybackWay,jdbcType=VARCHAR},
+      </if>
+      <if test="loanPaybackWay != null" >
+        loanPaybackWay = #{loanPaybackWay,jdbcType=VARCHAR},
+      </if>
+      <if test="expectPaybackDate != null" >
+        expectPaybackDate = #{expectPaybackDate,jdbcType=DATE},
+      </if>
+      <if test="returnPrincipalType != null" >
+        returnPrincipalType = #{returnPrincipalType,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackAmount != null" >
+        paybackAmount = #{paybackAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="paybackInterest != null" >
+        paybackInterest = #{paybackInterest,jdbcType=DECIMAL},
+      </if>
+      <if test="paybackPenalty != null" >
+      	paybackPenalty = #{paybackPenalty,jdbcType=DECIMAL},	
+      </if>
+      <if test="paybackTotalAmount != null" >
+        paybackTotalAmount = #{paybackTotalAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="term != null">
+      	term = #{term,jdbcType=VARCHAR},
+      </if>
+      <if test="advancedPaybackType != null" >
+        advancedPaybackType = #{advancedPaybackType,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackStatus != null" >
+        paybackStatus = #{paybackStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="operatePerson != null" >
+        operatePerson = #{operatePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackApplyDate != null" >
+        paybackApplyDate = #{paybackApplyDate,jdbcType=DATE},
+      </if>
+    </set>
+    where paybackApplyId = #{paybackApplyId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo" >
+    update t_payback_apply_info
+    set receiptId = #{receiptId,jdbcType=VARCHAR},
+      loanBalance = #{loanBalance,jdbcType=DECIMAL},
+      paybackWay = #{paybackWay,jdbcType=VARCHAR},
+      loanPaybackWay = #{loanPaybackWay,jdbcType=VARCHAR},
+      expectPaybackDate = #{expectPaybackDate,jdbcType=DATE},
+      returnPrincipalType = #{returnPrincipalType,jdbcType=VARCHAR},
+      paybackAmount = #{paybackAmount,jdbcType=DECIMAL},
+      paybackInterest = #{paybackInterest,jdbcType=DECIMAL},
+      paybackPenalty = #{paybackPenalty,jdbcType=DECIMAL},
+      paybackTotalAmount = #{paybackTotalAmount,jdbcType=DECIMAL},
+      term = #{term,jdbcType=VARCHAR},
+      advancedPaybackType = #{advancedPaybackType,jdbcType=VARCHAR},
+      paybackStatus = #{paybackStatus,jdbcType=VARCHAR},
+      operatePerson = #{operatePerson,jdbcType=VARCHAR},
+      paybackApplyDate = #{paybackApplyDate,jdbcType=DATE}
+    where paybackApplyId = #{paybackApplyId,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectRepaymentByZzApp" resultType="Map" parameterType="Map">
+    select tcusi.custId as custid, tcusi.custName as custname, tcusi.paperKind as paperkind, tcusi.paperId as paperid, tconi.loanId as loanid,tpai.paybackStatus status,
+    tconi.contNo as contno, tconi.cnContNo as cncontno, tpa.payApplyId as payapplyid, tpai.paybackApplyId as retulistid, tpai.type as retutype,
+    tpai.accNo as subsaccno, date_format(tprri.actualPaybackDate,'%Y%m%d%H%m%s') as acdate, tpai.paybackTotalAmount as sumamt, tpai.paybackAmount as rcapi,
+    tpai.paybackInterest as rinte, "" as rfine, tpai.paybackStatus as status, tpai.paybackAmount as paybackamt, date_format(tpai.paybackApplyDate,'%Y%m%d%H%m%s') as paybackdate
+    from      t_payback_apply_info tpai 
+    left join t_payback_running_record_info		tprri  on tprri.paybackRunningRecordId = tpai.paybackRunningRecordId
+    left join t_receipt_info 	  tri on tri.receiptId = tpai.receiptId
+    left join t_payment_apply 	  tpa on tpa.payApplyId = tri.payApplyId
+    left join t_customer_info     tcusi on tcusi.custId = tpa.custId
+    left join t_contract_info     tconi on tconi.contNo = tpa.contNo
+    left join t_credit_apply_info	tcai on tcai.loanId = tconi.loanId
+    where 1=1 and tcai.deleteFlag = '0'  and (tcai.inChannelKind = '01' or tcai.inChannelKind = '05')
+    <if test="paperId != null">
+    	and tcusi.paperId = #{paperId}
+    </if>
+    <if test="paperKind != null">
+    	and tcusi.paperKind = #{paperKind}
+    </if>
+    <if test="custId != null">
+    	and tcusi.custId = #{custId}
+    </if>
+    <if test="custName != null">
+    	and tcusi.custName = #{custName}
+    </if>
+    <if test="loanId != null">
+    	and tconi.loanId = #{loanId}
+    </if>
+    <if test="contNo != null">
+    	and tconi.contNo = #{contNo}
+    </if>
+    <if test="cnContNo != null">
+    	and tconi.cnContNo = #{cnContNo}
+    </if>
+    <if test="payApplyId != null">
+    	and tri.payApplyId = #{payApplyId}
+    </if>
+    <if test="beginDate != null">
+    	and tpai.paybackApplyDate >= #{beginDate,jdbcType=TIMESTAMP}
+    </if>
+    <if test="endDate != null">
+    	<![CDATA[ and tpai.paybackApplyDate <= #{endDate,jdbcType=TIMESTAMP} ]]>
+    </if>
+    order by tpai.paybackApplyDate desc
+  </select>
+  
+  <select id="selectRepaymentBySlApp" resultType="Map" parameterType="Map">
+    select tcusi.custId as custid, tcusi.custName as custname, tcusi.paperKind as paperkind, tcusi.paperId as paperid, tconi.loanId as loanid,
+    tconi.contNo as contno, tconi.cnContNo as cncontno, tpa.payApplyId as payapplyid, tpai.paybackApplyId as retulistid, tpai.type as retutype,
+    tpai.accNo as subsaccno, date_format(tprri.actualPaybackDate,'%Y%m%d%H%m%s') as acdate, tprri.actualTotalAmount as sumamt, tprri.actualCapital as rcapi,
+    tprri.actualInterest as rinte, "" as rfine, tpai.paybackStatus as status, tpai.paybackAmount as paybackamt, date_format(tpai.paybackApplyDate,'%Y%m%d%H%m%s') as paybackdate
+    from      t_payback_apply_info tpai 
+    left join t_payback_running_record_info		tprri  on tprri.paybackRunningRecordId = tpai.paybackRunningRecordId
+    left join t_receipt_info 	  tri on tri.receiptId = tpai.receiptId
+    left join t_payment_apply 	  tpa on tpa.payApplyId = tri.payApplyId
+    left join t_customer_info     tcusi on tcusi.custId = tpa.custId
+    left join t_contract_info     tconi on tconi.contNo = tpa.contNo
+    left join t_credit_apply_info	tcai on tcai.loanId = tconi.loanId
+    where 1=1 and tcai.prodId = '1001020351'
+    <if test="paperId != null">
+    	and tcusi.paperId = #{paperId}
+    </if>
+    <if test="paperKind != null">
+    	and tcusi.paperKind = #{paperKind}
+    </if>
+    <if test="custId != null">
+    	and tcusi.custId = #{custId}
+    </if>
+    <if test="custName != null">
+    	and tcusi.custName = #{custName}
+    </if>
+    <if test="loanId != null">
+    	and tconi.loanId = #{loanId}
+    </if>
+    <if test="contNo != null">
+    	and tconi.contNo = #{contNo}
+    </if>
+    <if test="cnContNo != null">
+    	and tconi.cnContNo = #{cnContNo}
+    </if>
+    <if test="payApplyId != null">
+    	and tri.payApplyId = #{payApplyId}
+    </if>
+    <if test="beginDate != null">
+    	and tpai.paybackApplyDate >= #{beginDate,jdbcType=TIMESTAMP}
+    </if>
+    <if test="endDate != null">
+    	<![CDATA[ and tpai.paybackApplyDate <= #{endDate,jdbcType=TIMESTAMP} ]]>
+    </if>
+    order by tpai.paybackApplyDate desc
+  </select>
+  <select id="selectPaybackApply" resultMap="BaseResultMap" parameterType="Map">
+  	select 
+    <include refid="Base_Column_List" />
+    from t_payback_apply_info
+    where receiptId = #{receiptId,jdbcType=VARCHAR}
+    <if test="flagTodo != null" >
+        and paybackStatus in ('00','10','90')
+    </if>
+    <if test="flagDone != null" >
+        and paybackStatus in ('20','21')
+    </if>
+    <if test="flagCancel != null" >
+        and paybackStatus in ('30','50')
+    </if>
+    <if test="expectPaybackDate != null" >
+        and expectPaybackDate = #{expectPaybackDate,jdbcType=DATE}
+    </if>
+	<if test="advancedPaybackType != null">
+		and advancedPaybackType = #{advancedPaybackType,jdbcType=VARCHAR}
+	</if>
+	<if test="paybackStatus != null">
+		and paybackStatus = #{paybackStatus,jdbcType=VARCHAR}
+	</if>
+	<if test="operatePerson != null">
+		and operatePerson = #{operatePerson,jdbcType=VARCHAR}
+	</if>
+	<if test="paybackApplyDate != null">
+		and paybackApplyDate = #{paybackApplyDate,jdbcType=DATE}
+	</if>
+  </select>
+  
+  <select id="queryPaybackApplyInfo01" resultMap="BaseResultMap">
+  	select * from t_payback_apply_info 
+  	where loanPaybackWay = '01' 
+  	AND 
+  	((paybackStatus in ('00','10') AND DATE_FORMAT(NOW(),'%Y-%m-%d') > DATE_FORMAT(expectPaybackDate,'%Y-%m-%d'))
+  	OR paybackStatus = '90' )
+  </select>
+  
+  <select id="queryPaybackApplyIdList02" resultType="java.lang.String">
+  	select paybackApplyId from t_payback_apply_info where loanPaybackWay = '02' AND paybackStatus in ('00','10');
+  </select>
+  
+    <update id="updatePaybackApplyInfo" parameterType="java.lang.String">
+  	update t_payback_apply_info 
+  	set paybackStatus ='50' 
+  	where paybackApplyId = #{paybackApplyId} 
+  </update>
+</mapper>

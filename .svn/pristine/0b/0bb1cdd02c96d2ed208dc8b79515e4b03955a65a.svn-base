@@ -1,0 +1,427 @@
+/**
+ * create by Lin,Zhaolin
+ */
+  	//add by Lin,Zhaolin for extends easyui's window-open function with allow options replace
+	$.fn.openWin = function(options) {
+		var defaults = {
+			width : 900,
+			height : $(window).height(),
+			modal : true,
+			shadow : false,
+			closed : true,
+			minimizable : false,
+			maximizable : true,
+			collapsible : false,
+			resizable : false
+		};
+		$.extend(defaults, options);
+		$(this).window(defaults);
+		$(this).window('open');
+	}
+	
+  	//add by zllin for extends validatebox
+	$.extend($.fn.validatebox.methods, {    
+	    remove: function(jq, newposition){    
+	        return jq.each(function(){    
+	            $(this).removeClass("validatebox-text validatebox-invalid").unbind('focus').unbind('blur');  
+	            $(this).attr('validType',null);
+	            var dop = $(this).attr('data-options');
+			    if(typeof(dop) !="undefined" && /(required[ ]*\:[ ]*true)/.test(dop)){
+			    	var nr = dop.replace(/(required[ ]*\:[ ]*true)/,"required:false");
+			    	$(this).attr('data-options', nr);
+			    }
+	        });    
+	    },  
+	    reduce: function(jq, newposition){    
+	        return jq.each(function(){    
+	           var opt = $(this).data().validatebox.options;  
+	           $(this).addClass("validatebox-text").validatebox(opt); 
+	           var dop = $(this).attr('data-options');
+			    if(typeof(dop) !="undefined" && /(required[ ]*\:[ ]*false)/.test(dop)){
+			    	var nr = dop.replace(/(required[ ]*\:[ ]*false)/,"required:true");
+			    	$(this).attr('data-options', nr);
+			    }
+	        });    
+	    }
+	});
+	
+	$.extend($.fn.validatebox.defaults.rules, {
+	    selectedRequired: {
+	        validator: function(value,param){             
+	             if (value == "" || value.indexOf('请选择') >= 0) {   
+	                return false;  
+	             }else {  
+	                return true;  
+	             }    
+	        },
+	        message: '该下拉框为必选项'   
+	     } 
+	});
+	
+	function validateForm(formId){
+		var vFlag = true;
+		$('#'+formId+' input').each(function () {
+		    var dop = $(this).attr('data-options');
+		    if(typeof(dop) !="undefined" && /(required[ ]*\:[ ]*true)/.test(dop)){
+		    
+		    	if ($(this).attr('required') || $(this).attr('validType')!=null || /(required[ ]*\:[ ]*true)/.test(dop)) {
+			    	if (!$(this).validatebox('isValid')) {
+				    	vFlag = false;
+				        return;
+				    }
+			    }
+		    }
+			
+		})
+		$('#'+formId+' select').each(function () {
+		    var dop = $(this).attr('data-options');
+			if ($(this).attr('required') || $(this).attr('validType')=="selectedRequired" || (typeof(dop) !="undefined" && /(required[ ]*\:[ ]*true)/.test(dop))) {
+				var val;
+				if($(this).attr('validType')=="selectedRequired"){		//combobox
+			    	val = getComboValue('#'+$(this).attr('id'));
+			    }else{
+					val = $(this).attr("value");
+			    }
+			    
+			    if (val == "" || val.indexOf('请选择') >= 0) {
+			    	vFlag = false;
+			        return;
+			    }
+		    }
+			
+		})
+		return vFlag;
+	}
+	
+	function setTextValue(objId,value){
+		$(objId).val(value);
+	}
+	
+	function setValTextValue(objId,value){
+		$(objId).val(value);
+		$(objId).validatebox();
+	}
+	
+	function setComboValue(objId,value){
+		$(objId).combobox('setValue',value);
+	}
+	
+	function setRadioValue(objId,value){
+		$("input:radio[name='"+objId+"'][value='"+value+"']").prop('checked', true);
+	}
+	
+	function setInputValue(objId,value,type){
+		if(type=="combo"){
+			setComboValue(objId,value);
+		}else if(type=="radio"){
+			setRadioValue(objId,value);
+		}else{
+			setValTextValue(objId,value);
+		}
+	}
+	
+	function setNumberValue(objId,value){
+		$(objId).numberbox('setValue',value);
+	}
+	
+	function getValue(objId,type){
+		if(type=="combo"){
+			return $(objId).combobox('getValue',"");
+		}else if(type=="radio"){
+			return $("input[name='"+objId+"']:checked").val();
+		}else if(type=="number"){
+			return $(objId).numberbox('getValue'); 
+		}else if(type=="date"){
+			return $(objId).datebox('getValue',""); 
+		}else{
+			return $(objId).val();
+		}
+	}
+	
+	function getRadioValue(objId){
+		return getValue(objId,"radio");
+	}
+	
+	function getComboValue(objId){
+		return getValue(objId,"combo");
+	}
+	
+	function getTextValue(objId){
+		return getValue(objId,"text");
+	}
+	
+	function getNumberValue(objId){
+		return getValue(objId,"number");
+	}
+	
+	//convert json date-value get by ajax to format-date 
+	function timeStamp2String(time){
+		if(typeof(time)=="undefined" || time=="") return "";
+		
+		var datetime = new Date();
+		datetime.setTime(time);
+		return formatDateStyle(datetime, "yyyy-MM-dd");
+	}
+	
+	function timeStamp2Time(time){
+		if(typeof(time)=="undefined" || time=="") return "";
+		
+		var datetime = new Date();
+		datetime.setTime(time);
+		return formatDateStyle(datetime, "yyyy-MM-dd hh:mm:ss");
+	}
+	
+	function formatDateStyle(time, style){
+		var o = {
+				"M+" : time.getMonth() + 1, //month
+				"d+" : time.getDate(),      //day
+				"h+" : time.getHours(),     //hour
+				"m+" : time.getMinutes(),   //minute
+				"s+" : time.getSeconds(),   //second
+				"w+" : "\u65e5\u4e00\u4e8c\u4e09\u56db\u4e94\u516d".charAt(time.getDay()),   //week
+				"q+" : Math.floor((time.getMonth() + 3) / 3),  //quarter
+				"S"  : time.getMilliseconds() //millisecond
+			}
+			if (/(y+)/.test(style)) {
+				style = style.replace(RegExp.$1, (time.getFullYear() + "").substr(4 - RegExp.$1.length));
+			}
+			for(var k in o){
+				if (new RegExp("("+ k +")").test(style)){
+					style = style.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
+				}
+			}
+			return style;
+	}
+	
+	//modify by cjq 
+	function formatdecimal(val, row, index){ //三位一逗
+		if(typeof(val)=='undefined'){
+			return "";
+		}
+		var str = val+"";
+		var n = str.length % 3; 
+		if(n){ 
+			return str.slice(0,n) + str.slice(n).replace(/(\d{3})/g,',$1') 
+		}else{
+			return str.replace(/(\d{3})/g,',$1').slice(1) 
+		}
+	}
+	
+	function formatMoney(dMoney, row, index)
+	{
+		var iType=2;
+		
+	    if (dMoney==null || (dMoney==""&&dMoney!=0) || typeof(dMoney)=='undefined') return "";
+	   
+	        if(dMoney==""){
+	            if( (""+dMoney)=="") return "";
+	            else dMoney=0.00;
+	        }
+	        else
+	        	dMoney = parseFloat(dMoney,10);
+	        
+	        if(isNaN(dMoney)) dMoney=0.00;
+	        
+	        var sMoney="",i,sTemp="",itemCount,iLength,digit=3,sign="",s1="",s2="",sResultSet="";
+	        
+	        //显示修正。修正原理：对需求的小数位数(iType)的下一位数进行四舍五入运算
+	        var myFraction = 0.5;  //修正基数 （只能是小数）
+				for(var ij=1;ij<=iType;ij++)
+					myFraction *= 0.1;
+
+	        if(dMoney < 0){
+	            sign = "-";  //符号位
+	            dMoney = dMoney - myFraction;  //修正最后一位
+	            sMoney = dMoney.toString().substring(1); //截去符号位
+	        }else{
+	        	dMoney = dMoney + myFraction;
+	        	sMoney = dMoney.toString();
+	        }
+	        
+	        //分出整数部分和小数部分
+	        s1 = sMoney.substring(0, sMoney.indexOf("."));  //整数部分
+	        s2 = sMoney.substring(sMoney.indexOf(".")+1, sMoney.indexOf(".")+1+iType);  //小数部分
+	       
+	        //三位一小逗
+	        iLength = s1.length;  //整数部分的长度（位数）
+	        itemCount = parseInt((iLength-1)/digit, 10) ;    //计算整数部分的显示段数    
+	        for (i=0;i<itemCount;i++){
+	            sTemp = ","+s1.substring(iLength-digit*(i+1),iLength-digit*i)+sTemp;
+	        }
+	        
+	        //将整数部分整理成最终显示模式（符号位+没有截取出来的最高几位+其余整数位）
+	        sResultSet = sign+s1.substring(0,iLength-digit*i)+sTemp;       
+	       
+	        //加上小数部分
+	        if(iType!=0)    sResultSet = sResultSet + "." + s2;    
+	       
+	        return sResultSet;
+	    
+	}
+	
+	function formatRate(val, row, index){
+		if(typeof(val)=='undefined' || val.length==0){
+			return val;
+		}
+		return val+" %";
+	}
+	
+	function formatTerm(val, row, index){
+		if(typeof(val)=='undefined' || val.length==0){
+			return val;
+		}
+		return val+" 月";
+	}
+	
+	function dateFormat(value, row, index){
+        return timeStamp2String(value);
+	}
+	
+	function timeFormat(value, row, index){
+    	return timeStamp2Time(value);
+	}
+	/**拖欠标识*/
+	function formatOverFlag(val, row, index){
+		if(typeof(val)=='undefined' || val == ""){
+			return val;
+		}
+		if(val == '0'){
+			return '正常';
+		}else{
+			return '拖欠';
+		}
+		return val;
+		
+	}
+	/**还款标识*/
+	function formatPayoffFlag(val, row, index){
+		if(typeof(val)=='undefined' || val == ""){
+			return val;
+		}
+		if(val == '00'){
+			return '未还';
+		}else if(val == '10'){
+			return '已还';
+		}
+		return val;
+	}
+	//检查是否只选择了记录
+    function rowSelected(tableId){
+    	var rows = $(tableId).datagrid('getSelections');
+    	var length = rows.length;
+		if (length == 0){
+		    alert("请选择一条记录！");
+		    return false;
+		}else if(length > 1){ 
+		    alert("请只选择一条记录！");
+		    return false;
+		}else{
+		    return true;
+		}
+    }
+	
+	function showProcess(vmsg){
+    	$.messager.progress({
+ 	        msg: vmsg,
+ 	        text: '正在处理，请等待......',
+ 	    }); 
+    }
+    
+    function hideProcess(){
+    	$.messager.progress('close');
+    }
+	
+	//----add end
+    
+    function showHideObjects(sObjects,sShowOrHide)
+	{
+		if(sObjects=="") return;
+		var sTargetObjects = sObjects.split(",");
+		if(sTargetObjects=="") return;
+		for (iObject=0;iObject<sTargetObjects.length;iObject++)
+		{
+			if(sShowOrHide=="hide"){
+				try{
+					sCurObj = document.all(sTargetObjects[iObject]);
+					sCurObj.style.display = "none";
+				}catch(e){
+					alert("隐藏查询区对象时出错。请检查Html模版。"+e);
+				}
+			}else{
+				try{
+					sCurObj = document.all(sTargetObjects[iObject]);
+					sCurObj.style.display = "";
+				}catch(e){
+					alert("显示查询区对象时出错。请检查Html模版。"+e);
+				}
+			}
+		}
+		
+	}
+	
+	function showFilterArea()
+	{
+		showHideObjects("filterArea","show");
+		showHideObjects("filterIconPlus","hide");
+		showHideObjects("filterIconMinus","show");
+	}
+	
+	function hideFilterArea(){
+		showHideObjects("filterArea","hide");
+		showHideObjects("filterIconPlus","show");
+		showHideObjects("filterIconMinus","hide");
+	}
+	
+	
+	//----protype extend
+	/**
+	* 删除左右两端的空格
+	*/
+	String.prototype.trim=function()
+	{
+	     return this.replace(/(^\s*)|(\s*$)/g, "");
+	}
+	
+	function fmtOverFlag(val, row, index){
+	    if(typeof(val) == "undefined"){
+	        return "";
+	    }
+		if("0" == val){
+			val = "不拖欠";
+		}else if(val.match(/[0-9]*/)){
+			val = "拖欠";
+				}
+		return val;
+	}
+	function fmtPayoffFlag(val, row, index){
+	       if(typeof(val) == "undefined"){
+	            return "";
+	        }
+		if("00" == val){
+			val = "未结清";
+		}else if(val.match(/[0-9]*/)){
+			val = "结清";
+				}
+		return val;
+	}
+	
+	 function clearForm(selector){
+	   //清除input
+	   $(selector).find("input[type='text']")
+	    .val('')  
+	    .removeAttr('checked')  
+	    .removeAttr('selected');
+	   //清除select
+	   $(selector).find("select").remove();
+	  }
+	 
+	 //下载文件
+   function download_file(url) {
+     if (typeof (download_file.iframe) == "undefined") {
+       var iframe = document.createElement("iframe");
+       download_file.iframe = iframe;
+       document.body.appendChild(download_file.iframe);
+     }
+     download_file.iframe.src = url;
+     download_file.iframe.style.display = "none";
+   }

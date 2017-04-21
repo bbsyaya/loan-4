@@ -1,0 +1,32 @@
+package com.hrbb.loan.pos.biz.backstage.inter.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosPaybackImportBiz;
+import com.hrbb.loan.pos.dao.entity.TPaybackImportInfo;
+import com.hrbb.loan.pos.service.LoanPosPaybackImportService;
+@Component("loanPosPaybackImportBiz")
+public class LoanPosPaybackImportBizImpl implements LoanPosPaybackImportBiz {
+	@Autowired
+	private LoanPosPaybackImportService loanPosPaybackImportService;
+	@Override
+	public List<TPaybackImportInfo> queryPaybackImportInfo(Map<String, Object> reqMap) {
+		List<TPaybackImportInfo> l =  loanPosPaybackImportService.queryPaybackImportInfo(reqMap);
+		return l;
+	}
+	@Override
+	public List<TPaybackImportInfo> queryMatchedPaybackImportInfo(Map<String, Object> reqMap) {
+		List<TPaybackImportInfo> l =  loanPosPaybackImportService.queryMatchedPaybackImportInfo(reqMap);
+		return l;
+	}
+	@Override
+	public List<TPaybackImportInfo> queryTransferInRecord(
+			Map<String, Object> reqMap) {
+		return loanPosPaybackImportService.queryTransferInRecord(reqMap);
+	}
+
+}

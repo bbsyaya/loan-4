@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TAICShareHolderMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TAICShareHolder" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="posCustId" property="posCustId" jdbcType="VARCHAR" />
+    <result column="orderNo" property="orderNo" jdbcType="VARCHAR" />
+    <result column="shaName" property="shaName" jdbcType="VARCHAR" />
+    <result column="subConAm" property="subConAm" jdbcType="VARCHAR" />
+    <result column="regCapCur" property="regCapCur" jdbcType="VARCHAR" />
+    <result column="conDate" property="conDate" jdbcType="VARCHAR" />
+    <result column="cdId" property="cdId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, posCustId, orderNo, shaName, subConAm, regCapCur, conDate, cdId, funDedRatio
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_shareholder_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectBySelectiveMap" resultType="Map" parameterType="Map">
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_shareholder_info
+    where orderNo = #{orderNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_aic_shareholder_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TAICShareHolder" >
+    insert into t_aic_shareholder_info (id, posCustId, orderNo, 
+      shaName, subConAm, regCapCur, 
+      conDate, cdId)
+    values (#{id,jdbcType=INTEGER}, #{posCustId,jdbcType=VARCHAR}, #{orderNo,jdbcType=VARCHAR}, 
+      #{shaName,jdbcType=VARCHAR}, #{subConAm,jdbcType=VARCHAR}, #{regCapCur,jdbcType=VARCHAR}, 
+      #{conDate,jdbcType=VARCHAR}, #{cdId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICShareHolder" >
+    insert into t_aic_shareholder_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="orderNo != null" >
+        orderNo,
+      </if>
+      <if test="shaName != null" >
+        shaName,
+      </if>
+      <if test="subConAm != null" >
+        subConAm,
+      </if>
+      <if test="regCapCur != null" >
+        regCapCur,
+      </if>
+      <if test="conDate != null" >
+        conDate,
+      </if>
+      <if test="cdId != null" >
+        cdId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="shaName != null" >
+        #{shaName,jdbcType=VARCHAR},
+      </if>
+      <if test="subConAm != null" >
+        #{subConAm,jdbcType=VARCHAR},
+      </if>
+      <if test="regCapCur != null" >
+        #{regCapCur,jdbcType=VARCHAR},
+      </if>
+      <if test="conDate != null" >
+        #{conDate,jdbcType=VARCHAR},
+      </if>
+      <if test="cdId != null" >
+        #{cdId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="Map" >
+    insert into t_aic_shareholder_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="orderNo != null" >
+        orderNo,
+      </if>
+      <if test="shaName != null" >
+        shaName,
+      </if>
+      <if test="subConAm != null" >
+        subConAm,
+      </if>
+      <if test="regCapCur != null" >
+        regCapCur,
+      </if>
+      <if test="conDate != null" >
+        conDate,
+      </if>
+      <if test="cdId != null" >
+        cdId,
+      </if>
+      <if test="funDedRatio != null">
+      	funDedRatio,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="shaName != null" >
+        #{shaName,jdbcType=VARCHAR},
+      </if>
+      <if test="subConAm != null" >
+        #{subConAm,jdbcType=VARCHAR},
+      </if>
+      <if test="regCapCur != null" >
+        #{regCapCur,jdbcType=VARCHAR},
+      </if>
+      <if test="conDate != null" >
+        #{conDate,jdbcType=VARCHAR},
+      </if>
+      <if test="cdId != null" >
+        #{cdId,jdbcType=VARCHAR},
+      </if>
+      <if test="funDedRatio != null">
+      	#{funDedRatio},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICShareHolder" >
+    update t_aic_shareholder_info
+    <set >
+      <if test="posCustId != null" >
+        posCustId = #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        orderNo = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="shaName != null" >
+        shaName = #{shaName,jdbcType=VARCHAR},
+      </if>
+      <if test="subConAm != null" >
+        subConAm = #{subConAm,jdbcType=VARCHAR},
+      </if>
+      <if test="regCapCur != null" >
+        regCapCur = #{regCapCur,jdbcType=VARCHAR},
+      </if>
+      <if test="conDate != null" >
+        conDate = #{conDate,jdbcType=VARCHAR},
+      </if>
+      <if test="cdId != null" >
+        cdId = #{cdId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TAICShareHolder" >
+    update t_aic_shareholder_info
+    set posCustId = #{posCustId,jdbcType=VARCHAR},
+      orderNo = #{orderNo,jdbcType=VARCHAR},
+      shaName = #{shaName,jdbcType=VARCHAR},
+      subConAm = #{subConAm,jdbcType=VARCHAR},
+      regCapCur = #{regCapCur,jdbcType=VARCHAR},
+      conDate = #{conDate,jdbcType=VARCHAR},
+      cdId = #{cdId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TAICAlterInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TAICAlterInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="posCustId" property="posCustId" jdbcType="VARCHAR" />
+    <result column="orderNo" property="orderNo" jdbcType="VARCHAR" />
+    <result column="altDate" property="altDate" jdbcType="VARCHAR" />
+    <result column="altItem" property="altItem" jdbcType="VARCHAR" />
+    <result column="altBe" property="altBe" jdbcType="VARCHAR" />
+    <result column="altAf" property="altAf" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, posCustId, orderNo, altDate, altItem, altBe, altAf
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_alter_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectSelective" resultType="Map" parameterType="Map">
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_alter_info
+    WHERE 1=1
+    <if test="orderNo != null">
+    	AND orderNo = #{orderNo}
+    </if>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_aic_alter_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TAICAlterInfo" >
+    insert into t_aic_alter_info (id, posCustId, orderNo, 
+      altDate, altItem, altBe, 
+      altAf)
+    values (#{id,jdbcType=INTEGER}, #{posCustId,jdbcType=VARCHAR}, #{orderNo,jdbcType=VARCHAR}, 
+      #{altDate,jdbcType=VARCHAR}, #{altItem,jdbcType=VARCHAR}, #{altBe,jdbcType=VARCHAR}, 
+      #{altAf,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICAlterInfo" >
+    insert into t_aic_alter_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="orderNo != null" >
+        orderNo,
+      </if>
+      <if test="altDate != null" >
+        altDate,
+      </if>
+      <if test="altItem != null" >
+        altItem,
+      </if>
+      <if test="altBe != null" >
+        altBe,
+      </if>
+      <if test="altAf != null" >
+        altAf,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="altDate != null" >
+        #{altDate,jdbcType=VARCHAR},
+      </if>
+      <if test="altItem != null" >
+        #{altItem,jdbcType=VARCHAR},
+      </if>
+      <if test="altBe != null" >
+        #{altBe,jdbcType=VARCHAR},
+      </if>
+      <if test="altAf != null" >
+        #{altAf,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICAlterInfo" >
+    update t_aic_alter_info
+    <set >
+      <if test="posCustId != null" >
+        posCustId = #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        orderNo = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="altDate != null" >
+        altDate = #{altDate,jdbcType=VARCHAR},
+      </if>
+      <if test="altItem != null" >
+        altItem = #{altItem,jdbcType=VARCHAR},
+      </if>
+      <if test="altBe != null" >
+        altBe = #{altBe,jdbcType=VARCHAR},
+      </if>
+      <if test="altAf != null" >
+        altAf = #{altAf,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TAICAlterInfo" >
+    update t_aic_alter_info
+    set posCustId = #{posCustId,jdbcType=VARCHAR},
+      orderNo = #{orderNo,jdbcType=VARCHAR},
+      altDate = #{altDate,jdbcType=VARCHAR},
+      altItem = #{altItem,jdbcType=VARCHAR},
+      altBe = #{altBe,jdbcType=VARCHAR},
+      altAf = #{altAf,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

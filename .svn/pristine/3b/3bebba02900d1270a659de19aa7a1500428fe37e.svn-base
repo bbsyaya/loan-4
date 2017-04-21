@@ -1,0 +1,17 @@
+package com.hrbb.loan.pos.dao;
+
+import com.hrbb.loan.pos.dao.entity.TApprovedRulesConfig;
+
+public interface TApprovedRulesConfigDao {
+    int deleteByPrimaryKey(Integer id);
+
+    int insert(TApprovedRulesConfig record);
+
+    int insertSelective(TApprovedRulesConfig record);
+
+    TApprovedRulesConfig selectByPrimaryKey(Integer id);
+
+    int updateByPrimaryKeySelective(TApprovedRulesConfig record);
+
+    int updateByPrimaryKey(TApprovedRulesConfig record);
+}

@@ -1,0 +1,104 @@
+/**
+ * 
+ */
+package com.hrbb.loan.spi;
+
+import com.hrbb.sh.framework.HService;
+
+/**
+ * <p>Title: POSHService.java </p>
+ * <p>Description:  </p>
+ * <p>Copyright: Copyright (C) 2015 Hrbb Ltd. Co.</p> 
+ *     
+ * @author linzhaolin@hrbb.com.cn
+ * @version 
+ * @date 2015年7月21日
+ *
+ * logs: 1. 
+ */
+public interface POSHService extends HService {
+	public static final String 进件渠道_银商 = "UM";
+	public static final String 进件渠道_58金融 = "58";
+	public static final String 进件渠道_慧聪网 = "HC";
+	public static final String 进件渠道_北龙中网 = "ZW";
+	public static final String 进件渠道_代理展业 = "ZY";
+	public static final String 进件渠道_融360 = "RN";
+	public static final String 进件渠道_萨摩耶 = "SM";
+	
+	public static final String 贷款模式_自营业务 = "01";
+	public static final String 贷款模式_资金池 = "02";
+	
+	public static final String 进件方式_PORTAL = "02";
+	
+	public static final String 联系类型_经营地址 = "01";
+	public static final String 联系类型_住宅地址 = "02";
+	
+	/**
+	 * 获取渠道名称
+	 * @return
+	 */
+	public String getChannel();
+	
+	/**
+	 * 进件方式
+	 * @return
+	 */
+	public String getInChannelKind();
+//	/**
+//	 * 推荐机构
+//	 * @return
+//	 */
+//	public String getPromOrg();
+//	/**
+//	 * 推荐人
+//	 * @return
+//	 */
+//	public String getPromMan();
+	/**
+	 * 加解密标签
+	 * @return
+	 */
+	public String getEncryptedRender();
+	
+//	/**
+//	 * 获取前置通道名称
+//	 * @return
+//	 */
+//	public String getFrontierTunnel();
+	
+	/**
+	 * 贷款方式
+	 * @return
+	 */
+	public String getLoanType();
+	
+	/**
+	 * 产品编号
+	 * @return
+	 */
+	public String getProdId();
+	
+	/**
+	 * 产品名称
+	 * @return
+	 */
+	public String getProdName();
+	
+	/**
+	 * 报文中保持银行代码
+	 * @return
+	 */
+	public boolean keepBankNo();
+	
+	/**
+	 * 日期格式
+	 * @return
+	 */
+	public String responseDateFormat();
+	
+	/**
+	 * 时间格式
+	 * @return
+	 */
+	public String responseTimeFormat();
+}

@@ -1,0 +1,30 @@
+package com.hrbb.loan.pos.service.bean;
+
+public class ExpiredMessage {
+	
+	
+	private String expiredDate;
+	
+	private String expiredReason;
+
+	public String getExpiredDate() {
+		return expiredDate;
+	}
+
+	public void setExpiredDate(String expiredDate) {
+		this.expiredDate = expiredDate;
+	}
+
+	public String getExpiredReason() {
+		return expiredReason;
+	}
+
+	public void setExpiredReason(String expiredReason) {
+		this.expiredReason = expiredReason;
+	}
+	
+	 public String toString() {
+	        return "\"expireddate\":\"" + expiredDate + "\","
+	                + "\"expiredreason\":\"" + expiredReason + "\",";
+	    }
+}

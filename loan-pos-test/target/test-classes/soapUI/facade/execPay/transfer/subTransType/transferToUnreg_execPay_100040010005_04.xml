@@ -1,0 +1,17 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+	<soap:Body>
+		<ns2:execPay xmlns:ns2="http://framework.facade.common.transcore.pinganfu.com/">
+			<arg0>
+				<extFeilds>{"DEV_IP":"127.0.0.1","DEV_ID":"014b68737ff05ed4b04ff4a7c70ba8ad903752dd3c30093be8b7a5b1a64eb5f733ad60111b997b93"}</extFeilds>
+				<paymentMode>1</paymentMode>
+				<transId>${transId}</transId>
+				<tranDetails>
+					<currencyCode>CNY</currencyCode>
+					<payAcctId>861</payAcctId>
+					<payAmt>100000</payAmt>
+					<payType>00</payType>
+				</tranDetails>
+			</arg0>
+		</ns2:execPay>
+	</soap:Body>
+</soap:Envelope>

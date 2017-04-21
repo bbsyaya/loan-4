@@ -1,0 +1,28 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:fram="http://framework.facade.common.transcore.pinganfu.com/">
+	<soapenv:Header />
+	<soapenv:Body>
+		<fram:execProxyPayoff>
+			<arg0>
+				<clientIp>0</clientIp>
+				<clientSource>0</clientSource>
+				<facadeVersion>0</facadeVersion>
+				<bankCardInfo>
+				</bankCardInfo>
+				<busiChannel>W</busiChannel>
+				<ccy>CNY</ccy>
+				<customerId>2000010000000002</customerId> <!--  03 -->
+				<dcFlag>D</dcFlag>
+				<extFeilds>sdd</extFeilds>
+				<feeAmt>0</feeAmt>
+				<orderNo>${orderNo}</orderNo>
+				<productCode>200020020000</productCode>
+				<toCredentialType>1</toCredentialType>
+				<toCustomerId>1000010000026540</toCustomerId>
+				<transAmt>1000000</transAmt>
+				<transFactAmt>1030000</transFactAmt>
+				<transType>60</transType>
+			</arg0>
+		</fram:execProxyPayoff>
+	</soapenv:Body>
+</soapenv:Envelope>

@@ -1,0 +1,86 @@
+/**
+ * 
+ */
+package com.hrbb.loan.pos.entity.event.impl;
+
+import java.util.EventObject;
+import java.util.Map;
+
+import com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo;
+import com.hrbb.loan.pos.dao.entity.TPaymentApply;
+import com.hrbb.loan.pos.entity.event.EventException;
+import com.hrbb.loan.pos.entity.event.ListenerEventAction;
+import com.hrbb.loan.pos.entity.event.POSEvent;
+import com.hrbb.loan.pos.entity.event.POSEventsSource;
+import com.hrbb.loan.pos.entity.event.cab.MessageCab;
+
+/**
+ * <p>Title: MsgEvent.java </p>
+ * <p>Description:  </p>
+ * <p>Copyright: Copyright (C) 2015 Hrbb Ltd. Co.</p> 
+ *     
+ * @author linzhaolin@hrbb.com.cn
+ * @version 
+ * @date 2015年7月8日
+ *
+ * logs: 1. 
+ */
+public class MsgEvent extends EventObject implements POSEvent {
+	
+	private POSEventsSource source = null;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	public MsgEvent(Object source) {
+		super(source);
+		this.source = (POSEventsSource)source;
+	}
+
+	@Override
+	public void execute() throws EventException {
+		
+		ListenerEventAction message = null;
+		int type = (int)source.getAttribute(POSEvent.监听事件名称_消息推送);
+		switch(type){
+			case MessageCab.消息推送_授信审批通过:
+				break;
+			case MessageCab.消息推送_授信审批拒绝:
+				break;
+			case MessageCab.消息推送_补件通知:
+				break;
+			case MessageCab.消息推送_放款结果通知:
+				TPaymentApply paymentApply = (TPaymentApply)source.getAttribute("paymentApply");
+				Map<String,Object> appr = (Map<String,Object>)source.getAttribute("paymentApproval");
+				String issueResult = (String)source.getAttribute("issueResult");
+				
+				message = new IssueMessage(paymentApply,appr,issueResult);
+				break;
+			case MessageCab.消息推送_协议状态调整:
+				break;
+			case MessageCab.消息推送_还款结果通知:
+				TPaybackApplyInfo paybackApply = (TPaybackApplyInfo)source.getAttribute("paybackApply");
+				message = new RepayNotifyMessage(paybackApply);
+				break;
+			case MessageCab.消息推送_到期还款提醒:
+				break;
+			case MessageCab.消息推送_逾期催收通知:
+				break;
+			case MessageCab.消息推送_审批结果失效:
+				break;
+			case MessageCab.消息推送_影像文件缺失通知:
+				break;
+			case MessageCab.消息推送_还款申请失效通知:
+			    TPaybackApplyInfo paybackApplyInfo = (TPaybackApplyInfo)source.getAttribute("paybackApplyInfo");
+			    message = new CancelRepayNotifyMessage(paybackApplyInfo);
+				break;
+			default:
+				message = new NullEventAction();
+		}
+		
+		message.execute();
+	}
+	
+
+}

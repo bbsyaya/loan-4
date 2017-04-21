@@ -1,0 +1,39 @@
+package com.hrbb.loan.sale.biz.constants;
+
+public enum LoanSaleApplyStatusEnum {
+    IN_CHECK("01","审核中"),
+    NEED_ADD_IT("02","待补件"),
+    REJECT("03","已拒绝"),
+    IN_REVIEW("04","复审中"),
+    PASSED("05","已通过"),
+    NEED_DELIVERY("06","待放款"),
+    NO_CLEAR("07","未结清"),
+    CLEARED("08","已结清"),
+    ORERDUE("09","已逾期"),
+    INVALID("10","已作废");
+    
+    private String statusCode;
+    private String statusMessage;
+    
+    private LoanSaleApplyStatusEnum(String statusCode,String statusMessage){
+        this.statusCode = statusCode;
+        this.statusMessage = statusMessage;
+    }
+
+    public String getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(String statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public String getStatusMessage() {
+        return statusMessage;
+    }
+
+    public void setStatusMessage(String statusMessage) {
+        this.statusMessage = statusMessage;
+    }
+    
+}

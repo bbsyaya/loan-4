@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditReportPensionIssueMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditReportPensionIssue" >
+    <id column="serialNo" property="serialNo" jdbcType="VARCHAR" />
+    <result column="reportNo" property="reportNo" jdbcType="VARCHAR" />
+    <result column="area" property="area" jdbcType="VARCHAR" />
+    <result column="retireType" property="retireType" jdbcType="VARCHAR" />
+    <result column="retireDate" property="retireDate" jdbcType="VARCHAR" />
+    <result column="workDate" property="workDate" jdbcType="VARCHAR" />
+    <result column="issueAmt" property="issueAmt" jdbcType="DECIMAL" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+    <result column="workUnit" property="workUnit" jdbcType="VARCHAR" />
+    <result column="updateDate" property="updateDate" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    serialNo, reportNo, area, retireType, retireDate, workDate, issueAmt, reason, workUnit, 
+    updateDate
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_report_pension_issue
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_credit_report_pension_issue
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportPensionIssue" >
+    insert into t_credit_report_pension_issue (serialNo, reportNo, area, 
+      retireType, retireDate, workDate, 
+      issueAmt, reason, workUnit, 
+      updateDate)
+    values (#{serialNo,jdbcType=VARCHAR}, #{reportNo,jdbcType=VARCHAR}, #{area,jdbcType=VARCHAR}, 
+      #{retireType,jdbcType=VARCHAR}, #{retireDate,jdbcType=VARCHAR}, #{workDate,jdbcType=VARCHAR}, 
+      #{issueAmt,jdbcType=DECIMAL}, #{reason,jdbcType=VARCHAR}, #{workUnit,jdbcType=VARCHAR}, 
+      #{updateDate,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportPensionIssue" >
+    insert into t_credit_report_pension_issue
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="area != null" >
+        area,
+      </if>
+      <if test="retireType != null" >
+        retireType,
+      </if>
+      <if test="retireDate != null" >
+        retireDate,
+      </if>
+      <if test="workDate != null" >
+        workDate,
+      </if>
+      <if test="issueAmt != null" >
+        issueAmt,
+      </if>
+      <if test="reason != null" >
+        reason,
+      </if>
+      <if test="workUnit != null" >
+        workUnit,
+      </if>
+      <if test="updateDate != null" >
+        updateDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="area != null" >
+        #{area,jdbcType=VARCHAR},
+      </if>
+      <if test="retireType != null" >
+        #{retireType,jdbcType=VARCHAR},
+      </if>
+      <if test="retireDate != null" >
+        #{retireDate,jdbcType=VARCHAR},
+      </if>
+      <if test="workDate != null" >
+        #{workDate,jdbcType=VARCHAR},
+      </if>
+      <if test="issueAmt != null" >
+        #{issueAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="reason != null" >
+        #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="workUnit != null" >
+        #{workUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="map" >
+    insert into t_credit_report_pension_issue
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="area != null" >
+        area,
+      </if>
+      <if test="retireType != null" >
+        retireType,
+      </if>
+      <if test="retireDate != null" >
+        retireDate,
+      </if>
+      <if test="workDate != null" >
+        workDate,
+      </if>
+      <if test="issueAmt != null" >
+        issueAmt,
+      </if>
+      <if test="reason != null" >
+        reason,
+      </if>
+      <if test="workUnit != null" >
+        workUnit,
+      </if>
+      <if test="updateDate != null" >
+        updateDate,
+      </if>
+       <if test="queryId != null">
+      	queryId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="area != null" >
+        #{area,jdbcType=VARCHAR},
+      </if>
+      <if test="retireType != null" >
+        #{retireType,jdbcType=VARCHAR},
+      </if>
+      <if test="retireDate != null" >
+        #{retireDate,jdbcType=VARCHAR},
+      </if>
+      <if test="workDate != null" >
+        #{workDate,jdbcType=VARCHAR},
+      </if>
+      <if test="issueAmt != null" >
+        #{issueAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="reason != null" >
+        #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="workUnit != null" >
+        #{workUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=VARCHAR},
+      </if>
+       <if test="queryId != null">
+      	#{queryId},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportPensionIssue" >
+    update t_credit_report_pension_issue
+    <set >
+      <if test="reportNo != null" >
+        reportNo = #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="area != null" >
+        area = #{area,jdbcType=VARCHAR},
+      </if>
+      <if test="retireType != null" >
+        retireType = #{retireType,jdbcType=VARCHAR},
+      </if>
+      <if test="retireDate != null" >
+        retireDate = #{retireDate,jdbcType=VARCHAR},
+      </if>
+      <if test="workDate != null" >
+        workDate = #{workDate,jdbcType=VARCHAR},
+      </if>
+      <if test="issueAmt != null" >
+        issueAmt = #{issueAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="reason != null" >
+        reason = #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="workUnit != null" >
+        workUnit = #{workUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null" >
+        updateDate = #{updateDate,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportPensionIssue" >
+    update t_credit_report_pension_issue
+    set reportNo = #{reportNo,jdbcType=VARCHAR},
+      area = #{area,jdbcType=VARCHAR},
+      retireType = #{retireType,jdbcType=VARCHAR},
+      retireDate = #{retireDate,jdbcType=VARCHAR},
+      workDate = #{workDate,jdbcType=VARCHAR},
+      issueAmt = #{issueAmt,jdbcType=DECIMAL},
+      reason = #{reason,jdbcType=VARCHAR},
+      workUnit = #{workUnit,jdbcType=VARCHAR},
+      updateDate = #{updateDate,jdbcType=VARCHAR}
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

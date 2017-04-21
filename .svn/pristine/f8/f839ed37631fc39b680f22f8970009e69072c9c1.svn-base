@@ -1,0 +1,277 @@
+package com.hrbb.loan.pos.dao.entity;
+
+import java.util.Date;
+
+public class TCustomerBase {
+   
+
+	private String custId;
+
+    private String acustId;
+
+    private String custName;
+
+    private String corpCustFlag;
+
+    private String paperKind;
+
+    private String paperId;
+
+    private Date bookDate;
+
+    private String origOperId;
+
+    private String origBankId;
+
+    private String operId;
+
+    private String bankId;
+
+    private String lastChanPerson;
+
+    private String lastChanBankId;
+
+    private Date lastChanDate;
+
+    private String recoId;
+
+    private String custState;
+
+    private String delFlag;
+
+    private String isLoan;
+
+    private String isPayOffLoan;
+
+    private String isBadLoan;
+
+    private String isOutAssu;
+
+    private String isBlack;
+
+    private String blackType;
+
+    private Date blackBeginDate;
+
+    private Date blackEndDate;
+
+    private String blackReason;
+
+    private String isRela;
+
+    public String getCustId() {
+        return custId;
+    }
+
+    public void setCustId(String custId) {
+        this.custId = custId == null ? null : custId.trim();
+    }
+
+    public String getAcustId() {
+        return acustId;
+    }
+
+    public void setAcustId(String acustId) {
+        this.acustId = acustId == null ? null : acustId.trim();
+    }
+
+    public String getCustName() {
+        return custName;
+    }
+
+    public void setCustName(String custName) {
+        this.custName = custName == null ? null : custName.trim();
+    }
+
+    public String getCorpCustFlag() {
+        return corpCustFlag;
+    }
+
+    public void setCorpCustFlag(String corpCustFlag) {
+        this.corpCustFlag = corpCustFlag == null ? null : corpCustFlag.trim();
+    }
+
+    public String getPaperKind() {
+        return paperKind;
+    }
+
+    public void setPaperKind(String paperKind) {
+        this.paperKind = paperKind == null ? null : paperKind.trim();
+    }
+
+    public String getPaperId() {
+        return paperId;
+    }
+
+    public void setPaperId(String paperId) {
+        this.paperId = paperId == null ? null : paperId.trim();
+    }
+
+    public Date getBookDate() {
+        return bookDate;
+    }
+
+    public void setBookDate(Date bookDate) {
+        this.bookDate = bookDate;
+    }
+
+    public String getOrigOperId() {
+        return origOperId;
+    }
+
+    public void setOrigOperId(String origOperId) {
+        this.origOperId = origOperId == null ? null : origOperId.trim();
+    }
+
+    public String getOrigBankId() {
+        return origBankId;
+    }
+
+    public void setOrigBankId(String origBankId) {
+        this.origBankId = origBankId == null ? null : origBankId.trim();
+    }
+
+    public String getOperId() {
+        return operId;
+    }
+
+    public void setOperId(String operId) {
+        this.operId = operId == null ? null : operId.trim();
+    }
+
+    public String getBankId() {
+        return bankId;
+    }
+
+    public void setBankId(String bankId) {
+        this.bankId = bankId == null ? null : bankId.trim();
+    }
+
+    public String getLastChanPerson() {
+        return lastChanPerson;
+    }
+
+    public void setLastChanPerson(String lastChanPerson) {
+        this.lastChanPerson = lastChanPerson == null ? null : lastChanPerson.trim();
+    }
+
+    public String getLastChanBankId() {
+        return lastChanBankId;
+    }
+
+    public void setLastChanBankId(String lastChanBankId) {
+        this.lastChanBankId = lastChanBankId == null ? null : lastChanBankId.trim();
+    }
+
+    public Date getLastChanDate() {
+        return lastChanDate;
+    }
+
+    public void setLastChanDate(Date lastChanDate) {
+        this.lastChanDate = lastChanDate;
+    }
+
+    public String getRecoId() {
+        return recoId;
+    }
+
+    public void setRecoId(String recoId) {
+        this.recoId = recoId == null ? null : recoId.trim();
+    }
+
+    public String getCustState() {
+        return custState;
+    }
+
+    public void setCustState(String custState) {
+        this.custState = custState == null ? null : custState.trim();
+    }
+
+    public String getDelFlag() {
+        return delFlag;
+    }
+
+    public void setDelFlag(String delFlag) {
+        this.delFlag = delFlag == null ? null : delFlag.trim();
+    }
+
+    public String getIsLoan() {
+        return isLoan;
+    }
+
+    public void setIsLoan(String isLoan) {
+        this.isLoan = isLoan == null ? null : isLoan.trim();
+    }
+
+    public String getIsPayOffLoan() {
+        return isPayOffLoan;
+    }
+
+    public void setIsPayOffLoan(String isPayOffLoan) {
+        this.isPayOffLoan = isPayOffLoan == null ? null : isPayOffLoan.trim();
+    }
+
+    public String getIsBadLoan() {
+        return isBadLoan;
+    }
+
+    public void setIsBadLoan(String isBadLoan) {
+        this.isBadLoan = isBadLoan == null ? null : isBadLoan.trim();
+    }
+
+    public String getIsOutAssu() {
+        return isOutAssu;
+    }
+
+    public void setIsOutAssu(String isOutAssu) {
+        this.isOutAssu = isOutAssu == null ? null : isOutAssu.trim();
+    }
+
+    public String getIsBlack() {
+        return isBlack;
+    }
+
+    public void setIsBlack(String isBlack) {
+        this.isBlack = isBlack == null ? null : isBlack.trim();
+    }
+
+    public String getBlackType() {
+        return blackType;
+    }
+
+    public void setBlackType(String blackType) {
+        this.blackType = blackType == null ? null : blackType.trim();
+    }
+
+    public Date getBlackBeginDate() {
+        return blackBeginDate;
+    }
+
+    public void setBlackBeginDate(Date blackBeginDate) {
+        this.blackBeginDate = blackBeginDate;
+    }
+
+    public Date getBlackEndDate() {
+        return blackEndDate;
+    }
+
+    public void setBlackEndDate(Date blackEndDate) {
+        this.blackEndDate = blackEndDate;
+    }
+
+    public String getBlackReason() {
+        return blackReason;
+    }
+
+    public void setBlackReason(String blackReason) {
+        this.blackReason = blackReason == null ? null : blackReason.trim();
+    }
+
+    public String getIsRela() {
+        return isRela;
+    }
+
+    public void setIsRela(String isRela) {
+        this.isRela = isRela == null ? null : isRela.trim();
+    }
+}

@@ -1,0 +1,352 @@
+package com.hrbb.loan.pos.biz.backstage.inter.impl;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import jodd.util.StringUtil;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.biz.backstage.inter.ILoanPosCreditApplyBackStageBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.ILoanPosCreditApplyCheckRegBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.ISmsSenderBiz;
+import com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo;
+import com.hrbb.loan.pos.dao.entity.TSmsTemplate;
+import com.hrbb.loan.pos.service.CreditApplyAprvInfoService;
+import com.hrbb.loan.pos.service.LoanPosBlacklistService;
+import com.hrbb.loan.pos.service.LoanPosCreditApplyService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.IdCardUtil;
+import com.hrbb.loan.pos.util.ListUtil;
+//import com.hrbb.loan.pos.util.SmsTemplateFactory;
+import com.hrbb.loan.pos.util.constants.BusinessDictionaryConstants;
+import com.hrbb.loan.pos.util.constants.ReviewNoteConstants;
+
+/**
+ * 业务规则校验
+ * 
+ * @author cjq
+ * @version $Id: LoanPosCreditApplyCheckRegBizImpl.java, v 0.1 2015年5月18日 下午4:27:34 cjq Exp $
+ */
+@Component("LoanPosCreditApplyCheckRegBizImpl")
+public class LoanPosCreditApplyCheckRegBizImpl implements ILoanPosCreditApplyCheckRegBiz {
+    
+    Logger logger = LoggerFactory.getLogger(LoanPosCreditApplyCheckRegBizImpl.class);
+    
+    @Autowired
+    private ILoanPosCreditApplyBackStageBiz loanPosCreditApplyBackStageBiz;
+    
+    @Autowired
+    private LoanPosCreditApplyService loanPosCreditApplyService;
+    
+    @Autowired
+    private LoanPosBlacklistService loanPosBlacklistService;
+    
+    @Autowired
+    private CreditApplyAprvInfoService creditApplyAprvInfoService;
+    
+    @Autowired
+    private ISmsSenderBiz smsSenderBiz;
+
+
+    public static final String EFF_FLAG = "effectFlag";
+
+    public static final String CERT_TYPE = "certType";
+
+    public static final String INFO_TYPE = "infoType";
+    
+    public static final String INFO_DETAIL = "infoDetail";
+
+    /** 
+     * @see com.hrbb.loan.pos.biz.backstage.inter.ILoanPosCreditApplyBackStageBiz#CreditApplyCheck(java.lang.String)
+     */
+    @Override
+    public Map<String, Object> creditApplyCheck(String loanId) throws Exception{
+        
+        Map<String,Object> checkResult = Maps.newHashMap();
+        if(StringUtil.isEmpty(loanId)){
+            checkResult.put("checkCode", "999");
+            checkResult.put("checkMessage", "该笔申请不存在，loanId为空");
+            return checkResult;
+        }
+        Map<String,Object> creMap = Maps.newHashMap();//业务信息
+        Map<String,Object> relMap = Maps.newHashMap();//亲属信息
+        Map<String,Object> custMap = Maps.newHashMap();//客户信息
+        Map<String,Object> posCustMap = Maps.newHashMap();//商户信息
+        Map<String,Object> bankCardMap = Maps.newHashMap();//银行卡信息
+        // 查询业务信息、客户信息、商户信息、银行信息
+        List<Map<String,Object>> mapList = loanPosCreditApplyBackStageBiz.getCreditApplyDetail(loanId);
+        if(mapList.isEmpty()){
+        	checkResult.put("checkCode", "999");
+            checkResult.put("checkMessage", "该笔申请不存在");
+            return checkResult;
+        }
+        creMap = mapList.get(0);
+        custMap = mapList.get(1);
+        relMap = mapList.get(2);
+        posCustMap = mapList.get(3);
+        bankCardMap = mapList.get(4);
+        logger.debug("creMap:[{}];custMap:[{}];relMap:[{}];posCustMap:[{}];bankCardMap:[{}]",creMap,custMap,relMap,posCustMap,bankCardMap);
+        
+        logger.info("业务受理短信发送开始");
+  /*      try {
+            TSmsTemplate smsTemplate = smsSenderBiz.getSmsTemplate(SmsTemplateFactory.getCheckTemplate((String)creMap.get("channel")));
+            
+            String smsContent = smsTemplate.getSmsContent();
+            if(!StringUtil.isEmpty(smsContent)){
+                smsSenderBiz.insertSmsMessage(SmsTemplateFactory.getCheckTemplate((String)creMap.get("channel")), (String)custMap.get("mobilePhone"), smsContent);
+                logger.info("业务受理短信发送成功");
+            }
+        } catch (Exception e) {
+            logger.error("业务受理短信发送失败", e);
+        }*/
+        
+        /** step1:合格性校验*/
+        // 申请人年龄（18-60）
+        String paperId = (String)custMap.get("paperId");
+        logger.debug("证件号码为:" + paperId);
+        if(!StringUtil.isEmpty(paperId)){
+            int age = IdCardUtil.getAgeByIdCard(paperId);
+            if(age<18 || age >60){
+                return refuse(loanId, "年龄不符合要求", "不满足合格性校验", checkResult, "999", "年龄不符合要求");
+            }
+        }
+        // 对于存量客户，如果距今最近的上一笔申请的审批状态为拒绝，那么拒绝日期距离本次申请日期时间差要大于三个月（按自然月计算）
+        Map<String,Object> map = loanPosCreditApplyService.selectLastTh((String)custMap.get("custId"));
+        if(map!=null && map.size()>0){
+            if(map.get("applyStatus").equals("91") || map.get("applyStatus").equals("92")){
+
+                    Date beginDate = (Date)map.get("beginDate");
+                    Long days = DateUtil.getDateDiffFromToday(beginDate);
+                    if(days > 90){
+                        return refuse(loanId, "三个月内被拒绝", "不满足合格性校验", checkResult, "999", "三个月内被拒绝过");
+                    }
+            }
+        }
+        /** step2:准入规则校验*/
+        // ********************黑名单校验************************
+        blackMapCheck(loanId, checkResult, relMap, custMap, posCustMap);
+        // ********************地区限入校验************************
+        // 宁德户籍（身份证以3522与3509开头），无论是申请人还是配偶均限制进入； 如果满足本规则，返回信息“申请人/配偶/企业属于XX地区”。
+        String matePaperId = (String)custMap.get("matePaperId");
+        if(paperId != null && (paperId.startsWith("3522") || paperId.startsWith("3509"))){
+        	return refuse(loanId, "申请人属于宁德地区", "不满足准入规则", checkResult, "999", "申请人属于宁德地区");
+        }
+        // guoyu 20150714 add
+        // 南平户籍（身份证以3507与3521开头），无论是申请人还是配偶均限制进入； 如果满足本规则，返回信息“申请人/配偶/企业属于XX地区”。
+        if(paperId != null && (paperId.startsWith("3507") || paperId.startsWith("3521"))){
+        	return refuse(loanId, "申请人属于南平地区", "不满足准入规则", checkResult, "999", "申请人属于南平地区");
+        }
+        if(matePaperId != null &&(matePaperId.startsWith("3522") || matePaperId.startsWith("3509"))){
+        	return refuse(loanId, "申请人配偶属于宁德地区", "不满足准入规则", checkResult, "999", "申请人配偶属于宁德地区");
+        }
+        if(matePaperId != null &&(matePaperId.startsWith("3507") || matePaperId.startsWith("3521"))){
+        	return refuse(loanId, "申请人配偶属于南平地区", "不满足准入规则", checkResult, "999", "申请人配偶属于南平地区");
+        }
+        //北京地区限入
+        String operAddrCode = (String)posCustMap.get("operAddrCode");
+        String posCustName = (String)posCustMap.get("posCustName");
+        String businessAddr = (String)posCustMap.get("posCustAddress");
+        String custAddr = (String)custMap.get("residentDetail");
+        
+        if(operAddrCode != null && operAddrCode.startsWith("11")){
+        	if((posCustName != null && containsAddr(posCustName))){
+        		return refuse(loanId, "申请人企业属于"+posCustName+"地区", "不满足准入规则", checkResult, "999", "申请人企业属于"+posCustName+"地区");
+        	}
+        	
+        	if(businessAddr != null &&  containsAddr(businessAddr)){
+        		return refuse(loanId, "申请人企业属于"+businessAddr+"地区", "不满足准入规则", checkResult, "999", "申请人企业属于"+businessAddr+"地区");
+        	}
+        }
+        // guoyu 20150714 add
+//        if(businessAddr != null && containsArea(businessAddr)){
+//        	return refuse(loanId, "申请人企业属于"+businessAddr+"地区", "不满足准入规则", checkResult, "999", "申请人企业属于"+businessAddr+"地区");
+//        }
+        // 58金融不受省份地区限制
+        String channel = creMap.get("channel")==null?null:creMap.get("channel").toString();
+        if (!ReviewNoteConstants.CHANNEL_CODE_58.equals(channel)){
+        	if (creMap.get("region") != null){
+        		//禁入地区
+        		String areaName = containsAreaByCode(creMap.get("region").toString());
+        		if (StringUtil.isNotEmpty(areaName)){
+        			return refuse(loanId, "申请人企业属于"+businessAddr+"地区", "不满足准入规则", checkResult, "999", "申请人企业属于"+businessAddr+"地区");
+        		}
+        	}
+        }
+        
+        if(custAddr != null && containsAddr(custAddr)){
+        	return refuse(loanId, "申请人地址属于"+custAddr+"地区", "不满足准入规则", checkResult, "999", "申请人地址属于"+custAddr+"地区");
+        }
+        // 发送短信
+        checkResult.put("checkCode", "000");
+        checkResult.put("checkMessage", "申请校验通过");
+        return checkResult;
+    }
+
+    /**
+     * 黑名单条件数据拼接
+     * 
+     * @param loanId
+     * @param checkResult
+     * @param relMap
+     * @param custMap
+     * @param posCustMap
+     */
+    private void blackMapCheck(String loanId, Map<String, Object> checkResult,
+                               Map<String, Object> relMap, Map<String, Object> custMap,
+                               Map<String, Object> posCustMap) {
+        // 如果是已有客户，判断客户是否黑名单客户，如果是业务状态直接拒绝，否则待处理
+        Map<String, Object> custIdCardNoBlackMap = Maps.newHashMap();
+        Map<String, Object> relIdCardNoBlackMap = Maps.newHashMap();
+        Map<String, Object> custTelBlackMap = Maps.newHashMap();
+        Map<String, Object> relTelBlackMap = Maps.newHashMap();
+        Map<String, Object> posCustTelBlackMap = Maps.newHashMap();
+        Map<String, Object> posCustNameBlackMap = Maps.newHashMap();
+        Map<String, Object> posCustAddressBlackMap = Maps.newHashMap();
+        // 申请人身份证号黑名单校验
+        custIdCardNoBlackMap.put(EFF_FLAG, "0");
+        custIdCardNoBlackMap.put(INFO_TYPE, BusinessDictionaryConstants.INFO_TYPE_CARD);
+        custIdCardNoBlackMap.put(INFO_DETAIL, (String) custMap.get("paperId"));
+        // 配偶身份证号黑名单校验
+        relIdCardNoBlackMap.put(EFF_FLAG, "0");
+        relIdCardNoBlackMap.put(INFO_TYPE, BusinessDictionaryConstants.INFO_TYPE_CARD);
+        relIdCardNoBlackMap.put(INFO_DETAIL, (String) relMap.get("paperId"));
+        // 申请人电话
+        custTelBlackMap.put(EFF_FLAG, "0");
+        custTelBlackMap.put(INFO_TYPE, BusinessDictionaryConstants.INFO_TYPE_TEL);
+        custTelBlackMap.put(INFO_DETAIL, custMap.get("mobilePhone"));
+        // 配偶电话
+        relTelBlackMap.put(EFF_FLAG, "0");
+        relTelBlackMap.put(INFO_TYPE, BusinessDictionaryConstants.INFO_TYPE_TEL);
+        relTelBlackMap.put(INFO_DETAIL, relMap.get("relaMobilePhone"));
+        // 商户电话
+        posCustTelBlackMap.put(EFF_FLAG, "0");
+        posCustTelBlackMap.put(INFO_TYPE, BusinessDictionaryConstants.INFO_TYPE_TEL);
+        posCustTelBlackMap.put(INFO_DETAIL, custMap.get("mobilePhone"));
+        // 商户名称
+        posCustNameBlackMap.put(EFF_FLAG, "0");
+        posCustNameBlackMap.put(INFO_TYPE, BusinessDictionaryConstants.INFO_TYPE_POSNAME);
+        posCustNameBlackMap.put(INFO_DETAIL, posCustMap.get("posCustName"));
+        // 商户地址
+        posCustAddressBlackMap.put(EFF_FLAG, "0");
+        posCustAddressBlackMap.put(INFO_TYPE, BusinessDictionaryConstants.INFP_TYPE_ADDRESS);
+        posCustAddressBlackMap.put(INFO_DETAIL, custMap.get("posCustAddress"));
+        if (isBlack(custIdCardNoBlackMap, relIdCardNoBlackMap, custTelBlackMap, relTelBlackMap,
+            posCustTelBlackMap, posCustNameBlackMap, posCustAddressBlackMap)) {
+            String apprInfo = "申请人/配偶/企业属于黑名单客户";
+            String apprInfoExt = "不满足准入规则";
+            updateCreditApplyRefuse(loanId, apprInfo, apprInfoExt);
+            messageReturn(checkResult, "999", "申请人/配偶/企业属于黑名单客户");
+        }       
+    }
+
+    /**
+     * 黑名单判断
+     * 
+     * @param custIdCardNoBlackMap
+     * @param relIdCardNoBlackMap
+     * @param custTelBlackMap
+     * @param relTelBlackMap
+     * @param posCustTelBlackMap
+     * @param posCustNameBlackMap
+     * @param posCustAddressBlackMap
+     * @return
+     */
+    private Boolean isBlack(Map<String, Object> custIdCardNoBlackMap,
+                            Map<String, Object> relIdCardNoBlackMap,
+                            Map<String, Object> custTelBlackMap,
+                            Map<String, Object> relTelBlackMap,
+                            Map<String, Object> posCustTelBlackMap,
+                            Map<String, Object> posCustNameBlackMap,
+                            Map<String, Object> posCustAddressBlackMap) {
+        
+        return checkInfoDetailIsEmpty(custIdCardNoBlackMap) 
+                || checkInfoDetailIsEmpty(relIdCardNoBlackMap) 
+                || checkInfoDetailIsEmpty(custTelBlackMap) 
+                ||checkInfoDetailIsEmpty(relTelBlackMap)
+                ||checkInfoDetailIsEmpty(posCustTelBlackMap) 
+                ||checkInfoDetailIsEmpty(posCustNameBlackMap) 
+                || checkInfoDetailIsEmpty(posCustAddressBlackMap);
+    }
+
+    /**
+     * 信息为空时，不进行黑名单校验
+     * 
+     * @param blackMap
+     * @return
+     */
+    private Boolean checkInfoDetailIsEmpty(Map<String, Object> blackMap) {
+        if(StringUtil.isEmpty((String)blackMap.get(INFO_DETAIL))){
+            return false;
+        }else{
+            return ListUtil.isNotEmpty(loanPosBlacklistService.getBlacklistMap(blackMap));
+        }
+    }
+
+	private Map<String, Object> messageReturn(Map<String, Object> checkResult, String checkCode, String checkMessage) {
+		checkResult.put("checkCode", checkCode);
+		checkResult.put("checkMessage", checkMessage);
+		return checkResult;
+	}
+
+	private void updateCreditApplyRefuse(String loanId, String apprInfo,
+			String apprInfoExt) {
+		TCreditApplyAprvInfo creditApplyAprvInfo = new TCreditApplyAprvInfo();
+		creditApplyAprvInfo.setLoanId(loanId);
+		creditApplyAprvInfo.setApprvId("system");
+		creditApplyAprvInfo.setApprInfo(apprInfo);
+		creditApplyAprvInfo.setApprInfoExt(apprInfoExt);
+		creditApplyAprvInfo.setApprState("10");
+		creditApplyAprvInfoService.updateCreditApplyRefuse(creditApplyAprvInfo);
+	}
+	
+	private Map<String, Object> refuse(String loanId, String apprInfo,
+			String apprInfoExt, Map<String, Object> checkResult, String checkCode, String checkMessage){
+		updateCreditApplyRefuse(loanId, apprInfo, apprInfoExt);
+		return messageReturn(checkResult, checkCode, checkMessage);
+	}
+	
+	private boolean containsAddr(String addr){
+		for(String str : addrMap){
+			if(addr.contains(str)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean containsArea(String addr){
+		for(String str : areaMap){
+			if(addr.contains(str)){
+				return true;
+			}
+		}
+		return false;
+	}
+	// guoyu 20150714 add
+	// 加入 北京和南平
+	private String containsAreaByCode(String addr){
+		if (addr.startsWith("15")){
+			return "内蒙古";
+		}else if(addr.startsWith("65")){
+			return "新疆";
+		}else if(addr.startsWith("54")){
+			return "西藏";
+		}else if(addr.startsWith("11")){
+			return "北京";
+		}else if(addr.startsWith("3507")){
+			return "南平";
+		}else{
+			return null;
+		}
+	}
+	private static final ImmutableList<String> addrMap = new ImmutableList.Builder<String>().add("益智发茶城").add("千石园石材市场").add("易开元石材市场").build();
+
+	private static final ImmutableList<String> areaMap = new ImmutableList.Builder<String>().add("内蒙古").add("新疆").add("西藏").build();
+}

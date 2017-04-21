@@ -1,0 +1,27 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.biz.backstage.inter.async;
+
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+
+import com.hrbb.loan.pos.biz.backstage.inter.IPDFService;
+import com.hrbb.loan.pos.util.PDFGenerator;
+
+/**
+ * @author yida
+ * @date 2015年10月28日 下午2:23:14
+ */
+
+@Service
+public class PDFService implements IPDFService {
+
+    @Async
+    public void generate(String agreementTemplate) {
+        PDFGenerator.generate(agreementTemplate);
+    }
+
+}

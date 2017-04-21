@@ -1,0 +1,41 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
+<div id="receipt" region="center" class="easyui-tabs" style="padding: 10px; background: #fff; border: 1px solid #ccc;">
+   	 <jsp:include page="FacilityUnifiedView.jsp"></jsp:include>
+     <c:if test="${receipt.paybackWay eq '10' }">
+     <div title="还款计划" style="padding:20px;">xxx</div>
+     </c:if> 
+   	 <jsp:include page="paybackRecord.jsp"></jsp:include>
+     <jsp:include page="customerInfo.jsp"></jsp:include>
+     <jsp:include page="photoInfo.jsp"></jsp:include>  
+</div>
+<div region="south" border="false" style="text-align: center; height: 30px; line-height: 30px;">
+	<c:if test="${mode=='create'}">
+		<a id="btnConfirm" onclick="paybackConfirm()" class="easyui-linkbutton" icon="icon-ok" href="javascript:void(0)" >确认还款</a>&nbsp;&nbsp;&nbsp;&nbsp;
+	</c:if>
+    	<a id="btnClose" onclick="closeDetailWindow()" class="easyui-linkbutton" icon="icon-cancel" href="javascript:void(0)" >关闭</a> 
+</div>
+<div id="tab-tools">
+	<a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-cancel'" onclick="closeDetailWindow()">关闭&nbsp;&nbsp; </a>
+</div>
+<script type="text/javascript">
+$('#receipt').tabs({ 
+    border:false, 
+    onSelect:function(title,index){ 
+       // #这里写你要怎么处理这个选中的tab 
+       if(title=="还款记录"){		//还款记录
+    	   $("#paybackRecord").datagrid({
+       		url:"<%=request.getContextPath()%>/paybackImport/displayPaybackRunningRecord.do?receiptId=${receipt.receiptId}"
+       	   })
+       	}
+	   	if(title=="影像资料"){		//影像资料
+	   		var url = "<%=request.getContextPath()%>/navigation/loanPOSImageFiles.do?loanId=${contract.loanId}&custId=${receipt.custId}";
+	   		$('#imageDataIframe1').attr("src", url);
+	   	}
+    },
+    toolPosition:'left',
+    tools: '#tab-tools'
+})
+</script>

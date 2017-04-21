@@ -1,0 +1,474 @@
+package com.hrbb.loan.controller;
+
+import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.constants.CreditApplyConstants;
+import com.hrbb.loan.pos.biz.backstage.inter.ActivityBiz;
+import com.hrbb.loan.pos.dao.entity.TActivityCommonInfo;
+import com.hrbb.loan.pos.dao.entity.TActivityContentInfo;
+import com.hrbb.loan.pos.dao.entity.TActivityDimInfo;
+import com.hrbb.loan.pos.dao.entity.TActivityInfo;
+import com.hrbb.loan.pos.util.IdUtil;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.loan.pos.util.ValidateUtil;
+import com.hrbb.loan.web.security.entity.AccessPrivilege;
+import com.hrbb.loan.web.security.entity.User;
+import com.hrbb.loan.web.security.service.UserService;
+
+@Controller
+@RequestMapping("/activity")
+public class ActivityController {
+	
+	Logger logger = LoggerFactory.getLogger(ActivityController.class);
+	@Autowired
+	private ActivityBiz activityBiz;
+	
+	@Autowired
+	private UserService userService;
+	
+	@Autowired
+	private UserDetailsService userDetailService;
+	
+	/*@PostConstruct
+	public void init(){
+		
+	}*/
+	
+	private boolean checkUser(User user, PrintWriter out){
+		if(user == null || user.getUserName()==null || user.getPassword() == null){
+			out.print("用户未登陆");
+			return false;
+		}
+		AccessPrivilege privileges = new AccessPrivilege();
+		//查询用户
+		User userFind = userService.findByName(user.getUserName());
+		if(userFind == null){
+			out.print("该用户不存在");
+			return false;
+		}
+		//比对密码
+		if(!user.getPassword().equals(userFind.getPassword())){
+			out.print("密码不正确");
+			return false;
+		}
+        StringBuffer buffer = new StringBuffer();
+        Iterator<? extends GrantedAuthority> it = userDetailService.loadUserByUsername(user.getUserName()).getAuthorities().iterator();
+        while (it.hasNext()){
+        	String auth = it.next().getAuthority();
+            buffer.append(auth).append(";");
+            
+            privileges.addPrivilege(auth);		//add by Lin,Zhaolin
+        }
+        if(!privileges.hasAnyPrivilege("ROLE_ADD_ACCT_RULE")){
+        	out.print("权限不足");
+        	return false;
+        }
+        return true;
+	}
+	
+	@RequestMapping("/addDimension")
+	public ModelAndView addDimension(@RequestParam(value="dimName", required=false)String dimensionName, 
+			@RequestParam(value="dimenSql", required = false)String dimensionSql, 
+			@RequestParam(value="dimParamType", required = false)String dimParamType, PrintWriter out, HttpServletRequest request){
+		User user = (User)request.getSession().getAttribute("USER");
+		if(!checkUser(user, out)){
+			return null;
+		}
+		TActivityDimInfo tActivityDimInfo = new TActivityDimInfo();
+		tActivityDimInfo.setActFlag("0");
+		tActivityDimInfo.setDimName(dimensionName);
+		tActivityDimInfo.setDimenSql(dimensionSql);
+		if(StringUtil.isNotEmpty(dimParamType)){
+			tActivityDimInfo.setDimParamType(dimParamType);
+		}
+		try{
+			activityBiz.addActivityDim(tActivityDimInfo);
+		}catch(Exception e){
+			logger.error("活动维度入库发生异常", e);
+			out.print("发生异常");
+			return null;
+		}
+		
+		out.print("操作成功");
+		return null;
+	}
+	
+	@RequestMapping("/addActivity")
+	public ModelAndView addActivity(@RequestParam(value="paramNum", required=false)String paramNum, @RequestParam(value="selectNum", required=false)String selectNum, 
+			@RequestParam(value="inputNum", required=false)String inputNum, @RequestParam(value = "actName", required=false)String actName, @RequestParam(value="activityType", required=false)String activityType, PrintWriter out){
+		Map<String, Object> reqMap = null;
+		Map<String, Object> paramMap = Maps.newHashMap();
+		String[] paramNumArray = paramNum.split("\\|");
+		String[] inputNumArray = inputNum.split("\\|");
+		String[] selectNumArray = selectNum.split("\\|");
+		StringBuffer contentBuffer = new StringBuffer();
+		StringBuffer dimBuffer = new StringBuffer();
+		for(int i=0; i<paramNumArray.length; i++){
+			if(selectNumArray[i] != null && selectNumArray[i].startsWith("content")){
+				contentBuffer.append(activityBiz.getActivityContentInfoById(selectNumArray[i].replace("content", ""))+"|");
+			}else if(selectNumArray[i] != null && selectNumArray[i].startsWith("dim")){
+				dimBuffer.append(activityBiz.getActivityDimById(selectNumArray[i].replace("dim", "")));
+			}
+			if(selectNumArray[i] != null && inputNumArray.length >i && StringUtil.isNotEmpty(inputNumArray[i])){
+				paramMap.put(selectNumArray[i], inputNumArray[i]);
+			}
+		}
+		
+		reqMap = Maps.newHashMap();
+		reqMap.put("activityType", activityType);
+		TActivityCommonInfo info = activityBiz.getActivityCommonInfo(reqMap);
+		String sql = null;
+		if(info != null){
+			String actSql = info.getCommonSql();
+			if(actSql != null){
+				sql = actSql.replace("$dim", dimBuffer.toString()).replace("$content", StringUtils.join("\"", contentBuffer.toString(), "\""));
+			}
+		}
+		
+		String actParam = null;
+		if(!paramMap.isEmpty()){
+			actParam = JSON.toJSONString(actParam);
+		}
+		if(actParam != null || sql != null){
+			TActivityInfo activityInfo = new TActivityInfo();
+			activityInfo.setActContentSql(sql);
+			activityInfo.setActionName(contentBuffer.toString());
+			activityInfo.setActParam(actParam);
+			activityInfo.setActName(actName);
+			activityInfo.setActId(IdUtil.getActId());
+			activityInfo.setActivityType(activityType);
+			activityBiz.addActivity(activityInfo);
+			out.print("添加成功");
+		}else{
+			out.print("参数异常");
+		}
+		return null;
+	}
+	
+	@RequestMapping("/addActivityContent")
+	public ModelAndView addActivityContent(@RequestParam(value="contentName", required = false)String contentName, @RequestParam(value = "contentSql", required = false)String contentSql,
+			@RequestParam(value="contentParamType", required = false)String contentParamType,
+			HttpServletRequest request, PrintWriter out){
+		User user = (User)request.getSession().getAttribute("USER");
+		if(!checkUser(user, out)){
+			return null;
+		}
+		TActivityContentInfo info = new TActivityContentInfo();
+		info.setActFlag("0");
+		info.setContentName(contentName);
+		info.setContentParamType(contentParamType);
+		info.setContentSql(contentSql);
+		try{
+			activityBiz.addActivityContent(info);
+		}catch(Exception e){
+			logger.error("添加活动内容维度异常", e);
+			out.print("发生异常");
+			return null;
+		}
+		out.print("操作成功");
+		return null;
+	}
+	
+	@RequestMapping("/queryActivityContent")
+	public ModelAndView queryActivityContent(HttpServletRequest request, PrintWriter out,
+			@RequestParam(value = "rows", required = false) Integer pageSize,
+			@RequestParam(value = "page", required = false) Integer pageNo){
+		if(pageNo == null || pageSize == null){
+			pageNo = 1;
+			pageSize = 0;
+		}
+		Map<String, Object> reqMap = Maps.newHashMap();
+		if(StringUtil.isNotEmpty((String)request.getParameter("actFlag"))){
+			reqMap.put("actFlag", request.getParameter("actFlag"));			
+		}
+		if(StringUtil.isNotEmpty((String)request.getParameter("contentNameLike"))){
+			reqMap.put("contentNameLike", "%"+request.getParameter("contentNameLike")+"%");
+		}
+		reqMap.put("startPage", (pageNo - 1) * pageSize);
+		reqMap.put("limit", pageSize);
+		
+		List<TActivityContentInfo> lists = activityBiz.geTActivityContentInfos(reqMap);
+		String total = activityBiz.countActivityContent(reqMap);
+			JSONObject aaJson = new JSONObject();
+			aaJson.put("total", total);
+			aaJson.put("rows", lists);
+			out.write(aaJson.toJSONString());		
+		return null;
+	}
+	
+	@RequestMapping("/queryActivityDim")
+	public ModelAndView queryActivityDim(HttpServletRequest request, PrintWriter out,
+			@RequestParam(value = "rows", required = false) Integer pageSize,
+			@RequestParam(value = "page", required = false) Integer pageNo){
+		if(pageNo == null || pageSize == null){
+			pageNo = 1;
+			pageSize = 0;
+		}
+		Map<String, Object> reqMap = Maps.newHashMap();
+		if(StringUtil.isNotEmpty((String)request.getParameter("actFlag"))){
+			reqMap.put("actFlag", request.getParameter("actFlag"));			
+		}
+		String dimNameLike = (String)request.getParameter("dimNameLike");
+		if(StringUtil.isNotEmpty((String)request.getParameter("dimNameLike"))){
+			reqMap.put("dimNameLike", "%"+request.getParameter("dimNameLike")+"%");
+		}
+		reqMap.put("startPage", (pageNo - 1) * pageSize);
+		reqMap.put("limit", pageSize);
+		
+		List<TActivityDimInfo> lists = activityBiz.getTActivityDimInfos(reqMap);
+		String total = activityBiz.countActivityDim(reqMap);
+			JSONObject aaJson = new JSONObject();
+			aaJson.put("total", total);
+			aaJson.put("rows", lists);
+			out.write(aaJson.toJSONString());		
+		return null;
+	}
+	
+	@RequestMapping("/queryActivity")
+	public ModelAndView queryActivity(HttpServletRequest request, PrintWriter out, 
+			@RequestParam(value = "rows", required = false) Integer pageSize,
+			@RequestParam(value = "page", required = false) Integer pageNo){
+		if(pageNo == null || pageSize == null){
+			pageNo = 1;
+			pageSize = 0;
+		}
+		Map<String, Object> reqMap = Maps.newHashMap();
+		if(StringUtil.isNotEmpty((String)request.getParameter("actFlag"))){
+			reqMap.put("actFlag", request.getParameter("actFlag"));			
+		}
+		if(StringUtil.isNotEmpty((String)request.getParameter("dimNameLike"))){
+			reqMap.put("activityNameLike", "%"+request.getParameter("dimNameLike")+"%");
+		}
+		reqMap.put("startPage", (pageNo - 1) * pageSize);
+		reqMap.put("limit", pageSize);
+		
+		List<TActivityInfo> lists = activityBiz.getActivityList(reqMap);
+		String total = activityBiz.countActivityContent(reqMap);
+			JSONObject aaJson = new JSONObject();
+			aaJson.put("total", total);
+			aaJson.put("rows", lists);
+			out.write(aaJson.toJSONString());		
+		return null;
+	}
+	
+	///////////////////修改活动状态/////////////////////////////////
+	
+	@RequestMapping("/modifyActivityContentFlag")
+	public ModelAndView modifyActivityContentFlag(@RequestParam(value="modifyItem", required = false)String modifyItem,
+			@RequestParam(value="actFlag", required = false)String actFlag, PrintWriter out){
+		if(StringUtil.isEmpty(modifyItem) || StringUtil.isEmpty(actFlag)){
+			out.print("操作失败");
+			return null;
+		}
+		String[] ids = modifyItem.split("\\|");
+		if (ids == null || ids.length == 0) {
+			out.print("操作失败");
+			return null;
+		}
+		try{
+			for (String id : ids) {
+				TActivityContentInfo record = new TActivityContentInfo();
+				record.setActFlag(actFlag);
+				record.setId(Integer.parseInt(id));
+				activityBiz.updateActivityContent(record);
+			}
+			
+		}catch(Exception e){
+			logger.error("发生异常:", e);
+			out.print("发生异常");
+		}
+		out.print("操作成功");
+		// 逻辑删除
+		return null;
+	}
+	
+	@RequestMapping("/modifyActivityDimFlag")
+	public ModelAndView modifyActivityDimFlag(@RequestParam(value="modifyItem", required = false)String modifyItem,
+			@RequestParam(value="actFlag", required = false)String actFlag, PrintWriter out){
+		if(StringUtil.isEmpty(modifyItem) || StringUtil.isEmpty(actFlag)){
+			out.print("操作失败");
+			return null;
+		}
+		String[] ids = modifyItem.split("\\|");
+		if (ids == null || ids.length == 0) {
+			out.print("操作失败");
+			return null;
+		}
+		try{
+			for (String id : ids) {
+				TActivityDimInfo record = new TActivityDimInfo();
+				record.setActFlag(actFlag);
+				record.setId(Integer.parseInt(id));
+				activityBiz.updateActvityDim(record);
+			}
+			
+		}catch(Exception e){
+			logger.error("发生异常:", e);
+			out.print("发生异常");
+		}
+		out.print("操作成功");
+		// 逻辑删除
+		return null;
+	}
+	
+	@RequestMapping("/modifyActivityFlag")
+	public ModelAndView modifyActivitFlag(@RequestParam(value="modifyItem", required = false)String modifyItem,
+			@RequestParam(value="actFlag", required = false)String actFlag, PrintWriter out){
+		if(StringUtil.isEmpty(modifyItem) || StringUtil.isEmpty(actFlag)){
+			out.print("操作失败");
+			return null;
+		}
+		String[] ids = modifyItem.split("\\|");
+		if (ids == null || ids.length == 0) {
+			out.print("操作失败");
+			return null;
+		}
+		try{
+			for (String id : ids) {
+				TActivityInfo record = new TActivityInfo();
+				record.setActFlag(actFlag);
+				record.setActId(id);
+				activityBiz.updateActivityInfo(record);
+			}
+			
+		}catch(Exception e){
+			logger.error("发生异常", e);
+			out.print("发生异常");
+		}
+		out.print("操作成功");
+		// 逻辑删除
+		return null;
+	}
+	
+	
+	//////////////////////////////修改活动信息///////////////////////////
+	
+	@RequestMapping("/modifyActivityContent")
+	public ModelAndView modifyActivityContent(HttpServletRequest request, PrintWriter out){
+		TActivityContentInfo record = new TActivityContentInfo();
+		String id = (String) request.getParameter("id");
+		
+		String contentSql = (String) request.getParameter("contentSql");
+		
+		String contentName = (String) request.getParameter("contentName");
+		
+		String contentParamType = (String) request.getParameter("contentParamType");
+		
+		String actFlag = (String)request.getParameter("actFlag");
+		if(StringUtil.isNotEmpty(id)){
+			record.setId(Integer.valueOf(id));
+		}
+		if(StringUtil.isNotEmpty(contentSql)){
+			record.setContentSql(contentSql);
+		}
+		
+		if(StringUtil.isNotEmpty(contentName)){
+			record.setContentName(contentName);
+		}
+		
+		if(StringUtil.isNotEmpty(contentParamType)){
+			record.setContentParamType(contentParamType);
+		}
+		
+		if(StringUtil.isNotEmpty(actFlag)){
+			record.setActFlag(actFlag);
+		}
+		try{
+			activityBiz.updateActivityContent(record);
+		}catch(Exception e){
+			logger.error("发生异常:", e);
+			out.print("发生异常");
+		}
+		out.print("操作成功");
+		// 逻辑删除
+		return null;
+	}
+	
+	@RequestMapping("/modifyActivityDim")
+	public ModelAndView modifyActivityDim(HttpServletRequest request, PrintWriter out){
+		TActivityDimInfo record = new TActivityDimInfo();
+		String id = (String) request.getParameter("id");
+		
+		String dimSql = (String) request.getParameter("dimenSql");
+		
+		String dimName = (String) request.getParameter("dimName");
+		
+		String dimParamType = (String) request.getParameter("dimParamType");
+		
+		String actFlag = (String)request.getParameter("actFlag");
+		if(StringUtil.isNotEmpty(id)){
+			record.setId(Integer.valueOf(id));
+		}
+		if(StringUtil.isNotEmpty(dimSql)){
+			record.setDimenSql(dimSql);
+		}
+		
+		if(StringUtil.isNotEmpty(dimName)){
+			record.setDimName(dimName);
+		}
+		
+		if(StringUtil.isNotEmpty(dimParamType)){
+			record.setDimParamType(dimParamType);
+		}
+		
+		if(StringUtil.isNotEmpty(actFlag)){
+			record.setActFlag(actFlag);
+		}
+		try{
+			activityBiz.updateActvityDim(record);
+		}catch(Exception e){
+			logger.error("发生异常:", e);
+			out.print("发生异常");
+		}
+		out.print("操作成功");
+		// 逻辑删除
+		return null;
+	}
+	
+	@RequestMapping("/modifyActivity")
+	public ModelAndView modifyActivit(HttpServletRequest request, PrintWriter out){
+		
+		return null;
+	}
+	
+	@RequestMapping("getInputParamType")
+	public ModelAndView getInputParamType(@RequestParam(value = "id", required = false)String id, PrintWriter out){
+		if(id != null && id.startsWith("content")){
+			TActivityContentInfo info = activityBiz.getActivityContentInfoById(id.replace("content", ""));
+			if(info != null){
+				out.print(info.getContentParamType());
+			}
+			return null;
+		}else if(id != null && id.startsWith("dim")){
+			TActivityDimInfo info = activityBiz.getActivityDimById(id.replace("dim", ""));
+			if(info != null){
+				out.print(info.getDimParamType());
+			}
+			return null;
+		}
+		return null;
+	}
+	
+}

@@ -1,0 +1,124 @@
+package com.hrbb.loan.sale.biz.inter.impl;
+
+import java.util.Date;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.dao.entity.TPaymentApplyTmp;
+import com.hrbb.loan.pos.util.IdUtil;
+import com.hrbb.loan.pos.util.constants.BusinessDictionaryConstants;
+import com.hrbb.loan.sale.biz.inter.ILoanSalePaymentApplyBiz;
+import com.hrbb.loan.sale.service.LoanSalePaymentApplyService;
+/**
+ * 消费贷用款申请临时表操作
+ * 
+ * @author litengfeng
+ * @version $Id: ILoanSalePaymentApplyBizImpl.java, v 0.1 2015年5月13日 下午7:16:53 litengfeng Exp $
+ */
+@Component("loanSalePaymentApplyBiz")
+public class LoanSalePaymentApplyBizImpl implements ILoanSalePaymentApplyBiz {
+    @Autowired
+    private LoanSalePaymentApplyService loanSalePaymentApplyService;
+    Logger logger = LoggerFactory.getLogger(LoanSalePaymentApplyBizImpl.class);
+    
+    private final String MERCHANT_DESP = "merchantDesp";
+    
+    private final String CONT_NO = "contNo";
+    
+    private final String  CUST_ID = "custId";
+    
+    private final String POS_CUST_ID = "posCustId";
+    
+    private final String PAY_APPLY_ID = "payApplyId";
+    
+    private final String STATUS = "status";
+    
+    private final String POS_CUST_NAME = "posCustName";
+    
+    private final String CREATE_DATE = "createDate";
+    
+    private final String LIST_ID = "listid";
+    
+    private final String TOTAL_NUM = "totalnum";
+    
+    private final String RET_NUM = "retnum";
+    
+    private final String PAYAPPLY_AMT = "payApplyAmt";
+    
+    private final String PAYAPPLY_TERM = "payApplyTerm";
+    
+    private final String RETURN_TYPE = "returnType";
+    
+    private final String ACC_NO = "accNo";
+    
+    private final String EXPECTED_DATE = "expectedDate";
+    
+    private final String EXPECTED_END_DATE = "expectedEndDate";
+    
+    private final String APPLY_MEMO = "applyMemo";                  //资金用途
+
+    @Override
+    public int addLoanSalePaymentApply(TPaymentApplyTmp tPaymentApplyTmp) {
+        return loanSalePaymentApplyService.insertLoanSalePaymentApply(tPaymentApplyTmp);
+    }
+    
+    @Override
+    public int deleteLoanSalePaymentApplyById(String id) {
+        return 0;
+    }
+
+    @Override
+    public int updateLoanSalePaymentApplyById(TPaymentApplyTmp tPaymentApplyTmp) {
+        return 0;
+    }
+
+    @Override
+    public TPaymentApplyTmp selectLoanSalePaymentApplyById(String id) {
+        return null;
+    }
+    
+    /**
+     * 消费贷插入用款申请临时表
+     * @see com.hrbb.loan.sale.biz.inter.ILoanSalePaymentApplyBiz#insertLoanSalePaymentApply(java.util.Map)
+     */
+    @Override
+    public Map<String,Object> insertLoanSalePaymentApply(Map<String, Object> reqMap) {
+        try{
+            Map<String, Object> respMap = Maps.newHashMap();
+            String payApplyId = IdUtil.getPaymentApplyId();
+            String custId = "";
+            
+//            String contNo = (String)reqMap.get(CONT_NO);
+//            Map<String, Object> contMap = loanPosContractManagementService.selectOneMapById(contNo);
+//            if(!contMap.isEmpty()){
+//                custId = (String)contMap.get(CUST_ID);
+//            }
+            
+//            reqMap.put(CUST_ID, reqMap.get(CUST_ID));
+//            reqMap.put(POS_CUST_ID, posCustId);
+            reqMap.put(PAY_APPLY_ID, payApplyId);                                       //用款申请编号
+            reqMap.put(STATUS, BusinessDictionaryConstants.ISSUE_APPLY_STATUS_INSERT);  //用款申请状态
+//            reqMap.put(MERCHANT_DESP, posCustName);
+            reqMap.put(CREATE_DATE, new Date());
+            
+//            reqMap.put(PAYAPPLY_AMT, reqMap.get(PAYAPPLY_AMT));
+//            reqMap.put(PAYAPPLY_TERM, reqMap.get(PAYAPPLY_TERM));
+//            reqMap.put(RETURN_TYPE, reqMap.get(RETURN_TYPE));
+//            reqMap.put(EXPECTED_DATE, reqMap.get(EXPECTED_DATE));
+//            reqMap.put(EXPECTED_END_DATE, reqMap.get(EXPECTED_END_DATE));
+//            reqMap.put(ACC_NO, reqMap.get(ACC_NO));
+//            reqMap.put(APPLY_MEMO, reqMap.get(APPLY_MEMO));
+            loanSalePaymentApplyService.insertLoanSalePaymentApplyMap(reqMap);
+            respMap.put(LIST_ID, payApplyId);
+            return respMap;
+        }catch(Exception e){
+            logger.error("消费贷增加临时用款申请表失败");
+            return Maps.newHashMap();
+        }
+    }
+}

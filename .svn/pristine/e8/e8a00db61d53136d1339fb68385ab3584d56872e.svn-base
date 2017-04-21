@@ -1,0 +1,136 @@
+package com.hrbb.loan.pos.dao.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+import org.springframework.stereotype.Repository;
+
+import com.hrbb.loan.pos.dao.TCreditApplyForReviewDao;
+import com.hrbb.loan.pos.dao.entity.TCreditApply;
+
+/**
+ *<h1>业务审批dao实现</h1>
+ *@author marco
+ *@version Id: TCreditApplyForReviewDaoImpl.java, v 1.0 2015-2-15 上午11:03:53 marco Exp
+ */
+@Repository("tCreditApplyForReviewDao")
+public class TCreditApplyForReviewDaoImpl extends SqlSessionDaoSupport implements TCreditApplyForReviewDao {
+	
+	/** 
+	 * @see com.hrbb.loan.pos.dao.TCreditApplyForReviewDao#selectSelective(com.hrbb.loan.pos.dao.entity.TCreditApply)
+	 */
+	@Override
+	public TCreditApply selectOne(String loanid) {
+		return getSqlSession().selectOne("TCreditApplyMapper.selectByPrimaryKey", loanid);
+	}
+	
+	/** 
+	 * @see com.hrbb.loan.pos.dao.TCreditApplyForReviewDao#selectSelective(com.hrbb.loan.pos.dao.entity.TCreditApply)
+	 */
+	@Override
+	public Map<String,Object> selectForRiskDetection(String loanid) {
+		return getSqlSession().selectOne("TCreditApplyMapper.selectForRiskDetection", loanid);
+	}
+
+	/** 
+	 * @see com.hrbb.loan.pos.dao.TCreditApplyForReviewDao#selectSelective(com.hrbb.loan.pos.dao.entity.TCreditApply)
+	 */
+	@Override
+	public List<TCreditApply> selectSelective(TCreditApply ca) {
+		return getSqlSession().selectList("TCreditApplyMapper.selectSelectiveForReview", ca);
+	}
+	
+	/** 
+	 * @see com.hrbb.loan.pos.dao.TCreditApplyForReviewDao#selectSelective(com.hrbb.loan.pos.dao.entity.TCreditApply)
+	 */
+	@Override
+	public long selectSelectiveCount(TCreditApply ca) {
+		return getSqlSession().selectOne("TCreditApplyMapper.selectSelectiveForReviewCount", ca);
+	}
+	
+	/** 
+	 * @see com.hrbb.loan.pos.dao.TCreditApplyForReviewDao#selectSelective(com.hrbb.loan.pos.dao.entity.TCreditApply)
+	 */
+	@Override
+	public List<TCreditApply> selectHistory(Map<String,Object> m) {
+		return getSqlSession().selectList("TCreditApplyMapper.selectHistory", m);
+	}
+
+	/** 
+	 * @see com.hrbb.loan.pos.dao.TCreditApplyForReviewDao#claim(com.hrbb.loan.pos.dao.entity.TCreditApply)
+	 */
+	@Override
+	public int claim(TCreditApply ca) {
+		return getSqlSession().update("TCreditApplyMapper.updateForClaim", ca);
+	}
+
+	/** 
+	 * @see com.hrbb.loan.pos.dao.TCreditApplyForReviewDao#doNotclaim(com.hrbb.loan.pos.dao.entity.TCreditApply)
+	 */
+	@Override
+	public int doNotClaim(TCreditApply ca) {
+		return getSqlSession().update("TCreditApplyMapper.updateForNotClaim", ca);
+	}
+
+	/** 
+	 * @see com.hrbb.loan.pos.dao.TCreditApplyForReviewDao#updateByPrimaryKey(com.hrbb.loan.pos.dao.entity.TCreditApply)
+	 */
+	@Override
+	public int updateByPrimaryKeySelective(TCreditApply record) {
+		return getSqlSession().update("TCreditApplyMapper.updateByPrimaryKeySelective", record);
+	}
+	
+	/** 
+	 * @see com.hrbb.loan.pos.dao.TCreditApplyForReviewDao#updateByPrimaryKey(com.hrbb.loan.pos.dao.entity.TCreditApply)
+	 */
+	@Override
+	public int updateForReview(TCreditApply record) {
+		return getSqlSession().update("TCreditApplyMapper.updateForReview", record);
+	}
+	
+	/** 
+	 * @see com.hrbb.loan.pos.dao.TCreditApplyForReviewDao#updateByPrimaryKey(com.hrbb.loan.pos.dao.entity.TCreditApply)
+	 */
+	@Override
+	public int updateForReviewBackTo(TCreditApply record) {
+		return getSqlSession().update("TCreditApplyMapper.updateForReviewBackTo", record);
+	}
+	
+	/** 
+	 * @see com.hrbb.loan.pos.dao.TCreditApplyForReviewDao#updateByPrimaryKey(com.hrbb.loan.pos.dao.entity.TCreditApply)
+	 */
+	@Override
+	public int updateForReviewAddInfo(TCreditApply record) {
+		return getSqlSession().update("TCreditApplyMapper.updateForReviewAddInfo", record);
+	}
+	
+	/** 
+	 * @see com.hrbb.loan.pos.dao.TCreditApplyForReviewDao#selectSelective(com.hrbb.loan.pos.dao.entity.TCreditApply)
+	 */
+	@Override
+	public long selectCheckClaimed(TCreditApply record) {
+		return getSqlSession().selectOne("TCreditApplyMapper.selectCheckClaimed", record);
+	}
+
+    @Override
+    public int updateApplyStatus(Map<String, Object> map) {
+        return getSqlSession().update("TCreditApplyMapper.updateApplyStatus", map);
+    }
+
+	/** 
+	 * @see com.hrbb.loan.pos.dao.TCreditApplyForReviewDao#doNotclaim(com.hrbb.loan.pos.dao.entity.TCreditApply)
+	 */
+	@Override
+	public int updateForReconsider(TCreditApply ca) {
+		return getSqlSession().update("TCreditApplyMapper.updateForReconsider", ca);
+	}
+	
+	/** 
+	 * @see com.hrbb.loan.pos.dao.TCreditApplyForReviewDao#selectSelective(com.hrbb.loan.pos.dao.entity.TCreditApply)
+	 */
+	@Override
+	public long selectContinueLending(String loanId) {
+		return getSqlSession().selectOne("TCreditApplyMapper.selectContinueLending", loanId);
+	}
+}

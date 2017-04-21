@@ -1,0 +1,250 @@
+package com.hrbb.loan.pos.biz.backstage.inter.impl;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import jodd.util.StringUtil;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.acct.facade.MadeLoanProcessBizHession;
+import com.hrbb.loan.acct.facade.bean.MadeLoanAddReturnOverReq;
+import com.hrbb.loan.acct.facade.bean.MadeLoanAddReturnOverRes;
+import com.hrbb.loan.acct.facade.bean.MadeLoanExecTurnOverReq;
+import com.hrbb.loan.acct.facade.bean.MadeLoanExecTurnOverRes;
+import com.hrbb.loan.acct.facade.bean.MadeLoanLoanLedgerBean;
+import com.hrbb.loan.acct.facade.bean.MadeLoanLoanLedgerReq;
+import com.hrbb.loan.acct.facade.bean.MadeLoanLoanLedgerRes;
+import com.hrbb.loan.acct.facade.common.constants.AcctRetConstants;
+import com.hrbb.loan.acct.facade2.MadeLoanProcessQuerySimpleFacade;
+import com.hrbb.loan.acct.facade2.bean.RepayCalmQueryReq;
+import com.hrbb.loan.acct.facade2.bean.RepayCalmQueryRes;
+import com.hrbb.loan.acct.facade2.bean.RepayClamQuerySubBean;
+import com.hrbb.loan.pos.biz.backstage.inter.IReceiptManageBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.IRepaymentAcctBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosPaybackApplyBiz;
+import com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+import com.hrbb.loan.pos.dao.entity.TRepaymentPlan;
+import com.hrbb.loan.pos.service.TRepaymentPlanService;
+
+/**
+ * 还款处理
+ * 
+ * @author cjq
+ * @version $Id: RepaymentAcctBizImpl.java, v 0.1 2015年9月21日 下午2:58:15 cjq Exp $
+ */
+@Component("repaymentAcctBizImpl")
+public class RepaymentAcctBizImpl implements IRepaymentAcctBiz {
+
+    private Logger                   logger = LoggerFactory.getLogger(RepaymentAcctBizImpl.class);
+
+    @Resource(name = "madeLoanProcessBizHession")
+    MadeLoanProcessBizHession        madeLoanProcessBizHession;
+
+    @Resource(name = "madeLoanProcessQuerySimpleFacade")
+    MadeLoanProcessQuerySimpleFacade madeLoanProcessQuerySimpleFacade;
+
+    @Autowired
+    LoanPosPaybackApplyBiz           loanPosPaybackApplyBiz;
+
+    @Autowired
+    IReceiptManageBiz                receiptManageBiz;
+    
+    @Autowired
+    TRepaymentPlanService repaymentPlanService;
+
+    /** 
+     * @see com.hrbb.loan.pos.biz.backstage.inter.IRepaymentAcctBiz#checkOverDueForReceipt(java.lang.String)
+     */
+    @Override
+    public Boolean checkOverDueForReceipt(String loanAcNo) throws Exception{
+        logger.info("查询分户账：请求参数loanAcNo=" + loanAcNo);
+        MadeLoanLoanLedgerReq req = new MadeLoanLoanLedgerReq();
+        MadeLoanLoanLedgerBean reqBean = new MadeLoanLoanLedgerBean();
+        reqBean.setLoanAcNo(loanAcNo);
+        req.setReqBean(reqBean);
+        logger.info("调用核算queryLoanLedger接口开始,req=[{}]", req);
+        MadeLoanLoanLedgerRes res = madeLoanProcessBizHession.queryLoanLedger(req);
+        logger.info("调用核算queryLoanLedger接口结束,res=[{}]", res);
+        if (res != null) {
+            List<MadeLoanLoanLedgerBean> list = res.getResList();
+            if (list != null && list.size() > 0) {
+                MadeLoanLoanLedgerBean bean = list.get(0);
+                String overFlag = bean.getOverFlag();
+                if (StringUtil.isNotEmpty(overFlag) && !overFlag.equals("0")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /** 
+     * @see com.hrbb.loan.pos.biz.backstage.inter.IRepaymentAcctBiz#paybackCalc(java.lang.String)
+     */
+    @Override
+    public Map<String, Object> paybackCalc(String loanAcNo,String paybackAmt) {
+        logger.info("还款试算：请求参数loanAcNo=" + loanAcNo);
+        Map<String, Object> respMap = Maps.newHashMap();
+        RepayCalmQueryReq req = new RepayCalmQueryReq();
+        req.setLoanAcNo(loanAcNo);
+        req.setrSumAmt(paybackAmt);
+        logger.info("调用核算doRepayCalm接口开始,req=[{}]", req);
+        RepayCalmQueryRes res = madeLoanProcessQuerySimpleFacade.doRepayCalm(req);
+        logger.info("调用核算doRepayCalm接口结束,res=[{}]", res);
+        String sumBal = res.getSumBal();
+        String sumInt = res.getSumInt();
+        String sumFine = res.getSumFine();
+        List<RepayClamQuerySubBean> list = res.getRepayList();
+        respMap.put("sumBal", sumBal);
+        respMap.put("sumInt", sumInt);
+        respMap.put("sumFine", sumFine);
+        respMap.put("list", list);
+        return respMap;
+
+    }
+
+    /** 
+     * @see com.hrbb.loan.pos.biz.backstage.inter.IRepaymentAcctBiz#repayment(java.lang.String)
+     */
+    @Override
+    public Boolean repayment(String paybackApplyId) {
+        logger.info("还款：请求参数paybackApplyId=" + paybackApplyId);
+        if (StringUtil.isNotEmpty(paybackApplyId)) {
+            TPaybackApplyInfo paybackApplyInfo = loanPosPaybackApplyBiz.queryPaybackApplyInfoById(paybackApplyId);
+            if (paybackApplyInfo != null) {
+                TReceiptInfo receiptInfo = receiptManageBiz.selectReceiptByPrimary(paybackApplyInfo.getReceiptId());
+                if (receiptInfo != null) {
+                    String loanAcNo = receiptInfo.getLoanAcNo();
+                    if (StringUtil.isNotEmpty(loanAcNo)) {
+                        try {
+                            String listId = addReturnOverReq(paybackApplyInfo, loanAcNo);
+                            if (StringUtil.isNotEmpty(listId)) {
+                                MadeLoanExecTurnOverRes res = processTurnOver(loanAcNo, listId);
+                                if (res != null 
+                                        && AcctRetConstants.SUCCESS.getValue().equals(res.getRespCode())) {
+                                    return true;
+                                }
+                            }
+                        } catch (Exception e) {
+                            logger.error("调用核算还款接口失败", e);
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 还款执行
+     * 
+     * @param receiptInfo
+     * @param listId
+     */
+    private MadeLoanExecTurnOverRes processTurnOver(String loanAcNo, String listId) throws Exception {
+        MadeLoanExecTurnOverReq req = new MadeLoanExecTurnOverReq();
+        req.setListId(listId);
+        req.setLoanAcNo(loanAcNo);
+        logger.info("调用核算[processTurnOver]接口开始,req=[{}]", req);
+        MadeLoanExecTurnOverRes res = madeLoanProcessBizHession.processTurnOver(req);
+        logger.info("调用核算[processTurnOver]接口结束,res=[{}]", res);
+        return res;
+    }
+
+    /**
+     * 还款记账
+     * 
+     * @param paybackApplyInfo
+     * @param receiptInfo
+     */
+    private String addReturnOverReq(TPaybackApplyInfo paybackApplyInfo, String loanAcNo) throws Exception {
+        MadeLoanAddReturnOverReq req = new MadeLoanAddReturnOverReq();
+        //核心借据号
+        req.setLoanAcNo(loanAcNo);
+        req.setTerm(paybackApplyInfo.getTerm());
+        //应还数据
+        req.setsDate(new Date());//应还日期
+        req.setsCapi(paybackApplyInfo.getPaybackAmount().toString());//应还本金
+        req.setsInte(paybackApplyInfo.getPaybackInterest().toString());//应还利息
+        req.setSaFine(paybackApplyInfo.getPaybackPenalty().toString());//应还本金罚息
+        //实还数据
+        req.setrDate(new Date());//实还日期
+        req.setrCapi(paybackApplyInfo.getPaybackAmount().toString());//实还本金
+        req.setrInte(paybackApplyInfo.getPaybackInterest().toString());//实还利息
+        req.setRaFine(paybackApplyInfo.getPaybackPenalty().toString());//实还本金罚息
+        logger.info("调用核算[addReturnOverList]接口开始,req=[{}]", req);
+        MadeLoanAddReturnOverRes res = madeLoanProcessBizHession.addReturnOverList(req);
+        logger.info("调用核算[addReturnOverList]接口结束,res=[{}]", res);
+        if (res != null && AcctRetConstants.SUCCESS.getValue().equals(res.getRespCode())) {
+            String listId = res.getListId();
+            return listId;
+        }
+        return null;
+    }
+    
+    /**
+     * 更新还款计划,分两步
+     * 1.调用核算，查询分户账
+     * 2.更新业务系统还款计划表
+     * 
+     * @param receiptId
+     * @return
+     */
+    @Override
+    public void updateRepaymentPlan(String receiptId) {
+        try {
+            if (StringUtil.isNotEmpty(receiptId)) {
+                TReceiptInfo receipt = receiptManageBiz.selectReceiptByPrimary(receiptId);
+                String loanAcNo = receipt.getLoanAcNo();
+                logger.info("查询分户账：请求参数loanAcNo=" + loanAcNo);
+                RepayCalmQueryReq req = new RepayCalmQueryReq();
+                req.setLoanAcNo(loanAcNo);
+                logger.info("调用核算doRepayCalm接口开始,req=[{}]", req);
+                RepayCalmQueryRes res = madeLoanProcessQuerySimpleFacade.doRepayCalm(req);
+                logger.info("调用核算doRepayCalm接口结束,res=[{}]", res);
+                if (res != null) {
+                    List<RepayClamQuerySubBean> list = res.getRepayList();
+                    if (list != null && list.size() > 0) {
+                        //删除还款计划
+                        repaymentPlanService.removeRepaymentPlan(receiptId);
+                        //生成新的还款计划
+                        for (RepayClamQuerySubBean plan : list) {
+                            TRepaymentPlan rp = new TRepaymentPlan();
+                            rp.setReceiptid(receiptId);
+                            rp.setPeriod(plan.getSterm());
+                            rp.setScheddate(plan.getsRepayDate());
+                            rp.setSchedprincipal(plan.getsCapi() == null ? BigDecimal.ZERO : new BigDecimal(plan.getsCapi()));//应还本金
+                            rp.setSchedinterest(plan.getsInte() == null ? BigDecimal.ZERO : new BigDecimal(plan.getsInte()));//应还利息
+                            rp.setUnpaidinterest(plan.getsFine() == null ? BigDecimal.ZERO : new BigDecimal(plan.getsFine()));//应还罚息
+                            rp.setSchedtotalamt(rp.getSchedprincipal().add(rp.getSchedinterest()).add(rp.getUnpaidinterest()));
+                            if(plan.getPayoffFlag().equals("10")){
+                                rp.setOwePrincipal(BigDecimal.ZERO); //初始化时与计划金额一致
+                                rp.setOweInterest(BigDecimal.ZERO); //初始化时与计划金额一致
+                            }else if(plan.getPayoffFlag().equals("00")){
+                                rp.setOwePrincipal(rp.getSchedprincipal()); //初始化时与计划金额一致
+                                rp.setOweInterest(rp.getSchedinterest()); //初始化时与计划金额一致
+                            }
+                            rp.setOverFlag(plan.getOverFlag());
+                            rp.setPayoffFlag(plan.getPayoffFlag());
+                            repaymentPlanService.insertSelective(rp);
+                        }
+                        logger.info("借据[{}]的更新还款计划成功",receiptId);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("还款计划更新异常", e);
+        }
+    }
+}

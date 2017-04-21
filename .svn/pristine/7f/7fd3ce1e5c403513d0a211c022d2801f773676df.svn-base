@@ -1,0 +1,47 @@
+package com.hrbb.loan.pos.dao.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+import org.springframework.stereotype.Repository;
+
+import com.hrbb.loan.pos.dao.TPaybackImportInfoDao;
+import com.hrbb.loan.pos.dao.entity.TPaybackImportInfo;
+@Repository("tPaybackImportInfoDao")
+public class TPaybackImportInfoDaoImpl extends SqlSessionDaoSupport implements TPaybackImportInfoDao {
+
+	@Override
+	public List<TPaybackImportInfo> queryPaybackImportInfo(
+			Map<String, Object> reqMap) {
+		return getSqlSession().selectList("TPaybackImportInfoMapper.queryPaybackImportInfo",reqMap);
+	}
+
+	@Override
+	public List<TPaybackImportInfo> queryMatchedPaybackImportInfo(
+			Map<String, Object> reqMap) {
+		return getSqlSession().selectList("TPaybackImportInfoMapper.queryMatchedPaybackImportInfo",reqMap);
+	}
+
+	@Override
+	public TPaybackImportInfo getPaybackImportInfo(String importRunningId) {
+		return getSqlSession().selectOne("TPaybackImportInfoMapper.getPaybackImportInfo",importRunningId);
+	}
+
+	@Override
+	public int updateImportInfo(Map<String, Object> updateImportMap) {
+		return getSqlSession().update("TPaybackImportInfoMapper.updateImportInfo", updateImportMap);
+	}
+
+	@Override
+	public List<TPaybackImportInfo> queryTransferInRecord(
+			Map<String, Object> reqMap) {
+		return getSqlSession().selectList("TPaybackImportInfoMapper.queryTransferInRecord",reqMap);
+	}
+
+	@Override
+	public long countImportNumber(Map<String, Object> reqMap) {
+		return getSqlSession().selectOne("TPaybackImportInfoMapper.countImportNumber", reqMap);
+	}
+
+}

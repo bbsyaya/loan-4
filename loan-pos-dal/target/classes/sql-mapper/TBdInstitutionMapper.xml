@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TBdInstitutionMapper">
+	<resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TBdInstitution">
+		<id column="orgId" property="orgId" jdbcType="INTEGER" />
+		<result column="orgName" property="orgName" jdbcType="VARCHAR" />
+		<result column="licenseNo" property="licenseNo" jdbcType="VARCHAR" />
+		<result column="alias" property="alias" jdbcType="VARCHAR" />
+		<result column="nameLR" property="nameLR" jdbcType="VARCHAR" />
+		<result column="phoneNoLR" property="phoneNoLR" jdbcType="VARCHAR" />
+		<result column="certNoLR" property="certNoLR" jdbcType="VARCHAR" />
+		<result column="regAddress" property="regAddress" jdbcType="VARCHAR" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="manager" property="manager" jdbcType="VARCHAR" />
+		<result column="active" property="active" jdbcType="VARCHAR" />
+		<result column="email" property="email" jdbcType="VARCHAR" />
+		<result column="mailCc" property="mailCc" jdbcType="VARCHAR" />
+		<result column="mailBcc" property="mailBcc" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		orgId, orgName, licenseNo, alias, nameLR, phoneNoLR,
+		certNoLR, regAddress,remark,
+		manager, active, email, mailCc, mailBcc
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_bd_institution
+		where orgId = #{orgId,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		t_bd_institution
+		where orgId = #{orgId,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TBdInstitution">
+		insert into t_bd_institution
+		(orgId, orgName, licenseNo,
+		alias, nameLR, phoneNoLR,
+		certNoLR,regAddress, remark,
+		manager, active, email,mailCc, mailBcc)
+		values (#{orgId,jdbcType=INTEGER},
+		#{orgName,jdbcType=VARCHAR},
+		#{licenseNo,jdbcType=VARCHAR},
+		#{alias,jdbcType=VARCHAR}, #{nameLR,jdbcType=VARCHAR},
+		#{phoneNoLR,jdbcType=VARCHAR},
+		#{certNoLR,jdbcType=VARCHAR},
+		#{regAddress,jdbcType=VARCHAR},
+		#{remark,jdbcType=VARCHAR},
+		#{manager,jdbcType=VARCHAR}, 
+		#{active,jdbcType=VARCHAR}, 
+		#{email,jdbcType=VARCHAR},
+		#{mailCc,jdbcType=VARCHAR},
+		#{mailBcc,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TBdInstitution">
+		insert into t_bd_institution
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="orgId != null">
+				orgId,
+			</if>
+			<if test="orgName != null">
+				orgName,
+			</if>
+			<if test="licenseNo != null">
+				licenseNo,
+			</if>
+			<if test="alias != null">
+				alias,
+			</if>
+			<if test="nameLR != null">
+				nameLR,
+			</if>
+			<if test="phoneNoLR != null">
+				phoneNoLR,
+			</if>
+			<if test="certNoLR != null">
+				certNoLR,
+			</if>
+			<if test="regAddress != null">
+				regAddress,
+			</if>
+			<if test="remark != null">
+				remark,
+			</if>
+			<if test="manager != null">
+				manager,
+			</if>
+			<if test="active != null">
+				active,
+			</if>
+			<if test="email != null">
+				email,
+			</if>
+			<if test="mailCc != null">
+				mailCc,
+			</if>
+			<if test="mailBcc != null">
+				mailBcc,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="orgId != null">
+				#{orgId,jdbcType=INTEGER},
+			</if>
+			<if test="orgName != null">
+				#{orgName,jdbcType=VARCHAR},
+			</if>
+			<if test="licenseNo != null">
+				#{licenseNo,jdbcType=VARCHAR},
+			</if>
+			<if test="alias != null">
+				#{alias,jdbcType=VARCHAR},
+			</if>
+			<if test="nameLR != null">
+				#{nameLR,jdbcType=VARCHAR},
+			</if>
+			<if test="phoneNoLR != null">
+				#{phoneNoLR,jdbcType=VARCHAR},
+			</if>
+			<if test="certNoLR != null">
+				#{certNoLR,jdbcType=VARCHAR},
+			</if>
+			<if test="regAddress != null">
+				#{regAddress,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="manager != null">
+				#{manager,jdbcType=VARCHAR},
+			</if>
+			<if test="active != null">
+				#{active,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null">
+				#{email,jdbcType=VARCHAR},
+			</if>
+			<if test="mailCc != null">
+				#{mailCc,jdbcType=VARCHAR},
+			</if>
+			<if test="mailBcc != null">
+				#{mailBcc,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<insert id="insertSelectiveMap" parameterType="Map">
+		insert into t_bd_institution
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="orgId != null">
+				orgId,
+			</if>
+			<if test="orgName != null">
+				orgName,
+			</if>
+			<if test="licenseNo != null">
+				licenseNo,
+			</if>
+			<if test="alias != null">
+				alias,
+			</if>
+			<if test="nameLR != null">
+				nameLR,
+			</if>
+			<if test="phoneNoLR != null">
+				phoneNoLR,
+			</if>
+			<if test="certNoLR != null">
+				certNoLR,
+			</if>
+			<if test="regAddress != null">
+				regAddress,
+			</if>
+			<if test="remark != null">
+				remark,
+			</if>
+			<if test="manager != null">
+				manager,
+			</if>
+			<if test="active != null">
+				active,
+			</if>
+			<if test="email != null">
+				email,
+			</if>
+			<if test="mailCc != null">
+				mailCc,
+			</if>
+			<if test="mailBcc != null">
+				mailBcc,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="orgId != null">
+				#{orgId,jdbcType=INTEGER},
+			</if>
+			<if test="orgName != null">
+				#{orgName,jdbcType=VARCHAR},
+			</if>
+			<if test="licenseNo != null">
+				#{licenseNo,jdbcType=VARCHAR},
+			</if>
+			<if test="alias != null">
+				#{alias,jdbcType=VARCHAR},
+			</if>
+			<if test="nameLR != null">
+				#{nameLR,jdbcType=VARCHAR},
+			</if>
+			<if test="phoneNoLR != null">
+				#{phoneNoLR,jdbcType=VARCHAR},
+			</if>
+			<if test="certNoLR != null">
+				#{certNoLR,jdbcType=VARCHAR},
+			</if>
+			<if test="regAddress != null">
+				#{regAddress,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="manager != null">
+				#{manager,jdbcType=VARCHAR},
+			</if>
+			<if test="active != null">
+				#{active,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null">
+				#{email,jdbcType=VARCHAR},
+			</if>
+			<if test="mailCc != null">
+				#{mailCc,jdbcType=VARCHAR},
+			</if>
+			<if test="mailBcc != null">
+				#{mailBcc,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TBdInstitution">
+		update t_bd_institution
+		<set>
+			<if test="orgName != null">
+				orgName = #{orgName,jdbcType=VARCHAR},
+			</if>
+			<if test="licenseNo != null">
+				licenseNo = #{licenseNo,jdbcType=VARCHAR},
+			</if>
+			<if test="alias != null">
+				alias = #{alias,jdbcType=VARCHAR},
+			</if>
+			<if test="nameLR != null">
+				nameLR = #{nameLR,jdbcType=VARCHAR},
+			</if>
+			<if test="phoneNoLR != null">
+				phoneNoLR = #{phoneNoLR,jdbcType=VARCHAR},
+			</if>
+			<if test="certNoLR != null">
+				certNoLR = #{certNoLR,jdbcType=VARCHAR},
+			</if>
+			<if test="regAddress != null">
+				regAddress = #{regAddress,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				remark = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="manager != null">
+				manager = #{manager,jdbcType=VARCHAR},
+			</if>
+			<if test="active != null">
+				active = #{active,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null">
+				email = #{email,jdbcType=VARCHAR},
+			</if>
+			<if test="mailCc != null">
+				mailCc = #{mailCc,jdbcType=VARCHAR},
+			</if>
+			<if test="mailBcc != null">
+				mailBcc = #{mailBcc,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where orgId = #{orgId,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TBdInstitution">
+		update
+		t_bd_institution
+		set orgName = #{orgName,jdbcType=VARCHAR},
+		licenseNo =
+		#{licenseNo,jdbcType=VARCHAR},
+		alias = #{alias,jdbcType=VARCHAR},
+		nameLR = #{nameLR,jdbcType=VARCHAR},
+		phoneNoLR =
+		#{phoneNoLR,jdbcType=VARCHAR},
+		certNoLR = #{certNoLR,jdbcType=VARCHAR},
+		regAddress = #{regAddress,jdbcType=VARCHAR},
+		remark =
+		#{remark,jdbcType=VARCHAR},
+		manager = #{manager,jdbcType=VARCHAR},
+		active = #{active,jdbcType=VARCHAR},
+		email = #{email,jdbcType=VARCHAR},
+		mailCc = #{mailCc,jdbcType=VARCHAR},
+		mailBcc = #{mailBcc,jdbcType=VARCHAR}
+		where orgId =
+		#{orgId,jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateByUpdateMap" parameterType="map">
+				update t_bd_institution
+		<set>
+			<if test="orgName != null">
+				orgName = #{orgName,jdbcType=VARCHAR},
+			</if>
+			<if test="licenseNo != null">
+				licenseNo = #{licenseNo,jdbcType=VARCHAR},
+			</if>
+			<if test="alias != null">
+				alias = #{alias,jdbcType=VARCHAR},
+			</if>
+			<if test="nameLR != null">
+				nameLR = #{nameLR,jdbcType=VARCHAR},
+			</if>
+			<if test="phoneNoLR != null">
+				phoneNoLR = #{phoneNoLR,jdbcType=VARCHAR},
+			</if>
+			<if test="certNoLR != null">
+				certNoLR = #{certNoLR,jdbcType=VARCHAR},
+			</if>
+			<if test="regAddress != null">
+				regAddress = #{regAddress,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				remark = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="manager != null">
+				manager = #{manager,jdbcType=VARCHAR},
+			</if>
+			<if test="active != null">
+				active = #{active,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null">
+				email = #{email,jdbcType=VARCHAR},
+			</if>
+			<if test="mailCc != null">
+				mailCc = #{mailCc,jdbcType=VARCHAR},
+			</if>
+			<if test="mailBcc != null">
+				mailBcc = #{mailBcc,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where orgId = #{orgId,jdbcType=INTEGER}
+	</update>
+	
+	<select id="selectList" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_bd_institution
+	</select>
+	
+	<select id="selectListBySelective" resultMap="BaseResultMap" parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from t_bd_institution
+		where 1=1
+		<if test="startPage != null">
+			LIMIT #{startPage}, #{limit}
+		</if>
+	</select>
+
+	<select id="countListBySelective" resultType="Long" parameterType="map">
+		select count(*)
+		from t_bd_institution
+		where 1=1
+	</select>
+
+	<select id = "selectByBelongOrgName" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_bd_institution
+		where alias = #{belongOrgName,jdbcType=VARCHAR}
+		LIMIT 0,1
+	</select>
+	
+	<select id = "selectByAlias" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_bd_institution
+		where alias = #{alias,jdbcType=VARCHAR}
+		LIMIT 0,1
+	</select>
+</mapper>

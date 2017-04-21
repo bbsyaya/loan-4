@@ -1,0 +1,279 @@
+package com.hrbb.loan.spi.SALE;
+
+import java.math.RoundingMode;
+import java.text.NumberFormat;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.brbb.loan.sale.validate.LoanSaleValidate;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.constants.saleapp.SaleAppApplyHServiceConstants;
+import com.hrbb.loan.pos.service.LoanPosContractManagementService;
+import com.hrbb.loan.pos.service.LoanPosPaybackService;
+import com.hrbb.loan.pos.util.MapUtils;
+import com.hrbb.loan.pos.util.SignUtil;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.loan.pos.util.ValidateUtil;
+import com.hrbb.loan.sale.service.LoanSaleApplyService;
+import com.hrbb.loan.sale.service.LoanSaleCustomerService;
+import com.hrbb.loan.spiconstants.SaleLoanReturnCode;
+import com.hrbb.sh.framework.HRequest;
+import com.hrbb.sh.framework.HResponse;
+import com.hrbb.sh.framework.HService;
+import com.hrbb.sh.framework.HServiceException;
+
+/**
+ * 电子协议查询.
+ * 
+ * @author litengfeng
+ * @version $Id: ZzASalePPElectronicProtocolQueryHserviceImpl.java, v 0.1 2015年5月14日 下午5:58:51 litengfeng Exp $
+ */
+@Service("zzSaleAPPElectronicProtocolQuery")
+public class ZzSaleAPPElectronicProtocolQueryHserviceImpl implements HService {
+    Logger                                   logger = LoggerFactory
+                                                        .getLogger(ZzSaleAPPElectronicProtocolQueryHserviceImpl.class);
+    @Autowired
+    private LoanSaleApplyService        loanSaleApplyService;
+    @Autowired
+    private LoanPosContractManagementService loanPosContractManagementService;
+    @Autowired
+    private LoanSaleCustomerService           loanSaleCustomerService;
+
+    @Autowired
+    private LoanPosPaybackService            loanPosPaybackService;
+
+    @Override
+    public HResponse serve(HRequest request) throws HServiceException {
+        logger.debug("in ZZAPPElectronicProtocolQueryHserviceImpl...");
+        
+     // 0. 接收请求包，解包
+        Map<String, String> headerMap = (Map<String, String>) request.getProperties().get("HrbbHeader");
+        Map<String, String> bodyMap = (Map<String, String>) request.getProperties().get("HrbbBody");
+        logger.info("headerMap : " + MapUtils.toString(headerMap));
+        logger.info("bodyMap : " + MapUtils.toString(bodyMap));
+        
+        // 1. 请求包校验
+        HResponse resp = new HResponse();
+        if (!validate(headerMap, bodyMap, resp)) {
+            resp.setRespTime(new Date());
+            return getBlankHResponse(resp, headerMap, bodyMap);
+        }
+
+        // 2. 验证数字签名,暂不实现
+        String signedMsg = SignUtil.getSignMsg((Map<String, Object>)request.getProperties().get("HrbbBody"), null);
+        logger.info("请求待签名串 signedMsg = [" + signedMsg + "]");
+//        if (!SignUtil.verifySign(SignUtil.MD5_ALG, signedMsg, headerMap.get("Mac"), SignUtil.getProperty("app_posloan_signkey"))) {
+//            logger.error("数字签名验证失败");
+//            bodyMap.put("respcode", SaleLoanReturnCode.OTHER_ERROR.getReturnCode());
+//            bodyMap.put("respmsg", SaleLoanReturnCode.OTHER_ERROR.getReturnMessage());
+//            resp.setRespCode(SaleLoanReturnCode.OTHER_ERROR.getReturnCode());
+//            resp.setRespMessage(SaleLoanReturnCode.OTHER_ERROR.getReturnMessage());
+//            resp.setRespTime(new Date());
+//            return getBlankHResponse(resp, headerMap, bodyMap);
+//        }
+        logger.info("数字签名验证通过!");
+        
+        // 3. 组装检索条件
+        Map<String, Object> queryMap = Maps.newHashMap();
+        if (!StringUtil.isEmpty(bodyMap.get(SaleAppApplyHServiceConstants.custid))) {
+            queryMap.put("custId", bodyMap.get(SaleAppApplyHServiceConstants.custid));
+        }
+        if (!StringUtil.isEmpty(bodyMap.get(SaleAppApplyHServiceConstants.custname))) {
+            queryMap.put("custName", bodyMap.get(SaleAppApplyHServiceConstants.custname));
+        }
+        if (!StringUtil.isEmpty(bodyMap.get(SaleAppApplyHServiceConstants.paperkind))) {
+            queryMap.put("paperKind", bodyMap.get(SaleAppApplyHServiceConstants.paperkind));
+        }
+        if (!StringUtil.isEmpty(bodyMap.get(SaleAppApplyHServiceConstants.paperid))) {
+            queryMap.put("paperId", bodyMap.get(SaleAppApplyHServiceConstants.paperid));
+        }
+        if (!StringUtil.isEmpty(bodyMap.get(SaleAppApplyHServiceConstants.loanid))) {
+            queryMap.put("loanId", bodyMap.get(SaleAppApplyHServiceConstants.loanid));
+        }
+        if (!StringUtil.isEmpty(bodyMap.get("contno"))) {           //合同编号
+            queryMap.put("contNo", bodyMap.get("contno"));
+        }
+//        if (!StringUtil.isEmpty(bodyMap.get("cncontno"))) {         //中文合同编号
+//            queryMap.put("cnContNo", bodyMap.get("cncontno"));
+//        }
+        if (!StringUtil.isEmpty(bodyMap.get(SaleAppApplyHServiceConstants.begindate))) {
+            queryMap.put("beginDate", bodyMap.get(SaleAppApplyHServiceConstants.begindate));
+        }
+        if (!StringUtil.isEmpty(bodyMap.get(SaleAppApplyHServiceConstants.enddate))) {
+            queryMap.put("endDate", bodyMap.get(SaleAppApplyHServiceConstants.enddate));
+        }
+        
+        // 4. 合同明细检索
+        List<Map<String, Object>> queryList = loanPosContractManagementService.queryListByZzApp(queryMap);
+        if (null == queryList || queryList.isEmpty()) {
+            logger.info("查询合同为空");
+            bodyMap.put("respcode", SaleLoanReturnCode.OTHER_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.OTHER_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.OTHER_ERROR.getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.OTHER_ERROR.getReturnMessage());
+            resp.setRespTime(new Date());
+            return getBlankHResponse(resp, headerMap, bodyMap);
+        }
+        
+        // 5. 格式化
+        setFormat(queryList);
+        
+        // 6. 成功应答
+        Map<String, Object> rootMap = Maps.newHashMap();
+        Map<String, Object> detailsMap = Maps.newHashMap();
+        detailsMap.put("details", queryList);
+        detailsMap.put("respcode", SaleLoanReturnCode.SUCCESS.getReturnCode());
+        detailsMap.put("respmsg", SaleLoanReturnCode.SUCCESS.getReturnMessage());
+        
+        // 5.1 签名处理
+        headerMap.put("Mac", sign(detailsMap, null));
+        
+        rootMap.put("HrbbHeader", headerMap);
+        rootMap.put("HrbbBody", detailsMap);
+        resp.setRespCode(SaleLoanReturnCode.SUCCESS.getReturnCode());
+        resp.setRespMessage(SaleLoanReturnCode.SUCCESS.getReturnMessage());
+        resp.setRespTime(new Date());
+        resp.setProperties(rootMap);
+        logger.info("回写数据: " + resp.toString());
+        logger.debug("out ZZAPPElectronicProtocolQueryHserviceImpl...");
+        return resp; 
+    }
+    
+    /**
+     * format.
+     * 
+     * @param formatList
+     */
+    private void setFormat(List<Map<String, Object>> formatList) {
+        if (formatList.isEmpty()) {
+            return;
+        }
+        
+        Map<String, Object> tmpMap = null;
+        for (int i = 0; i < formatList.size(); i++) {
+            tmpMap = formatList.get(i);
+            if (tmpMap.isEmpty()) {
+                continue;
+            }
+            
+            Iterator<String> iterator = tmpMap.keySet().iterator();
+            while (iterator.hasNext()) {
+                String key = iterator.next();
+                
+                // format process
+                if (tmpMap.get(key) == null) {
+                    tmpMap.put(key, "");
+                    continue;
+                }
+                
+                // decimal
+                if ("conttotalamt".equals(key)
+                        || "conttouseamt".equals(key)) {
+                    NumberFormat nf = NumberFormat.getNumberInstance();
+                    nf.setMaximumFractionDigits(5);
+                    nf.setRoundingMode(RoundingMode.CEILING);
+                    nf.setGroupingUsed(false);
+                    tmpMap.put(key, nf.format(tmpMap.get(key)));
+                }
+            }
+        }
+        
+    }
+
+    /**
+     * 请求包校验处理.
+     * 
+     * @param headerMap
+     * @param bodyMap
+     * @return
+     * @throws Exception 
+     */
+    private boolean validate(Map<String, String> headerMap, Map<String, String> bodyMap,
+                             HResponse resp) throws HServiceException {
+        if(!LoanSaleValidate.validateHeader(headerMap, bodyMap, resp)){     //校验消息头
+            return false;
+        }
+        // 联合校验
+        boolean idx = true;
+        try {
+            if (StringUtil.isEmpty(bodyMap.get(SaleAppApplyHServiceConstants.loanid))
+                && StringUtil.isEmpty(bodyMap.get(SaleAppApplyHServiceConstants.custid))
+                && StringUtil.isEmpty(bodyMap.get(SaleAppApplyHServiceConstants.custname))
+                && StringUtil.isEmpty(bodyMap.get(SaleAppApplyHServiceConstants.paperid))
+                && StringUtil.isEmpty(bodyMap.get(SaleAppApplyHServiceConstants.paperkind))
+                && StringUtil.isEmpty(bodyMap.get("contno"))
+//                && StringUtil.isEmpty(bodyMap.get("cncontno"))
+                ) {
+                logger.error("检索条件不完整 :[]", "");
+                bodyMap.put("respcode", SaleLoanReturnCode.LOANID_ERROR.getReturnCode());
+                bodyMap.put("respmsg", SaleLoanReturnCode.LOANID_ERROR.getReturnMessage());
+                resp.setRespCode(SaleLoanReturnCode.LOANID_ERROR.getReturnCode());
+                resp.setRespMessage(SaleLoanReturnCode.LOANID_ERROR.getReturnMessage());
+                idx = false;
+            } else if (!StringUtil.isEmpty(bodyMap.get(SaleAppApplyHServiceConstants.paperid))
+                    && !ValidateUtil.checkIdNumber2(bodyMap.get(SaleAppApplyHServiceConstants.paperid))) {
+                logger.error("证件代码不合法:[]",
+                    bodyMap.get(SaleAppApplyHServiceConstants.paperkind) + "_"
+                            + SaleAppApplyHServiceConstants.paperid);
+                bodyMap.put("respcode", SaleLoanReturnCode.PAPERID_ERROR.getReturnCode());
+                bodyMap.put("respmsg", SaleLoanReturnCode.PAPERID_ERROR.getReturnMessage());
+                resp.setRespCode(SaleLoanReturnCode.PAPERID_ERROR.getReturnCode());
+                resp.setRespMessage(SaleLoanReturnCode.PAPERID_ERROR.getReturnMessage());
+                idx = false;
+            }
+
+        } catch (Exception e) {
+            logger.error("校验 异常:[]", e.getMessage());
+            return false;
+        }
+
+        return idx;
+    }
+
+    /**
+     * 失败应答.
+     * 
+     * @param response
+     * @return
+     */
+    private HResponse getBlankHResponse(HResponse response, Map<String, String> headerMap, Map<String, String> bodyMap) {
+        Map<String, Object> respMap = Maps.newHashMap();
+        Map<String, Object> tmpBodyMap = Maps.newHashMap();
+        List<Object> respList = Lists.newArrayList();
+        tmpBodyMap.put("details", respList);
+        tmpBodyMap.put("respcode", bodyMap.get("respcode"));
+        tmpBodyMap.put("respmsg", bodyMap.get("respmsg"));
+        
+        // 5.1 签名处理
+        headerMap.put("Mac", sign(tmpBodyMap, null));
+        
+        respMap.put("HrbbHeader", headerMap);
+        respMap.put("HrbbBody", tmpBodyMap);
+        response.setProperties(respMap);
+        return response;
+    }
+    
+    /**
+     * 回写签名处理.
+     * 
+     * @param signMap
+     * @param ignoreSet
+     * @return
+     */
+    private String sign(Map<String, Object> signMap, Set<String> ignoreSet) {
+        String signedMsg = SignUtil.getSignMsg(signMap, ignoreSet);
+        logger.info("应答待签名串 signedMsg = [" + signedMsg + "]");
+        String signRet = SignUtil.sign(SignUtil.MD5_ALG, signedMsg, SignUtil.getProperty("app_posloan_signkey"));
+        logger.info("应答签名 Mac = [" + signRet + "]");
+        return signRet;
+    }
+}

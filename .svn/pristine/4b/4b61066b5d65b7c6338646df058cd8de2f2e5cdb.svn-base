@@ -1,0 +1,125 @@
+package com.hrbb.loan.timer;
+
+import java.util.Date;
+import java.util.List;
+
+import jodd.util.StringUtil;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosPaybackApplyBiz;
+import com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo;
+import com.hrbb.loan.pos.dao.entity.TTransactionRelative;
+import com.hrbb.loan.pos.entity.event.EventException;
+import com.hrbb.loan.pos.entity.event.POSEvent;
+import com.hrbb.loan.pos.entity.event.POSEventsSource;
+import com.hrbb.loan.pos.entity.event.cab.MessageCab;
+import com.hrbb.loan.pos.entity.listener.impl.MsgListener;
+import com.hrbb.loan.pos.service.TransactionRelativeService;
+import com.hrbb.loan.pos.util.DateUtil;
+
+/**
+ * 还款作废任务
+ * 
+ * @author cjq
+ * @version $Id: POSRepaymentTimer.java, v 0.1 2015年9月6日 上午10:33:00 cjq Exp $
+ */
+@Service("ZjPOSRepaymentTimer")
+public class POSRepaymentTimer {
+
+    private static final Logger        LOG = LoggerFactory.getLogger(POSRepaymentTimer.class);
+
+    /** 还款申请 */
+    @Autowired
+    private LoanPosPaybackApplyBiz     loanPosPaybackApplyBiz;
+
+    /** 交易记录 */
+    @Autowired
+    private TransactionRelativeService transactionRelativeService;
+
+    /**
+     * 每日上午6点跑批
+     */
+    @Scheduled(cron = "0 0 6 * * ?")
+    public void run() {
+        LOG.info("还款申请作废Timer开始。。。。。。");
+        /* 偿还方式为01(主动)*/
+        try {
+            List<TPaybackApplyInfo> list = loanPosPaybackApplyBiz.queryPaybackApplyInfo01();
+            LOG.info("主动方式下：待作废处理申请数为[{}]", list.size());
+            if (!list.isEmpty() && list.size() > 0) {
+                POSEventsSource source = new POSEventsSource();
+                for (TPaybackApplyInfo tPaybackApplyInfo : list) {
+                    if (tPaybackApplyInfo != null) {
+                        int flag1 = loanPosPaybackApplyBiz.updatePaybackApplyInfo(tPaybackApplyInfo
+                            .getPaybackApplyId());
+                        if (flag1 > 0) {
+                            LOG.info("还款申请[{}]作废更新成功", tPaybackApplyInfo.getPaybackApplyId());
+                            try {
+                                source.setAttribute("paybackApplyInfo", tPaybackApplyInfo);
+                                source.setAttribute(POSEvent.监听事件名称_消息推送, MessageCab.消息推送_还款申请失效通知);
+                                source.addListener(new MsgListener());
+                                source.notifyEvent();
+                            } catch (EventException e) {
+                                LOG.error("推送还款通知消息失败.", e);
+                            }
+                        }
+                    }
+                }
+            }
+            /* 偿还方式为代扣 02*/
+            List<String> paybackApplyIds = loanPosPaybackApplyBiz.queryPaybackApplyIdList02();
+            LOG.info("代扣方式下，待处理申请数为[{}]", paybackApplyIds.size());
+            if (!paybackApplyIds.isEmpty() && paybackApplyIds.size() > 0) {
+                POSEventsSource source = new POSEventsSource();
+                TPaybackApplyInfo paybackApplyInfo = new TPaybackApplyInfo();
+                TTransactionRelative tr = null;
+                for (String paybackApplyId : paybackApplyIds) {
+                    paybackApplyInfo = loanPosPaybackApplyBiz
+                        .queryPaybackApplyInfoById(paybackApplyId);
+                    tr = transactionRelativeService
+                        .queryTTransactionRelativeByBusinessId(paybackApplyId);
+                    if (tr != null) {
+                        if (!(StringUtil.isNotEmpty(tr.getTransactionStatus()) && "FAIL".equals(tr
+                            .getTransactionStatus()))) {
+                            LOG.info("该笔申请[{}]外处理失败", paybackApplyId);
+                            return;
+                        }
+                    } else {
+                        //没有调用代扣,判断期望还款期大于当天
+                        try {
+                            if (DateUtil.getDateDiffByDay(paybackApplyInfo.getExpectPaybackDate(),
+                                new Date()) > 0) {
+                                return;
+                            }
+                        } catch (Exception e) {
+                            LOG.error("日期处理错误", e);
+                        }
+
+                    }
+                    LOG.info("该笔申请没有被处理");
+                    int flag = loanPosPaybackApplyBiz.updatePaybackApplyInfo(paybackApplyId);
+                    if (flag > 0) {
+                        LOG.info("还款申请[{}]作废更新成功", paybackApplyId);
+                        try {
+                            source.setAttribute("paybackApplyInfo", paybackApplyInfo);
+                            source.setAttribute(POSEvent.监听事件名称_消息推送, MessageCab.消息推送_还款申请失效通知);
+                            source.addListener(new MsgListener());
+                            source.notifyEvent();
+                        } catch (EventException e) {
+                            LOG.error("推送还款通知消息失败.", e);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("还款申请作废Timer发生异常", e);
+        }
+
+        LOG.info("还款申请作废Timer结束。。。。。。");
+    }
+}

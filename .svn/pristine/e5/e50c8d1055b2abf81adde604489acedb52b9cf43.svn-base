@@ -1,0 +1,131 @@
+package com.hrbb.loan.spi.TC;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.service.LoanPosPaybackRunningRecordService;
+import com.hrbb.loan.pos.service.LoanPosPaybackService;
+import com.hrbb.loan.spiconstants.HServiceReturnCode;
+import com.hrbb.loan.spiconstants.PaymentApplyHServiceConstants;
+import com.hrbb.sh.framework.HRequest;
+import com.hrbb.sh.framework.HResponse;
+import com.hrbb.sh.framework.HServiceException;
+
+@Service("tcPaybackRunningQuery")
+public class TCPaybackRunningQueryImpl extends TCService {
+//	Logger logger = LoggerFactory.getLogger(TCPaybackRunningQueryImpl.class);
+	@Autowired
+	private LoanPosPaybackService loanPosPaybackService;
+	@Autowired
+	private LoanPosPaybackRunningRecordService loanPosPaybackRunningRecordService;
+	@Override
+	public HResponse serve(HRequest request) throws HServiceException {
+		
+		logger.debug("executing "+this.getClass().getName()+"...");
+		
+		SimpleDateFormat sft = new SimpleDateFormat(responseDateFormat());
+		
+		HResponse response = new HResponse();
+		Map<String, Object> propMap = request.getProperties();
+		String  issueid = propMap.get("issueid").toString();
+		logger.info("用款申请号为"+issueid);
+		String receiptId = loanPosPaybackService.getReceiptIdByPayApplyId(issueid);
+		logger.info("借据编号为"+receiptId);
+		String  stdshno = propMap.get("stdshno").toString();
+		long startnum =Long.valueOf(propMap.get("startnum").toString()) ;
+		long recnum =Long.valueOf(propMap.get("recnum").toString()) ;
+		Map<String, Object> reqMap = Maps.newHashMap();
+		reqMap.put("receiptId",receiptId);
+		reqMap.put("startnum",startnum);
+		reqMap.put("recnum",recnum);
+		
+		try{
+			logger.info("还款流水查询前");
+			List<Map<String, Object>> paybackRunninglist =loanPosPaybackRunningRecordService.getPaybackRunningRecordList(reqMap);
+			int t =  paybackRunninglist.size();
+			logger.info("还款流水查询结果为"+paybackRunninglist);
+			String tn = String.valueOf(t);
+			List<Map<String, Object>> c = Lists.newArrayList();
+			for(Map<String, Object> a :paybackRunninglist){
+			    String type = (String) a.get("type");
+			    type = type==null?"01":type;
+			    
+				String custId = (String) a.get("custId");
+				String custName = (String) a.get("custName");
+				String payApplyId = (String) a.get("payApplyId");
+				String paybackRunningRecordId = (String) a.get("paybackRunningRecordId");
+				String acceptAccount = (String) a.get("acceptAccount");
+				Date actualPaybackDate = (Date) a.get("actualPaybackDate");
+//				SimpleDateFormat sft = new SimpleDateFormat("yyyy-MM-dd");
+				String apt = sft.format(actualPaybackDate);
+				BigDecimal actualTotalAmount = (BigDecimal) a.get("actualTotalAmount");
+				BigDecimal actualCapital = (BigDecimal) a.get("actualCapital");
+				BigDecimal actualInterest = (BigDecimal) a.get("actualInterest");
+				Map<String, Object> b = Maps.newHashMap();
+	            b.put("custid", custId);
+	            b.put("custname", custName);
+	            b.put("listid", payApplyId);
+	            b.put("retulistid", paybackRunningRecordId);
+	            b.put("subsaccno", acceptAccount);
+	            b.put("acdate", apt);
+	            b.put("sumamt", actualTotalAmount.toString());
+	            b.put("rcapi", actualCapital.toString());
+	            b.put("rinte", actualInterest.toString());
+	            b.put("retutype",type);
+		        c.add(b);
+			 }
+			
+			response.setRespCode(HServiceReturnCode.SUCCESS.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.SUCCESS.getReturnMessage());
+			response.setRespTime(new Date());
+			Map<String, Object> respMap = Maps.newHashMap();
+			respMap.put("totalnum",tn);
+			respMap.put("retnum",String.valueOf(10));
+			respMap.put("rows", c);
+			response.setProperties(respMap);
+			return response;
+		}catch(Exception e){
+			logger.error("还款流水查询失败",e);
+			response.setRespCode(HServiceReturnCode.POS_PAYBACK_RUNNING_QUERY_ERROR.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.POS_PAYBACK_RUNNING_QUERY_ERROR
+						.getReturnMessage());
+			response.setRespTime(new Date());
+			return getBlankHResponse(response);
+			
+		}
+		
+	}
+
+	
+	private HResponse getBlankHResponse(HResponse response){
+		Map<String, Object> respMap = Maps.newHashMap();
+		List<Map<String, Object>> aaMaps = Lists.newArrayList();
+		Map<String, Object> respMap1 = Maps.newHashMap();
+		respMap1.put(PaymentApplyHServiceConstants.totalnum, "0");
+		respMap1.put(PaymentApplyHServiceConstants.retnum, "0");
+		respMap1.put("totalnum", "0");
+		respMap1.put("retnum", "0");
+		respMap1.put("custid","");
+		respMap1.put("custname","");
+		respMap1.put("listid","");
+		respMap1.put("retulistid","");
+		respMap1.put("subsaccno","");
+		respMap1.put("acdate","");
+		respMap1.put("sumamt","");
+		respMap1.put("rcapi","");
+		respMap1.put("rinte", "");
+		respMap1.put("retutype","");
+		aaMaps.add(respMap1);
+		respMap1.put("rows", aaMaps);
+		response.setProperties(respMap1);
+		return response;
+	}
+	
+}

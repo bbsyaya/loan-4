@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditReportQueryDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditReportQueryDetail" >
+    <id column="serialNo" property="serialNo" jdbcType="VARCHAR" />
+    <result column="reportNo" property="reportNo" jdbcType="VARCHAR" />
+    <result column="queryDate" property="queryDate" jdbcType="VARCHAR" />
+    <result column="querier" property="querier" jdbcType="VARCHAR" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+    <result column="countSerialNo" property="countSerialNo" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    serialNo, reportNo, queryDate, querier, reason
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_report_query_detail
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_credit_report_query_detail
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportQueryDetail" >
+    insert into t_credit_report_query_detail (serialNo, reportNo, queryDate, 
+      querier, reason)
+    values (#{serialNo,jdbcType=VARCHAR}, #{reportNo,jdbcType=VARCHAR}, #{queryDate,jdbcType=VARCHAR}, 
+      #{querier,jdbcType=VARCHAR}, #{reason,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportQueryDetail" >
+    insert into t_credit_report_query_detail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="queryDate != null" >
+        queryDate,
+      </if>
+      <if test="querier != null" >
+        querier,
+      </if>
+      <if test="reason != null" >
+        reason,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="queryDate != null" >
+        #{queryDate,jdbcType=VARCHAR},
+      </if>
+      <if test="querier != null" >
+        #{querier,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        #{reason,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="map" >
+    insert into t_credit_report_query_detail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="queryDate != null" >
+        queryDate,
+      </if>
+      <if test="querier != null" >
+        querier,
+      </if>
+      <if test="reason != null" >
+        reason,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="queryDate != null" >
+        #{queryDate,jdbcType=VARCHAR},
+      </if>
+      <if test="querier != null" >
+        #{querier,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        #{reason,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportQueryDetail" >
+    update t_credit_report_query_detail
+    <set >
+      <if test="reportNo != null" >
+        reportNo = #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="queryDate != null" >
+        queryDate = #{queryDate,jdbcType=VARCHAR},
+      </if>
+      <if test="querier != null" >
+        querier = #{querier,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        reason = #{reason,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportQueryDetail" >
+    update t_credit_report_query_detail
+    set reportNo = #{reportNo,jdbcType=VARCHAR},
+      queryDate = #{queryDate,jdbcType=VARCHAR},
+      querier = #{querier,jdbcType=VARCHAR},
+      reason = #{reason,jdbcType=VARCHAR}
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+  <select id="selectCount" resultMap="BaseResultMap" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportQueryDetail" >
+    select ifnull(count(serialNo),0) countSerialNo
+     from t_credit_report_query_detail qd, t_credit_report_brief b
+    where qd.reportNo = #{reportNo,jdbcType=VARCHAR}
+      and qd.reportNo = b.reportNo
+      and to_days(left(b.createtime,10)) - to_days(qd.querydate) <![CDATA[<]]> #{days,jdbcType=INTEGER}
+  </select>
+  <select id="selectCountMap" resultMap="BaseResultMap" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportQueryDetail" >
+    select ifnull(count(distinct qd.querier),0) count
+     from t_credit_report_query_detail qd, t_credit_report_brief b
+    where qd.reportNo = #{reportNo,jdbcType=VARCHAR}
+      and qd.reportNo = b.reportNo
+      <if test="reason != null" >
+      and qd.reason= #{reason,jdbcType=VARCHAR}
+      </if>
+      and to_days(left(b.createtime,10)) - to_days(qd.querydate) <![CDATA[<]]> #{days,jdbcType=INTEGER}
+  </select>
+</mapper>

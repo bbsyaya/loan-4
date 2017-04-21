@@ -1,0 +1,230 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.biz.backstage.inter.impl;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.util.Calendar;
+
+import javax.annotation.Resource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import com.hrbb.sh.framework.ftp.FtpTransUpload;
+
+
+import com.hrbb.loan.pos.biz.backstage.inter.SynFileBiz;
+
+import com.hrbb.loan.pos.biz.backstage.inter.SynFileUploadBiz;
+import com.hrbb.loan.pos.biz.constants.SynFileConstants;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.FileUtil;
+import com.hrbb.sh.framework.HServiceException;
+
+import com.hrbb.sh.framework.ftp.ParamResBean;
+import com.hrbb.sh.framework.ftpproxy.HFTPFile;
+
+/**
+ * 
+ * @author marco
+ * @version $Id: SynFileUploadBizImpl.java, v 0.1 2015-4-28 下午2:52:13 marco Exp
+ *          $
+ */
+@Component("synFileUploadBiz")
+public class SynFileUploadBizImpl implements SynFileUploadBiz {
+
+	private final Logger LOG = LoggerFactory
+			.getLogger(SynFileUploadBizImpl.class);
+
+	@Autowired
+	@Qualifier("synFileBiz")
+	private SynFileBiz biz;
+
+	@Value("#{systemInfo[synFileUploanEnable]}")
+	private boolean synFileUploanEnable;
+
+	@Resource(name = "ftpTransUpload")
+	private FtpTransUpload ftpTransUpload;
+
+	/**
+	 * 创建文件，并上传
+	 * 
+	 * @param args
+	 */
+	public String makeAndUpload(String channel, String excuteDay,
+			boolean uploadFlag) {
+
+		LOG.info("SynFileUploadBiz.makeAndUpload begin");
+		// 项目路径
+		String synFilePath = "";
+		try {
+			synFilePath = this.getClass().getClassLoader()
+					.getResource("../../").toURI().getPath()
+					+ SynFileConstants.SYNFILEUM;
+		} catch (URISyntaxException e) {
+			LOG.error("获取输出路径失败！", e);
+			return "获取输出路径失败！";
+		}
+		// linux下不能去掉前面的斜线；windows下要保留
+		// synFilePath = synFilePath.substring(1);
+		LOG.info("synFilePath=" + synFilePath);
+
+		LOG.debug("channel=" + channel);
+		LOG.debug("excuteDay=" + excuteDay);
+
+		// 数据区间
+		Calendar cal = Calendar.getInstance();
+		try {
+			cal.setTime(DateUtil.getDatePattern3(excuteDay));
+		} catch (Exception e) {
+			LOG.error("生成报表日期错误！", e);
+			return "生成报表日期错误！";
+		}
+		cal.add(Calendar.DATE, -1);
+
+		String to = DateUtil.getDateToString12(cal.getTime());
+
+		cal.add(Calendar.DATE, -6);
+		String from = DateUtil.getDateToString12(cal.getTime());
+		// 文件名
+		String fileName = SynFileConstants.NO_STATISTICS
+				.concat(SynFileConstants.STRING_UNDERLINE).concat(channel)
+				.concat(SynFileConstants.STRING_UNDERLINE).concat(from)
+				.concat(SynFileConstants.STRING_UNDERLINE).concat(to)
+				.concat(FileUtil.FILETYPE_XLSX);
+
+		// 创建文件
+		biz.makeSynFile(synFilePath, fileName, channel, excuteDay);
+
+		LOG.debug("uploadFlag=" + uploadFlag);
+		String msg = "";
+		// 上传
+		if (uploadFlag) {
+			LOG.info("synFileUploanEnable=" + synFileUploanEnable);
+			// 上传文件
+			if (synFileUploanEnable) {
+				msg = upload(synFilePath + fileName);
+			} else {
+				msg = "上传文件成功。";
+			}
+		} else {
+			msg = "生成文件成功。";
+		}
+		LOG.info("SynFileUploadBiz.makeAndUpload end");
+		return msg;
+	}
+
+	/**
+	 * 创建文件，并上传
+	 * 
+	 * @param args
+	 */
+	public String upload(String allPath) {
+		LOG.info("SynFileUpload begin");
+		// 取得路径
+		LOG.debug("文件路径和名称=" + allPath);
+		// 判断文件是否存在
+		if (FileUtil.checkFileExist(allPath)) {
+			LOG.debug("文件存在，准备上传。");
+			if (uploadFile(allPath)) {
+				LOG.info("SynFileUpload end");
+				return "上传文件成功。";
+			} else {
+				LOG.info("SynFileUpload end");
+				return "上传文件失败！";
+			}
+		} else {
+			LOG.debug("文件不存在！");
+			LOG.info("SynFileUpload end");
+			return "文件不存在！";
+		}
+	}
+
+	/**
+	 * 上传文件
+	 * 
+	 * @param hftpService
+	 * @param fileName
+	 * @return
+	 */
+	private boolean uploadFile(String fileName) {
+
+		// 取得文件
+		LOG.info("取得文件=" + fileName);
+		File file = new File(fileName);
+		// 取得文件读入流
+		InputStream zis;
+		try {
+			zis = new FileInputStream(file);
+		} catch (FileNotFoundException e) {
+			LOG.error("上传文件不存在！");
+			return false;
+		}
+		LOG.info("读取文件...");
+		// 获取文件大小
+		long length = file.length();
+		LOG.info("文件大小length=" + length);
+
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		byte[] b = new byte[(int) length];
+		int i = 0;
+		try {
+			while ((i = zis.read(b)) != -1) {
+				bos.write(b);
+			}
+			LOG.info("读取文件成功。");
+		} catch (IOException e) {
+			LOG.error("读取文件失败！");
+			return false;
+		} finally {
+			try {
+				zis.close();
+			} catch (IOException e) {
+				LOG.info("zis释放失败.");
+				zis = null;
+			}
+		}
+
+		byte[] bytes = bos.toByteArray();
+		LOG.info("准备上传...");
+		// 上传文件
+		HFTPFile hFTPFile = new HFTPFile();
+		hFTPFile.setData(bytes);
+		hFTPFile.setName(file.getName());
+		LOG.info("file.getName()=" + file.getName());
+		LOG.info("bytes.length=" + bytes.length);
+		LOG.info("开始上传");
+		// 用户
+		LOG.info("custid_um=" + SynFileConstants.KEY_CUSTID_UM);
+		try {
+			ParamResBean paramResBean = ftpTransUpload.uploadFile(
+					SynFileConstants.KEY_CUSTID_UM, hFTPFile);
+			if (null != paramResBean.getRespCode()
+					&& "000".equals(paramResBean.getRespCode())) {
+				LOG.info("resultCode=" + paramResBean.getRespCode());
+				LOG.info("上传文件成功。");
+				return true;
+			} else {
+				LOG.error("resultCode=" + paramResBean.getRespCode());
+				LOG.error("上传文件失败！");
+				return false;
+			}
+		} catch (HServiceException e) {
+			LOG.error("上传文件失败！", e);
+			return false;
+		}
+	}
+}

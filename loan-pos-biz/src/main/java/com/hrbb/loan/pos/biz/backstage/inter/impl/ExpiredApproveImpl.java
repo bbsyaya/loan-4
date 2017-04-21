@@ -1,0 +1,102 @@
+package com.hrbb.loan.pos.biz.backstage.inter.impl;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.xmlbeans.impl.jam.mutable.MPackage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.biz.backstage.inter.IExpiredApprove;
+import com.hrbb.loan.pos.dao.TCallingTaskDao;
+import com.hrbb.loan.pos.dao.entity.TCallingTask;
+import com.hrbb.loan.pos.service.LoanPosCreditApplyAprvService;
+import com.hrbb.loan.pos.service.bean.ExpiredMessage;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.IdUtil;
+import com.hrbb.loan.pos.util.ListUtil;
+import com.hrbb.loan.pos.util.constants.ReviewNoteConstants;
+
+@Component("expiredApprove")
+public class ExpiredApproveImpl implements IExpiredApprove {
+	
+	private Logger logger = LoggerFactory.getLogger(ExpiredApproveImpl.class);
+	
+	
+	@Autowired
+	private LoanPosCreditApplyAprvService loanPosCreditApplyAprvService;
+	
+	@Autowired
+	private TCallingTaskDao tCallingTaskDao;
+
+	@Override
+	public void expiredApprove() {
+		try{
+			//三天未确认的批复要生成外呼任务
+			Calendar cal1 = Calendar.getInstance();
+			cal1.add(Calendar.DATE, -3);
+			Map<String, Object> reqCallMap = Maps.newHashMap();
+			reqCallMap.put("callOverDate", cal1.getTime());
+			List<Map<String, Object>> callResMap = loanPosCreditApplyAprvService.selectCallTask(reqCallMap);
+			//生成外呼任务
+			for(Map<String, Object> callMap : callResMap){
+				//查询如果已生成外呼任务则不用再生成
+				/*Map<String, Object> callCheckMap = Maps.newHashMap();
+				callCheckMap.put("callingType", "06");
+				callCheckMap.put("relaBizPhase", "APR");
+				callCheckMap.put("relaBizNo", (String)callMap.get("approveId"));
+				List<TCallingTask> callingTasks = tCallingTaskDao.getTCallingTask(callCheckMap);
+				if(callingTasks != null && ! callingTasks.isEmpty()){
+					logger.debug((String)callMap.get("approveId") + "已生成外呼任务,不用再生成");
+					continue;
+				}*/
+				TCallingTask ct = new TCallingTask();
+				ct.setTaskNo(IdUtil.getId(ReviewNoteConstants.CALLING_TASK_KEY_PREFIX));
+				ct.setGenerateTime(new Date());
+				ct.setCallingType("06");
+				ct.setRelaBizNo((String)callMap.get("approveId"));
+				ct.setRelaBizPhase("APR");
+				ct.setCustId((String)callMap.get("custId"));
+				ct.setCustName((String)callMap.get("custName"));
+				ct.setPosCustId((String)callMap.get("posCustId"));
+				ct.setPosCustName((String)callMap.get("posCustName"));
+				tCallingTaskDao.insertSelective(ct);
+			}
+			
+			
+			
+			//修改所有失效的批复状态
+			Map<String, Object> reqMap = Maps.newHashMap();
+			reqMap.put("expiryDate", new Date());
+			Calendar cal = Calendar.getInstance();
+			cal.add(Calendar.DATE, -7);
+			reqMap.put("expiredDate", cal.getTime());
+			loanPosCreditApplyAprvService.updateExpiredRecord(reqMap);
+			//查出所有失效的记录
+			Map<String, Object> selectMap = Maps.newHashMap();
+			selectMap.put("searchApproveStatus", "09");
+			List<Map<String, Object>> resList = loanPosCreditApplyAprvService.getExpiredRecord(selectMap);
+			if(ListUtil.isNotEmpty(resList)){
+				loanPosCreditApplyAprvService.updateBatch(resList);
+				for(Map<String, Object> map : resList){
+					map.put("messageType", "11");
+					ExpiredMessage expiredMessage = new ExpiredMessage();
+					expiredMessage.setExpiredDate(DateUtil.getCurrentTimePattern3());
+					expiredMessage.setExpiredReason("审批结果逾期自动失效");
+					map.put("messageInfo", expiredMessage.toString());
+				}
+				//批量插入
+				loanPosCreditApplyAprvService.insertExpiredMessageBatch(resList);
+		}
+		
+	}catch (Exception e) {
+		logger.error("轮询失效批复异常:" + e.getMessage());
+	}
+	}
+
+}

@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TPaybackImportInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TPaybackImportInfo" >
+    <id column="importRunningId" property="importRunningId" jdbcType="VARCHAR" />
+    <result column="importRunningDate" property="importRunningDate" jdbcType="DATE" />
+    <result column="moneyKind" property="moneyKind" jdbcType="VARCHAR" />
+    <result column="importAmount" property="importAmount" jdbcType="DECIMAL" />
+    <result column="delegateTime" property="delegateTime" jdbcType="DATE" />
+    <result column="paybackPersonName" property="paybackPersonName" jdbcType="VARCHAR" />
+    <result column="paybackPersonAcount" property="paybackPersonAcount" jdbcType="VARCHAR" />
+    <result column="paybackPersonOpenBankName" property="paybackPersonOpenBankName" jdbcType="VARCHAR" />
+    <result column="paybackClearBankId" property="paybackClearBankId" jdbcType="VARCHAR" />
+    <result column="paybackClearBankName" property="paybackClearBankName" jdbcType="VARCHAR" />
+    <result column="paybackPersonOpenBankId" property="paybackPersonOpenBankId" jdbcType="VARCHAR" />
+    <result column="paybackBankId" property="paybackBankId" jdbcType="VARCHAR" />
+    <result column="hrbbAccount" property="hrbbAccount" jdbcType="VARCHAR" />
+    <result column="hrbbAccountName" property="hrbbAccountName" jdbcType="VARCHAR" />
+    <result column="businessProperty" property="businessProperty" jdbcType="VARCHAR" />
+    <result column="businessKind" property="businessKind" jdbcType="VARCHAR" />
+    <result column="additional" property="additional" jdbcType="VARCHAR" />
+    <result column="note" property="note" jdbcType="VARCHAR" />
+    <result column="notAllocateAmount" property="notAllocateAmount" jdbcType="DECIMAL" />
+    <result column="matchedCustId" property="matchedCustId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    importRunningId, importRunningDate, moneyKind, importAmount, delegateTime, paybackPersonName, 
+    paybackPersonAcount, paybackPersonOpenBankName, paybackClearBankId,paybackClearBankName, paybackPersonOpenBankId, 
+    paybackBankId, hrbbAccount,hrbbAccountName,businessProperty, businessKind, additional, note, notAllocateAmount, 
+    matchedCustId
+  </sql>
+  <select id="countImportNumber" resultType="java.lang.Long" parameterType="Map">
+  	SELECT count(*) from t_import_running_info where 1=1
+    
+     <if test="paybackPersonNameLike != null">
+    	AND paybackPersonName like #{paybackPersonNameLike}
+     </if>
+     <if test="paybackPersonAccountLike != null">
+    	AND paybackPersonAccount like #{paybackPersonAccountLike}
+     </if>
+     <choose>
+     	<when test="viewStatus == '01'">
+     	AND notAllocateAmount >0
+     	</when>
+     	<when test="viewStatus == '02'">
+     	AND notAllocateAmount =0
+     	</when>
+     	<otherwise>
+     	</otherwise>
+     </choose>
+   </select>
+  <select id="queryTransferInRecord" resultMap="BaseResultMap" parameterType="Map"  >
+    select 
+    <include refid="Base_Column_List" />
+    from t_import_running_info
+    where 1=1
+    <if test="paybackPersonNameLike != null">
+    	AND paybackPersonName like #{paybackPersonNameLike}
+     </if>
+     <if test="paybackPersonAccountLike != null">
+    	AND paybackPersonAcount like #{paybackPersonAccountLike}
+     </if>
+     <choose>
+     	<when test="viewStatus == '01'">
+     	AND notAllocateAmount >0
+     	</when>
+     	<when test="viewStatus == '02'">
+     	AND notAllocateAmount =0
+     	</when>
+     	<otherwise>
+     	</otherwise>
+     </choose>
+    <if test="startPage != null">
+    	LIMIT #{startPage}, #{limit}
+    </if>
+  </select>
+  <select id="queryPaybackImportInfo" resultMap="BaseResultMap" parameterType="Map"  >
+    select 
+    <include refid="Base_Column_List" />
+    from t_import_running_info
+    where 1=1
+    <if test="paybackPersonNameLike != null">
+    	AND paybackPersonName like #{paybackPersonNameLike}
+     </if>
+     <if test="paybackPersonAccountLike != null">
+    	AND paybackPersonAcount like #{paybackPersonAccountLike}
+     </if>
+       AND notAllocateAmount >0
+    <if test="startPage != null">
+    	LIMIT #{startPage}, #{limit}
+    </if>
+  </select>
+  <select id="queryMatchedPaybackImportInfo" resultMap="BaseResultMap" parameterType="Map"  >
+    select 
+    <include refid="Base_Column_List" />
+    from t_import_running_info
+    where 1=1
+    <if test="paybackPersonNameLike != null">
+    	AND paybackPersonName like #{paybackPersonNameLike}
+     </if>
+     <if test="paybackPersonAccountLike != null">
+    	AND paybackPersonAcount like #{paybackPersonAccountLike}
+     </if>
+     
+       AND notAllocateAmount =0
+    
+    <if test="startPage != null">
+    	LIMIT #{startPage}, #{limit}
+    </if>
+  </select>
+  <select id="getPaybackImportInfo" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_import_running_info
+    where importRunningId = #{importRunningId,jdbcType=VARCHAR}
+  </select>
+  <select id="getImportListInfo" resultType="Map">
+    select 
+    <include refid="Base_Column_List" />
+    from t_import_running_info
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_import_running_info
+    where importRunningId = #{importRunningId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TPaybackImportInfo" >
+    insert into t_import_running_info (importRunningId, importRunningDate, 
+      moneyKind, importAmount, delegateTime, 
+      paybackPersonName, paybackPersonAcount, 
+      paybackPersonOpenBankName, paybackClearBankId, paybackClearBankName,
+      paybackPersonOpenBankId, paybackBankId, hrbbAccount,hrbbAccountName,
+      businessProperty, businessKind, additional, 
+      note, notAllocateAmount, matchedCustId
+      )
+    values (#{importRunningId,jdbcType=VARCHAR}, #{importRunningDate,jdbcType=DATE}, 
+      #{moneyKind,jdbcType=VARCHAR}, #{importAmount,jdbcType=DECIMAL}, #{delegateTime,jdbcType=DATE}, 
+      #{paybackPersonName,jdbcType=VARCHAR}, #{paybackPersonAcount,jdbcType=VARCHAR}, 
+      #{paybackPersonOpenBankName,jdbcType=VARCHAR}, #{paybackClearBankId,jdbcType=VARCHAR}, #{paybackClearBankName,jdbcType=VARCHAR},
+      #{paybackPersonOpenBankId,jdbcType=VARCHAR}, #{paybackBankId,jdbcType=VARCHAR},  #{hrbbAccount,jdbcType=VARCHAR},#{hrbbAccountName,jdbcType=VARCHAR},
+      #{businessProperty,jdbcType=VARCHAR}, #{businessKind,jdbcType=VARCHAR}, #{additional,jdbcType=VARCHAR}, 
+      #{note,jdbcType=VARCHAR}, #{notAllocateAmount,jdbcType=DECIMAL}, #{matchedCustId,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertImportData" parameterType="Map" >
+    insert into t_import_running_info (importRunningId, importRunningDate, 
+      moneyKind, importAmount, delegateTime, 
+      paybackPersonName, paybackPersonAcount, 
+      paybackPersonOpenBankName, paybackClearBankId, paybackClearBankName,
+      paybackPersonOpenBankId, paybackBankId, hrbbAccount,hrbbAccountName,
+      businessProperty, businessKind, additional, 
+      note, notAllocateAmount, matchedCustId
+      )
+    values (#{importRunningId,jdbcType=VARCHAR}, #{importRunningDate,jdbcType=DATE}, 
+      #{moneyKind,jdbcType=VARCHAR}, #{importAmount,jdbcType=DECIMAL}, #{delegateTime,jdbcType=DATE}, 
+      #{paybackPersonName,jdbcType=VARCHAR}, #{paybackPersonAcount,jdbcType=VARCHAR}, 
+      #{paybackPersonOpenBankName,jdbcType=VARCHAR}, #{paybackClearBankId,jdbcType=VARCHAR}, #{paybackClearBankName,jdbcType=VARCHAR},
+      #{paybackPersonOpenBankId,jdbcType=VARCHAR}, #{paybackBankId,jdbcType=VARCHAR}, #{hrbbAccount,jdbcType=VARCHAR},#{hrbbAccountName,jdbcType=VARCHAR},
+      #{businessProperty,jdbcType=VARCHAR}, #{businessKind,jdbcType=VARCHAR}, #{additional,jdbcType=VARCHAR}, 
+      #{note,jdbcType=VARCHAR}, #{notAllocateAmount,jdbcType=DECIMAL}, #{matchedCustId,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TPaybackImportInfo" >
+    insert into t_import_running_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="importRunningId != null" >
+        importRunningId,
+      </if>
+      <if test="importRunningDate != null" >
+        importRunningDate,
+      </if>
+      <if test="moneyKind != null" >
+        moneyKind,
+      </if>
+      <if test="importAmount != null" >
+        importAmount,
+      </if>
+      <if test="delegateTime != null" >
+        delegateTime,
+      </if>
+      <if test="paybackPersonName != null" >
+        paybackPersonName,
+      </if>
+      <if test="paybackPersonAcount != null" >
+        paybackPersonAcount,
+      </if>
+      <if test="paybackPersonOpenBankName != null" >
+        paybackPersonOpenBankName,
+      </if>
+      <if test="paybackClearBankId != null" >
+        paybackClearBankId,
+      </if>
+      <if test="paybackClearBankName != null" >
+        paybackClearBankName,
+      </if>
+      <if test="paybackPersonOpenBankId != null" >
+        paybackPersonOpenBankId,
+      </if>
+      <if test="paybackBankId != null" >
+        paybackBankId,
+      </if>
+       <if test="hrbbAccount != null" >
+        hrbbAccount,
+      </if>
+       <if test="hrbbAccountName != null" >
+        hrbbAccountName,
+      </if>
+      <if test="businessProperty != null" >
+        businessProperty,
+      </if>
+      <if test="businessKind != null" >
+        businessKind,
+      </if>
+      <if test="additional != null" >
+        additional,
+      </if>
+      <if test="note != null" >
+        note,
+      </if>
+      <if test="notAllocateAmount != null" >
+        notAllocateAmount,
+      </if>
+      <if test="matchedCustId != null" >
+        matchedCustId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="importRunningId != null" >
+        #{importRunningId,jdbcType=VARCHAR},
+      </if>
+      <if test="importRunningDate != null" >
+        #{importRunningDate,jdbcType=DATE},
+      </if>
+      <if test="moneyKind != null" >
+        #{moneyKind,jdbcType=VARCHAR},
+      </if>
+      <if test="importAmount != null" >
+        #{importAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="delegateTime != null" >
+        #{delegateTime,jdbcType=DATE},
+      </if>
+      <if test="paybackPersonName != null" >
+        #{paybackPersonName,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackPersonAcount != null" >
+        #{paybackPersonAcount,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackPersonOpenBankName != null" >
+        #{paybackPersonOpenBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackClearBankId != null" >
+        #{paybackClearBankId,jdbcType=VARCHAR},
+      </if>
+       <if test="paybackClearBankName != null" >
+        #{paybackClearBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackPersonOpenBankId != null" >
+        #{paybackPersonOpenBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackBankId != null" >
+        #{paybackBankId,jdbcType=VARCHAR},
+      </if>
+        <if test="hrbbAccount != null" >
+        #{hrbbAccount,jdbcType=VARCHAR},
+      </if>
+        <if test="hrbbAccountName != null" >
+        #{hrbbAccountName,jdbcType=VARCHAR},
+      </if>
+      <if test="businessProperty != null" >
+        #{businessProperty,jdbcType=VARCHAR},
+      </if>
+      <if test="businessKind != null" >
+        #{businessKind,jdbcType=VARCHAR},
+      </if>
+      <if test="additional != null" >
+        #{additional,jdbcType=VARCHAR},
+      </if>
+      <if test="note != null" >
+        #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="notAllocateAmount != null" >
+        #{notAllocateAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="matchedCustId != null" >
+        #{matchedCustId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateImportInfo" parameterType="Map" >
+    update t_import_running_info
+    <set> 
+    <if test="matchedCustId != null" >
+        matchedCustId = #{matchedCustId,jdbcType=DATE},
+    </if>
+    <if test="notAllocateAmount != null" >
+        notAllocateAmount = #{notAllocateAmount,jdbcType=DATE},
+    </if>
+    </set>
+    where importRunningId = #{importRunningId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TPaybackImportInfo" >
+    update t_import_running_info
+    <set >
+      <if test="importRunningDate != null" >
+        importRunningDate = #{importRunningDate,jdbcType=DATE},
+      </if>
+      <if test="moneyKind != null" >
+        moneyKind = #{moneyKind,jdbcType=VARCHAR},
+      </if>
+      <if test="importAmount != null" >
+        importAmount = #{importAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="delegateTime != null" >
+        delegateTime = #{delegateTime,jdbcType=DATE},
+      </if>
+      <if test="paybackPersonName != null" >
+        paybackPersonName = #{paybackPersonName,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackPersonAcount != null" >
+        paybackPersonAcount = #{paybackPersonAcount,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackPersonOpenBankName != null" >
+        paybackPersonOpenBankName = #{paybackPersonOpenBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackClearBankId != null" >
+        paybackClearBankId = #{paybackClearBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackClearBankName != null" >
+        paybackClearBankName = #{paybackClearBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackPersonOpenBankId != null" >
+        paybackPersonOpenBankId = #{paybackPersonOpenBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackBankId != null" >
+        paybackBankId = #{paybackBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="hrbbAccount != null" >
+        hrbbAccount = #{hrbbAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="hrbbAccountName != null" >
+        hrbbAccountName = #{hrbbAccountName,jdbcType=VARCHAR},
+      </if>
+      <if test="businessProperty != null" >
+        businessProperty = #{businessProperty,jdbcType=VARCHAR},
+      </if>
+      <if test="businessKind != null" >
+        businessKind = #{businessKind,jdbcType=VARCHAR},
+      </if>
+      <if test="additional != null" >
+        additional = #{additional,jdbcType=VARCHAR},
+      </if>
+      <if test="note != null" >
+        note = #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="notAllocateAmount != null" >
+        notAllocateAmount = #{notAllocateAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="matchedCustId != null" >
+        matchedCustId = #{matchedCustId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where importRunningId = #{importRunningId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TPaybackImportInfo" >
+    update t_import_running_info
+    set importRunningDate = #{importRunningDate,jdbcType=DATE},
+      moneyKind = #{moneyKind,jdbcType=VARCHAR},
+      importAmount = #{importAmount,jdbcType=DECIMAL},
+      delegateTime = #{delegateTime,jdbcType=DATE},
+      paybackPersonName = #{paybackPersonName,jdbcType=VARCHAR},
+      paybackPersonAcount = #{paybackPersonAcount,jdbcType=VARCHAR},
+      paybackPersonOpenBankName = #{paybackPersonOpenBankName,jdbcType=VARCHAR},
+      paybackClearBankId = #{paybackClearBankId,jdbcType=VARCHAR},
+      paybackClearBankName = #{paybackClearBankName,jdbcType=VARCHAR},
+      paybackPersonOpenBankId = #{paybackPersonOpenBankId,jdbcType=VARCHAR},
+      paybackBankId = #{paybackBankId,jdbcType=VARCHAR},
+      hrbbAccount = #{hrbbAccount,jdbcType=VARCHAR},
+      hrbbAccountName = #{hrbbAccountName,jdbcType=VARCHAR},
+      businessProperty = #{businessProperty,jdbcType=VARCHAR},
+      businessKind = #{businessKind,jdbcType=VARCHAR},
+      additional = #{additional,jdbcType=VARCHAR},
+      note = #{note,jdbcType=VARCHAR},
+      notAllocateAmount = #{notAllocateAmount,jdbcType=DECIMAL},
+      matchedCustId = #{matchedCustId,jdbcType=VARCHAR}
+    where importRunningId = #{importRunningId,jdbcType=VARCHAR}
+  </update>
+</mapper>

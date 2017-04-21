@@ -1,0 +1,575 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditReportCreditCardMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditReportCreditCard" >
+    <id column="serialNo" property="serialNo" jdbcType="VARCHAR" />
+    <result column="shareLimit" property="shareLimit" jdbcType="DECIMAL" />
+    <result column="usedLimit" property="usedLimit" jdbcType="DECIMAL" />
+    <result column="usedAvgAmt6m" property="usedAvgAmt6m" jdbcType="DECIMAL" />
+    <result column="usedAmtMax" property="usedAmtMax" jdbcType="DECIMAL" />
+    <result column="scheduledAmt" property="scheduledAmt" jdbcType="DECIMAL" />
+    <result column="scheduledDate" property="scheduledDate" jdbcType="VARCHAR" />
+    <result column="actualAmt" property="actualAmt" jdbcType="DECIMAL" />
+    <result column="recentPayDate" property="recentPayDate" jdbcType="VARCHAR" />
+    <result column="overdueCycle" property="overdueCycle" jdbcType="INTEGER" />
+    <result column="overdueAmt" property="overdueAmt" jdbcType="DECIMAL" />
+    <result column="reportNo" property="reportNo" jdbcType="VARCHAR" />
+    <result column="bizType" property="bizType" jdbcType="VARCHAR" />
+    <result column="account" property="account" jdbcType="VARCHAR" />
+    <result column="note" property="note" jdbcType="VARCHAR" />
+    <result column="financeOrg" property="financeOrg" jdbcType="VARCHAR" />
+    <result column="currency" property="currency" jdbcType="VARCHAR" />
+    <result column="openDate" property="openDate" jdbcType="VARCHAR" />
+    <result column="limitAmt" property="limitAmt" jdbcType="DECIMAL" />
+    <result column="guarantyType" property="guarantyType" jdbcType="VARCHAR" />
+    <result column="state" property="state" jdbcType="VARCHAR" />
+    <result column="badBalance" property="badBalance" jdbcType="DECIMAL" />
+    <result column="stateEndDate" property="stateEndDate" jdbcType="VARCHAR" />
+    <result column="beginMonth" property="beginMonth" jdbcType="VARCHAR" />
+    <result column="endMonth" property="endMonth" jdbcType="VARCHAR" />
+    <result column="latest24State" property="latest24State" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    serialNo, shareLimit, usedLimit, usedAvgAmt6m, usedAmtMax, scheduledAmt, scheduledDate, 
+    actualAmt, recentPayDate, overdueCycle, overdueAmt, reportNo, bizType, account, note, 
+    financeOrg, currency, openDate, limitAmt, guarantyType, state, badBalance, stateEndDate, 
+    beginMonth, endMonth, latest24State
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_report_creditcard
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_credit_report_creditcard
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportCreditCard" >
+    insert into t_credit_report_creditcard (serialNo, shareLimit, usedLimit, 
+      usedAvgAmt6m, usedAmtMax, scheduledAmt, 
+      scheduledDate, actualAmt, recentPayDate, 
+      overdueCycle, overdueAmt, reportNo, 
+      bizType, account, note, 
+      financeOrg, currency, openDate, 
+      limitAmt, guarantyType, state, 
+      badBalance, stateEndDate, beginMonth, 
+      endMonth, latest24State)
+    values (#{serialNo,jdbcType=VARCHAR}, #{shareLimit,jdbcType=DECIMAL}, #{usedLimit,jdbcType=DECIMAL}, 
+      #{usedAvgAmt6m,jdbcType=DECIMAL}, #{usedAmtMax,jdbcType=DECIMAL}, #{scheduledAmt,jdbcType=DECIMAL}, 
+      #{scheduledDate,jdbcType=VARCHAR}, #{actualAmt,jdbcType=DECIMAL}, #{recentPayDate,jdbcType=VARCHAR}, 
+      #{overdueCycle,jdbcType=INTEGER}, #{overdueAmt,jdbcType=DECIMAL}, #{reportNo,jdbcType=VARCHAR}, 
+      #{bizType,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR}, #{note,jdbcType=VARCHAR}, 
+      #{financeOrg,jdbcType=VARCHAR}, #{currency,jdbcType=VARCHAR}, #{openDate,jdbcType=VARCHAR}, 
+      #{limitAmt,jdbcType=DECIMAL}, #{guarantyType,jdbcType=VARCHAR}, #{state,jdbcType=VARCHAR}, 
+      #{badBalance,jdbcType=DECIMAL}, #{stateEndDate,jdbcType=VARCHAR}, #{beginMonth,jdbcType=VARCHAR}, 
+      #{endMonth,jdbcType=VARCHAR}, #{latest24State,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportCreditCard" >
+    insert into t_credit_report_creditcard
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="shareLimit != null" >
+        shareLimit,
+      </if>
+      <if test="usedLimit != null" >
+        usedLimit,
+      </if>
+      <if test="usedAvgAmt6m != null" >
+        usedAvgAmt6m,
+      </if>
+      <if test="usedAmtMax != null" >
+        usedAmtMax,
+      </if>
+      <if test="scheduledAmt != null" >
+        scheduledAmt,
+      </if>
+      <if test="scheduledDate != null" >
+        scheduledDate,
+      </if>
+      <if test="actualAmt != null" >
+        actualAmt,
+      </if>
+      <if test="recentPayDate != null" >
+        recentPayDate,
+      </if>
+      <if test="overdueCycle != null" >
+        overdueCycle,
+      </if>
+      <if test="overdueAmt != null" >
+        overdueAmt,
+      </if>
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="bizType != null" >
+        bizType,
+      </if>
+      <if test="account != null" >
+        account,
+      </if>
+      <if test="note != null" >
+        note,
+      </if>
+      <if test="financeOrg != null" >
+        financeOrg,
+      </if>
+      <if test="currency != null" >
+        currency,
+      </if>
+      <if test="openDate != null" >
+        openDate,
+      </if>
+      <if test="limitAmt != null" >
+        limitAmt,
+      </if>
+      <if test="guarantyType != null" >
+        guarantyType,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="badBalance != null" >
+        badBalance,
+      </if>
+      <if test="stateEndDate != null" >
+        stateEndDate,
+      </if>
+      <if test="beginMonth != null" >
+        beginMonth,
+      </if>
+      <if test="endMonth != null" >
+        endMonth,
+      </if>
+      <if test="latest24State != null" >
+        latest24State,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="shareLimit != null" >
+        #{shareLimit,jdbcType=DECIMAL},
+      </if>
+      <if test="usedLimit != null" >
+        #{usedLimit,jdbcType=DECIMAL},
+      </if>
+      <if test="usedAvgAmt6m != null" >
+        #{usedAvgAmt6m,jdbcType=DECIMAL},
+      </if>
+      <if test="usedAmtMax != null" >
+        #{usedAmtMax,jdbcType=DECIMAL},
+      </if>
+      <if test="scheduledAmt != null" >
+        #{scheduledAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="scheduledDate != null" >
+        #{scheduledDate,jdbcType=VARCHAR},
+      </if>
+      <if test="actualAmt != null" >
+        #{actualAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="recentPayDate != null" >
+        #{recentPayDate,jdbcType=VARCHAR},
+      </if>
+      <if test="overdueCycle != null" >
+        #{overdueCycle,jdbcType=INTEGER},
+      </if>
+      <if test="overdueAmt != null" >
+        #{overdueAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="bizType != null" >
+        #{bizType,jdbcType=VARCHAR},
+      </if>
+      <if test="account != null" >
+        #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="note != null" >
+        #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="financeOrg != null" >
+        #{financeOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="currency != null" >
+        #{currency,jdbcType=VARCHAR},
+      </if>
+      <if test="openDate != null" >
+        #{openDate,jdbcType=VARCHAR},
+      </if>
+      <if test="limitAmt != null" >
+        #{limitAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="guarantyType != null" >
+        #{guarantyType,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=VARCHAR},
+      </if>
+      <if test="badBalance != null" >
+        #{badBalance,jdbcType=DECIMAL},
+      </if>
+      <if test="stateEndDate != null" >
+        #{stateEndDate,jdbcType=VARCHAR},
+      </if>
+      <if test="beginMonth != null" >
+        #{beginMonth,jdbcType=VARCHAR},
+      </if>
+      <if test="endMonth != null" >
+        #{endMonth,jdbcType=VARCHAR},
+      </if>
+      <if test="latest24State != null" >
+        #{latest24State,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+
+  <insert id="insertSelectiveMap" parameterType="Map" >
+    insert into t_credit_report_creditcard
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="shareLimit != null" >
+        shareLimit,
+      </if>
+      <if test="usedLimit != null" >
+        usedLimit,
+      </if>
+      <if test="usedAvgAmt6m != null" >
+        usedAvgAmt6m,
+      </if>
+      <if test="usedAmtMax != null" >
+        usedAmtMax,
+      </if>
+      <if test="scheduledAmt != null" >
+        scheduledAmt,
+      </if>
+      <if test="scheduledDate != null" >
+        scheduledDate,
+      </if>
+      <if test="actualAmt != null" >
+        actualAmt,
+      </if>
+      <if test="recentPayDate != null" >
+        recentPayDate,
+      </if>
+      <if test="overdueCycle != null" >
+        overdueCycle,
+      </if>
+      <if test="overdueAmt != null" >
+        overdueAmt,
+      </if>
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="bizType != null" >
+        bizType,
+      </if>
+      <if test="account != null" >
+        account,
+      </if>
+      <if test="note != null" >
+        note,
+      </if>
+      <if test="financeOrg != null" >
+        financeOrg,
+      </if>
+      <if test="currency != null" >
+        currency,
+      </if>
+      <if test="openDate != null" >
+        openDate,
+      </if>
+      <if test="limitAmt != null" >
+        limitAmt,
+      </if>
+      <if test="guarantyType != null" >
+        guarantyType,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="badBalance != null" >
+        badBalance,
+      </if>
+      <if test="stateEndDate != null" >
+        stateEndDate,
+      </if>
+      <if test="beginMonth != null" >
+        beginMonth,
+      </if>
+      <if test="endMonth != null" >
+        endMonth,
+      </if>
+      <if test="latest24State != null" >
+        latest24State,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="shareLimit != null" >
+        #{shareLimit,jdbcType=DECIMAL},
+      </if>
+      <if test="usedLimit != null" >
+        #{usedLimit,jdbcType=DECIMAL},
+      </if>
+      <if test="usedAvgAmt6m != null" >
+        #{usedAvgAmt6m,jdbcType=DECIMAL},
+      </if>
+      <if test="usedAmtMax != null" >
+        #{usedAmtMax,jdbcType=DECIMAL},
+      </if>
+      <if test="scheduledAmt != null" >
+        #{scheduledAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="scheduledDate != null" >
+        #{scheduledDate,jdbcType=VARCHAR},
+      </if>
+      <if test="actualAmt != null" >
+        #{actualAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="recentPayDate != null" >
+        #{recentPayDate,jdbcType=VARCHAR},
+      </if>
+      <if test="overdueCycle != null" >
+        #{overdueCycle,jdbcType=INTEGER},
+      </if>
+      <if test="overdueAmt != null" >
+        #{overdueAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="bizType != null" >
+        #{bizType,jdbcType=VARCHAR},
+      </if>
+      <if test="account != null" >
+        #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="note != null" >
+        #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="financeOrg != null" >
+        #{financeOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="currency != null" >
+        #{currency,jdbcType=VARCHAR},
+      </if>
+      <if test="openDate != null" >
+        #{openDate,jdbcType=VARCHAR},
+      </if>
+      <if test="limitAmt != null" >
+        #{limitAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="guarantyType != null" >
+        #{guarantyType,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=VARCHAR},
+      </if>
+      <if test="badBalance != null" >
+        #{badBalance,jdbcType=DECIMAL},
+      </if>
+      <if test="stateEndDate != null" >
+        #{stateEndDate,jdbcType=VARCHAR},
+      </if>
+      <if test="beginMonth != null" >
+        #{beginMonth,jdbcType=VARCHAR},
+      </if>
+      <if test="endMonth != null" >
+        #{endMonth,jdbcType=VARCHAR},
+      </if>
+      <if test="latest24State != null" >
+        #{latest24State,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportCreditCard" >
+    update t_credit_report_creditcard
+    <set >
+      <if test="shareLimit != null" >
+        shareLimit = #{shareLimit,jdbcType=DECIMAL},
+      </if>
+      <if test="usedLimit != null" >
+        usedLimit = #{usedLimit,jdbcType=DECIMAL},
+      </if>
+      <if test="usedAvgAmt6m != null" >
+        usedAvgAmt6m = #{usedAvgAmt6m,jdbcType=DECIMAL},
+      </if>
+      <if test="usedAmtMax != null" >
+        usedAmtMax = #{usedAmtMax,jdbcType=DECIMAL},
+      </if>
+      <if test="scheduledAmt != null" >
+        scheduledAmt = #{scheduledAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="scheduledDate != null" >
+        scheduledDate = #{scheduledDate,jdbcType=VARCHAR},
+      </if>
+      <if test="actualAmt != null" >
+        actualAmt = #{actualAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="recentPayDate != null" >
+        recentPayDate = #{recentPayDate,jdbcType=VARCHAR},
+      </if>
+      <if test="overdueCycle != null" >
+        overdueCycle = #{overdueCycle,jdbcType=INTEGER},
+      </if>
+      <if test="overdueAmt != null" >
+        overdueAmt = #{overdueAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="reportNo != null" >
+        reportNo = #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="bizType != null" >
+        bizType = #{bizType,jdbcType=VARCHAR},
+      </if>
+      <if test="account != null" >
+        account = #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="note != null" >
+        note = #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="financeOrg != null" >
+        financeOrg = #{financeOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="currency != null" >
+        currency = #{currency,jdbcType=VARCHAR},
+      </if>
+      <if test="openDate != null" >
+        openDate = #{openDate,jdbcType=VARCHAR},
+      </if>
+      <if test="limitAmt != null" >
+        limitAmt = #{limitAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="guarantyType != null" >
+        guarantyType = #{guarantyType,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=VARCHAR},
+      </if>
+      <if test="badBalance != null" >
+        badBalance = #{badBalance,jdbcType=DECIMAL},
+      </if>
+      <if test="stateEndDate != null" >
+        stateEndDate = #{stateEndDate,jdbcType=VARCHAR},
+      </if>
+      <if test="beginMonth != null" >
+        beginMonth = #{beginMonth,jdbcType=VARCHAR},
+      </if>
+      <if test="endMonth != null" >
+        endMonth = #{endMonth,jdbcType=VARCHAR},
+      </if>
+      <if test="latest24State != null" >
+        latest24State = #{latest24State,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportCreditCard" >
+    update t_credit_report_creditcard
+    set shareLimit = #{shareLimit,jdbcType=DECIMAL},
+      usedLimit = #{usedLimit,jdbcType=DECIMAL},
+      usedAvgAmt6m = #{usedAvgAmt6m,jdbcType=DECIMAL},
+      usedAmtMax = #{usedAmtMax,jdbcType=DECIMAL},
+      scheduledAmt = #{scheduledAmt,jdbcType=DECIMAL},
+      scheduledDate = #{scheduledDate,jdbcType=VARCHAR},
+      actualAmt = #{actualAmt,jdbcType=DECIMAL},
+      recentPayDate = #{recentPayDate,jdbcType=VARCHAR},
+      overdueCycle = #{overdueCycle,jdbcType=INTEGER},
+      overdueAmt = #{overdueAmt,jdbcType=DECIMAL},
+      reportNo = #{reportNo,jdbcType=VARCHAR},
+      bizType = #{bizType,jdbcType=VARCHAR},
+      account = #{account,jdbcType=VARCHAR},
+      note = #{note,jdbcType=VARCHAR},
+      financeOrg = #{financeOrg,jdbcType=VARCHAR},
+      currency = #{currency,jdbcType=VARCHAR},
+      openDate = #{openDate,jdbcType=VARCHAR},
+      limitAmt = #{limitAmt,jdbcType=DECIMAL},
+      guarantyType = #{guarantyType,jdbcType=VARCHAR},
+      state = #{state,jdbcType=VARCHAR},
+      badBalance = #{badBalance,jdbcType=DECIMAL},
+      stateEndDate = #{stateEndDate,jdbcType=VARCHAR},
+      beginMonth = #{beginMonth,jdbcType=VARCHAR},
+      endMonth = #{endMonth,jdbcType=VARCHAR},
+      latest24State = #{latest24State,jdbcType=VARCHAR}
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+  <select id="selectSum" resultMap="BaseResultMap" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportCreditCard" >
+    select ifnull(SUM(limitAmt),0) limitAmt
+    from t_credit_report_creditcard
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+      and (state = #{state,jdbcType=VARCHAR} or state = #{state1,jdbcType=VARCHAR})
+      and guarantyType = #{guarantyType,jdbcType=VARCHAR}
+  </select>
+  <select id="selectList" resultMap="BaseResultMap" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportCreditCard" >
+    select <include refid="Base_Column_List" />
+    from t_credit_report_creditcard
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+      <if test="state != null" >
+        and state not in ('已销户','销户')
+      </if>
+  </select>
+  <select id="selectListNot" resultMap="BaseResultMap" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportCreditCard" >
+    select <include refid="Base_Column_List" />
+    from t_credit_report_creditcard
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+      <if test="state != null" >
+        and state != #{state,jdbcType=VARCHAR}
+        and state != #{state1,jdbcType=VARCHAR}
+      </if>
+  </select>
+  <select id="selectCount" resultMap="BaseResultMap" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportCreditCard" >
+    select count(serialno) countSerialNo
+    from t_credit_report_creditcard
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+      <if test="state != null" >
+        and (state = #{state,jdbcType=VARCHAR} or state = #{state1,jdbcType=VARCHAR})
+      </if>
+      <if test="currency != null" >
+        and currency = #{currency,jdbcType=VARCHAR}
+      </if>
+  </select>
+  <select id="selectSumLimitAmtNew" resultMap="BaseResultMap" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportCreditCard" >
+    select ifnull(SUM(c.limitAmt),0) limitAmt
+    from t_credit_report_creditcard c, t_credit_report_brief b
+    where c.reportNo = #{reportNo,jdbcType=VARCHAR}
+      and b.reportNo = c.reportNo
+      <if test="state != null" >
+        and c.state != #{state,jdbcType=VARCHAR}
+        and c.state != #{state1,jdbcType=VARCHAR}
+      </if>
+    <if test="flag == 1" >
+        and to_days(left(b.CREATETIME,10)) - to_days(c.openDate) <![CDATA[<=]]> #{days,jdbcType=INTEGER}
+    </if>
+    <if test="flag == 2" >
+        and to_days(left(b.CREATETIME,10)) - to_days(c.openDate) >= #{days,jdbcType=INTEGER}
+        and to_days(left(b.CREATETIME,10)) - to_days(c.openDate) <![CDATA[<=]]> #{days2,jdbcType=INTEGER}
+    </if>
+  </select>
+  <select id="selectSelectiveMax" resultMap="BaseResultMap" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportCreditCard" >
+    select ifnull(max(c.limitAmt),0) limitAmt
+    from t_credit_report_creditcard c, t_credit_report_brief b
+    where c.reportNo = #{reportNo,jdbcType=VARCHAR}
+      and b.reportNo = c.reportNo
+    <if test="flag == 1" >
+        and to_days(left(b.CREATETIME,10)) - to_days(c.openDate) <![CDATA[<=]]> #{days,jdbcType=INTEGER}
+    </if>
+    <if test="flag == 2" >
+        and to_days(left(b.CREATETIME,10)) - to_days(c.openDate) > #{days,jdbcType=INTEGER}
+        and to_days(left(b.CREATETIME,10)) - to_days(c.openDate) <![CDATA[<=]]> #{days2,jdbcType=INTEGER}
+    </if>
+    <if test="flag == 3" >
+        and to_days(left(b.CREATETIME,10)) - to_days(c.openDate) > #{days,jdbcType=INTEGER}
+    </if>
+  </select>
+</mapper>

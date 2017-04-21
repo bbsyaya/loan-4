@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TAICFrpositionInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TAICFrpositionInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="posCustId" property="posCustId" jdbcType="VARCHAR" />
+    <result column="orderNo" property="orderNo" jdbcType="VARCHAR" />
+    <result column="entName" property="entName" jdbcType="VARCHAR" />
+    <result column="regNo" property="regNo" jdbcType="VARCHAR" />
+    <result column="entType" property="entType" jdbcType="VARCHAR" />
+    <result column="regCap" property="regCap" jdbcType="VARCHAR" />
+    <result column="entStatus" property="entStatus" jdbcType="VARCHAR" />
+    <result column="regOrg" property="regOrg" jdbcType="VARCHAR" />
+    <result column="position" property="position" jdbcType="VARCHAR" />
+    <result column="lerepSign" property="lerepSign" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, posCustId, orderNo, entName, regNo, entType, regCap, entStatus, regOrg, position, 
+    lerepSign
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_frposition_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_aic_frposition_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TAICFrpositionInfo" >
+    insert into t_aic_frposition_info (id, posCustId, orderNo, 
+      entName, regNo, entType, 
+      regCap, entStatus, regOrg, 
+      position, lerepSign)
+    values (#{id,jdbcType=INTEGER}, #{posCustId,jdbcType=VARCHAR}, #{orderNo,jdbcType=VARCHAR}, 
+      #{entName,jdbcType=VARCHAR}, #{regNo,jdbcType=VARCHAR}, #{entType,jdbcType=VARCHAR}, 
+      #{regCap,jdbcType=VARCHAR}, #{entStatus,jdbcType=VARCHAR}, #{regOrg,jdbcType=VARCHAR}, 
+      #{position,jdbcType=VARCHAR}, #{lerepSign,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICFrpositionInfo" >
+    insert into t_aic_frposition_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="orderNo != null" >
+        orderNo,
+      </if>
+      <if test="entName != null" >
+        entName,
+      </if>
+      <if test="regNo != null" >
+        regNo,
+      </if>
+      <if test="entType != null" >
+        entType,
+      </if>
+      <if test="regCap != null" >
+        regCap,
+      </if>
+      <if test="entStatus != null" >
+        entStatus,
+      </if>
+      <if test="regOrg != null" >
+        regOrg,
+      </if>
+      <if test="position != null" >
+        position,
+      </if>
+      <if test="lerepSign != null" >
+        lerepSign,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="entName != null" >
+        #{entName,jdbcType=VARCHAR},
+      </if>
+      <if test="regNo != null" >
+        #{regNo,jdbcType=VARCHAR},
+      </if>
+      <if test="entType != null" >
+        #{entType,jdbcType=VARCHAR},
+      </if>
+      <if test="regCap != null" >
+        #{regCap,jdbcType=VARCHAR},
+      </if>
+      <if test="entStatus != null" >
+        #{entStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="regOrg != null" >
+        #{regOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="position != null" >
+        #{position,jdbcType=VARCHAR},
+      </if>
+      <if test="lerepSign != null" >
+        #{lerepSign,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="Map" >
+    insert into t_aic_frposition_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="orderNo != null" >
+        orderNo,
+      </if>
+      <if test="entName != null" >
+        entName,
+      </if>
+      <if test="regNo != null" >
+        regNo,
+      </if>
+      <if test="entType != null" >
+        entType,
+      </if>
+      <if test="regCap != null" >
+        regCap,
+      </if>
+      <if test="entStatus != null" >
+        entStatus,
+      </if>
+      <if test="regOrg != null" >
+        regOrg,
+      </if>
+      <if test="position != null" >
+        position,
+      </if>
+      <if test="lerepSign != null" >
+        lerepSign,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="entName != null" >
+        #{entName,jdbcType=VARCHAR},
+      </if>
+      <if test="regNo != null" >
+        #{regNo,jdbcType=VARCHAR},
+      </if>
+      <if test="entType != null" >
+        #{entType,jdbcType=VARCHAR},
+      </if>
+      <if test="regCap != null" >
+        #{regCap,jdbcType=VARCHAR},
+      </if>
+      <if test="entStatus != null" >
+        #{entStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="regOrg != null" >
+        #{regOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="position != null" >
+        #{position,jdbcType=VARCHAR},
+      </if>
+      <if test="lerepSign != null" >
+        #{lerepSign,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICFrpositionInfo" >
+    update t_aic_frposition_info
+    <set >
+      <if test="posCustId != null" >
+        posCustId = #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        orderNo = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="entName != null" >
+        entName = #{entName,jdbcType=VARCHAR},
+      </if>
+      <if test="regNo != null" >
+        regNo = #{regNo,jdbcType=VARCHAR},
+      </if>
+      <if test="entType != null" >
+        entType = #{entType,jdbcType=VARCHAR},
+      </if>
+      <if test="regCap != null" >
+        regCap = #{regCap,jdbcType=VARCHAR},
+      </if>
+      <if test="entStatus != null" >
+        entStatus = #{entStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="regOrg != null" >
+        regOrg = #{regOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="position != null" >
+        position = #{position,jdbcType=VARCHAR},
+      </if>
+      <if test="lerepSign != null" >
+        lerepSign = #{lerepSign,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TAICFrpositionInfo" >
+    update t_aic_frposition_info
+    set posCustId = #{posCustId,jdbcType=VARCHAR},
+      orderNo = #{orderNo,jdbcType=VARCHAR},
+      entName = #{entName,jdbcType=VARCHAR},
+      regNo = #{regNo,jdbcType=VARCHAR},
+      entType = #{entType,jdbcType=VARCHAR},
+      regCap = #{regCap,jdbcType=VARCHAR},
+      entStatus = #{entStatus,jdbcType=VARCHAR},
+      regOrg = #{regOrg,jdbcType=VARCHAR},
+      position = #{position,jdbcType=VARCHAR},
+      lerepSign = #{lerepSign,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

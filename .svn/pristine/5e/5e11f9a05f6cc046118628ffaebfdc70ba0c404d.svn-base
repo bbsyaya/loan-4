@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.hrbb.loan</groupId>
+		<artifactId>loan</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<groupId>com.hrbb.loan.test</groupId>
+	<artifactId>loan-pos-test</artifactId>
+	<packaging>jar</packaging>
+	<name>test Desc</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+		</dependency>
+
+		<!-- <dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+		</dependency>
+ -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+		</dependency>
+		 
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		
+<!-- 		<dependency>
+		    <groupId>org.easymock</groupId>
+		    <artifactId>easymock</artifactId>
+		    <version>3.2</version>
+	    </dependency>
+	    
+	    <dependency>
+  		<groupId>org.codehaus.groovy</groupId>
+  		<artifactId>groovy-all</artifactId>
+  		<version>2.2.2</version>
+		</dependency> -->
+	    
+		 
+	</dependencies>
+
+	<build>
+
+	 <plugins>
+	 
+	      <plugin>
+	        <groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-surefire-plugin</artifactId>
+	        <version>2.17</version>
+	        <configuration>
+	      <!--    <includes>
+	            <include>test/com/pinganfu/transcore/coverage/RunAllCoverageTest.java</include>
+	          </includes>
+	          -->
+	        </configuration>
+	      </plugin>
+	      
+	      <!-- cobertura 无用 
+	      <plugin>
+	        <groupId>org.codehaus.mojo</groupId>
+	        <artifactId>cobertura-maven-plugin</artifactId>
+	        <version>2.6</version>
+	          <configuration>
+	           <instrumentation>
+	            <ignores>
+	              <ignore>test.com.pinganfu.transcore.service.*</ignore>
+	            </ignores>
+	            <excludes>
+	              <exclude>test/com/pinganfu/transcore/**/*.class</exclude>
+	              <exclude>test/coverage/**/*.class</exclude>
+	            </excludes>
+	          </instrumentation>
+	        </configuration>
+	        <executions>
+	          <execution>
+	            <goals>
+	              <goal>clean</goal>
+	            </goals>
+	          </execution>
+	        </executions>
+	      </plugin>
+       -->
+       
+       
+      <!-- sonar -->
+     	 <plugin>
+ 				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<configuration>
+					<destFile>${sonar.jacoco.itReportPath}</destFile>
+				</configuration>
+				<executions>
+					<execution>
+						<id>post-test</id>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+      
+    </plugins>
+	</build>
+	 <!-- cobertura 无用 
+	<reporting>
+	    <plugins>
+	      <plugin>
+	        <groupId>org.codehaus.mojo</groupId>
+	        <artifactId>cobertura-maven-plugin</artifactId>
+	        <version>2.6</version>
+	      </plugin>
+	    </plugins>
+  	</reporting>
+  -->
+  
+</project>

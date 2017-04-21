@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="TModelResultMapper">
+	<resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TModelResult">
+		<id column="id" property="id" jdbcType="INTEGER"></id>
+		<result column="loanid" property="loanId" jdbcType="VARCHAR"/>
+		<result column="approved_result" property="approvedResult" jdbcType="VARCHAR"/>
+		<result column="approved_amt" property="approvedAmt" jdbcType="DOUBLE"/>
+		<result column="approved_rate" property="approvedRate" jdbcType="DOUBLE"/>
+		<result column="approved_type" property="approvedType" jdbcType="VARCHAR"/>
+		<result column="approved_period" property="approvedPeriod" jdbcType="VARCHAR"/>
+		<result column="pd30" property="pd30" jdbcType="DOUBLE"/>
+		<result column="pd3" property="pd3" jdbcType="DOUBLE"/>
+		<result column="score_d30" property="scored30" jdbcType="DOUBLE"/>
+		<result column="score_d3" property="scored3" jdbcType="DOUBLE"/>
+		<result column="version" property="version" jdbcType="VARCHAR"/>
+		<result column="create_date" property="createDate" jdbcType="TIMESTAMP"/>
+		<result column="modify_date" property="modifyDate" jdbcType="TIMESTAMP"/>
+	</resultMap>
+	<parameterMap type="map" id="riskMap">
+		<parameter property="no1" jdbcType="VARCHAR" mode="IN"/>
+		<parameter property="approved_result" jdbcType="VARCHAR" mode="OUT"/>
+	</parameterMap>
+	<sql id="Base_Column_List">
+		id, loanid,approved_result,approved_amt,approved_rate,approved_period,approved_type, version
+	</sql>
+	<select id="creditRiskCheck" parameterMap="riskMap" statementType="CALLABLE">
+		{call creditscore_result(?,?)}
+	</select>
+	<delete id="deleteByLoanId" parameterType="java.lang.Integer" >
+	   	 delete from t_model_result
+	   	 where loanid = #{loanId,jdbcType=VARCHAR}
+  	</delete>
+  	<select id="selectByLoanId" resultMap="BaseResultMap" parameterType="java.lang.String">
+  		select 
+  		<include refid="Base_Column_List"/>
+		from t_model_result where loanid = #{loanId jdbcType=VARCHAR}
+  	</select>
+	<select id="selectSelectiveMap" parameterType="map" resultType="map">
+		select 
+		<include refid="Base_Column_List"/>
+		from t_model_result where 1=1
+		<if test="loanid != null">
+			AND loanid = #{loanId, jabcType=VARCHAR}
+		</if>
+	</select>
+</mapper>

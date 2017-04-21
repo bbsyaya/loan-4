@@ -1,0 +1,113 @@
+/**
+ * 
+ */
+package com.hrbb.loan.pos.biz.backstage.inter.impl.reader;
+
+import com.hrbb.loan.pos.util.DateUtil;
+
+/**
+ * <p>Title: RowMeta.java </p>
+ * <p>Description:  </p>
+ * <p>Copyright: Copyright (C) 2015 Hrbb Ltd. Co.</p> 
+ *     
+ * @author linzhaolin@hrbb.com.cn
+ * @version 
+ * @date 2015年4月27日
+ *
+ * logs: 1. 
+ */
+public class RowMeta {
+	
+	public static final String LOAN_ID = "loanId";
+	
+	public static final String POS_SERIAL_NO = "posSerialNo";
+
+	public static final String POS_CHANNEL = "posChannel";
+
+	public static final String POS_KIND = "posKind";
+
+	public static final String TRADE_DATE = "tradeDate";
+
+	public static final String TRADE_TIME = "tradeTime";
+
+	public static final String TRADE_AMT = "tradeAmt";
+
+	public static final String TRADE_NUM = "tradeNum";
+
+	public static final String TRADE_LAST_FOUR_STATE = "cardLastFourState";
+
+	public static final String TRADE_CARD_KIND = "tradeCardKind";
+
+	public static final String STAT_TRADE_NUM = "stattradeNum";
+
+	public static final String REG_TIME_TRADE_AMT = "regTimeTradeAmt";
+
+	public static final String REG_TIME_TRADE_NUM = "regTimeTradeNum";
+
+	public static final String MAX_TRADE_AMT_PER_MONTH = "maxTradeAmtPerMonth";
+
+	public static final String CREDIT_CARD_TRADE_AMT_RADE = "creditCardTradeAmtRate";
+
+	public static final String CREDIT_CARD_TRADE_NUM_RATE = "creditCardTradeNumRate";
+
+	public static final String DIFFERENT_CARD_NO_NUM = "differentCardNoNum";
+	
+	public static final String RELATIVE_PRFIX = "RE";
+
+	public static final String MERCHANT_ID = "merchantId";
+
+	public static final String MERCHANT_NAME = "merchantName";
+
+	public static final String TRADE_TYPE = "tradeType";
+
+	public static final String MERCHANT_TYPE_CODE = "merchantType";
+
+	public static final String TRADE_CARD_NO = "tradeCardNo";
+	
+	public static final int META_TYPE_DATE = 1;
+	public static final int META_TYPE_CHAR = 2;
+	
+	private int index = 0;
+	private String fromFormat = "";
+	private String toFormat = "";
+	private int type = META_TYPE_CHAR;
+	
+	public RowMeta(int idx, String fromFormat){
+		this(idx, fromFormat, DateUtil.HRRB_SHORT_DATETIME_FORMAT);
+	}
+	
+	public RowMeta(int idx, String fromFormat, int type){
+		this(idx, fromFormat, DateUtil.HRRB_SHORT_DATETIME_FORMAT, type);
+	}
+	
+	public RowMeta(int idx, String fromFormat, String toFormat){
+		this(idx, fromFormat, toFormat, META_TYPE_CHAR);
+	}
+	
+	public RowMeta(int idx, String fromFormat, String toFormat, int type){
+		this.index = idx;
+		this.fromFormat = fromFormat;
+		this.toFormat = toFormat;
+		this.type = type;
+	}
+
+	public String getFromFormat() {
+		return fromFormat;
+	}
+	
+	public String getToFormat() {
+		return toFormat;
+	}
+	
+	public int getIndex() {
+		return index;
+	}
+	
+	public int getType() {
+		return type;
+	}
+
+	public String toString(){
+		return "index="+getIndex()+"/from "+getFromFormat()+" to "+getToFormat();
+	}
+}

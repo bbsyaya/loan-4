@@ -1,0 +1,71 @@
+package com.hrbb.loan.pos.biz.backstage.inter;
+
+import java.util.List;
+import java.util.Map;
+
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+
+/**
+ * 借据管理
+ * 
+ * @author jianQing
+ * @version $Id: IReceiptManageBiz.java, v 0.1 2015年4月27日 下午6:02:09 jianQing Exp $
+ */
+public interface IReceiptManageBiz {
+    
+    /**
+     * 生成借据
+     * 
+     * @param receiptInfo 借据对象
+     * @return
+     */
+   int generateReceiptInfo(TReceiptInfo receiptInfo);
+   
+   public List<TReceiptInfo> queryReceiptByContNo(String contNo, String loanExtStatus);
+       
+    /**
+     * 更新借据
+     * 
+     * @param reqMap
+     */
+    void updateReceiptInfo(Map<String, Object> reqMap);
+   
+   /**
+     * 计算贷款总余额之和
+     * 
+     * @param contNo 协议编号
+     * @return
+     */
+    String sumLoanTotalBalance(String contNo);
+
+    /**
+     * 通过用款ID查询借据
+     * 
+     * @param payApplyId
+     * @return
+     */
+    TReceiptInfo selectReceiptOne(String payApplyId);
+
+    /**
+     * 主键查询
+     * 
+     * @param receiptId
+     * @return
+     */
+    TReceiptInfo selectReceiptByPrimary(String receiptId);
+    
+    /**
+     * 查询放款指令执行成功的借据列表
+     * 
+     * @param reqMap
+     * @return
+     */
+    List<TReceiptInfo> getReceiptList10();
+    
+    /**
+	 * 根据放款序号获取借据
+	 * @param exeSeq
+	 * @return
+	 */
+	public TReceiptInfo selectByExeSeq(String exeSeq);
+}

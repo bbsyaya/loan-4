@@ -1,0 +1,69 @@
+package com.hrbb.loan.pos.biz.backstage.inter.impl;
+
+import java.util.Date;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.hrbb.loan.pos.biz.backstage.inter.IDueDiligenceBiz;
+import com.hrbb.loan.pos.dao.entity.TCreditApply;
+import com.hrbb.loan.pos.dao.entity.TDueDiligence;
+import com.hrbb.loan.pos.service.CommDueDiligenceService;
+import com.hrbb.loan.pos.service.LoanPosCreditApplyService;
+
+/**
+ * 尽职调查.
+ * 
+ * @author xiongshaogang
+ * @version $Id: DueDiligenceBizImpl.java, v 0.1 2015年5月7日 上午11:11:37 xiongshaogang Exp $
+ */
+@Component("iDueDiligenceBiz")
+public class DueDiligenceBizImpl implements IDueDiligenceBiz {
+    
+    private final Logger logger = LoggerFactory
+            .getLogger(DueDiligenceBizImpl.class);
+
+    @Autowired
+    private LoanPosCreditApplyService loanPosCreditApplyService;
+    
+    @Autowired
+    private CommDueDiligenceService commDueDiligenceService;
+    
+    @Override
+    public boolean insertDueDiligence(TDueDiligence tDueDiligence) {
+        
+        // 1. 查询业务受理流水
+        TCreditApply tCreditApply = loanPosCreditApplyService.queryCreditApply(tDueDiligence.getLoanid());
+        if (tCreditApply == null) {
+            logger.error("业务受理流水不存在");
+            return false;
+        } else if (!"40".equals(tCreditApply.getApplyStatus())) {
+            logger.error("业务受理流水状态不为 [尽调中]");
+            return false;
+        }
+        
+        // 0. 插入尽调报告
+        TDueDiligence tmpTDueDiligence = commDueDiligenceService.selectByLoanId(tDueDiligence.getLoanid());
+        if (tmpTDueDiligence != null) {
+            logger.error("尽调报告已经存在");
+            return false;
+        }
+        if (1 != commDueDiligenceService.insert(tDueDiligence)) {
+            logger.error("插入数据库失败");
+            return false;
+        }
+        
+        // 2. 更新申请状态为： 尽调审核 41
+        tCreditApply.setApplyStatus("41");
+        tCreditApply.setLastOperTime(new Date());
+        tCreditApply.setLastOperId("system");
+        if (1 != loanPosCreditApplyService.updateCreditApply(tCreditApply)) {
+            logger.error("业务申请流水更新失败");
+            return false;
+        }
+        return true;
+    }
+
+}

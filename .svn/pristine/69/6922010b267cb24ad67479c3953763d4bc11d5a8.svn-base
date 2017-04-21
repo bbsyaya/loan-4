@@ -1,0 +1,9 @@
+#Synchro File Path
+synchrofilepath=/home/loan-pos-synchrofile/
+#channel
+channels=UM,58,HC,ZW,SM
+channelFtpIds=UMI,58I,HCI,ZWI,SMI
+#dataTransfer File Path
+dataTransferfilepath=/home/loan-pos-dataTransferfile/dataTransferfile/data.json
+#dataTransferfilepath=C\:\\work\\POSLOAN\\dataTransfer\\data.json
+#logpath=/home/hrbbif/webtools/logs/cron/log

@@ -1,0 +1,29 @@
+package com.hrbb.loan.pos.dao;
+
+import java.util.List;
+
+import com.hrbb.loan.pos.dao.entity.TUpsIndexConsumeCity;
+
+public interface TUpsIndexConsumeCityDao {
+    int deleteByPrimaryKey(Integer id);
+
+    int insert(TUpsIndexConsumeCity record);
+
+    int insertSelective(TUpsIndexConsumeCity record);
+    
+    int insertBatch(List<TUpsIndexConsumeCity> record);
+
+    TUpsIndexConsumeCity selectByPrimaryKey(Integer id);
+
+    int updateByPrimaryKeySelective(TUpsIndexConsumeCity record);
+
+    int updateByPrimaryKey(TUpsIndexConsumeCity record);
+
+    /**
+     * 查询汇总情况
+     * 
+     * @param fileUuid
+     * @return
+     */
+    List<TUpsIndexConsumeCity> selectListByFileUuid(String fileUuid);
+}

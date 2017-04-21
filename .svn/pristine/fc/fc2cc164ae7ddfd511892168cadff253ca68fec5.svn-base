@@ -1,0 +1,46 @@
+package com.hrbb.loan.pos.dao.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+import org.springframework.stereotype.Repository;
+
+import com.hrbb.loan.pos.dao.TBdRegionDao;
+import com.hrbb.loan.pos.dao.entity.TBdRegion;
+
+
+@Repository("tBdRegionDao")
+public class TBdRegionDaoImpl extends SqlSessionDaoSupport implements TBdRegionDao {
+
+    @Override
+    public int insert(TBdRegion record) {
+        return getSqlSession().insert("TBdRegionMapper.insertSelective", record);
+    }
+
+    @Override
+    public int insertSelective(TBdRegion record) {
+        return getSqlSession().insert("TBdRegionMapper.insertSelective", record);
+    }
+
+    @Override
+    public List<TBdRegion> queryRegion(Map<String, Object> param) {
+        return getSqlSession().selectList("TBdRegionMapper.selectListBySelective", param);
+    }
+
+    @Override
+    public int deleteRegion(Map<String, Object> param) {
+        return getSqlSession().delete("TBdRegionMapper.deleteByParam", param);
+    }
+
+    @Override
+    public Long count(Map<String,Object> param) {
+        return getSqlSession().selectOne("TBdRegionMapper.countListBySelective", param);
+    }
+
+    @Override
+    public List<TBdRegion> selectTBRegionsByReqMap(Map<String, Object> reqMap) {
+        return getSqlSession().selectList("TBdRegionMapper.selectByRegion", reqMap);
+    }
+   
+}

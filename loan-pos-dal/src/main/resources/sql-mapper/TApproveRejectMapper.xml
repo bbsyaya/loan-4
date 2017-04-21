@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TApproveRejectMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TApproveReject" >
+    <result column="approveId" property="approveId" jdbcType="VARCHAR" />
+    <result column="approvenum" property="approvenum" jdbcType="INTEGER" />
+    <result column="rejectreason" property="rejectreason" jdbcType="VARCHAR" />
+    <result column="rejdetail" property="rejdetail" jdbcType="VARCHAR" />
+    <result column="rejdt" property="rejdt" jdbcType="DATE" />
+    <result column="rejperson" property="rejperson" jdbcType="VARCHAR" />
+  </resultMap>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TApproveReject" >
+    insert into t_approve_reject (approveId, approvenum, rejectreason, 
+      rejdetail, rejdt, rejperson, 
+      adjustreason, adjustdt, adjustpersonId
+      )
+    values (#{approveId,jdbcType=VARCHAR}, #{approvenum,jdbcType=INTEGER}, #{rejectreason,jdbcType=VARCHAR}, 
+      #{rejdetail,jdbcType=VARCHAR}, #{rejdt,jdbcType=DATE}, #{rejperson,jdbcType=VARCHAR}, 
+      #{adjustreason,jdbcType=VARCHAR}, #{adjustdt,jdbcType=DATE}, #{adjustpersonId,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertApproveReject" parameterType="Map" >
+    insert into t_approve_reject
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="approveId != null" >
+        approveId,
+      </if>
+      <if test="approvenum != null" >
+        approvenum,
+      </if>
+      <if test="rejectreason != null" >
+        rejectreason,
+      </if>
+      <if test="rejdetail != null" >
+        rejdetail,
+      </if>
+      <if test="rejdt != null" >
+        rejdt,
+      </if>
+      <if test="rejperson != null" >
+        rejperson,
+      </if>
+      <if test="adjustreason != null" >
+        adjustreason,
+      </if>
+      <if test="adjustdt != null" >
+        adjustdt,
+      </if>
+      <if test="adjustpersonId != null" >
+        adjustpersonId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="approveId != null" >
+        #{approveId,jdbcType=VARCHAR},
+      </if>
+      <if test="approvenum != null" >
+        #{approvenum,jdbcType=INTEGER},
+      </if>
+      <if test="rejectreason != null" >
+        #{rejectreason,jdbcType=VARCHAR},
+      </if>
+      <if test="rejdetail != null" >
+        #{rejdetail,jdbcType=VARCHAR},
+      </if>
+      <if test="rejdt != null" >
+        #{rejdt,jdbcType=DATE},
+      </if>
+      <if test="rejperson != null" >
+        #{rejperson,jdbcType=VARCHAR},
+      </if>
+      <if test="adjustreason != null" >
+        #{adjustreason,jdbcType=VARCHAR},
+      </if>
+      <if test="adjustdt != null" >
+        #{adjustdt,jdbcType=DATE},
+      </if>
+      <if test="adjustpersonId != null" >
+        #{adjustpersonId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="selectRejectMaxApproveNumByApproveId" resultType="java.lang.Integer" parameterType="java.lang.String" >
+    select ifnull(max(approvenum),0) approvenum
+    from t_approve_reject
+    where approveId = #{approveId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="Map" >
+    select approveId, approvenum, rejectreason, 
+      rejdetail, rejdt, rejperson
+    from t_approve_reject
+    where approveId = #{approveId,jdbcType=VARCHAR} and approvenum = #{approvenum,jdbcType=VARCHAR}
+  </select>
+</mapper>

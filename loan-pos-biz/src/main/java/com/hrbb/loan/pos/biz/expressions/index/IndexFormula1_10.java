@@ -1,0 +1,158 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.biz.expressions.index;
+
+import java.math.BigDecimal;
+
+import com.hrbb.loan.pos.dao.entity.TRiskCheckCalcIndex;
+import com.hrbb.loan.pos.dao.entity.TRiskCheckModelIndex;
+import com.hrbb.loan.pos.biz.constants.RiskCheckConstants;
+
+/**
+ * 1.2.1.2 指标计算
+ * 
+ * @author XLY
+ * @version $Id: IndexFormula.java, v 0.1 2015-3-10 上午11:08:51 XLY Exp $
+ */
+public class IndexFormula1_10 {
+
+	/**
+	 * If(Model_Index-01 申请人未结清贷款笔数 > 0, Y, N)
+	 * 
+	 * @param modelIndex01
+	 * @return
+	 */
+	public static String calcIndex01(Integer modelIndex01) {
+		if (modelIndex01 == null)
+			return RiskCheckConstants.N;
+		return modelIndex01 > 0 ? RiskCheckConstants.Y : RiskCheckConstants.N;
+	}
+
+	/**
+	 * If(Model_Index-02 申请人未销户贷记卡账户数 > 0 , Y, N)
+	 * 
+	 * @param modelIndex02
+	 * @return
+	 */
+	public static String calcIndex02(Integer modelIndex02) {
+		if (modelIndex02 == null)
+			return RiskCheckConstants.N;
+		return modelIndex02 > 0 ? RiskCheckConstants.Y : RiskCheckConstants.N;
+	}
+
+	/**
+	 * If(Model_Index-03 申请人未结清信用记录笔数 > 0 , Y, N)
+	 * 
+	 * @param modelIndex02
+	 * @return
+	 */
+	public static String calcIndex03(Integer modelIndex03) {
+		if (modelIndex03 == null)
+			return RiskCheckConstants.N;
+		return modelIndex03 > 0 ? RiskCheckConstants.Y : RiskCheckConstants.N;
+	}
+
+	/**
+	 * If(Model_Index-20 申请人征信报告查询次数 > 10, Y, N)
+	 * 
+	 * @param modelIndex02
+	 * @return
+	 */
+	public static String calcIndex04(Integer modelIndex20) {
+		if (modelIndex20 == null)
+			return RiskCheckConstants.N;
+		return modelIndex20 > 10 ? RiskCheckConstants.Y : RiskCheckConstants.N;
+	}
+
+	/**
+	 * If(Model_Index-14 申请人贷记卡使用率 > 0.9, Y, N)
+	 * 
+	 * @param modelIndex02
+	 * @return
+	 */
+	public static String calcIndex05(BigDecimal modelIndex14) {
+		if (modelIndex14.compareTo(new BigDecimal(0.9)) > 0)
+			return RiskCheckConstants.Y;
+		return RiskCheckConstants.N;
+	}
+
+	/**
+	 * If(Model_Index-22 申请人连续逾期月份 >= 2, Y, N)
+	 * 
+	 * @param modelIndex22
+	 * @return
+	 */
+	public static String calcIndex06(Integer modelIndex22) {
+		if (modelIndex22 == null)
+			return RiskCheckConstants.N;
+		if (modelIndex22 > 2)
+			return RiskCheckConstants.Y;
+		return RiskCheckConstants.N;
+	}
+
+	/**
+	 * If(Model_Index-06申请人最早信用记录距今月份数 < 12, Y, N)
+	 * 
+	 * @param modelIndex06
+	 * @return
+	 */
+	public static String calcIndex07(BigDecimal modelIndex06) {
+		if (modelIndex06 == null)
+			return RiskCheckConstants.N;
+		// return modelIndex06 < 12 ? RiskCheckConstants.Y :
+		// RiskCheckConstants.N;
+		return modelIndex06.compareTo(new BigDecimal(24)) < 0 ? RiskCheckConstants.Y
+				: RiskCheckConstants.N;
+	}
+
+	/**
+	 * If(Model_Index-07申请人存量有效信用记录 < 3, Y, N)
+	 * 
+	 * @param modelIndex06
+	 * @return
+	 */
+	public static String calcIndex08(Integer modelIndex07) {
+		if (modelIndex07 == null)
+			return RiskCheckConstants.N;
+		return modelIndex07 < 3 ? RiskCheckConstants.Y : RiskCheckConstants.N;
+	}
+
+	/**
+	 * If(Model_Index-08申请人信用类融资余额 < 10000, Y, N)
+	 * 
+	 * @param modelIndex06
+	 * @return
+	 */
+	public static String calcIndex09(BigDecimal modelIndex08) {
+		return modelIndex08.compareTo(new BigDecimal(10000)) < 0 ? RiskCheckConstants.Y
+				: RiskCheckConstants.N;
+	}
+
+	/**
+	 * If(Model_Index-09申请人逾期贷款笔数 > 10, Y, N)
+	 * 
+	 * @param modelIndex06
+	 * @return
+	 */
+	public static String calcIndex10(Integer modelIndex09) {
+		if (modelIndex09 == null)
+			return RiskCheckConstants.N;
+		return modelIndex09 > 10 ? RiskCheckConstants.Y : RiskCheckConstants.N;
+	}
+
+	public static void computer(TRiskCheckModelIndex m, TRiskCheckCalcIndex b) {
+		b.setCalcIndex01(calcIndex01(m.getModelIndex01()));
+		b.setCalcIndex02(calcIndex02(m.getModelIndex02()));
+		b.setCalcIndex03(calcIndex03(m.getModelIndex03()));
+		b.setCalcIndex04(calcIndex04(m.getModelIndex20()));
+		b.setCalcIndex05(calcIndex05(m.getModelIndex14()));
+		b.setCalcIndex06(calcIndex06(m.getModelIndex22()));
+		b.setCalcIndex07(calcIndex07(m.getModelIndex06()));
+		b.setCalcIndex08(calcIndex08(m.getModelIndex07()));
+		b.setCalcIndex09(calcIndex09(m.getModelIndex08()));
+		b.setCalcIndex10(calcIndex10(m.getModelIndex09()));
+	}
+}

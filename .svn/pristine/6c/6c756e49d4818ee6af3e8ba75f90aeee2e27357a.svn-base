@@ -1,0 +1,85 @@
+package com.hrbb.loan.pos.biz.backstage.inter;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+
+/**
+ * 
+ * @author cjq
+ * @version $Id: LoanPosPaybackApplyBiz.java, v 0.1 2015年9月6日 上午10:45:12 cjq Exp $
+ */
+public interface LoanPosPaybackApplyBiz {
+    
+    List<TPaybackApplyInfo> queryPaybackApplyInfo(Map<String, Object> reqMap);
+
+    int updatePaybackApply(Map<String, Object> updateMap);
+
+    List<Map<String, Object>> queryPaybackDetailsByMaps(Map<String, Object> map);
+
+    List<Map<String, Object>> queryPaybackDetailsBySlApp(Map<String, Object> map);
+
+    /**
+     * 校验还款申请合法性
+     * 
+     * @param receipt
+     * @param expectPaybackDate
+     * @param paybackPrincipal
+     * @param paybackInterest
+     * @param paybackTotalAmount
+     * @param limitCalcDate   是否限定还款日期不能小于当前日期
+     * @return
+     */
+    Map<String, Object> validatePaybackApply(TReceiptInfo receipt, Date expectPaybackDate,
+                                                    BigDecimal paybackPrincipal,
+                                                    BigDecimal paybackInterest,
+                                                    BigDecimal paybackTotalAmount,
+                                                    boolean limitCalcDate);
+
+    Map<String, Object> validatePaybackApply(TReceiptInfo receipt, Date expectPaybackDate,
+                                                    BigDecimal paybackPrincipal,
+                                                    BigDecimal paybackInterest,
+                                                    BigDecimal paybackTotalAmount);
+
+    /**
+     * 创建用款申请
+     * 
+     * @param receipt
+     * @param paybackDate
+     * @param prcpType
+     * @param principal
+     * @param interest
+     * @param totalAmt
+     * @param userName
+     * @return
+     */
+    String createPaybackApply(TReceiptInfo receipt, Date paybackDate, String prcpType,
+                                     BigDecimal principal, BigDecimal interest,
+                                     BigDecimal totalAmt, String userName, String stdrpno);
+    
+    /**
+     * 创建还款申请,repayMethod添加
+     * 
+     * @param receipt
+     * @param paybackDate
+     * @param prcpType
+     * @param principal
+     * @param interest
+     * @param totalAmt
+     * @param userName
+     * @param stdrpno
+     * @param repayMethod
+     * @return
+     */
+    String createPaybackApply(TReceiptInfo receipt, Date paybackDate, String prcpType,
+                                BigDecimal principal, BigDecimal interest, BigDecimal totalAmt,
+                                String userName, String stdrpno, String repayMethod);
+
+    long countNumber(Map<String, Object> reqMap);
+
+
+}

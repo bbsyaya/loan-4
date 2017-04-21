@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditApplyReturnInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditApplyReturnInfo" >
+    <id column="loanId" property="loanId" jdbcType="VARCHAR" />
+    <id column="serialNum" property="serialNum" jdbcType="INTEGER" />
+    <result column="applyStatus" property="applyStatus" jdbcType="VARCHAR" />
+    <result column="claimUserId" property="claimUserId" jdbcType="VARCHAR" />
+    <result column="claimTime" property="claimTime" jdbcType="TIMESTAMP" />
+    <result column="returnTime" property="returnTime" jdbcType="TIMESTAMP" />
+    <result column="returnReason" property="returnReason" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    loanId, serialNum, applyStatus, claimUserId, claimTime, returnTime, returnReason
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApplyReturnInfoKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_apply_return_info
+    where loanId = #{loanId,jdbcType=VARCHAR}
+      and serialNum = #{serialNum,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApplyReturnInfoKey" >
+    delete from t_credit_apply_return_info
+    where loanId = #{loanId,jdbcType=VARCHAR}
+      and serialNum = #{serialNum,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApplyReturnInfo" >
+    insert into t_credit_apply_return_info (loanId, serialNum, applyStatus, 
+      claimUserId, claimTime, returnTime, 
+      returnReason)
+    values (#{loanId,jdbcType=VARCHAR}, #{serialNum,jdbcType=INTEGER}, #{applyStatus,jdbcType=VARCHAR}, 
+      #{claimUserId,jdbcType=VARCHAR}, #{claimTime,jdbcType=TIMESTAMP}, #{returnTime,jdbcType=TIMESTAMP}, 
+      #{returnReason,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApplyReturnInfo" >
+    insert into t_credit_apply_return_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="loanId != null" >
+        loanId,
+      </if>
+      <if test="serialNum != null" >
+        serialNum,
+      </if>
+      <if test="applyStatus != null" >
+        applyStatus,
+      </if>
+      <if test="claimUserId != null" >
+        claimUserId,
+      </if>
+      <if test="claimTime != null" >
+        claimTime,
+      </if>
+      <if test="returnTime != null" >
+        returnTime,
+      </if>
+      <if test="returnReason != null" >
+        returnReason,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="loanId != null" >
+        #{loanId,jdbcType=VARCHAR},
+      </if>
+      <if test="serialNum != null" >
+        #{serialNum,jdbcType=INTEGER},
+      </if>
+      <if test="applyStatus != null" >
+        #{applyStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="claimUserId != null" >
+        #{claimUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="claimTime != null" >
+        #{claimTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="returnTime != null" >
+        #{returnTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="returnReason != null" >
+        #{returnReason,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApplyReturnInfo" >
+    update t_credit_apply_return_info
+    <set >
+      <if test="applyStatus != null" >
+        applyStatus = #{applyStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="claimUserId != null" >
+        claimUserId = #{claimUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="claimTime != null" >
+        claimTime = #{claimTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="returnTime != null" >
+        returnTime = #{returnTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="returnReason != null" >
+        returnReason = #{returnReason,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where loanId = #{loanId,jdbcType=VARCHAR}
+      and serialNum = #{serialNum,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApplyReturnInfo" >
+    update t_credit_apply_return_info
+    set applyStatus = #{applyStatus,jdbcType=VARCHAR},
+      claimUserId = #{claimUserId,jdbcType=VARCHAR},
+      claimTime = #{claimTime,jdbcType=TIMESTAMP},
+      returnTime = #{returnTime,jdbcType=TIMESTAMP},
+      returnReason = #{returnReason,jdbcType=VARCHAR}
+    where loanId = #{loanId,jdbcType=VARCHAR}
+      and serialNum = #{serialNum,jdbcType=INTEGER}
+  </update>
+  <select id="selectMaxSerialNumByLoanId" resultType="java.lang.Integer" parameterType="com.hrbb.loan.pos.dao.entity.TCreditApplyReturnInfoKey" >
+    select ifnull(max(serialNum),0) serialNum
+    from t_credit_apply_return_info
+    where loanId = #{loanId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAllByKey" resultMap="BaseResultMap" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_apply_return_info
+    where loanId = #{loanId,jdbcType=VARCHAR}
+    <if test="serialNum != null" >
+    and serialNum = #{serialNum,jdbcType=INTEGER}
+    </if>
+  </select>
+</mapper>

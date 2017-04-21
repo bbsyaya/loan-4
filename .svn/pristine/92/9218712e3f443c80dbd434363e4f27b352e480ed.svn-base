@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCreditReportBriefMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCreditReportBrief" >
+    <id column="reportNo" property="reportNo" jdbcType="VARCHAR" />
+    <result column="queryTime" property="queryTime" jdbcType="VARCHAR" />
+    <result column="createTime" property="createTime" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="certType" property="certType" jdbcType="VARCHAR" />
+    <result column="certNo" property="certNo" jdbcType="VARCHAR" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+    <result column="format" property="format" jdbcType="VARCHAR" />
+    <result column="queryOrg" property="queryOrg" jdbcType="VARCHAR" />
+    <result column="userCode" property="userCode" jdbcType="VARCHAR" />
+    <result column="result" property="result" jdbcType="VARCHAR" />
+    <result column="completeFlag" property="completeFlag" jdbcType="VARCHAR" />
+    <result column="formatHtml" property="formatHtml" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    reportNo, queryTime, createTime, name, certType, certNo, reason, format, queryOrg, 
+    userCode, result, completeFlag,formatHtml
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_report_brief
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_credit_report_brief
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportBrief" >
+    insert into t_credit_report_brief (reportNo, queryTime, createTime, 
+      name, certType, certNo, 
+      reason, format, queryOrg, 
+      userCode, result)
+    values (#{reportNo,jdbcType=VARCHAR}, #{queryTime,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, 
+      #{name,jdbcType=VARCHAR}, #{certType,jdbcType=VARCHAR}, #{certNo,jdbcType=VARCHAR}, 
+      #{reason,jdbcType=VARCHAR}, #{format,jdbcType=VARCHAR}, #{queryOrg,jdbcType=VARCHAR}, 
+      #{userCode,jdbcType=VARCHAR}, #{result,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportBrief" >
+    insert into t_credit_report_brief
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="queryTime != null" >
+        queryTime,
+      </if>
+      <if test="createTime != null" >
+        createTime,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="certType != null" >
+        certType,
+      </if>
+      <if test="certNo != null" >
+        certNo,
+      </if>
+      <if test="reason != null" >
+        reason,
+      </if>
+      <if test="format != null" >
+        format,
+      </if>
+      <if test="queryOrg != null" >
+        queryOrg,
+      </if>
+      <if test="userCode != null" >
+        userCode,
+      </if>
+      <if test="result != null" >
+        result,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="queryTime != null" >
+        #{queryTime,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="certType != null" >
+        #{certType,jdbcType=VARCHAR},
+      </if>
+      <if test="certNo != null" >
+        #{certNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="format != null" >
+        #{format,jdbcType=VARCHAR},
+      </if>
+      <if test="queryOrg != null" >
+        #{queryOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="userCode != null" >
+        #{userCode,jdbcType=VARCHAR},
+      </if>
+      <if test="result != null" >
+        #{result,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+   <insert id="insertSelectiveMap" useGeneratedKeys="true" keyProperty="id" parameterType="Map" >
+    insert into t_credit_report_brief
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        reportNo,
+      </if>
+      <if test="queryTime != null" >
+        queryTime,
+      </if>
+      <if test="createTime != null" >
+        createTime,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="certType != null" >
+        certType,
+      </if>
+      <if test="certNo != null" >
+        certNo,
+      </if>
+      <if test="reason != null" >
+        reason,
+      </if>
+      <if test="format != null" >
+        format,
+      </if>
+      <if test="queryOrg != null" >
+        queryOrg,
+      </if>
+      <if test="userCode != null" >
+        userCode,
+      </if>
+      <if test="result != null" >
+        result,
+      </if>
+      <if test="formatHtml != null">
+      	formatHtml,
+      </if>
+      <if test="completeFlag != null">
+      	completeFlag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="reportNo != null" >
+        #{reportNo,jdbcType=VARCHAR},
+      </if>
+      <if test="queryTime != null" >
+        #{queryTime,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="certType != null" >
+        #{certType,jdbcType=VARCHAR},
+      </if>
+      <if test="certNo != null" >
+        #{certNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="format != null" >
+        #{format,jdbcType=VARCHAR},
+      </if>
+      <if test="queryOrg != null" >
+        #{queryOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="userCode != null" >
+        #{userCode,jdbcType=VARCHAR},
+      </if>
+      <if test="result != null" >
+        #{result,jdbcType=VARCHAR},
+      </if>
+      <if test="formatHtml != null">
+      	#{formatHtml},
+      </if>
+      <if test="completeFlag != null">
+      	#{completeFlag}
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportBrief" >
+    update t_credit_report_brief
+    <set >
+      <if test="queryTime != null" >
+        queryTime = #{queryTime,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        createTime = #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="certType != null" >
+        certType = #{certType,jdbcType=VARCHAR},
+      </if>
+      <if test="certNo != null" >
+        certNo = #{certNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        reason = #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="format != null" >
+        format = #{format,jdbcType=VARCHAR},
+      </if>
+      <if test="queryOrg != null" >
+        queryOrg = #{queryOrg,jdbcType=VARCHAR},
+      </if>
+      <if test="userCode != null" >
+        userCode = #{userCode,jdbcType=VARCHAR},
+      </if>
+      <if test="result != null" >
+        result = #{result,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateMap" parameterType="map">
+  	update t_credit_report_brief set completeFlag = #{completeFlag} where reportNo = #{reportNo}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportBrief" >
+    update t_credit_report_brief
+    set queryTime = #{queryTime,jdbcType=VARCHAR},
+      createTime = #{createTime,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      certType = #{certType,jdbcType=VARCHAR},
+      certNo = #{certNo,jdbcType=VARCHAR},
+      reason = #{reason,jdbcType=VARCHAR},
+      format = #{format,jdbcType=VARCHAR},
+      queryOrg = #{queryOrg,jdbcType=VARCHAR},
+      userCode = #{userCode,jdbcType=VARCHAR},
+      result = #{result,jdbcType=VARCHAR}
+    where reportNo = #{reportNo,jdbcType=VARCHAR}
+  </update>
+  <select id="selectOneByCertNo" resultMap="BaseResultMap" parameterType="Map" >
+    select queryTime, completeFlag, name
+    from t_credit_report_brief
+    where certType = #{certType,jdbcType=VARCHAR}
+      and certNo = #{certNo,jdbcType=VARCHAR}
+      order by queryTime desc
+      limit 0,1
+  </select>
+  <select id="selectOne" resultMap="BaseResultMap" parameterType="com.hrbb.loan.pos.dao.entity.TCreditReportBrief" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_credit_report_brief
+    where certType = #{certType,jdbcType=VARCHAR}
+      and certNo = #{certNo,jdbcType=VARCHAR}
+    order by queryTime desc
+    limit 0,1
+  </select>
+  <select id="selectByMap" resultType="Map" parameterType="map">
+  	SELECT 
+  	<include refid="Base_Column_List" />
+  	FROM t_credit_report_brief
+  	WHERE 1=1
+  	<if test="certType != null">
+  		AND certType = #{certType}
+  	</if>
+  	<if test="certNo != null">
+  		AND certNo = #{certNo}
+  	</if>
+  	<if test="name != null">
+  		AND name = #{name}
+  	</if>
+  	<if test="queryTime != null">
+  		AND queryTime > #{queryTime}
+  	</if>
+  	ORDER BY queryTime DESC
+  	LIMIT 0, 1
+  </select>
+</mapper>

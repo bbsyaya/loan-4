@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TAICSharesFrostInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TAICSharesFrostInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="posCustId" property="posCustId" jdbcType="VARCHAR" />
+    <result column="orderNo" property="orderNo" jdbcType="VARCHAR" />
+    <result column="froDocNo" property="froDocNo" jdbcType="VARCHAR" />
+    <result column="froAuth" property="froAuth" jdbcType="VARCHAR" />
+    <result column="froFrom" property="froFrom" jdbcType="VARCHAR" />
+    <result column="froTo" property="froTo" jdbcType="VARCHAR" />
+    <result column="froAm" property="froAm" jdbcType="VARCHAR" />
+    <result column="thawAuth" property="thawAuth" jdbcType="VARCHAR" />
+    <result column="thawDocNo" property="thawDocNo" jdbcType="VARCHAR" />
+    <result column="thawDate" property="thawDate" jdbcType="VARCHAR" />
+    <result column="thawComment" property="thawComment" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, posCustId, orderNo, froDocNo, froAuth, froFrom, froTo, froAm, thawAuth, thawDocNo, 
+    thawDate, thawComment
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_sharesfrost_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectSelective" resultType="Map" parameterType="Map">
+    select 
+    <include refid="Base_Column_List" />
+    from t_aic_sharesfrost_info
+    where 1=1
+    <if test="orderNo != null">
+      AND orderNo = #{orderNo}
+    </if>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_aic_sharesfrost_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TAICSharesFrostInfo" >
+    insert into t_aic_sharesfrost_info (id, posCustId, orderNo, 
+      froDocNo, froAuth, froFrom, 
+      froTo, froAm, thawAuth, 
+      thawDocNo, thawDate, thawComment
+      )
+    values (#{id,jdbcType=INTEGER}, #{posCustId,jdbcType=VARCHAR}, #{orderNo,jdbcType=VARCHAR}, 
+      #{froDocNo,jdbcType=VARCHAR}, #{froAuth,jdbcType=VARCHAR}, #{froFrom,jdbcType=VARCHAR}, 
+      #{froTo,jdbcType=VARCHAR}, #{froAm,jdbcType=VARCHAR}, #{thawAuth,jdbcType=VARCHAR}, 
+      #{thawDocNo,jdbcType=VARCHAR}, #{thawDate,jdbcType=VARCHAR}, #{thawComment,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICSharesFrostInfo" >
+    insert into t_aic_sharesfrost_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="orderNo != null" >
+        orderNo,
+      </if>
+      <if test="froDocNo != null" >
+        froDocNo,
+      </if>
+      <if test="froAuth != null" >
+        froAuth,
+      </if>
+      <if test="froFrom != null" >
+        froFrom,
+      </if>
+      <if test="froTo != null" >
+        froTo,
+      </if>
+      <if test="froAm != null" >
+        froAm,
+      </if>
+      <if test="thawAuth != null" >
+        thawAuth,
+      </if>
+      <if test="thawDocNo != null" >
+        thawDocNo,
+      </if>
+      <if test="thawDate != null" >
+        thawDate,
+      </if>
+      <if test="thawComment != null" >
+        thawComment,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="froDocNo != null" >
+        #{froDocNo,jdbcType=VARCHAR},
+      </if>
+      <if test="froAuth != null" >
+        #{froAuth,jdbcType=VARCHAR},
+      </if>
+      <if test="froFrom != null" >
+        #{froFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="froTo != null" >
+        #{froTo,jdbcType=VARCHAR},
+      </if>
+      <if test="froAm != null" >
+        #{froAm,jdbcType=VARCHAR},
+      </if>
+      <if test="thawAuth != null" >
+        #{thawAuth,jdbcType=VARCHAR},
+      </if>
+      <if test="thawDocNo != null" >
+        #{thawDocNo,jdbcType=VARCHAR},
+      </if>
+      <if test="thawDate != null" >
+        #{thawDate,jdbcType=VARCHAR},
+      </if>
+      <if test="thawComment != null" >
+        #{thawComment,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TAICSharesFrostInfo" >
+    update t_aic_sharesfrost_info
+    <set >
+      <if test="posCustId != null" >
+        posCustId = #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        orderNo = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="froDocNo != null" >
+        froDocNo = #{froDocNo,jdbcType=VARCHAR},
+      </if>
+      <if test="froAuth != null" >
+        froAuth = #{froAuth,jdbcType=VARCHAR},
+      </if>
+      <if test="froFrom != null" >
+        froFrom = #{froFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="froTo != null" >
+        froTo = #{froTo,jdbcType=VARCHAR},
+      </if>
+      <if test="froAm != null" >
+        froAm = #{froAm,jdbcType=VARCHAR},
+      </if>
+      <if test="thawAuth != null" >
+        thawAuth = #{thawAuth,jdbcType=VARCHAR},
+      </if>
+      <if test="thawDocNo != null" >
+        thawDocNo = #{thawDocNo,jdbcType=VARCHAR},
+      </if>
+      <if test="thawDate != null" >
+        thawDate = #{thawDate,jdbcType=VARCHAR},
+      </if>
+      <if test="thawComment != null" >
+        thawComment = #{thawComment,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TAICSharesFrostInfo" >
+    update t_aic_sharesfrost_info
+    set posCustId = #{posCustId,jdbcType=VARCHAR},
+      orderNo = #{orderNo,jdbcType=VARCHAR},
+      froDocNo = #{froDocNo,jdbcType=VARCHAR},
+      froAuth = #{froAuth,jdbcType=VARCHAR},
+      froFrom = #{froFrom,jdbcType=VARCHAR},
+      froTo = #{froTo,jdbcType=VARCHAR},
+      froAm = #{froAm,jdbcType=VARCHAR},
+      thawAuth = #{thawAuth,jdbcType=VARCHAR},
+      thawDocNo = #{thawDocNo,jdbcType=VARCHAR},
+      thawDate = #{thawDate,jdbcType=VARCHAR},
+      thawComment = #{thawComment,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,168 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.controller;
+
+import java.io.PrintWriter;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.hrbb.loan.pos.biz.backstage.inter.CreditApplyAprvInfoBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.CreditApplyForReviewBiz;
+import com.hrbb.loan.pos.dao.entity.TCreditApply;
+import com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo;
+import com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfoKey;
+import com.hrbb.loan.spiconstants.CreditApplyHServiceConstants;
+
+/**
+ * 补件资料下载成功后，创建补件发起人的工作
+ * 
+ * @author marco
+ * @version $Id: CreditApplyUpdateController.java, v 0.1 2015-3-31 下午4:29:27
+ *          marco Exp $
+ */
+@Controller
+@RequestMapping("/creditApplyUpdate")
+public class CreditApplyUpdateController {
+
+	private final Logger logger = LoggerFactory
+			.getLogger(CreditApplyUpdateController.class);
+
+	@Autowired
+	@Qualifier("creditApplyAprvInfoBiz")
+	private CreditApplyAprvInfoBiz biz;
+	@Autowired
+	@Qualifier("creditApplyForReviewBiz")
+	private CreditApplyForReviewBiz caBiz;
+
+	/**
+	 * <h2>补件资料下载成功后，创建补件发起人的工作</h2>
+	 * 
+	 * @param reviewid
+	 * @return modelAndView
+	 */
+	@RequestMapping("/updateBackToReview")
+	public ModelAndView updateBackToReview(
+			@RequestParam(value = "LocalSubFolderNameDef", required = false) String loanid,
+			@RequestParam(value = "RespCode", required = false) String respCode,
+			HttpServletRequest request, PrintWriter out) {
+
+		logger.debug("CreditApplyUpdateController.updateBackToReview begin ");
+		logger.debug("loanid=" + loanid);
+		logger.debug("respCode=" + respCode);
+
+		// 处理成功
+		if (CreditApplyHServiceConstants.ftp_resp_code_000.equals(respCode)) {
+			// 申请审批表信息
+			// TCreditApplyAprvInfo record = new TCreditApplyAprvInfo();
+			TCreditApply record = new TCreditApply();
+			record.setLoanId(loanid);
+
+			// 查询上次提交时的申请状态
+			TCreditApplyAprvInfoKey caai = new TCreditApplyAprvInfoKey();
+			caai.setLoanId(loanid);
+			TCreditApplyAprvInfo caaiLast = biz.selectLastSubbmitted(caai);
+			// record.setApplyStatus(ReviewNoteConstants.APPLYSTATUS_CODE_20);
+			record.setApplyStatus(caaiLast.getApprState());
+			// record.setLastOperId(ReviewNoteConstants.ROLE_SYSTEM_ID);
+			// record.setLastOperTime(new Date());
+			int flag = caBiz.updateApplyStatus(record);
+			// 更新申请表，申请审批记录表
+			// int flag = biz.updateBackToReview(record);
+			logger.debug("flag=" + flag);
+			// 保存成功
+			if (flag == 1) {
+				out.print("000");
+				// 保存失败
+			} else {
+				out.print("001");
+			}
+			// 处理失败
+		} else {
+			// ftp下载文件处理失败，重新发送消息
+			int flag = biz.sendMsg(loanid);
+			logger.debug("flag=" + flag);
+			// 保存成功
+			if (flag == 1) {
+				out.print("000");
+				// 保存失败
+			} else {
+				out.print("001");
+			}
+		}
+		logger.debug("CreditApplyUpdateController.updateBackToReview end ");
+		return null;
+	}
+
+	/**
+	 * <h2>补件资料下载成功后，创建补件发起人的工作</h2>
+	 * 
+	 * @param reviewid
+	 * @return modelAndView
+	 */
+	@RequestMapping("/updateBackToAddit")
+	public ModelAndView updateBackToAddit(
+			@RequestParam(value = "LocalSubFolderNameDef", required = false) String loanid,
+			@RequestParam(value = "RespCode", required = false) String respCode,
+			HttpServletRequest request, PrintWriter out) {
+
+		logger.debug("CreditApplyUpdateController.updateBackToAddit begin ");
+		logger.debug("loanid=" + loanid);
+		logger.debug("respCode=" + respCode);
+
+		// 处理成功
+		if (CreditApplyHServiceConstants.ftp_resp_code_000.equals(respCode)) {
+			// 申请审批表信息
+			TCreditApplyAprvInfo record = new TCreditApplyAprvInfo();
+			record.setLoanId(loanid);
+			// 更新申请表，申请审批记录表
+			int flag = biz.updateBackToReview(record);
+			logger.debug("flag=" + flag);
+			// 保存成功
+			if (flag == 1) {
+				out.print("000");
+				// 保存失败
+			} else {
+				out.print("001");
+			}
+			// 处理失败
+		}
+		logger.debug("CreditApplyUpdateController.updateBackToAddit end ");
+		return null;
+	}
+
+	@RequestMapping("/updateApplyStatusForDownloadImages")
+	public void updateApplyStatus(
+			@RequestParam(value = "LocalSubFolderNameDef", required = false) String loanid,
+			@RequestParam(value = "RespCode", required = false) String respCode,
+			HttpServletRequest request, PrintWriter out) {
+		logger.debug("CreditApplyUpdateController.updateBackToReview begin ");
+		logger.debug("loanid=" + loanid);
+		logger.debug("respCode=" + respCode);
+		// 如果状态为00
+		if (CreditApplyHServiceConstants.ftp_resp_code_000.equals(respCode)) {
+			TCreditApply tCreditApply = caBiz.selectOne(loanid);
+			if ("00".equals(tCreditApply.getApplyStatus())) {
+				tCreditApply.setApplyStatus("20");
+				caBiz.updateApplyStatus(tCreditApply);
+			}
+		} else {
+			TCreditApply tCreditApply = caBiz.selectOne(loanid);
+			if ("00".equals(tCreditApply.getApplyStatus())) {
+				tCreditApply.setApplyStatus("10");
+				caBiz.updateApplyStatus(tCreditApply);
+			}
+		}
+	}
+}

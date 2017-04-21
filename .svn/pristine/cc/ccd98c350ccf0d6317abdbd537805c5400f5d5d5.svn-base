@@ -1,0 +1,250 @@
+package com.hrbb.loan.pos.biz.bean.pay.impl;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.acct.facade.MadeLoanProcessBizHession;
+import com.hrbb.loan.acct.facade.bean.BatchPayOutReq;
+import com.hrbb.loan.acct.facade.bean.BatchPayOutRes;
+import com.hrbb.loan.acct.facade.bean.BusiPropQueryReq;
+import com.hrbb.loan.acct.facade.bean.BusiPropQueryRes;
+import com.hrbb.loan.acct.facade.common.constants.AcctRetConstants;
+import com.hrbb.loan.acct.facade.common.constants.BatchPayoutFlagConstants;
+import com.hrbb.loan.acct.facade.common.constants.ChannelConstants;
+import com.hrbb.loan.pos.biz.backstage.inter.IReceiptManageBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosContractManagementBiz;
+import com.hrbb.loan.pos.biz.bean.pay.IPayService;
+import com.hrbb.loan.pos.biz.constants.ProductInfoEnum;
+import com.hrbb.loan.pos.dao.entity.TBankAccnoInfo;
+import com.hrbb.loan.pos.dao.entity.TContractManagement;
+import com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+import com.hrbb.loan.pos.dao.entity.TransactionLog;
+import com.hrbb.loan.pos.entity.SpringBeans;
+import com.hrbb.loan.pos.service.IGenericConfigService;
+import com.hrbb.loan.pos.service.LoanPosBusinessCodeService;
+import com.hrbb.loan.pos.service.LoanPosCustomerService;
+
+/**
+ * 核算
+ * 
+ * @author cjq
+ * @version $Id: ACCTPayService.java, v 0.1 2015年8月13日 下午4:22:02 cjq Exp $
+ */
+public class ACCTPayServiceImpl implements IPayService {
+
+    private Logger                       logger = LoggerFactory.getLogger(ACCTPayServiceImpl.class);
+
+    private MadeLoanProcessBizHession    madeLoanProcessBizHession;
+
+    private LoanPosCustomerService       loanPosCustomerService;
+
+    private LoanPosBusinessCodeService   loanPosBusinessCodeService;
+
+    private IReceiptManageBiz            receiptManageBiz;
+
+    private IGenericConfigService        genericConfigService;
+
+    private LoanPosContractManagementBiz loanPosContractManagementBiz;
+
+    private TReceiptInfo                 receipt;
+
+    private TPaybackApplyInfo            paybackApply;
+
+    public TPaybackApplyInfo getPaybackApply() {
+        return paybackApply;
+    }
+
+    public TReceiptInfo getReceipt() {
+        return receipt;
+    }
+
+    /**
+     * pay构造器
+     * 
+     * @param receipt
+     */
+    public ACCTPayServiceImpl(TReceiptInfo receipt) {
+        this.receipt = receipt;
+    }
+
+    /**
+     * repay构造器
+     * 
+     * @param receipt
+     */
+    public ACCTPayServiceImpl(TPaybackApplyInfo paybackApply) {
+        this.paybackApply = paybackApply;
+    }
+
+    @Override
+    public boolean pay() throws Exception {
+        receiptManageBiz = (IReceiptManageBiz) SpringBeans.getBean("receiptManageBiz");
+        genericConfigService = (IGenericConfigService) SpringBeans.getBean("genericConfigService");
+        loanPosCustomerService = (LoanPosCustomerService) SpringBeans.getBean("loanPosCustomerService");
+        loanPosBusinessCodeService = (LoanPosBusinessCodeService) SpringBeans.getBean("loanPosBusinessCodeService");
+        loanPosContractManagementBiz = (LoanPosContractManagementBiz) SpringBeans.getBean("loanPosContractManagementBiz");
+        madeLoanProcessBizHession = (MadeLoanProcessBizHession) SpringBeans.getBean("madeLoanProcessBizHession");
+        return batchPayout();
+    }
+
+    @Override
+    public boolean repay() throws Exception {
+        return false;
+    }
+
+    /**
+     * 核算支付通道（包括大小额，超级网银）
+     * 
+     * @return
+     */
+    private boolean batchPayout() {
+        TransactionLog tl = new TransactionLog(receipt.getReceiptId());
+
+        boolean isSuccess = false;
+        BatchPayOutRes resp = new BatchPayOutRes();
+        //请求借据json字符串
+        JSONObject json = new JSONObject();
+        json.put(receipt.getLoanAcNo(),
+            receipt.getPayApplyAmt() == null ? "0.00" : receipt.getPayApplyAmt());
+        String idListJson = json.toJSONString();
+
+        BatchPayOutReq req = new BatchPayOutReq();
+        req.setIdList(idListJson);
+        req.setSumAmt(receipt.getPayApplyAmt());//拮据金额
+        req.setBatchFlag(receipt.getPayChannel());
+        req.setWorkDate(getAcctWorkDate());
+        // 查询行号
+        TBankAccnoInfo bankAccno = loanPosCustomerService.getBanAccnoById(receipt.getPayAccount());
+
+        req.setCdtrno(receipt.getPayAccount()); //收款人账号
+        req.setCdtrnm(receipt.getCustName()); //收款人名称
+        /*针对超级网银支付通道获取行号*/
+        String payChannelBankNo = "";
+        logger.info("借据[" + receipt.getReceiptId() + "]的支付通道为:" + receipt.getPayChannel());
+        //协议信息
+        TContractManagement contract = loanPosContractManagementBiz.getContractByContNo(receipt
+            .getContNo());
+        if (receipt.getPayChannel() != null
+            && receipt.getPayChannel().equals(BatchPayoutFlagConstants.SUPER_ONLINE_BANK.getCode())) { //2-超级网银
+            payChannelBankNo = getSOBankNo(bankAccno.getBankName());
+        } else {
+            payChannelBankNo = bankAccno.getCdtbranchid(); //默认大小额
+        }
+        req.setCdtbranchid(payChannelBankNo); //收款行行号
+        req.setChannelId(ChannelConstants.POS.getValue()); //系统渠道
+        // POS贷和流量贷都是1001020305
+        if (ProductInfoEnum.PRODUCT_POS.getProdId().equals(contract.getProdId())
+            || ProductInfoEnum.PRODUCT_LIULIANG.getProdId().equals(contract.getProdId())) {
+            req.setProductId(ProductInfoEnum.PRODUCT_LIULIANG.getProdId());
+        } else {
+            req.setProductId(contract.getProdId());
+        }
+
+        //流水号
+        req.setOutSysReqSeqNo(tl.getSeq()); //每次发送独立的seq
+
+        //        StringBuilder remark = new StringBuilder("#HRB_LOAN#").append(receipt.getLoanAcNo());
+        //        req.setRemark(remark.toString());
+
+        logger.info("放款请求 - req = {}", req.toString());
+
+        try {
+            resp = madeLoanProcessBizHession.batchPayout(req);
+
+            logger.info("放款返回 - resp = {}", resp.toString());
+
+            if (AcctRetConstants.SUCCESS.getValue().equals(resp.getRespCode())) {
+                logger.error("该笔借据 loanAcNo[{}] 放款成功.", idListJson);
+                isSuccess = true;
+
+                /*发送成功后更新exeSeq*/
+                logger.info("更新借据[facilityId" + receipt.getReceiptId() + "]的放款序号:" + tl.getSeq());
+                Map<String, Object> mapUpt = Maps.newHashMap();
+                mapUpt.put("exeSeq", tl.getSeq());
+                mapUpt.put("receiptId", receipt.getReceiptId());
+                mapUpt.put("lendingChannel", "0");
+                mapUpt.put("loanExecuteStatus", "10");
+                mapUpt.put("lnExctStsUpdtTm", new Date());
+                receiptManageBiz.updateReceiptInfo(mapUpt);
+            }
+
+            if (!AcctRetConstants.SUCCESS.getValue().equals(resp.getRespCode())) {
+                logger.error("该笔借据 loanAcNo[{}] 放款失败.", idListJson);
+                Map<String, Object> mapUpt = Maps.newHashMap();
+                mapUpt.put("exeSeq", tl.getSeq());
+                mapUpt.put("receiptId", receipt.getReceiptId());
+                mapUpt.put("lendingChannel", "0");
+                mapUpt.put("loanExecuteStatus", "19");
+                mapUpt.put("lnExctStsUpdtTm", new Date());
+                receiptManageBiz.updateReceiptInfo(mapUpt);
+                isSuccess = false;
+                tl.setStatus(TransactionLog.核心交易状态_失败);
+            }
+
+            tl.setTransObject(req, resp);
+            return isSuccess;
+        } catch (Exception e) {
+            logger.error("调用发送转账接口失败!", e);
+            tl.setTransObject(req, e.getMessage());
+            tl.setStatus(TransactionLog.核心交易状态_失败);
+            Map<String, Object> mapUpt = Maps.newHashMap();
+            mapUpt.put("exeSeq", tl.getSeq());
+            mapUpt.put("receiptId", receipt.getReceiptId());
+            mapUpt.put("lendingChannel", "0");
+            mapUpt.put("loanExecuteStatus", "19");
+            mapUpt.put("lnExctStsUpdtTm", new Date());
+            receiptManageBiz.updateReceiptInfo(mapUpt);
+        } finally {
+            /*记录交易日志*/
+            tl.setRspTime();
+            genericConfigService.insertTransactionLog(tl);
+        }
+        return false;
+    }
+
+    /**
+     * 调用核算系统获取workDate
+     * @return
+     */
+    public Date getAcctWorkDate() {
+        Calendar c = Calendar.getInstance();
+        int hour = c.get(Calendar.HOUR_OF_DAY);
+        int minute = c.get(Calendar.MINUTE);
+        BusiPropQueryReq busiPropQueryReq = new BusiPropQueryReq();
+        busiPropQueryReq.setName("workDate");
+        BusiPropQueryRes busiPropQueryRes = madeLoanProcessBizHession
+            .queryBusiProperties(busiPropQueryReq);
+        Date workDate = busiPropQueryRes.getWorkDate();
+        c.setTime(workDate);
+        if (hour >= 16 && minute >= 30) {
+            c.add(Calendar.DATE, 1);
+        }
+        return c.getTime();
+    }
+
+    /**
+     * 获取超级网银行号
+     * @param bankNo
+     * @return
+     */
+    private String getSOBankNo(String bankNo) {
+        String SIBNo = loanPosBusinessCodeService.getExtAttrByNo("BankNo", bankNo);
+        if (SIBNo == null || SIBNo.trim().length() == 0) {
+            logger.error("银行[" + bankNo + "]缺少超级网银行号");
+            SIBNo = ""; //reset SIBNo value
+        }
+        return SIBNo;
+    }
+
+    @Override
+    public Map<String, Object> repayMap() throws Exception {
+        return null;
+    }
+}

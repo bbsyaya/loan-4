@@ -1,0 +1,341 @@
+package com.hrbb.loan.controller;
+
+import java.io.PrintWriter;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.acct.facade.MadeLoanProcessBizHession;
+import com.hrbb.loan.constants.SmsTemplateContants;
+import com.hrbb.loan.constants.agreementMrg.AgreementMrgConstants;
+import com.hrbb.loan.controller.helper.ControllerHelper;
+import com.hrbb.loan.pos.biz.backstage.inter.ISmsSenderBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosContractManagementBiz;
+import com.hrbb.loan.pos.dao.entity.TContractManagement;
+import com.hrbb.loan.pos.dao.entity.TCustomer;
+import com.hrbb.loan.pos.dao.entity.TSmsTemplate;
+import com.hrbb.loan.pos.service.LoanPosChannelPosCust;
+import com.hrbb.loan.pos.service.LoanPosCreditApplyService;
+import com.hrbb.loan.pos.service.LoanPosCustomerService;
+import com.hrbb.loan.pos.service.LoanPosMessageService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.loan.web.security.entity.User;
+
+@Controller
+@RequestMapping("/agreementMrg")
+public class AgreementMrgController {
+    
+    private Logger logger = LoggerFactory.getLogger(AgreementMrgController.class);
+	
+	@Autowired
+	private LoanPosContractManagementBiz loanPosContractManagementBiz;
+	
+	@Autowired
+	private LoanPosCustomerService loanPosCustomerService;
+	
+	@Resource(name="madeLoanProcessBizHession")
+	private MadeLoanProcessBizHession MadeLoanProcessBizHession;
+	
+	@Autowired
+	private LoanPosMessageService loanPosMessageService;
+	
+	@Autowired
+	private LoanPosCreditApplyService loanPosCreditApplyService;
+	
+	@Autowired
+	private LoanPosChannelPosCust loanPosChannelPosCust;
+	
+	@Autowired
+	private ISmsSenderBiz smsSenderBiz;
+	
+	/**
+	 * 协议查询
+	 * 
+	 * @param agreementStatus
+	 * @param contNoLike
+	 * @param posCustNameLike
+	 * @param custIdLike
+	 * @param custNameLike
+	 * @param paperIdLike
+	 * @param pageSize
+	 * @param pageNo
+	 * @param out
+	 * @return
+	 */
+	@RequestMapping("/queryAgreement")
+	public ModelAndView queryAgreement(@RequestParam(value = "agreementStatus", required=false)String agreementStatus,
+                            		   @RequestParam(value = "contNoLike", required=false)String contNoLike,
+                            		   @RequestParam(value = "posCustNameLike", required=false)String posCustNameLike,
+                            		   @RequestParam(value = "custIdLike", required=false)String custIdLike,
+                            		   @RequestParam(value = "custNameLike", required=false)String custNameLike,
+                            		   @RequestParam(value = "paperIdLike", required=false)String paperIdLike, 
+                            		   @RequestParam(value = "rows", required = false) Integer pageSize,
+                            		   @RequestParam(value = "page", required = false) Integer pageNo, PrintWriter out){
+		
+		Map<String, Object> reqMap = Maps.newHashMap();
+		if(!StringUtil.isEmpty(agreementStatus) && !agreementStatus.equals("99")){		//当99时显示所有协议
+			reqMap.put(AgreementMrgConstants.AGREEMENT_STATUS, agreementStatus);
+		}
+		if(!StringUtil.isEmpty(contNoLike)){
+			reqMap.put(AgreementMrgConstants.CONT_NO_LIKE, ControllerHelper.getLikeString(contNoLike));
+		}
+		if(!StringUtil.isEmpty(posCustNameLike)){
+			reqMap.put(AgreementMrgConstants.POS_CUST_NAME_LIKE, ControllerHelper.getLikeString(posCustNameLike));
+		}
+		if(!StringUtil.isEmpty(custIdLike)){
+			reqMap.put(AgreementMrgConstants.CUST_ID_LIKE, custIdLike);
+		}
+		if(!StringUtil.isEmpty(paperIdLike)){
+			reqMap.put(AgreementMrgConstants.PAPER_ID_LIKE, ControllerHelper.getLikeString(paperIdLike));
+		}
+		if(!StringUtil.isEmpty(custNameLike)){
+			reqMap.put(AgreementMrgConstants.CUST_NAME_LIKE, ControllerHelper.getRLikeString(custNameLike));
+		}
+		if(pageNo != null && pageSize != null){
+			reqMap.put("startPage", (pageNo - 1) * pageSize);
+			reqMap.put("limit", pageSize);
+		}
+		List<Map<String, Object>> lists = loanPosContractManagementBiz.selectSelectiveMap(reqMap);
+		JSONObject aaJson = new JSONObject();
+		if(null != lists && lists.size()>0){
+		    Map<String, Object> map = lists.get(lists.size() - 1);
+		    lists.remove(lists.size() - 1);
+		    aaJson.put("total", map.get("total"));
+		    aaJson.put("rows", lists);
+		}else{
+		    aaJson.put("total", 0);
+            aaJson.put("rows", lists);
+		}
+		out.write(aaJson.toJSONString());
+		return null;
+	}
+	
+	
+	/**
+     * 查询满足用款申请的协议列表
+     * 
+     * @param agreementStatus
+     * @param contNoLike
+     * @param posCustNameLike
+     * @param custIdLike
+     * @param custNameLike
+     * @param paperIdLike
+     * @param pageSize
+     * @param pageNo
+     * @param out
+     * @return
+     */
+    @RequestMapping("/queryAvalibleAgreement")
+    public ModelAndView queryAvalibleAgreement(@RequestParam(value = "agreementStatus", required=false)String agreementStatus,
+                                       @RequestParam(value = "contNoLike", required=false)String contNoLike,
+                                       @RequestParam(value = "posCustNameLike", required=false)String posCustNameLike,
+                                       @RequestParam(value = "custIdLike", required=false)String custIdLike,
+                                       @RequestParam(value = "custNameLike", required=false)String custNameLike,
+                                       @RequestParam(value = "paperIdLike", required=false)String paperIdLike, 
+                                       @RequestParam(value = "rows", required = false) Integer pageSize,
+                                       @RequestParam(value = "page", required = false) Integer pageNo, PrintWriter out){
+        Map<String, Object> reqMap = Maps.newHashMap();
+        if(!StringUtil.isEmpty(agreementStatus)){
+            reqMap.put(AgreementMrgConstants.AGREEMENT_STATUS, agreementStatus);
+        }
+        if(!StringUtil.isEmpty(contNoLike)){
+            reqMap.put(AgreementMrgConstants.CONT_NO_LIKE, contNoLike);
+        }
+        if(!StringUtil.isEmpty(posCustNameLike)){
+            reqMap.put(AgreementMrgConstants.POS_CUST_NAME_LIKE, posCustNameLike);
+        }
+        if(!StringUtil.isEmpty(custNameLike)){
+            reqMap.put(AgreementMrgConstants.CUST_NAME_LIKE, custNameLike);
+        }
+        if(!StringUtil.isEmpty(paperIdLike)){
+            reqMap.put(AgreementMrgConstants.PAPER_ID_LIKE, paperIdLike);
+        }
+        if(pageNo != null && pageSize != null){
+            reqMap.put("startPage", (pageNo - 1) * pageSize);
+            reqMap.put("limit", pageSize);
+        }
+        List<Map<String, Object>> lists = loanPosContractManagementBiz.selectAvalibleSelectiveMap(reqMap);
+        Map<String, Object> map = lists.get(lists.size() - 1);
+        lists.remove(lists.size() - 1);
+        JSONObject aaJson = new JSONObject();
+        aaJson.put("total", map.get("total"));
+        aaJson.put("rows", lists);
+        out.write(aaJson.toJSONString());
+        return null;
+    }
+	@RequestMapping("/queryAgreementDetail")
+	public ModelAndView queryAgreementDetail(@RequestParam(value="contNo", required=false)String contNo, PrintWriter out){
+	    out.write(JSONObject.toJSONString(loanPosContractManagementBiz.queryAgreementDetailForObjectFormat(contNo)));
+		//out.print(JSONObject.toJSONString(loanPosContractManagementBiz.queryAgreementDetail(contNo)));
+		return null;
+	}
+	
+	/**
+	 * 协议修改 
+	 * 
+	 * @param freezeReason 冻结原因
+	 * @param contNo 协议编号
+	 * @param unFreezeReason 解冻原因
+	 * @param eddectReason 生效原因
+	 * @param creditLine 授信额度
+	 * @param editReason 调整原因
+	 * @param contTerm 授信期限
+	 * @param agreementEndDate 协议到期日
+	 * @param agreementStatus 协议状态
+	 * @param out
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/modifyAgreement")
+	public ModelAndView modifyAgreement(@RequestParam(value="freezeReason", required=false)String freezeReason,
+                            			@RequestParam(value="contNo", required=false)String contNo,
+                            			@RequestParam(value="unFreezeReason", required=false)String unFreezeReason,
+                            			@RequestParam(value="eddectReason", required=false)String eddectReason,
+                            			@RequestParam(value="creditLine", required=false)String creditLine,
+                            			@RequestParam(value="editReason", required=false)String editReason,
+                            			@RequestParam(value="editContTerm", required=false)String contTerm,
+                            			@RequestParam(value="editAgreementEndDate", required=false)String agreementEndDate,
+                            			@RequestParam(value="agreementStatus", required=false)String agreementStatus,PrintWriter out,
+                            			HttpServletRequest request){
+	    
+		try {
+            Map<String, Object> reqMap = Maps.newHashMap();
+            User user = ((User)request.getSession().getAttribute("USER"));
+            String userName = user.getUserName();
+            TContractManagement contract = loanPosContractManagementBiz.getContractByContNo(contNo);
+            
+            //协议编号
+            if(!StringUtil.isEmpty(contNo)){
+            	reqMap.put(AgreementMrgConstants.CONT_NO, contNo);
+            }
+            //协议状态
+            if(!StringUtil.isEmpty(agreementStatus)){
+                reqMap.put(AgreementMrgConstants.AGREEMENT_STATUS, agreementStatus);
+            }
+            //生效原因
+            if (!StringUtil.isEmpty(eddectReason)) {
+                String channel = contract.getChannel();// 业务渠道
+                if (!StringUtil.isEmpty(channel)) {
+                    if ("ZY".equals(channel) || "SQ".equals(channel)) {
+                        out.print("生效成功");
+                        loanPosContractManagementBiz.updateAgreement(reqMap);
+                        if (contract.getChannel().equals("UM")) {
+                            loanPosContractManagementBiz.addContractStatusChangeMessage(contNo, contract, "01", "协议生效");
+                        }
+                        try {
+                            insertContractSmsMessage(contract);
+                        } catch (Exception e) {
+                            logger.error("协议生效短信入库异常", e);
+                        }
+                    } else {
+                        String privileges = (String) request.getSession().getAttribute("assignedPrivileges");
+                        if (privileges == null || privileges.indexOf("ROLE_CONTRACT_ADMIN;") == -1) {
+                            out.print("非合同管理员，无此操作权限");
+                        } else {
+                            out.print("生效成功");
+                            loanPosContractManagementBiz.updateAgreement(reqMap);
+                            if (contract.getChannel().equals("UM")) {
+                                loanPosContractManagementBiz.addContractStatusChangeMessage(contNo, contract, "01", "协议生效");
+                            }       
+                            try {
+                                insertContractSmsMessage(contract);
+                            } catch (Exception e) {
+                                logger.error("协议生效短信入库异常", e);
+                            }
+                        }
+                    }
+                }
+                return null;
+            }
+            //冻结原因
+            if(!StringUtil.isEmpty(freezeReason)){
+            	reqMap.put(AgreementMrgConstants.FREEZE_REASON, freezeReason);
+            	reqMap.put(AgreementMrgConstants.freezePerson, userName);
+            	reqMap.put(AgreementMrgConstants.freezeDate, new Date());
+            	out.print("冻结成功");
+            	loanPosContractManagementBiz.updateAgreement(reqMap);
+            	if (contract.getChannel().equals("UM")) {
+            	    loanPosContractManagementBiz.addContractStatusChangeMessage(contNo, contract, "02", "协议冻结");
+            	}
+            	return null;
+            }
+            //解冻原因
+            if(!StringUtil.isEmpty(unFreezeReason)){
+            	reqMap.put(AgreementMrgConstants.UNFREEZE_REASON, unFreezeReason);
+            	reqMap.put(AgreementMrgConstants.unfreezePerson, userName);
+            	reqMap.put(AgreementMrgConstants.unfreezeDate, new Date());
+            	out.print("解冻成功");
+            	loanPosContractManagementBiz.updateAgreement(reqMap);
+            	if (contract.getChannel().equals("UM")) {
+                    loanPosContractManagementBiz.addContractStatusChangeMessage(contNo, contract, "01", "协议解冻");
+                }
+            	return null;
+            }
+            //调整原因
+            if(!StringUtil.isEmpty(editReason)){
+            	reqMap.put(AgreementMrgConstants.editReason, editReason);
+            	reqMap.put(AgreementMrgConstants.editPerson, userName);
+            	reqMap.put(AgreementMrgConstants.editDate, new Date());
+            	if(!StringUtil.isEmpty(creditLine)){
+            		reqMap.put(AgreementMrgConstants.CREDIT_LINE, creditLine);
+            	}
+            	if(!StringUtil.isEmpty(contTerm)){
+            	    reqMap.put(AgreementMrgConstants.CONT_TERM, contTerm);
+            	}
+            	if(!StringUtil.isEmpty(agreementEndDate)){
+            	    reqMap.put(AgreementMrgConstants.endDate, agreementEndDate);
+            	}
+            	out.print("调整成功");
+            	loanPosContractManagementBiz.updateAgreement(reqMap);
+            	//调整后协议
+            	TContractManagement contractNew = loanPosContractManagementBiz.getContractByContNo(contNo);
+            	if (contract.getChannel().equals("UM")) {
+                    loanPosContractManagementBiz.addContractStatusChangeMessage(contNo, contractNew, "01", "协议调整");
+                }
+            	return null;
+            }
+        } catch (Exception e) {
+            logger.error("协议调整异常", e);
+        }
+		out.print("填写内容不完整");
+		return null;
+	}
+
+
+    /**
+     * 协议生效短信入库
+     * 
+     * @param contract
+     */
+    private void insertContractSmsMessage(TContractManagement contract) throws Exception{
+        // 发送短信
+        String tempId = SmsTemplateContants.CONTRACT_TEMPID;
+        // 获取短信模板
+        TSmsTemplate smsTemplate = smsSenderBiz.getSmsTemplate(tempId);
+        // 编辑短信内容
+        String sendContent = smsTemplate.getSmsContent();
+        sendContent = sendContent.replace("%effectDate%", DateUtil.getCurrentTimePattern3())
+            .replace("%amount1%", contract.getCreditLine().toString())
+            .replace("%rate%", contract.getCreditInterest().toString())
+            .replace("%issueDate%", DateUtil.getCurrentTimePattern3())
+            .replace("%maturity%", DateUtil.getDateToString3(contract.getEndDate()));
+        // 获取手机号
+        TCustomer customer = loanPosCustomerService.getCustumerInfoById(contract.getCustId());
+        // 短信入库
+        smsSenderBiz.insertSmsMessage(tempId, customer.getMobilePhone(), sendContent);
+    }
+}

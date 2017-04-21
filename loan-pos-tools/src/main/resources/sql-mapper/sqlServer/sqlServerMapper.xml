@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sqlServerMapper">
+	<select id="select" parameterType="Map" resultType="Map">
+SELECT
+	convert(varchar(10),a.NO) AS NO,
+	CONVERT(varchar(12),a.app_date,112) AS beginDate,
+	dealer AS bankId,
+	a.product AS prodId,
+	a.partner AS channel,
+	a.corp_name AS posCustName,
+	a.[营业执照编号] AS regiCode,
+	convert(varchar(20),a.capital) AS regCapital,
+	a.[主营业务] AS posCustBusiScope,
+	a.[营业执照有效期起始日] AS registDate,
+	a.state,
+	a.city,
+	a.[实际经营地址-具体] AS posCustAddress,
+	a.NAME AS custName,
+	a.applicant_id AS paperId,
+	a.gender AS sexSign,
+	a.education AS educSign,
+	convert(varchar(10),a.yrs_expn) AS busiYear,
+	convert(varchar(10),a.mar_stat) AS marrSign,
+	convert(varchar(10),a.kids) AS childNum,
+	a.[微信号] AS weixinNo,
+	a.[QQ号] AS qqNo,
+	a.[电子邮件] AS email,
+	convert(varchar(20),m.[申请手机]) AS mobilePhone,
+	a.applicant_tel AS tel,
+	a.home_addr AS residentDetail,
+	CASE a.contact_addr
+	WHEN a.[实际经营地址-具体] THEN
+		'01'
+	WHEN a.home_addr THEN
+		'02'
+	ELSE
+		NULL
+	END as contactAddrFlag,
+	a.spouse as familyCustName,
+	a.spouse_id as matePaperId,
+	a.spouse_mobile as mateMobilephone,
+	a.apply_amt as applyAmt,
+	a.apply_term AS applyTerm,
+	a.[收款开户行] AS bankName,
+	a.[银联收款账号] AS bankAccno,
+	a.biz_city AS region,
+	CASE r.[终审结果]
+	WHEN '拒绝' THEN
+		'92'
+	WHEN '通过' THEN
+		'90'
+	ELSE
+		NULL
+	END as applystatus
+FROM
+	in_app a
+	left join model_result m on m.[序号]= a.no,
+	final_result r
+WHERE
+	a.no = r.[序号] and r.[当前状态] = '复审完成' and r.[终审结果] in ('拒绝','通过')
+	  <if test="day != null" >
+ 	and REPLACE(SUBSTRING(r.[登记时间],1,10),'-','') = #{day}
+      </if>
+	</select>
+</mapper>

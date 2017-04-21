@@ -1,0 +1,76 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+    <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<!-- 
+     <div title="借据信息" style="padding:20px;"> 
+     	<table>
+     -->
+			     <tr>
+			     <td class="tdtitle" width="15%">核心借据编号:</td>
+			     <td width="35%"><input type="text" id="loanAcNo" readonly= "readonly" name="loanAcNo" value="${receipt.loanAcNo}" size="30"/>
+			     	<input type="hidden" id="receiptId" name="receiptId" value="${receipt.receiptId}"/></td>
+			     <td class="tdtitle" width="15%">业务渠道:</td>
+			     <td width="35%"><input type="text" id="BusinessChannel" readonly= "readonly" name="BusinessChannel" value="${contract.channelName}" size="30"/></td>
+			     </tr>
+			     <tr>
+			     <td class="tdtitle">客户名称:</td>
+			     <td><input type="text" id="CustName" readonly= "readonly" name="CustName" value="${receipt.custName}" size="30"/></td>
+			     <td class="tdtitle">商户名称:</td>
+			     <td><input type="text" id="PosCustName" readonly= "readonly" name="PosCustName" value="${receipt.posCustName}" size="30"/></td>
+			     </tr>
+			     <tr>
+			     <td class="tdtitle">借据金额:</td>
+			     <td><input type="text" id="LoanAmount" readonly= "readonly" name="LoanAmount" class="easyui-numberbox" value="${receipt.payApplyAmt}" data-options="groupSeparator:',',precision:2" size="30" style="text-align:right"/></td>
+			     <td class="tdtitle">贷款利率:</td>
+			     <td><input type="text" id="LoanInterest" readonly= "readonly" name="LoanInterest" class="easyui-numberbox" value="${receipt.loanInterest}" data-options="groupSeparator:',',precision:2" size="30" style="text-align:right"/></td>
+			     </tr>
+			     <tr>
+			     <td class="tdtitle">起贷日:</td>
+			     <td><input type="text" id="BeginDate" readonly= "readonly" name="BeginDate" value="<fmt:formatDate value='${receipt.actualIssueDate}' pattern='yyyy-MM-dd'/>" size="30"/></td>
+			     <td class="tdtitle">到期日:</td>
+			     <td><input type="text" id="EndDate" readonly= "readonly" name="EndDate" value="<fmt:formatDate value='${receipt.actualMaturity}' pattern='yyyy-MM-dd'/>" size="30"/></td>
+			     </tr>
+			     <tr>
+			     <td class="tdtitle">偿还方式:</td>
+			     <td><input type="text" id="PaybackWay" readonly= "readonly" name="PaybackWay" value="${contract.repayMethodName}" size="30"/></td>
+			     <!-- 
+			     <td class="tdtitle">贷款用途:</td>
+			     <td><input type="text" id="LoanUsage" readonly= "readonly" name="LoanUsage" value="receipt.loanUsageName" size="30"/></td>
+			      -->
+			     </tr>
+			     <tr>
+			     <td class="tdtitle">银行账号:</td>
+			     <td><input type="text" id="PaybackAccount" readonly= "readonly" name="PaybackAccount" value="${receipt.loanAcNo}" size="30"/></td>
+			     <td class="tdtitle">账户开户行:</td>
+			     <td><input type="text" id="AccountOpenBank" readonly= "readonly" name="AccountOpenBank" value="${contract.accountOpenBank} / ${contract.accountBranchBank} / ${contract.accountSubBranchBank}" size="30"/></td>
+			     </tr>
+			     <!-- 
+			     <tr>
+			     <td class="tdtitle">账户分行:</td>
+			     <td><input type="text" class="AccountBranchBank" readonly= "readonly" name="AccountBranchBank" value="${receipt.accountBranckBank}" size="30"/></td>
+			     <td class="tdtitle">账户支行:</td>
+			     <td><input type="text" class="AccountSubBranchBank" readonly= "readonly" name="AccountSubBranchBank" value="${receipt.accountSubBranchBank}" size="30"/></td>
+			     </tr>
+			      -->
+			     <tr>
+			     <td class="tdtitle">贷款总余额:</td>
+			     <td><input type="text" id="LoanTotalBalance" readonly= "readonly" name="LoanTotalBalance" class="easyui-numberbox" value="${receipt.loanTotalBalance}" data-options="groupSeparator:',',precision:2" size="30" style="text-align:right"/></td>
+			     <td class="tdtitle">正常余额:</td>
+			     <td><input type="text" id="NormalBalance" readonly= "readonly" name="NormalBalance" value="<fmt:formatNumber value="${receipt.normalBalance}" pattern="#,#0.00"/>" size="30" style="text-align:right"/></td>
+			     </tr>
+			     <tr>
+			     <td class="tdtitle">逾期余额:</td>
+			     <td><input type="text" id="OverdueBalance" readonly= "readonly" name="OverdueBalance" value="<fmt:formatNumber value="${receipt.overdueBalance}" pattern="#,#0.00"/>" size="30" style="text-align:right"/></td>
+			     <td class="tdtitle">表内欠息:</td>
+			     <td><input type="text" id="InnerOwnedInterest" readonly= "readonly" name="InnerOwnedInterest" value="<fmt:formatNumber value="${receipt.innerOwnedInterest}" pattern="#,#0.00"/>" size="30" style="text-align:right"/></td>
+			     </tr>
+			     <tr>
+			     <td class="tdtitle">表外 欠息:</td>
+			     <td><input type="text" id="OutterOwnedInterest" readonly= "readonly" name="OutterOwnedInterest" value="<fmt:formatNumber value="${receipt.outterOwnedInterest}" pattern="#,#0.00"/>" size="30" style="text-align:right"/></td>
+			     <td class="tdtitle">支付时间:</td>
+			     <td><input type="text" id="insertIssueTime" readonly= "readonly" name="insertIssueTime" value="<fmt:formatDate value='${receipt.issueTime}' pattern='yyyy-MM-dd HH:mm:ss'/>" size="30" /></td>
+			     </tr>
+ <!-- 
+ 	</table>
+     </div> -->

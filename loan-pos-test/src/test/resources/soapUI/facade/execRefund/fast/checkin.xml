@@ -1,0 +1,26 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:fram="http://framework.facade.common.transcore.pinganfu.com/">
+	<soapenv:Header />
+	<soapenv:Body>
+		<fram:transactionCheckIn>
+			<arg0>
+				<busiChannel>W</busiChannel>
+				<businessCode>20</businessCode>
+				<ccy>CNY</ccy>
+				<customerId>1000010000000519</customerId>
+				<customerName>李锐</customerName>
+				<dcFlag>D</dcFlag>
+				<feeAmt>0</feeAmt>
+				<orderNo>${orderNo}</orderNo>
+				<productCode>100010020000</productCode>
+				<registerFlag>0</registerFlag>
+				<toCustomerId>2000010000000002</toCustomerId>
+				<toCustomerName>程绍</toCustomerName>
+				<transAmount>1000000</transAmount>
+				<transTotalAmount>1000000</transTotalAmount>
+				<transType>12</transType>
+			</arg0>
+		</fram:transactionCheckIn>
+	</soapenv:Body>
+</soapenv:Envelope>
+

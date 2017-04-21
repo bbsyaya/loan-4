@@ -1,0 +1,187 @@
+/**
+ * 
+ */
+package com.hrbb.loan.quartz.mail;
+
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.dao.entity.TMailNotification;
+import com.hrbb.loan.pos.factory.ConfigService;
+import com.hrbb.loan.pos.factory.SysConfigFactory;
+import com.hrbb.loan.pos.service.TMailNotificationService;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.loan.quartz.AbsQuartzJob;
+import com.hrbb.sh.frontier.biz.mail.bean.HrbbTextMailSendRequest;
+import com.hrbb.sh.frontier.biz.mail.facade.HrbbMailService;
+
+/**
+ * <p>Title: SendMailJob.java </p>
+ * <p>Description:  </p>
+ * <p>Copyright: Copyright (C) 2015 Hrbb Ltd. Co.</p> 
+ *     
+ * @author linzhaolin@hrbb.com.cn
+ * @version 
+ * @date Sep 5, 2015
+ *
+ * logs: 1. 
+ */
+@Service("sendMailJob")
+public class SendMailJob extends AbsQuartzJob {
+	
+	@Autowired
+	private TMailNotificationService tMailNotificationService;
+	
+	@Autowired
+	private HrbbMailService mailService;
+	
+	private Map<Integer,NotifyResult> result = Maps.newHashMap();
+	
+//	private HessianProxyFactory factory;
+	
+	/* (non-Javadoc)
+	 * @see com.hrbb.loan.quartz.IQuartzJob#getJobName()
+	 */
+	@Override
+	public String getJobName() {
+		return "发送邮件";
+	}
+
+	/* (non-Javadoc)
+	 * @see com.hrbb.loan.quartz.AbsQuartzJob#initJob()
+	 */
+	@Override
+	protected boolean initJob() throws Exception {
+		String switchFlag = SysConfigFactory.getInstance().getService("quartzSwitchService").getPropertyValue("emailSwitch");
+        if (StringUtil.isEmpty(switchFlag) || "false".equals(switchFlag.toLowerCase())) {
+            logger.info("邮件开关为false,不发送短信");
+            return false;
+        }
+		
+		logger.debug("邮件发送任务开始...");
+		
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.hrbb.loan.quartz.AbsQuartzJob#processJob()
+	 */
+	@Override
+	protected boolean processJob() throws Exception {
+		if(SysConfigFactory.getInstance().hasService("mailService")){
+			ConfigService service = SysConfigFactory.getInstance().getService("mailService");
+			String sendFlag = service.getPropertyValue("execSend");
+			if(sendFlag!=null && sendFlag.toUpperCase().equals("FALSE")) {
+				logger.info("邮件发送任务不执行..");
+				return true;		//明确不发送时不执行,此外均视为执行
+			}
+		}
+		
+		List<TMailNotification> records = tMailNotificationService.selectTodoList();
+		if(records!=null && records.size()>0){
+			for(TMailNotification record:records){
+		        
+				if(record.getMailContent()==null){
+					logger.warn("邮件[id="+record.getId()+"] 缺少邮件内容 .");
+					continue;
+				}
+				HrbbTextMailSendRequest request = new HrbbTextMailSendRequest();
+				request.setAuthor("bdd@hrbb.com.cn");
+		        request.setUserName("bdd");
+		        request.setPassword("@abc2014hlwpos");
+		        
+				if(record.getMailTo()!=null){
+					request.setTo(record.getMailTo().split(";",-1));
+				}else{
+					logger.warn("邮件[id="+record.getId()+"] 缺少收件人 .");
+					continue;
+				}
+		        if(record.getMailCc()!=null){
+		        	request.setCc(record.getMailCc().split(";", -1));
+		        }else{
+		        	request.setCc(new String[0]);		//临时解决方案
+		        }
+		        if(record.getMailBcc()!=null){
+		        	request.setBcc(record.getMailBcc().split(";", -1));
+		        }else{
+		        	request.setBcc(new String[0]);		//临时解决方案
+		        }
+		        request.setSubject(record.getMailSubject());
+		        request.setContent(record.getMailContent());
+		        request.setHtmlText(true);		//html格式邮件
+		        
+		        /*NotifyResult*/
+		        NotifyResult nr = new NotifyResult(record.getId());
+		        try{
+		        	mailService.sendTextMail(request);
+		        	
+		        	nr.setNotifyStatus(任务执行状态_成功);
+		        }catch(Exception ex){
+		        	nr.setNotifyStatus(任务执行状态_失败);
+		        	logger.error("邮件[id="+record.getId()+"]发送失败!",ex);
+		        }
+		        nr.setNotifyTime(new Date());
+		        result.put(nr.getId(), nr);
+			}
+		}
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.hrbb.loan.quartz.AbsQuartzJob#postJob()
+	 */
+	@Override
+	protected boolean postJob() throws Exception {
+		int successCnt = 0;
+		Iterator<Integer> tk = result.keySet().iterator();
+		while(tk.hasNext()){
+			NotifyResult nr = result.get(tk.next());
+			
+			TMailNotification mt = new TMailNotification();
+			mt.setId(nr.getId());
+			mt.setNotifyStatus(nr.getNotifyStatus());
+			mt.setNotifyTime(nr.getNotifyTime());
+			tMailNotificationService.updateByPrimaryKeySelective(mt);
+			
+			if(nr.getNotifyStatus()==任务执行状态_成功) successCnt++;		//统计成功数
+		}
+		
+		logger.debug("邮件发送任务结束,其中:成功 "+successCnt+"/共计 "+result.size()+" .");
+		result.clear();
+		return true;
+	}
+
+}
+
+class NotifyResult{
+	private int id;
+	private String notifyStatus;
+	private Date notifyTime;
+	public NotifyResult(int id){
+		this.id = id;
+	}
+	
+	public int getId() {
+		return id;
+	}
+
+	public String getNotifyStatus() {
+		return notifyStatus;
+	}
+	public void setNotifyStatus(String notifyStatus) {
+		this.notifyStatus = notifyStatus;
+	}
+	public Date getNotifyTime() {
+		return notifyTime;
+	}
+	public void setNotifyTime(Date notifyTime) {
+		this.notifyTime = notifyTime;
+	}
+	
+}

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd" >
+    <bean class="com.pinganfu.transcore.common.cache.TransCache" lazy-init="false">
+        <!-- memcache可以后面加上-->
+        <constructor-arg value="null"/>
+        <constructor-arg ref="ehCache"/>
+    </bean>
+
+    <!-- ehcache配置 -->
+    <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+        <property name="configLocation">
+            <value>classpath:cache/ehcache.xml</value>
+        </property>
+    </bean>
+
+    <bean id="ehCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <property name="cacheManager">
+            <ref local="cacheManager"/>
+        </property>
+        <property name="cacheName">
+            <value>transcoreCache</value>
+        </property>
+    </bean>
+</beans>

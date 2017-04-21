@@ -1,0 +1,49 @@
+/**
+ * 
+ *	哈尔滨银行
+ * Copyright (c) 2007-2015 HRBB,Inc.All Rights Reserved.
+ */
+package com.hrbb.loan.pos.dao.entity.common;
+
+/**
+ * 
+ * @author marco
+ * @version $Id: TPage.java, v 0.1 2015-3-5 下午2:22:56 marco Exp $
+ */
+public class TPage {
+	  private Integer startPage;
+	  private Integer limit;
+	/**
+	 * Getter method for property <tt>startPage</tt>.
+	 * 
+	 * @return property value of startPage
+	 */
+	public Integer getStartPage() {
+		return startPage;
+	}
+	/**
+	 * Setter method for property <tt>startPage</tt>.
+	 * 
+	 * @param startPage value to be assigned to property startPage
+	 */
+	public void setStartPage(Integer startPage) {
+		this.startPage = startPage;
+	}
+	/**
+	 * Getter method for property <tt>limit</tt>.
+	 * 
+	 * @return property value of limit
+	 */
+	public Integer getLimit() {
+		return limit;
+	}
+	/**
+	 * Setter method for property <tt>limit</tt>.
+	 * 
+	 * @param limit value to be assigned to property limit
+	 */
+	public void setLimit(Integer limit) {
+		this.limit = limit;
+	}
+	  
+}

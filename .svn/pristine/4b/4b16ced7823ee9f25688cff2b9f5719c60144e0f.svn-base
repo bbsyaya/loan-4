@@ -1,0 +1,313 @@
+package com.hrbb.loan.spi.SALE;
+
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.Resource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.channel.user.UserProcesser;
+import com.hrbb.loan.hessian.inter.IBankCardCheckHessianService;
+import com.hrbb.loan.hessian.inter.IPoliceHessianService;
+import com.hrbb.loan.pos.biz.backstage.inter.IPoliceAndAICConnectBiz;
+import com.hrbb.loan.pos.service.PoliceAndAICConnectService;
+import com.hrbb.loan.pos.util.MapUtils;
+import com.hrbb.loan.pos.util.SignUtil;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.loan.spiconstants.HServiceReturnCode;
+import com.hrbb.loan.spiconstants.SaleLoanReturnCode;
+import com.hrbb.sh.framework.HRequest;
+import com.hrbb.sh.framework.HResponse;
+import com.hrbb.sh.framework.HService;
+import com.hrbb.sh.framework.HServiceException;
+import com.hrbb.ump.facade.bean.requests.user.UserInformationQueryRequest;
+import com.hrbb.ump.facade.bean.requests.user.UserSensitiveInformationUpdateRequest;
+import com.hrbb.ump.facade.bean.responses.user.UserInformationQueryResponse;
+import com.hrbb.ump.facade.bean.responses.user.UserSensitiveInformationUpdateResponse;
+
+/**
+ * AP0005: 消费贷 持卡人实名认证、卡验证处理.
+ * 
+ * @author xiongshaogang
+ * @version $Id: ZzSaleAppVerifiedServiceImpl.java, v 0.1 2015年4月29日 下午5:04:48 xiongshaogang Exp $
+ */
+@Service("zzSaleAppVerified")
+public class ZzSaleAppVerifiedServiceImpl implements HService {
+
+    Logger                                   logger = LoggerFactory
+                                                        .getLogger(ZzSaleAppVerifiedServiceImpl.class);
+    
+    @Autowired
+    private IPoliceAndAICConnectBiz iPoliceAndAICConnectBiz;
+    
+    @Autowired
+    private PoliceAndAICConnectService policeAndAICConnectService;
+    
+    @Autowired
+    private IPoliceHessianService policeHessianService;
+    
+    @Autowired
+    private IBankCardCheckHessianService bankCardCheckHessianService;
+    
+    @Resource(name="userProcesser")
+    private UserProcesser userProcesser;
+
+    @Override
+    public HResponse serve(HRequest request) throws HServiceException {
+        logger.debug("in ZzSaleAppVerifiedServiceImpl...");
+
+        // 0. 接收请求包，解包
+        Map<String, String> headerMap = (Map<String, String>) request.getProperties().get("HrbbHeader");
+        Map<String, String> bodyMap = (Map<String, String>) request.getProperties().get("HrbbBody");
+        logger.info("headerMap : " + MapUtils.toString(headerMap));
+        logger.info("bodyMap : " + MapUtils.toString(bodyMap));
+
+        // 1. 请求包校验
+        HResponse resp = new HResponse();
+        if (!validate(headerMap, bodyMap, resp)) {
+            resp.setRespTime(new Date());
+            return getBlankHResponse(resp, headerMap, bodyMap);
+        }
+
+        // 2. 验证数字签名,暂不实现
+        String signedMsg = SignUtil.getSignMsg((Map<String, Object>)request.getProperties().get("HrbbBody"), null);
+        logger.info("请求待签名串 signedMsg = [" + signedMsg + "]");
+//        if (!SignUtil.verifySign(SignUtil.MD5_ALG, signedMsg, headerMap.get("Mac"), SignUtil.getProperty("app_saleloan_signkey"))) {
+//            logger.error("数字签名验证失败");
+//            bodyMap.put("respcode", HServiceReturnCode.OTHER_ERROR.getReturnCode());
+//            bodyMap.put("respmsg", HServiceReturnCode.OTHER_ERROR.getReturnMessage());
+//            resp.setRespCode(HServiceReturnCode.OTHER_ERROR.getReturnCode());
+//            resp.setRespMessage(HServiceReturnCode.OTHER_ERROR.getReturnMessage());
+//            resp.setRespTime(new Date());
+//            return getBlankHResponse(resp, headerMap, bodyMap);
+//        }
+        logger.info("数字签名验证通过!");
+
+        // 3. 用户系统会话状态确认
+        if (!userProcesser.CheckUserLoginStatus(headerMap.get("UserId"), headerMap.get("SessionId"))) {
+            logger.error("用户未登陆");
+            bodyMap.put("respcode", SaleLoanReturnCode.NO_LOGIN_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.NO_LOGIN_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.NO_LOGIN_ERROR.getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.NO_LOGIN_ERROR.getReturnMessage());
+            return getBlankHResponse(resp, headerMap, bodyMap);
+        }
+        
+        // 4. 用户系统 信息拉取
+        UserInformationQueryRequest userInformationQueryRequest = new UserInformationQueryRequest();
+        userInformationQueryRequest.setUserId(Integer.parseInt(headerMap.get("UserId")));
+        UserInformationQueryResponse userInformationQueryResponse = userProcesser.queryUserInfo(userInformationQueryRequest);
+        if (userInformationQueryResponse == null) {
+            logger.error("用户未登陆");
+            bodyMap.put("respcode", SaleLoanReturnCode.NO_LOGIN_ERROR.getReturnCode());
+            bodyMap.put("respmsg", SaleLoanReturnCode.NO_LOGIN_ERROR.getReturnMessage());
+            resp.setRespCode(SaleLoanReturnCode.NO_LOGIN_ERROR.getReturnCode());
+            resp.setRespMessage(SaleLoanReturnCode.NO_LOGIN_ERROR.getReturnMessage());
+            return getBlankHResponse(resp, headerMap, bodyMap);
+        }
+        
+        // 4. 1 如果持卡人公安部验证失败次数超过阀值，丢弃请求
+        
+        // 5. 公安部处理
+        String paperId = userInformationQueryResponse.getIdNo();
+        String paperName = userInformationQueryResponse.getUserName();
+        
+        Map<String, String> tmpMap = Maps.newHashMap();
+        tmpMap.put("idNo", paperId);
+        tmpMap.put("custName", paperName);
+        Map<String, String> tmpRetMap = policeHessianService.getCustPoliceInfo(tmpMap);
+        if (tmpRetMap == null || tmpRetMap.size() < 1) {
+            logger.error("公安部请求异常");
+            bodyMap.put("respcode", HServiceReturnCode.QUERY_KEY_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.QUERY_KEY_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.QUERY_KEY_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.QUERY_KEY_ERROR.getReturnMessage());
+            return getBlankHResponse(resp, headerMap, bodyMap);
+        } else if (!"00".equals(tmpRetMap.get("returnCode"))) {
+            logger.error("公安部验证失败");
+            bodyMap.put("respcode", HServiceReturnCode.QUERY_KEY_ERROR.getReturnCode());
+            bodyMap.put("respmsg", tmpRetMap.get("returnMsg"));
+            resp.setRespCode(HServiceReturnCode.QUERY_KEY_ERROR.getReturnCode());
+            resp.setRespMessage(tmpRetMap.get("returnMsg"));
+            return getBlankHResponse(resp, headerMap, bodyMap);
+        }
+        
+        Map<String, Object> queryPoliceMap = null;
+        boolean policeFlag = true;
+        if (iPoliceAndAICConnectBiz.hasPoliceInfo(paperId, paperName)) {
+            queryPoliceMap = policeAndAICConnectService.queryOnePoliceInfo(paperName, paperId, null);
+            if (queryPoliceMap != null && queryPoliceMap.size() > 0 
+                    && "一致".equals(queryPoliceMap.get("isIdNoSame")) && "一致".equals(queryPoliceMap.get("isNameSame"))) {
+                paperId = (String) queryPoliceMap.get("idNo");
+                paperName = (String) queryPoliceMap.get("policeCustName");
+            } else {
+                policeFlag = false;
+            }
+        } else {
+            policeFlag = false;
+        }
+        
+        if (!policeFlag) {
+            logger.error("公安部数据异常");
+            bodyMap.put("respcode", HServiceReturnCode.QUERY_KEY_ERROR.getReturnCode());
+            bodyMap.put("respmsg", "公安部数据异常");
+            resp.setRespCode(HServiceReturnCode.QUERY_KEY_ERROR.getReturnCode());
+            resp.setRespMessage("公安部数据异常");
+            return getBlankHResponse(resp, headerMap, bodyMap);
+        }
+        
+        // 7. 公安部实名信息录入用户系统
+        UserSensitiveInformationUpdateRequest userSensitiveInformationUpdateRequest = new UserSensitiveInformationUpdateRequest();
+        userSensitiveInformationUpdateRequest.setUserId(StringUtil.isEmpty(headerMap.get("UserId")) ? "0" : String.valueOf(headerMap.get("UserId")));
+        userSensitiveInformationUpdateRequest.setOperationType("2");
+        userSensitiveInformationUpdateRequest.setAppSource("2");
+        userSensitiveInformationUpdateRequest.setIdType("1");
+        userSensitiveInformationUpdateRequest.setIdNo(paperId);
+        userSensitiveInformationUpdateRequest.setIdCheckedStatus("2");
+        logger.info("用户系统请求 : " + userSensitiveInformationUpdateRequest);
+        UserSensitiveInformationUpdateResponse userSensitiveInformationUpdateResponse = userProcesser.updateUserSensitiveInfo(userSensitiveInformationUpdateRequest);
+        logger.info("用户系统应答 : " + userSensitiveInformationUpdateResponse);
+        if (userSensitiveInformationUpdateResponse == null || !"UMP000000".equals(userSensitiveInformationUpdateResponse.getResponseCode())) {
+            logger.error("公安部实名数据录入失败");
+        } else {
+            logger.info("公安部实名数据录入成功");
+        }
+        
+        // 8. 公安部照片推送给face++
+        
+        
+        // 6. 卡认证处理
+        String cardNo = userInformationQueryResponse.getBankCardNo();
+        
+        tmpMap = Maps.newHashMap();
+        tmpMap.put("bankAccno", cardNo);
+        tmpMap.put("cardNo", cardNo);
+        tmpMap.put("cardType", "DEBIT_CARD_TYPE");
+        tmpMap.put("cardName", paperName);
+        tmpMap.put("certType", "ID");
+        tmpMap.put("certNo", paperId);
+        tmpRetMap = null;
+        tmpRetMap = bankCardCheckHessianService.bankCardCheck(tmpMap);
+        if (tmpRetMap == null || tmpRetMap.size() < 1 || !"00".equals(tmpRetMap.get("respCode"))) {
+            logger.error("卡验证数据异常");
+            bodyMap.put("respcode", HServiceReturnCode.QUERY_KEY_ERROR.getReturnCode());
+            bodyMap.put("respmsg", "卡验证数据异常");
+            resp.setRespCode(HServiceReturnCode.QUERY_KEY_ERROR.getReturnCode());
+            resp.setRespMessage("卡验证数据异常");
+            return getBlankHResponse(resp, headerMap, bodyMap);
+        }
+        
+        // 8. 公安部实名信息录入用户系统
+        userSensitiveInformationUpdateRequest = new UserSensitiveInformationUpdateRequest();
+        userSensitiveInformationUpdateRequest.setUserId(StringUtil.isEmpty(headerMap.get("UserId")) ? "0" : String.valueOf(headerMap.get("UserId")));
+        userSensitiveInformationUpdateRequest.setOperationType("3");
+        userSensitiveInformationUpdateRequest.setAppSource("2");
+        userSensitiveInformationUpdateRequest.setBankCode(userInformationQueryResponse.getBankCode());
+        userSensitiveInformationUpdateRequest.setBankBranchName(userInformationQueryResponse.getBankBranchName());
+        userSensitiveInformationUpdateRequest.setBankSubbranchName(userInformationQueryResponse.getBankSubbranchName());
+        userSensitiveInformationUpdateRequest.setBankCardNo(cardNo);
+        userSensitiveInformationUpdateRequest.setBankCardCheckedStatus("2");
+        logger.info("用户系统请求 : " + userSensitiveInformationUpdateRequest);
+        userSensitiveInformationUpdateResponse = null;
+        userSensitiveInformationUpdateResponse = userProcesser.updateUserSensitiveInfo(userSensitiveInformationUpdateRequest);
+        logger.info("用户系统应答 : " + userSensitiveInformationUpdateResponse);
+        if (userSensitiveInformationUpdateResponse == null || !"UMP000000".equals(userSensitiveInformationUpdateResponse.getResponseCode())) {
+            logger.error("易极付卡验证实名数据录入失败");
+        } else {
+            logger.info("易极付卡验证实名数据录入成功");
+        }
+        
+        // 8. 回写成功应答
+        Map<String, Object> rootMap = Maps.newHashMap();
+        bodyMap.put("respcode", HServiceReturnCode.SUCCESS.getReturnCode());
+        bodyMap.put("respmsg", HServiceReturnCode.SUCCESS.getReturnMessage());
+        
+        // 5.1 签名处理
+        Map<String, Object> signMap = Maps.newHashMap();
+        for (Iterator<String> it = bodyMap.keySet().iterator(); it.hasNext();) {
+            String key = it.next();
+            signMap.put(key, bodyMap.get(key));
+        }
+        headerMap.put("Mac", sign(signMap, null));
+        
+        rootMap.put("HrbbHeader", headerMap);
+        rootMap.put("HrbbBody", bodyMap);
+        resp.setRespCode(HServiceReturnCode.SUCCESS.getReturnCode());
+        resp.setRespMessage(HServiceReturnCode.SUCCESS.getReturnMessage());
+        resp.setRespTime(new Date());
+        resp.setProperties(rootMap);
+        logger.info("回写数据: " + resp.toString());
+        logger.debug("out ZzSaleAppVerifiedServiceImpl...");
+        return resp;
+    }
+
+    /**
+     * 请求包校验处理.
+     * 
+     * @param headerMap
+     * @param bodyMap
+     * @return
+     * @throws Exception 
+     */
+    private boolean validate(Map<String, String> headerMap, Map<String, String> bodyMap,
+                             HResponse resp) throws HServiceException {
+        // 版本号
+        if (StringUtil.isEmpty(headerMap.get("Version"))
+            || !"20150415".equals(headerMap.get("Version"))) {
+            logger.error("接口版本号为空或不合法:[]", headerMap.get("Version"));
+            bodyMap.put("respcode", HServiceReturnCode.VERSION_ERRO_ERROR.getReturnCode());
+            bodyMap.put("respmsg", HServiceReturnCode.VERSION_ERRO_ERROR.getReturnMessage());
+            resp.setRespCode(HServiceReturnCode.VERSION_ERRO_ERROR.getReturnCode());
+            resp.setRespMessage(HServiceReturnCode.VERSION_ERRO_ERROR.getReturnMessage());
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 失败应答.
+     * 
+     * @param response
+     * @return
+     */
+    private HResponse getBlankHResponse(HResponse response, Map<String, String> headerMap,
+                                        Map<String, String> bodyMap) {
+        Map<String, Object> respMap = Maps.newHashMap();
+        
+        // 5.1 签名处理
+        Map<String, Object> signMap = Maps.newHashMap();
+        for (Iterator<String> it = bodyMap.keySet().iterator(); it.hasNext();) {
+            String key = it.next();
+            signMap.put(key, bodyMap.get(key));
+        }
+        headerMap.put("Mac", sign(signMap, null));
+        
+        respMap.put("HrbbHeader", headerMap);
+        respMap.put("HrbbBody", bodyMap);
+        response.setProperties(respMap);
+        return response;
+    }
+    
+    /**
+     * 回写签名处理.
+     * 
+     * @param signMap
+     * @param ignoreSet
+     * @return
+     */
+    private String sign(Map<String, Object> signMap, Set<String> ignoreSet) {
+        String signedMsg = SignUtil.getSignMsg(signMap, ignoreSet);
+        logger.info("应答待签名串 signedMsg = [" + signedMsg + "]");
+        String signRet = SignUtil.sign(SignUtil.MD5_ALG, signedMsg, SignUtil.getProperty("app_saleloan_signkey"));
+        logger.info("应答签名 Mac = [" + signRet + "]");
+        return signRet;
+    }
+}

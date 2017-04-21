@@ -1,0 +1,307 @@
+package com.hrbb.loan.spi.TC2;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import com.hrbb.loan.pos.dao.entity.TApproveResult;
+import com.hrbb.loan.pos.dao.entity.TCreditApply;
+import com.hrbb.loan.pos.dao.entity.TCreditApplyAprvInfo;
+import com.hrbb.loan.pos.service.CreditApplyAprvInfoService;
+import com.hrbb.loan.pos.service.LoanPosCreditApplyService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.StringUtil;
+import com.hrbb.loan.pos.util.constants.ReviewNoteConstants;
+import com.hrbb.loan.spi.TC.TCService;
+import com.hrbb.loan.spiconstants.CreditApplyHServiceConstants;
+import com.hrbb.loan.spiconstants.HServiceReturnCode;
+import com.hrbb.sh.framework.HRequest;
+import com.hrbb.sh.framework.HResponse;
+import com.hrbb.sh.framework.HServiceException;
+
+/**
+ * T61审批结果反馈
+ * 
+ * @author marco
+ * 
+ */
+@Service("tc2ApproveResultFeedback")
+public class TC2ApproveResultFeedbackHServiceImpl extends TCService {
+
+	@Autowired
+	@Qualifier("creditApplyAprvInfoService")
+	private CreditApplyAprvInfoService serivce;
+	
+	@Autowired
+	private LoanPosCreditApplyService loanPosCreditApplyService;
+
+	@Override
+	public HResponse serve(HRequest request) throws HServiceException {
+		HResponse response = new HResponse();
+
+		logger.debug("tc2ApproveResultFeedback begin");
+
+		Map<String, Object> props = request.getProperties();
+		String loanId = (String) props.get(CreditApplyHServiceConstants.loanid);
+		logger.debug("loanId=" + loanId);
+		String custId = (String) props.get(CreditApplyHServiceConstants.custid);
+		String apprTime = (String) props
+				.get(CreditApplyHServiceConstants.apprtime);
+		String apprResult = (String) props
+				.get(CreditApplyHServiceConstants.apprresult);
+		logger.debug("apprResult=" + apprResult);
+		String apprLimit = (String) props
+				.get(CreditApplyHServiceConstants.apprlimit);
+		String apprPrice = (String) props
+				.get(CreditApplyHServiceConstants.apprprice);
+		String apprTerm = (String) props
+				.get(CreditApplyHServiceConstants.apprterm);
+		String expiredDate = (String) props
+				.get(CreditApplyHServiceConstants.expireddate);
+		String refuseReason = (String) props
+				.get(CreditApplyHServiceConstants.refusereason);
+		String stdshno = (String) props
+				.get(CreditApplyHServiceConstants.stdshno);
+
+		if (StringUtil.isEmpty(loanId)) {
+			logger.error("申请流水号为空");
+			response.setRespCode(HServiceReturnCode.LOANID_ERROR
+					.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.LOANID_ERROR
+					.getReturnMessage());
+			response.setRespTime(new Date());
+			return response;
+		}
+
+		if (StringUtil.isEmpty(custId)) {
+			logger.error("客户id为空");
+			response.setRespCode(HServiceReturnCode.CUSTID_ERROR
+					.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.CUSTID_ERROR
+					.getReturnMessage());
+			response.setRespTime(new Date());
+			return response;
+		}
+
+		Date apprTimeD = null;
+		if (StringUtil.isEmpty(apprTime)) {
+			logger.error("审批时间为空或有误");
+			response.setRespCode(HServiceReturnCode.APPRTIME_ERROR
+					.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.APPRTIME_ERROR
+					.getReturnMessage());
+			response.setRespTime(new Date());
+			return response;
+		} else {
+			apprTimeD = DateUtil.getDatePatternC(apprTime);
+			if (apprTimeD == null) {
+				logger.error("审批时间为空或有误");
+				response.setRespCode(HServiceReturnCode.APPRTIME_ERROR
+						.getReturnCode());
+				response.setRespMessage(HServiceReturnCode.APPRTIME_ERROR
+						.getReturnMessage());
+				response.setRespTime(new Date());
+				return response;
+			}
+		}
+
+		if (StringUtil.isEmpty(apprResult)) {
+			logger.error("审批结果为空或有误");
+			response.setRespCode(HServiceReturnCode.APPRRESULT_ERROR
+					.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.APPRRESULT_ERROR
+					.getReturnMessage());
+			response.setRespTime(new Date());
+			return response;
+		} else {
+			if (!ReviewNoteConstants.APPLYSTATUS_CODE_90.equals(apprResult)
+					&& !ReviewNoteConstants.APPLYSTATUS_CODE_92
+							.equals(apprResult)) {
+				logger.error("审批结果为空或有误");
+				response.setRespCode(HServiceReturnCode.APPRRESULT_ERROR
+						.getReturnCode());
+				response.setRespMessage(HServiceReturnCode.APPRRESULT_ERROR
+						.getReturnMessage());
+				response.setRespTime(new Date());
+				return response;
+			}
+		}
+
+		BigDecimal apprLimitB = null;
+		BigDecimal apprPriceB = null;
+		Date expiredDateD = null;
+		TCreditApply tCreditApply = loanPosCreditApplyService.queryCreditApply(loanId);
+		if(tCreditApply == null){
+			logger.error("不存在该申请");
+			response.setRespCode(HServiceReturnCode.HAS_NO_CREDIT_APPLY
+					.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.HAS_NO_CREDIT_APPLY
+					.getReturnMessage());
+			response.setRespTime(new Date());
+			return response;
+		}
+		
+		if(!"20".equals(tCreditApply.getApplyStatus())){
+			logger.error("该笔申请的状态不是资料审核，不能做该操作");
+			response.setRespCode(HServiceReturnCode.APPLY_STATUS_ERROR
+					.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.APPLY_STATUS_ERROR
+					.getReturnMessage());
+			response.setRespTime(new Date());
+			return response;
+		}
+		// 拒绝
+		if (ReviewNoteConstants.APPLYSTATUS_CODE_92.equals(apprResult)) {
+			if (StringUtil.isEmpty(refuseReason)) {
+				logger.error("拒绝原因为空或有误");
+				response.setRespCode(HServiceReturnCode.REFUSEREASON_ERROR
+						.getReturnCode());
+				response.setRespMessage(HServiceReturnCode.REFUSEREASON_ERROR
+						.getReturnMessage());
+				response.setRespTime(new Date());
+				return response;
+			}
+			// 通过
+		} else {
+			if (StringUtil.isEmpty(apprLimit)) {
+				logger.error("批复额度为空或有误");
+				response.setRespCode(HServiceReturnCode.APPRLIMIT_ERROR
+						.getReturnCode());
+				response.setRespMessage(HServiceReturnCode.APPRLIMIT_ERROR
+						.getReturnCode());
+				response.setRespTime(new Date());
+				return response;
+			} else {
+				try {
+					apprLimitB = new BigDecimal(apprLimit);
+				} catch (Exception e) {
+					logger.error("批复额度为空或有误");
+					response.setRespCode(HServiceReturnCode.APPRLIMIT_ERROR
+							.getReturnCode());
+					response.setRespMessage(HServiceReturnCode.APPRLIMIT_ERROR
+							.getReturnCode());
+					response.setRespTime(new Date());
+					return response;
+				}
+			}
+
+			if (StringUtil.isEmpty(apprPrice)) {
+				logger.error("批复利率为空或有误");
+				response.setRespCode(HServiceReturnCode.APPRPRICE_ERROR
+						.getReturnCode());
+				response.setRespMessage(HServiceReturnCode.APPRPRICE_ERROR
+						.getReturnMessage());
+				response.setRespTime(new Date());
+				return response;
+			} else {
+				try {
+					apprPriceB = new BigDecimal(apprPrice);
+				} catch (Exception e) {
+					logger.error("批复利率为空或有误");
+					response.setRespCode(HServiceReturnCode.APPRPRICE_ERROR
+							.getReturnCode());
+					response.setRespMessage(HServiceReturnCode.APPRPRICE_ERROR
+							.getReturnMessage());
+					response.setRespTime(new Date());
+					return response;
+				}
+			}
+			if (StringUtil.isEmpty(apprTerm)) {
+				logger.error("批复期限为空或有误");
+				response.setRespCode(HServiceReturnCode.APPRTERM_ERROR
+						.getReturnCode());
+				response.setRespMessage(HServiceReturnCode.APPRTERM_ERROR
+						.getReturnMessage());
+				response.setRespTime(new Date());
+				return response;
+			}
+
+			if (StringUtil.isEmpty(expiredDate)) {
+				logger.error("批复有效截止日期为空或有误");
+				response.setRespCode(HServiceReturnCode.EXPIREDDATE_ERROR
+						.getReturnCode());
+				response.setRespMessage(HServiceReturnCode.EXPIREDDATE_ERROR
+						.getReturnMessage());
+				response.setRespTime(new Date());
+				return response;
+			} else {
+				try {
+					expiredDateD = DateUtil.getStrToDate1(expiredDate);
+				} catch (Exception e) {
+					logger.error("批复有效截止日期为空或有误");
+					response.setRespCode(HServiceReturnCode.EXPIREDDATE_ERROR
+							.getReturnCode());
+					response.setRespMessage(HServiceReturnCode.EXPIREDDATE_ERROR
+							.getReturnMessage());
+					response.setRespTime(new Date());
+					return response;
+				}
+			}
+		}
+
+		if (StringUtil.isEmpty(stdshno)) {
+			logger.error("合作机构申请流水号为空或有误");
+			response.setRespCode(HServiceReturnCode.STDSHNO_ERROR
+					.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.STDSHNO_ERROR
+					.getReturnMessage());
+			response.setRespTime(new Date());
+			return response;
+		}
+		// 申请信息
+		TCreditApplyAprvInfo caai = new TCreditApplyAprvInfo();
+		caai.setLoanId(loanId);
+		caai.setApprvId(getChannel());
+		caai.setAppBeginTime(apprTimeD);
+		caai.setAppEndTime(apprTimeD);
+		caai.setApprState(apprResult);
+
+		int result = 0;
+		// 审批通过
+		if (ReviewNoteConstants.APPLYSTATUS_CODE_90.equals(apprResult)) {
+			// 更新申请状态为90
+			// 插入一条审批记录
+			caai.setApprResult(ReviewNoteConstants.APPRRESULT_CODE_10);
+			caai.setApprAmount(apprLimitB);
+			caai.setApprInte(apprPriceB);
+			caai.setApprInfo("外部审批通过。");
+			// 生成批复，状态为02已确认
+			TApproveResult ar = new TApproveResult();
+			// 申请流水号
+			ar.setLoanId(loanId);
+			// 批复失效日期
+			ar.setExpiryDate(expiredDateD);
+			// 批复期限单位
+			ar.setApproveTermUnit("M");
+			// 批复期限
+			ar.setApproveTerm(apprTerm);
+			// 更新申请状态，审批流程，批复数据
+			result = serivce.updateCreditApplyPassForCP(caai, ar);
+		} else {
+			// 更新申请状态为92
+			// 插入一条审批记录
+			caai.setApprInfo("外部审批拒绝，" + refuseReason);
+			// 更新申请状态，审批流程，批复数据
+			result = serivce.updateCreditApplyRefuseForCP(caai);
+		}
+		if (result == 0) {
+			logger.info("更新失败！");
+			response.setRespCode(HServiceReturnCode.OTHER_ERROR.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.OTHER_ERROR
+					.getReturnMessage());
+			response.setRespTime(new Date());
+		} else {
+			logger.info("更新成功！");
+			response.setRespCode(HServiceReturnCode.SUCCESS.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.SUCCESS
+					.getReturnMessage());
+			response.setRespTime(new Date());
+		}
+		logger.info("tc2ApproveResultFeedback end");
+		return response;
+	}
+}

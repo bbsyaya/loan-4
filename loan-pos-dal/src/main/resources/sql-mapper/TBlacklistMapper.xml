@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TBlacklistMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TBlacklist" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="infoType" property="infoType" jdbcType="VARCHAR" />
+    <result column="certType" property="certType" jdbcType="VARCHAR" />
+    <result column="infoDetail" property="infoDetail" jdbcType="VARCHAR" />
+    <result column="confirmUser" property="confirmUser" jdbcType="VARCHAR" />
+    <result column="confirmTime" property="confirmTime" jdbcType="TIMESTAMP" />
+    <result column="confirmReason" property="confirmReason" jdbcType="VARCHAR" />
+    <result column="effectTime" property="effectTime" jdbcType="TIMESTAMP" />
+    <result column="uneffTime" property="uneffTime" jdbcType="TIMESTAMP" />
+    <result column="intervalType" property="intervalType" jdbcType="VARCHAR" />
+    <result column="modifyTime" property="modifyTime" jdbcType="TIMESTAMP" />
+    <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="delFlag" property="delFlag" jdbcType="VARCHAR" />
+    <result column="confirmUserId" property="confirmUserId" jdbcType="VARCHAR" />
+    <result column="effectFlag" property="effectFlag" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, infoType, certType, infoDetail, confirmUser, confirmTime, confirmReason, effectTime, 
+    uneffTime, intervalType, modifyTime, createTime,delFlag,confirmUserId,effectFlag
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_blacklist_info
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_blacklist_info
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TBlacklist" >
+    insert into t_blacklist_info (
+    id, infoType, certType, 
+      infoDetail, confirmUser, confirmTime, 
+      confirmReason, effectTime, uneffTime, 
+      intervalType, modifyTime, createTime,
+      delFlag,confirmUserId,effectFlag
+      )
+    values (#{id,jdbcType=VARCHAR}, #{infoType,jdbcType=VARCHAR}, #{certType,jdbcType=VARCHAR}, 
+      #{infoDetail,jdbcType=VARCHAR}, #{confirmUser,jdbcType=VARCHAR}, #{confirmTime,jdbcType=TIMESTAMP}, 
+      #{confirmReason,jdbcType=VARCHAR}, #{effectTime,jdbcType=TIMESTAMP}, #{uneffTime,jdbcType=TIMESTAMP}, 
+      #{intervalType,jdbcType=VARCHAR}, #{modifyTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{delFlag,jdbcType=VARCHAR}, #{confirmUserId,jdbcType=VARCHAR}, #{effectFlag,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TBlacklist" >
+    insert into t_blacklist_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="infoType != null" >
+        infoType,
+      </if>
+      <if test="certType != null" >
+        certType,
+      </if>
+      <if test="infoDetail != null" >
+        infoDetail,
+      </if>
+      <if test="confirmUser != null" >
+        confirmUser,
+      </if>
+      <if test="confirmTime != null" >
+        confirmTime,
+      </if>
+      <if test="confirmReason != null" >
+        confirmReason,
+      </if>
+      <if test="effectTime != null" >
+        effectTime,
+      </if>
+      <if test="uneffTime != null" >
+        uneffTime,
+      </if>
+      <if test="intervalType != null" >
+        intervalType,
+      </if>
+      <if test="modifyTime != null" >
+        modifyTime,
+      </if>
+      <if test="createTime != null" >
+        createTime,
+      </if>
+      <if test="delFlag != null" >
+        delFlag,
+      </if>
+      <if test="confirmUserId != null" >
+        confirmUserId,
+      </if>
+      <if test="effectFlag != null" >
+        effectFlag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="infoType != null" >
+        #{infoType,jdbcType=VARCHAR},
+      </if>
+      <if test="certType != null" >
+        #{certType,jdbcType=VARCHAR},
+      </if>
+      <if test="infoDetail != null" >
+        #{infoDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmUser != null" >
+        #{confirmUser,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmTime != null" >
+        #{confirmTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="confirmReason != null" >
+        #{confirmReason,jdbcType=VARCHAR},
+      </if>
+      <if test="effectTime != null" >
+        #{effectTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uneffTime != null" >
+        #{uneffTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="intervalType != null" >
+        #{intervalType,jdbcType=VARCHAR},
+      </if>
+      <if test="modifyTime != null" >
+        #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="delFlag != null" >
+        #{delFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmUserId != null" >
+        #{confirmUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="effectFlag != null" >
+        #{effectFlag,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TBlacklist" >
+    update t_blacklist_info
+    <set >
+      <if test="infoType != null" >
+        infoType = #{infoType,jdbcType=VARCHAR},
+      </if>
+      <if test="certType != null" >
+        certType = #{certType,jdbcType=VARCHAR},
+      </if>
+      <if test="infoDetail != null" >
+        infoDetail = #{infoDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmUser != null" >
+        confirmUser = #{confirmUser,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmTime != null" >
+        confirmTime = #{confirmTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="confirmReason != null" >
+        confirmReason = #{confirmReason,jdbcType=VARCHAR},
+      </if>
+      <if test="effectTime != null" >
+        effectTime = #{effectTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uneffTime != null" >
+        uneffTime = #{uneffTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="intervalType != null" >
+        intervalType = #{intervalType,jdbcType=VARCHAR},
+      </if>
+      <if test="modifyTime != null" >
+        modifyTime = #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        createTime = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="delFlag != null" >
+        delFlag = #{delFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmUserId != null" >
+       confirmUserId = #{confirmUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="effectFlag != null" >
+        effectFlag = #{effectFlag,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TBlacklist" >
+    update t_blacklist_info
+    set infoType = #{infoType,jdbcType=VARCHAR},
+      certType = #{certType,jdbcType=VARCHAR},
+      infoDetail = #{infoDetail,jdbcType=VARCHAR},
+      confirmUser = #{confirmUser,jdbcType=VARCHAR},
+      confirmTime = #{confirmTime,jdbcType=TIMESTAMP},
+      confirmReason = #{confirmReason,jdbcType=VARCHAR},
+      effectTime = #{effectTime,jdbcType=TIMESTAMP},
+      uneffTime = #{uneffTime,jdbcType=TIMESTAMP},
+      intervalType = #{intervalType,jdbcType=VARCHAR},
+      modifyTime = #{modifyTime,jdbcType=TIMESTAMP},
+      createTime = #{createTime,jdbcType=TIMESTAMP},
+      delFlag = #{delFlag,jdbcType=VARCHAR},
+      confirmUserId = #{confirmUserId,jdbcType=VARCHAR},
+      effectFlag = #{effectFlag,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  
+    <select id="selectSelective" resultMap="BaseResultMap" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_blacklist_info
+    where 1=1
+    <if test="startPage != null">
+    	LIMIT #{startPage}, #{limit}
+    </if>
+  </select>
+  
+  <select id="queryCount" resultMap="BaseResultMap" parameterType="Map" >
+    select 
+    count(*)
+    from t_blacklist_info
+    where 1=1
+    <if test="startPage != null">
+    	LIMIT #{startPage}, #{limit}
+    </if>
+  </select>
+  
+  <!--  -->
+    <select id="selectSelectiveMap" resultType="Map" parameterType="Map">
+  	SELECT 
+ 	<include refid="Base_Column_List" /> 
+   	 FROM t_blacklist_info t1
+  	WHERE 1=1 
+  	<if test="infoType != null">
+    	AND t1.infoType = #{infoType}
+    </if>
+    <if test="certType != null">
+    	AND t1.certType =  #{certType}
+    </if>
+    <if test="confirmUser != null">
+    	AND t1.confirmUser like #{confirmUser}
+    </if>
+    <if test="infoDetail != null">
+    	AND t1.infoDetail like #{infoDetail}
+    </if>
+    <if test="delFlag != null">
+    	AND t1.delFlag = #{delFlag}
+    </if>
+    <if test="confirmUserId != null">
+    	AND t1.confirmUserId = #{confirmUserId}
+    </if>
+    <if test="effectFlag != null">
+    	AND t1.effectFlag = #{effectFlag}
+    </if>
+    <if test="effectTime != null">
+		and effectTime >= #{effectTime,jdbcType=TIMESTAMP}
+	</if>
+	<if test="uneffTime != null">
+		<![CDATA[ and uneffTime <= #{uneffTime,jdbcType=TIMESTAMP} ]]>
+	</if>
+	AND delFlag != 1
+	<if test="startPage != null">
+    	LIMIT #{startPage}, #{limit}
+    </if>
+    <!-- <if test="custNameLike != null">
+    	AND t2.custName like #{custNameLike} 
+    </if>
+    <if test="paperIdLike != null">
+    	AND t2.pageId like #{paperIdLike}
+    </if>
+    <if test="recOrgLike != null">
+    	AND t1.recOrg like #{recOrgLike}
+    </if>
+    <if test="recPersonLike != null">
+    	AND t1.recPerson like #{recPersonLike}
+    </if>
+ 
+    <if test="applyStatus != null">
+    	AND applyStatus = #{applyStatus}
+    </if> -->
+  </select>
+  
+   <select id="countSelective" resultType="Long" parameterType="Map">
+  	SELECT COUNT(*) FROM t_blacklist_info t1
+  	WHERE 1=1 
+  	<if test="infoType != null">
+    	AND t1.infoType = #{infoType}
+    </if>
+    <if test="certType != null">
+    	AND t1.certType =  #{certType}
+    </if>
+    <if test="confirmUser != null">
+    	AND t1.confirmUser like #{confirmUser}
+    </if>
+    <if test="infoDetail != null">
+    	AND t1.infoDetail like #{infoDetail}
+    </if>
+    <if test="delFlag != null">
+    	AND t1.delFlag = #{infoDetail}
+    </if>
+    <if test="confirmUserId != null">
+    	AND t1.confirmUserId = #{confirmUserId}
+    </if>
+   	<if test="effectFlag != null">
+    	AND t1.effectFlag = #{effectFlag}
+    </if>
+    <if test="effectTime != null">
+		AND effectTime >= #{effectTime,jdbcType=TIMESTAMP}
+	</if>
+	<if test="uneffTime != null">
+		<![CDATA[ AND uneffTime <= #{uneffTime,jdbcType=TIMESTAMP} ]]>
+	</if>
+	AND delFlag != 1
+	<if test="startPage != null">
+    	LIMIT #{startPage}, #{limit}
+    </if>
+    <!-- <if test="custNameLike != null">
+    	AND t2.custName like #{custNameLike} 
+    </if>
+    <if test="paperIdLike != null">
+    	AND t2.pageId like #{paperIdLike}
+    </if>
+    <if test="recOrgLike != null">
+    	AND t1.recOrg like #{recOrgLike}
+    </if>
+    <if test="recPersonLike != null">
+    	AND t1.recPerson like #{recPersonLike}
+    </if>
+    <if test="deleteFlag != null">
+    	AND deleteFlag = #{deleteFlag}
+    </if>
+    <if test="applyStatus != null">
+    	AND applyStatus = #{applyStatus}
+    </if> -->
+  </select>
+  
+   <insert id="insertSelectiveMap" parameterType="Map">
+    insert into t_blacklist_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="infoType != null" >
+        infoType,
+      </if>
+      <if test="certType != null" >
+        certType,
+      </if>
+      <if test="infoDetail != null" >
+        infoDetail,
+      </if>
+      <if test="confirmUser != null" >
+        confirmUser,
+      </if>
+      <if test="confirmTime != null" >
+        confirmTime,
+      </if>
+      <if test="confirmReason != null" >
+        confirmReason,
+      </if>
+      <if test="effectTime != null" >
+        effectTime,
+      </if>
+      <if test="uneffTime != null" >
+        uneffTime,
+      </if>
+      <if test="intervalType != null" >
+        intervalType,
+      </if>
+      <if test="modifyTime != null" >
+        modifyTime,
+      </if>
+      <if test="createTime != null" >
+        createTime,
+      </if>
+      <if test="delFlag != null" >
+        delFlag,
+      </if>
+      <if test="confirmUserId != null" >
+        confirmUserId,
+      </if>
+      <if test="effectFlag != null" >
+        effectFlag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="infoType != null" >
+        #{infoType,jdbcType=VARCHAR},
+      </if>
+      <if test="certType != null" >
+        #{certType,jdbcType=VARCHAR},
+      </if>
+      <if test="infoDetail != null" >
+        #{infoDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmUser != null" >
+        #{confirmUser,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmTime != null" >
+        #{confirmTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="confirmReason != null" >
+        #{confirmReason,jdbcType=VARCHAR},
+      </if>
+      <if test="effectTime != null" >
+        #{effectTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uneffTime != null" >
+        #{uneffTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="intervalType != null" >
+        #{intervalType,jdbcType=VARCHAR},
+      </if>
+      <if test="modifyTime != null" >
+        #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="delFlag != null" >
+        #{delFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmUserId != null" >
+        #{confirmUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="effectFlag != null" >
+        #{effectFlag,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+   <update id="updateByPrimaryKeySelectiveMap"  parameterType="Map">
+    update t_blacklist_info
+    <set >
+      <if test="infoType != null" >
+        infoType = #{infoType,jdbcType=VARCHAR},
+      </if>
+      <if test="certType != null" >
+        certType = #{certType,jdbcType=VARCHAR},
+      </if>
+      <if test="infoDetail != null" >
+        infoDetail = #{infoDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmUser != null" >
+        confirmUser = #{confirmUser,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmTime != null" >
+        confirmTime = #{confirmTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="confirmReason != null" >
+        confirmReason = #{confirmReason,jdbcType=VARCHAR},
+      </if>
+      <if test="effectTime != null" >
+        effectTime = #{effectTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uneffTime != null" >
+        uneffTime = #{uneffTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="intervalType != null" >
+        intervalType = #{intervalType,jdbcType=VARCHAR},
+      </if>
+      <if test="modifyTime != null" >
+        modifyTime = #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        createTime = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="delFlag != null" >
+        delFlag = #{delFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmUserId != null" >
+       confirmUserId = #{confirmUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="effectFlag != null" >
+        effectFlag = #{effectFlag,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+   <select id="selectForRiskCheck" resultType="Long" parameterType="list">
+  	SELECT COUNT(id) FROM t_blacklist_info t1
+  	WHERE delFlag = '0' 
+  	  and effectFlag = '0' 
+  	  and
+  	<foreach item="infoDetail" collection="list" open="(" separator="or" close=")">
+  		infoDetail = #{infoDetail}
+  	</foreach>
+    </select>
+</mapper>

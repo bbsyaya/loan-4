@@ -1,0 +1,485 @@
+package com.hrbb.loan.pos.biz.backstage.inter.impl;
+
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Objects;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.acct.facade.MadeLoanProcessBizHession;
+import com.hrbb.loan.acct.facade.bean.BatchPayOutReq;
+import com.hrbb.loan.acct.facade.bean.BatchPayOutRes;
+import com.hrbb.loan.acct.facade.bean.BusiPropQueryReq;
+import com.hrbb.loan.acct.facade.bean.BusiPropQueryRes;
+import com.hrbb.loan.acct.facade.bean.CalcRamtReq;
+import com.hrbb.loan.acct.facade.bean.CalcRamtRes;
+import com.hrbb.loan.acct.facade.bean.MadeLoanContractInfoReq;
+import com.hrbb.loan.acct.facade.bean.MadeLoanContractInfoRes;
+import com.hrbb.loan.acct.facade.bean.MadeLoanCreditDuebillReq;
+import com.hrbb.loan.acct.facade.bean.MadeLoanCreditDuebillRes;
+import com.hrbb.loan.acct.facade.bean.MadeLoanLoanLedgerBean;
+import com.hrbb.loan.acct.facade.common.constants.AcctRetConstants;
+import com.hrbb.loan.acct.facade.common.constants.BatchPayoutFlagConstants;
+import com.hrbb.loan.acct.facade.common.constants.ChannelConstants;
+import com.hrbb.loan.pos.biz.backstage.inter.IMadeLoanAcctBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.IReceiptManageBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosContractManagementBiz;
+import com.hrbb.loan.pos.biz.constants.ProductInfoEnum;
+import com.hrbb.loan.pos.dao.entity.TBankAccnoInfo;
+import com.hrbb.loan.pos.dao.entity.TContractManagement;
+import com.hrbb.loan.pos.dao.entity.TCustomer;
+import com.hrbb.loan.pos.dao.entity.TPaymentApply;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+import com.hrbb.loan.pos.service.LoanPosCustomerService;
+import com.hrbb.loan.pos.util.DateUtil;
+
+/**
+ * 
+ * @author cjq
+ * @version $Id: MadeLoanAcctBizImpl.java, v 0.1 2015年5月20日 下午1:11:03 cjq Exp $
+ */
+@Component("madeLoanAcctBizImpl")
+public class MadeLoanAcctBizImpl implements IMadeLoanAcctBiz {
+    
+    private Logger logger = LoggerFactory.getLogger(MadeLoanAcctBizImpl.class);
+    
+    @Autowired
+    private LoanPosContractManagementBiz loanPosContractManagementBiz;
+    
+    @Autowired
+    private LoanPosCustomerService loanPosCustomerService;
+    
+    @Autowired
+    private IReceiptManageBiz receiprManageBiz;
+    
+    @Resource(name="madeLoanProcessBizHession")
+    MadeLoanProcessBizHession madeLoanProcessBizHession;
+    
+    private String accountingEnable = "true";
+    /**
+     * 调用核算系统，添加合同
+     * 
+     * @param contNo 合同号
+     * @param contract 合同
+     * @param customerInfo 客户信息
+     */
+    @Override
+    public boolean addContractInfo(String contNo, TContractManagement contract, TCustomer customerInfo) {
+        // 返回值
+        boolean isSuccess = false;
+        // 核算返回对象
+        MadeLoanContractInfoRes res = null;
+        // 请求对象
+        MadeLoanContractInfoReq req = new MadeLoanContractInfoReq();
+        req.setLoanId(contract.getLoanId());//业务编号
+        req.setLoanForm("0");//贷款形式：0 新增
+        req.setAssuMethod("A01040000");//贷款方式：A01040000 信用
+        req.setCurrency("CNY");//币种
+        
+        if(ProductInfoEnum.PRODUCT_POS.getProdId().equals(contract.getProdId()) || ProductInfoEnum.PRODUCT_LIULIANG.getProdId().equals(contract.getProdId())){
+            req.setProdId(ProductInfoEnum.PRODUCT_LIULIANG.getProdId());//产品编号
+        }else{
+            req.setProdId(contract.getProdId());//产品编号
+        }
+        req.setProdName(contract.getProdName());//产品名称
+        req.setContNo(contNo);
+        req.setCnContractNo(contNo);
+        req.setContractName(req.getProdName() + contNo);
+        req.setCustId(contract.getCustId());//客户编号
+        req.setCivilianId(customerInfo.getPaperId());//身份证号
+        req.setCustName(contract.getCustName());//客户名称o
+        req.setApprTotalAmt(contract.getCreditLine());//授信金额
+        req.setContractTotalAmt(contract.getCreditLine());//授信金额
+        req.setTermUnit(contract.getTermUnit());//期限单位
+        req.setApptTerm(Integer.parseInt(contract.getApplyTerm()));//申请期限
+        req.setContTerm(Integer.parseInt(contract.getContTerm()));//合同期限
+        req.setBeginDate(contract.getBeginDate());//合同开始日
+        req.setEndDate(contract.getEndDate());//合同到期日
+        Calendar c = DateUtil.getCalendarToDate(contract.getEndDate());
+        int day =  c.get(Calendar.DATE);//获取日 
+        req.setRetuDay(day);//待定
+        req.setTurnGraceDay(0);
+       
+        req.setRetuMethod(contract.getPaybackMethod());//还款方式
+        req.setRetuMethod2(contract.getPaybackMethod());//
+        req.setIntCalcMethod("1");//
+        req.setSubsFlag("2");//还款方法（1、委托扣款（足额），2、委托扣款（不足额）。3、非委托扣款）
+        req.setInteType("1");//利率类别（1、固定利率。2、比例浮动。3、加点浮动）
+        req.setInterestRate(new BigDecimal(contract.getCreditInterest()));//利率
+        req.setInteBalMethod("2");//结息方式（1、统一定日。2、按户定日）
+        
+        req.setAcBankId("6801");//机构代码
+        req.setDepeSubsAc("100000000");
+        req.setDepeSubsAcNo("10000000");
+        req.setIndeSubsAc("100000000");
+        req.setIndeSubsAcNo("100000000");
+        req.setBillDay(20);
+        req.setInstallAmt(new BigDecimal(0.00));
+        req.setOperId("680199");
+        
+        StringBuilder extField = new StringBuilder("#hrbb#");
+        extField.append(contNo).append("#").append(customerInfo.getPaperId()).append("#");
+        req.setExtField(extField.toString());
+  
+        //添加合同成功，记录核算返回合同编号
+        res = madeLoanProcessBizHession.addContractInfo(req);
+        
+        logger.info(res.toString());
+        //处理结果
+        if(!AcctRetConstants.SUCCESS.getValue().equals(res.getRespCode())){
+            logger.error("accounting invoke error - madeLoanProcessBizHession.addListPrepayment.");
+            return false;
+        }
+        //核算返回合同号
+        String acctContNo = null;
+        if(res != null) {
+            logger.info("remoteRespCode = {}, acctContNo = {}", res.getRespCode(), res.getContNo());
+            acctContNo = res.getContNo();
+        }
+        // 赋值
+        contract.setAcctContNo(acctContNo == null ? "06" + contract.getAcctContNo() : acctContNo);
+        // 请求
+        Map<String,Object> reqMap = Maps.newHashMap();
+        reqMap.put("contNo", contNo);
+        reqMap.put("acctContNo", contract.getAcctContNo());
+        reqMap.put("loanNum", 0);
+        contract.setLoanNum("0");
+        // 记录核算返回合同号
+        loanPosContractManagementBiz.updateAgreement(reqMap);
+        logger.info("accounting contractInfo[{}] updated.", req.getContNo());
+        
+        isSuccess = true;
+        return isSuccess;
+    }
+    
+    /**
+     * 发送借据
+     * 
+     * @param contract 合同
+     * @param customer 客户
+     * @param receipt 借据
+     */
+    @Override
+    public boolean addCreditDueBill(TContractManagement contract,TCustomer customer,TReceiptInfo receipt) {
+         //返回对象
+         boolean isSuccess = false;
+         //调用核算接口放款，返回对象
+         MadeLoanCreditDuebillRes resp = null;
+         int maxLoanNum = Integer.parseInt(contract.getLoanNum() == null ? "0" : contract.getLoanNum());
+         int loanNum = maxLoanNum + 1;
+         MadeLoanCreditDuebillReq addCreditDueReq = new MadeLoanCreditDuebillReq();
+         
+         if(ProductInfoEnum.PRODUCT_POS.getProdId().equals(contract.getProdId()) || ProductInfoEnum.PRODUCT_LIULIANG.getProdId().equals(contract.getProdId())){
+             addCreditDueReq.setProdId(ProductInfoEnum.PRODUCT_LIULIANG.getProdId());//产品编号
+         }else{
+             addCreditDueReq.setProdId(contract.getProdId());
+         }
+         addCreditDueReq.setProdName(contract.getProdName());
+         
+         addCreditDueReq.setLoanId(contract.getLoanId());//业务编号
+         addCreditDueReq.setContNo(contract.getAcctContNo());//借款合同编号
+         addCreditDueReq.setLoanNum(loanNum);//发放顺序号 
+         
+         addCreditDueReq.setListType("41");//单据类型: 41 贷款发放
+         addCreditDueReq.setBusinessType("41");//业务类型: 41 贷款发放
+         addCreditDueReq.setRepayMethod(contract.getPaybackMethod());//还款方式:01 等额本息（分期型）；90 利随本清（白条型）
+         addCreditDueReq.setLoanType("10");//贷款方式:10 信用
+         addCreditDueReq.setLoanForm("0");//贷款形式:0 新增
+         addCreditDueReq.setListStat("1");//单据状态:1 为记账
+         addCreditDueReq.setInteBalMethod("2");//结息方式：2 按户定日
+         addCreditDueReq.setIntcalcMethod("1");//计息方式：1 按期计息
+         addCreditDueReq.setCurrency("CNY");
+         addCreditDueReq.setPayMode("1");//支付方式：1 自主支付
+         addCreditDueReq.setContType("");//借款合同类型：1 最高额；2 一次性；3多次发放
+//         addCreditDueReq.setRateType("2");//
+//         addCreditDueReq.setBasicInteRate(new BigDecimal(6.32));//
+//         addCreditDueReq.setFineRate(new BigDecimal(30.9));//
+//         addCreditDueReq.setAcTime("141524");//
+         
+         addCreditDueReq.setCheckId("6801");//复审员
+         addCreditDueReq.setIndesubsacNo(contract.getAcceptAccount());//自主支付账号（必）
+         addCreditDueReq.setIndesubsac(contract.getCustName());//自助支付账户户名（必）
+         addCreditDueReq.setSaveacName(contract.getCustName());//委托扣款账户户名（必）
+         addCreditDueReq.setSaveacNo(contract.getAcceptAccount());//委托账户账号（必）
+         addCreditDueReq.setOperId("680199");//初始经办人
+         addCreditDueReq.setBankId("6801");//机构代码
+         addCreditDueReq.setBeginDate(new Date());//放款日期
+         addCreditDueReq.setEndDate(receipt.getEndDate());//到期日
+         addCreditDueReq.setAcbankId("6801");//会计机构
+         
+         StringBuilder listIdSB = new StringBuilder("06");//拮据号
+         listIdSB.append(contract.getContNo()).append(new DecimalFormat("###").format(addCreditDueReq.getLoanNum()));
+         addCreditDueReq.setListId(listIdSB.toString());//单据ID
+         
+         StringBuilder extField = new StringBuilder("#hrbb#");
+         extField.append(contract.getLoanId()).append("#").append(customer.getPaperId()).append("#");
+         addCreditDueReq.setExtField(extField.toString());//拓展字段（必）
+         
+         addCreditDueReq.setCustId(customer.getCustId());//客户ID
+         addCreditDueReq.setCivilianId(customer.getPaperId());//客户身份证
+         addCreditDueReq.setCustName(customer.getCustName());//客户名称
+         addCreditDueReq.setContTotalAmt(contract.getCreditLine());//合同金额
+         addCreditDueReq.setLoanAmount(receipt.getPayApplyAmt());//发放金额
+         addCreditDueReq.setLoanTerm(Integer.parseInt(contract.getContTerm()));//贷款期限
+         addCreditDueReq.setTermUnit("月");
+         addCreditDueReq.setPeriods(Integer.parseInt(contract.getContTerm()));//还款期次
+         addCreditDueReq.setInterestRate(new BigDecimal(contract.getCreditInterest()));//贷款利率[%]
+         addCreditDueReq.setFineRate(new BigDecimal(0.0));//逾期利率[%]
+         addCreditDueReq.setInstallAmt(new BigDecimal(0.0));//分期还款额
+         addCreditDueReq.setTurnGraceDay(0);//转逾期宽限天数
+         addCreditDueReq.setIsBatch("1");//0,批量出款，1，单笔出款
+         
+         // 查询行号
+         TBankAccnoInfo bankAccno = loanPosCustomerService.getBanAccnoById(receipt.getPayAccount());
+         
+         addCreditDueReq.setCdtrno(receipt.getPayAccount());//收款人账号
+         addCreditDueReq.setCdtbranchid(bankAccno.getCdtbranchid());//收款行行号
+         addCreditDueReq.setCdtrnm(receipt.getCustName());//收款人名称
+         
+         addCreditDueReq.setChannelId(ChannelConstants.POS.getValue());
+         
+         addCreditDueReq.setLastInteDate(DateUtil.getCurrentTimePattern3());
+         //放款（添加借据同时执行放款）
+         resp = madeLoanProcessBizHession.addCreditDueBill(addCreditDueReq);
+         if(!AcctRetConstants.SUCCESS.getValue().equals(resp.getRespCode())){
+             logger.error("调用核算接口，放款记账失败");
+             isSuccess = false;
+             return isSuccess;
+         }
+         isSuccess = true;
+         // 记账成功后，更新借据表
+         String loanAcNo = resp.getLoanAcNo();
+         String listId = resp.getListId();
+         Map<String,Object> reqMap = Maps.newHashMap();
+         reqMap.put("loanAcNo", loanAcNo);
+         reqMap.put("listId", listId);
+         reqMap.put("receiptId", receipt.getReceiptId());
+         receipt.setLoanAcNo(loanAcNo);
+         receipt.setListId(listId);
+         receiprManageBiz.updateReceiptInfo(reqMap);
+         //放款成功
+         logger.info("放款记账返回参数 [{}]",resp.toString());
+         logger.info("放款记账成功 - addCreditDueBill[{}] success.", contract.getLoanId());
+         return isSuccess;
+    }
+
+    /**
+     * 单笔放款
+     * 
+     * @param receipt
+     * @return
+     */
+    @Override
+    public boolean batchPayout(TContractManagement contract, TReceiptInfo receipt){
+        
+        boolean isSuccess = false;
+        BatchPayOutRes resp = new BatchPayOutRes();
+        //请求借据json字符串
+        JSONObject json = new JSONObject();
+        json.put(receipt.getLoanAcNo(), receipt.getPayApplyAmt()== null ? "0.00" : receipt.getPayApplyAmt());
+        String idListJson = json.toJSONString();
+        
+        BatchPayOutReq req = new BatchPayOutReq();
+        req.setIdList(idListJson);
+        req.setSumAmt(receipt.getPayApplyAmt());//拮据金额
+        if(receipt.getPayApplyAmt()!=null){
+        	if(receipt.getPayApplyAmt().compareTo(new BigDecimal(50000))>0){		//5万以上走大额支付.5万以下走小额
+        		req.setBatchFlag(BatchPayoutFlagConstants.BATCH_PAYOUT.getCode());
+        	}else{
+        		req.setBatchFlag(BatchPayoutFlagConstants.SINGLE_PAYOUT.getCode());
+        	}
+        }
+        req.setWorkDate(getAcctWorkDate());
+        // 查询行号
+        TBankAccnoInfo bankAccno = loanPosCustomerService.getBanAccnoById(receipt.getPayAccount());
+        
+        req.setCdtrno(receipt.getPayAccount());//收款人账号
+        req.setCdtrnm(receipt.getCustName());//收款人名称
+        req.setCdtbranchid(bankAccno.getCdtbranchid());//收款行行号
+        req.setChannelId(ChannelConstants.POS.getValue());//系统渠道
+        // POS贷和流量贷都是1001020305
+        if(ProductInfoEnum.PRODUCT_POS.getProdId().equals(contract.getProdId()) || ProductInfoEnum.PRODUCT_LIULIANG.getProdId().equals(contract.getProdId())){
+            req.setProductId(ProductInfoEnum.PRODUCT_LIULIANG.getProdId());
+        }else{
+            req.setProductId(contract.getProdId());
+        }
+        
+        //流水号
+        req.setOutSysReqSeqNo("POS"+receipt.getReceiptId());
+        
+        StringBuilder remark = new StringBuilder("#HRB_LOAN#").append(receipt.getLoanAcNo());
+        req.setRemark(remark.toString());
+        
+        logger.info("放款请求 - req = {}", req.toString());
+        
+        resp = madeLoanProcessBizHession.batchPayout(req);
+        
+        logger.info("放款返回 - resp = {}", resp.toString());
+        
+        if(AcctRetConstants.SUCCESS.getValue().equals(resp.getRespCode())) {
+            logger.error("该笔借据 loanAcNo[{}] 放款成功.", idListJson);
+            isSuccess = true;
+        }
+        
+        if(!AcctRetConstants.SUCCESS.getValue().equals(resp.getRespCode())) {
+            logger.error("该笔借据 loanAcNo[{}] 放款失败.", idListJson);
+            isSuccess = false;
+        }
+        return isSuccess;
+    }
+    
+    /**
+     * 发送放款指令
+     * 
+     * @param paymentApply
+     * @param receipt
+     */
+    @Override
+    public Map<String,Object> sendMadeLoanCommend(TPaymentApply paymentApply, TReceiptInfo receipt) {
+        Map<String,Object> map = Maps.newHashMap();
+        Map<String,Object> mapUpt = Maps.newHashMap();
+        // 核算系统开放
+        if("true".equals(accountingEnable.trim())){
+            //TODO 发送用款支付指令,更新放款执行状态
+            map = this.madeLoan(paymentApply, receipt);
+            if(map.get("resCode").equals("000000")){
+                //发送用款支付指令成功，更新借据表和用款状态
+                mapUpt.put("receiptId", receipt.getReceiptId());
+                mapUpt.put("lendingChannel", "0");
+                mapUpt.put("loanExecuteStatus", "10");
+                mapUpt.put("lnExctStsUpdtTm", new Date());
+                receiprManageBiz.updateReceiptInfo(mapUpt);
+            }else{
+                //发送用款支付指令失败，更新借据表和用款状态
+                mapUpt.put("receiptId", receipt.getReceiptId());
+                mapUpt.put("lendingChannel", "0");
+                mapUpt.put("loanExecuteStatus", "19");
+                mapUpt.put("lnExctStsUpdtTm", new Date());
+                receiprManageBiz.updateReceiptInfo(mapUpt);
+            }
+        }
+        // 系统模拟（修改状态）
+        else{
+            map.put("resCode", "000000");
+            mapUpt.put("receiptId", receipt.getReceiptId());
+            mapUpt.put("lendingChannel", "1");
+            mapUpt.put("loanExecuteStatus", "10");
+            mapUpt.put("lnExctStsUpdtTm", new Date());
+            receiprManageBiz.updateReceiptInfo(mapUpt);
+        }
+        return map;
+    }
+
+    /**
+     * 放款执行
+     * 
+     * @param out
+     * @param paymentApply
+     * @param receipt
+     */
+    @Override
+    public Map<String,Object> madeLoan(TPaymentApply paymentApply, TReceiptInfo receipt) {
+        
+        Map<String,Object> resMessage = Maps.newHashMap();
+        //协议信息
+        TContractManagement contract = loanPosContractManagementBiz.getContractByContNo(paymentApply.getContNo());
+        //客户信息
+        TCustomer customerInfo = loanPosCustomerService.getCustumerInfoById(Objects.firstNonNull(contract.getCustId(), ""));
+        boolean isSuccessAddContractInfo = false;
+        boolean isSuccessAddCreditDueBill = false;
+        boolean isSuccessBatchPayout = false;
+        
+        // 放款step1:添加合同
+        if(null == contract.getAcctContNo() || "".equals(contract.getAcctContNo().trim())){
+            isSuccessAddContractInfo = this.addContractInfo(contract.getContNo(), contract, customerInfo);
+            if(isSuccessAddContractInfo){
+                logger.info("添加合同成功");
+            }else{
+                logger.info("调用核算接口，发送合同失败");
+                resMessage.put("resCode", "000001");
+                resMessage.put("resMessage", "调用核算接口 [addContractInfo]，添加合同失败");
+                return resMessage;
+            }
+        }
+        
+        // 放款step2:放款记账
+        isSuccessAddCreditDueBill = this.addCreditDueBill(contract,customerInfo,receipt);
+        if(isSuccessAddCreditDueBill){
+            logger.info("放款记账成功");
+        }else{
+            logger.info("调用核算接口，放款记账失败");
+            resMessage.put("resCode", "000002");
+            resMessage.put("resMessage", "调用核算接口 [addCreditDueBill]，放款记账失败");
+            return resMessage;
+        }
+        
+        // 放款step3:执行放款
+        isSuccessBatchPayout = this.batchPayout(contract, receipt);
+        if(isSuccessBatchPayout){
+            logger.info("放款执行成功");
+        }else{
+            logger.info("调用核算接口，放款执行失败");
+            resMessage.put("resCode", "000003");
+            resMessage.put("resMessage", "调用核算接口 [batchPayout]，放款执行失败");
+            return resMessage;
+        }
+        
+        resMessage.put("resCode", "000000");
+        resMessage.put("resMessage", "放款成功");
+        return resMessage;
+    }
+
+    /**
+     * 调用核算系统获取workDate
+     * @return
+     */
+    public Date getAcctWorkDate(){
+        Calendar c = Calendar.getInstance();
+        int hour = c.get(Calendar.HOUR_OF_DAY);
+        int minute = c.get(Calendar.MINUTE);
+        BusiPropQueryReq busiPropQueryReq = new BusiPropQueryReq();
+        busiPropQueryReq.setName("workDate");
+        BusiPropQueryRes busiPropQueryRes = madeLoanProcessBizHession.queryBusiProperties(busiPropQueryReq);
+        Date workDate = busiPropQueryRes.getWorkDate();
+        c.setTime(workDate);
+        if(hour >= 16 && minute >= 30) {
+            c.add(Calendar.DATE, 1);
+        }
+        return c.getTime();
+    }
+    
+    /**
+     * 试算
+     * 
+     * @param contract
+     * @return
+     */
+    public CalcRamtRes calcRamtWithBean(TContractManagement contract,TReceiptInfo receipt){
+        CalcRamtRes res = new CalcRamtRes();
+        CalcRamtReq req = new CalcRamtReq();
+        req.setLoanAcNo("loanAcNo");
+        req.setAheakind("1");//还款类型
+        req.setSsubsamt(receipt.getPayApplyAmt().doubleValue());//应放金额
+        req.setWorkDate(receipt.getEndDate());//下次还款日
+        MadeLoanLoanLedgerBean bean = new MadeLoanLoanLedgerBean();
+        bean.setInterestRate(receipt.getLoanInterest()); //贷款利率
+        bean.setaBal(receipt.getPayApplyAmt());//正常本金
+        bean.setBeginDate(receipt.getBeginDate());
+        bean.setLastInteDate(receipt.getBeginDate());//
+        bean.setRepayMethod(receipt.getPaybackWay());//还款方式
+        bean.setProdId(contract.getProdId());
+        req.setBean(bean);
+        res = madeLoanProcessBizHession.calcRamtWithBean(req);
+        return res;
+    }
+}

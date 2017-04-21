@@ -1,0 +1,78 @@
+package com.hrbb.loan.pos.dao.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+import org.springframework.stereotype.Repository;
+
+import com.hrbb.loan.pos.dao.TBankAccnoInfoDao;
+import com.hrbb.loan.pos.dao.entity.TBankAccnoInfo;
+
+/**
+ *<h1></h1>
+ *@author Johnson Song
+ *@version Id: TBankAccnoInfoDaoImpl.java, v 1.0 2015-3-2 上午10:56:57 Johnson Song Exp
+ */
+@Repository("tBankAccnoInfoDao")
+public class TBankAccnoInfoDaoImpl extends SqlSessionDaoSupport implements TBankAccnoInfoDao {
+
+	@Override
+	public int deleteByPrimaryKey(String bankAccno) {
+		return getSqlSession().delete("TBankAccnoInfoMapper.deleteByPrimaryKey", bankAccno);
+	}
+
+	@Override
+	public int insert(TBankAccnoInfo record) {
+		return getSqlSession().insert("TBankAccnoInfoMapper.insert", record);
+	}
+	
+	@Override
+	public int insertSelective(TBankAccnoInfo record) {
+		return getSqlSession().insert("TBankAccnoInfoMapper.insertSelective", record);
+	}
+
+	@Override
+	public int insertSelectiveMap(Map<String, Object> map) {
+		return getSqlSession().insert("TBankAccnoInfoMapper.insertSelectiveMap", map);
+	}
+
+	@Override
+	public long selectAccountCount(Map<String, Object> reqMap) {
+		Map<String,Object> count = getSqlSession().selectOne("TBankAccnoInfoMapper.selectRowCount", reqMap);
+		return (long)count.get("cnt");
+	}
+	
+	@Override
+	public List<Map<String, Object>> selectMap(Map<String, Object> reqMap) {
+		return getSqlSession().selectList("TBankAccnoInfoMapper.selectMap", reqMap);
+	}
+
+	@Override
+	public int updateByPrimaryKeySelectiveMap(Map<String, Object> reqMap) {
+		return getSqlSession().update("TBankAccnoInfoMapper.updateByPrimaryKeySelectiveMap", reqMap);
+	}
+
+	@Override
+	public TBankAccnoInfo selectByPrimaryKey(String bankAccno) {
+		return getSqlSession().selectOne("TBankAccnoInfoMapper.selectByPrimaryKey", bankAccno);
+	}
+
+	@Override
+	public int updateByPrimaryKeySelective(TBankAccnoInfo record) {
+		return getSqlSession().update("TBankAccnoInfoMapper.updateByPrimaryKeySelective", record);
+	}
+
+	@Override
+	public int updateByPrimaryKey(TBankAccnoInfo record) {
+		return getSqlSession().update("TBankAccnoInfoMapper.updateByPrimaryKey", record);
+	}
+
+	@Override
+	public String getLoanBankNameByBankAccno(String bankAccno) {
+		return getSqlSession().selectOne("TBankAccnoInfoMapper.getLoanBankNameByBankAccno", bankAccno);
+	}
+
+	
+
+}

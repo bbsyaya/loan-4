@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TBankSerialnoInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TBankSerialnoInfo" >
+    <id column="serialNo" property="serialNo"/>
+    <result column="loanId" property="loanId" jdbcType="VARCHAR" />
+    <result column="custId" property="custId" jdbcType="VARCHAR" />
+    <result column="custName" property="custName" jdbcType="VARCHAR" />
+    <result column="bankName" property="bankName" jdbcType="VARCHAR" />
+    <result column="bankAccno" property="bankAccno" jdbcType="VARCHAR" />
+    <result column="currMonth" property="currMonth" jdbcType="VARCHAR" />
+    <result column="currMonthIn" property="currMonthIn" jdbcType="VARCHAR" />
+    <result column="currMonthOut" property="currMonthOut" jdbcType="VARCHAR" />
+    <result column="currSeaInterestAmt" property="currSeaInterestAmt" jdbcType="DECIMAL" />
+    <result column="regPersonId" property="regPersonId" jdbcType="VARCHAR" />
+    <result column="regDate" property="regDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    serialNo, loanId, custId, custName, bankName, bankAccno, currMonth, currMonthIn, 
+    currMonthOut, currSeaInterestAmt, regPersonId, regDate
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_bank_serialno_info
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectMap" resultType="map" parameterType="map" >
+    SELECT 
+    <include refid="Base_Column_List" />
+    FROM t_bank_serialno_info
+    WHERE 1=1
+    <if test="loanId != null">
+    	AND loanId = #{loanId}
+    </if>
+    <if test="startPage != null">
+    	LIMIT #{startPage}, #{limit}
+    </if>
+  </select>
+  
+   <select id="selectMapByCurrMonth" resultType="map" parameterType="map" >
+    SELECT 
+    <include refid="Base_Column_List" />
+    FROM t_bank_serialno_info
+    WHERE 1=1
+    <if test="loanId != null">
+    	AND loanId = #{loanId}
+    </if>
+    <if test="currMonth != null">
+    	AND currMonth = #{currMonth}
+    </if>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_bank_serialno_info
+    where serialNo = #{serialNo}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TBankSerialnoInfo" >
+    insert into t_bank_serialno_info (serialNo, loanId, custId, 
+      custName, bankName, bankAccno, 
+      currMonth, currMonthIn, currMonthOut, 
+      currSeaInterestAmt, regPersonId, regDate
+      )
+    values (#{serialNo}, #{loanId,jdbcType=VARCHAR}, #{custId,jdbcType=VARCHAR}, 
+      #{custName,jdbcType=VARCHAR}, #{bankName,jdbcType=VARCHAR}, #{bankAccno,jdbcType=VARCHAR}, 
+      #{currMonth,jdbcType=VARCHAR}, #{currMonthIn,jdbcType=VARCHAR}, #{currMonthOut,jdbcType=VARCHAR}, 
+      #{currSeaInterestAmt,jdbcType=DECIMAL}, #{regPersonId,jdbcType=VARCHAR}, #{regDate,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TBankSerialnoInfo" >
+    insert into t_bank_serialno_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="loanId != null" >
+        loanId,
+      </if>
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="custName != null" >
+        custName,
+      </if>
+      <if test="bankName != null" >
+        bankName,
+      </if>
+      <if test="bankAccno != null" >
+        bankAccno,
+      </if>
+      <if test="currMonth != null" >
+        currMonth,
+      </if>
+      <if test="currMonthIn != null" >
+        currMonthIn,
+      </if>
+      <if test="currMonthOut != null" >
+        currMonthOut,
+      </if>
+      <if test="currSeaInterestAmt != null" >
+        currSeaInterestAmt,
+      </if>
+      <if test="regPersonId != null" >
+        regPersonId,
+      </if>
+      <if test="regDate != null" >
+        regDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo},
+      </if>
+      <if test="loanId != null" >
+        #{loanId,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="custName != null" >
+        #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankName != null" >
+        #{bankName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAccno != null" >
+        #{bankAccno,jdbcType=VARCHAR},
+      </if>
+      <if test="currMonth != null" >
+        #{currMonth,jdbcType=VARCHAR},
+      </if>
+      <if test="currMonthIn != null" >
+        #{currMonthIn,jdbcType=VARCHAR},
+      </if>
+      <if test="currMonthOut != null" >
+        #{currMonthOut,jdbcType=VARCHAR},
+      </if>
+      <if test="currSeaInterestAmt != null" >
+        #{currSeaInterestAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="regPersonId != null" >
+        #{regPersonId,jdbcType=VARCHAR},
+      </if>
+      <if test="regDate != null" >
+        #{regDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="map" >
+    insert into t_bank_serialno_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="loanId != null" >
+        loanId,
+      </if>
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="custName != null" >
+        custName,
+      </if>
+      <if test="bankName != null" >
+        bankName,
+      </if>
+      <if test="bankAccno != null" >
+        bankAccno,
+      </if>
+      <if test="currMonth != null" >
+        currMonth,
+      </if>
+      <if test="currMonthIn != null" >
+        currMonthIn,
+      </if>
+      <if test="currMonthOut != null" >
+        currMonthOut,
+      </if>
+      <if test="currSeaInterestAmt != null" >
+        currSeaInterestAmt,
+      </if>
+      <if test="regPersonId != null" >
+        regPersonId,
+      </if>
+      <if test="regDate != null" >
+        regDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo},
+      </if>
+      <if test="loanId != null" >
+        #{loanId,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="custName != null" >
+        #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankName != null" >
+        #{bankName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAccno != null" >
+        #{bankAccno,jdbcType=VARCHAR},
+      </if>
+      <if test="currMonth != null" >
+        #{currMonth,jdbcType=VARCHAR},
+      </if>
+      <if test="currMonthIn != null" >
+        #{currMonthIn,jdbcType=VARCHAR},
+      </if>
+      <if test="currMonthOut != null" >
+        #{currMonthOut,jdbcType=VARCHAR},
+      </if>
+      <if test="currSeaInterestAmt != null" >
+        #{currSeaInterestAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="regPersonId != null" >
+        #{regPersonId,jdbcType=VARCHAR},
+      </if>
+      <if test="regDate != null" >
+        #{regDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TBankSerialnoInfo" >
+    update t_bank_serialno_info
+    <set >
+      <if test="loanId != null" >
+        loanId = #{loanId,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        custId = #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="custName != null" >
+        custName = #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankName != null" >
+        bankName = #{bankName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAccno != null" >
+        bankAccno = #{bankAccno,jdbcType=VARCHAR},
+      </if>
+      <if test="currMonth != null" >
+        currMonth = #{currMonth,jdbcType=VARCHAR},
+      </if>
+      <if test="currMonthIn != null" >
+        currMonthIn = #{currMonthIn,jdbcType=VARCHAR},
+      </if>
+      <if test="currMonthOut != null" >
+        currMonthOut = #{currMonthOut,jdbcType=VARCHAR},
+      </if>
+      <if test="currSeaInterestAmt != null" >
+        currSeaInterestAmt = #{currSeaInterestAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="regPersonId != null" >
+        regPersonId = #{regPersonId,jdbcType=VARCHAR},
+      </if>
+      <if test="regDate != null" >
+        regDate = #{regDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where serialNo = #{serialNo,jdbcType=VARCHAR}
+  </update>
+  
+  <update id="updateSelectiveMap" parameterType="map" >
+    update t_bank_serialno_info
+    <set >
+      <if test="loanId != null" >
+        loanId = #{loanId,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        custId = #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="custName != null" >
+        custName = #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankName != null" >
+        bankName = #{bankName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAccno != null" >
+        bankAccno = #{bankAccno,jdbcType=VARCHAR},
+      </if>
+      <if test="currMonth != null" >
+        currMonth = #{currMonth,jdbcType=VARCHAR},
+      </if>
+      <if test="currMonthIn != null" >
+        currMonthIn = #{currMonthIn,jdbcType=VARCHAR},
+      </if>
+      <if test="currMonthOut != null" >
+        currMonthOut = #{currMonthOut,jdbcType=VARCHAR},
+      </if>
+      <if test="currSeaInterestAmt != null" >
+        currSeaInterestAmt = #{currSeaInterestAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="regPersonId != null" >
+        regPersonId = #{regPersonId,jdbcType=VARCHAR},
+      </if>
+      <if test="regDate != null" >
+        regDate = #{regDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where serialNo = #{serialNo}
+  </update>
+  
+  <select id="countMap" parameterType="Map" resultType="Long">
+  	SELECT COUNT(*) FROM t_bank_serialno_info 
+  	WHERE 1=1 
+  	<if test="loanId != null">
+  		AND loanId = #{loanId}
+  	</if>
+  </select>
+  
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TBankSerialnoInfo" >
+    update t_bank_serialno_info
+    set loanId = #{loanId,jdbcType=VARCHAR},
+      custId = #{custId,jdbcType=VARCHAR},
+      custName = #{custName,jdbcType=VARCHAR},
+      bankName = #{bankName,jdbcType=VARCHAR},
+      bankAccno = #{bankAccno,jdbcType=VARCHAR},
+      currMonth = #{currMonth,jdbcType=VARCHAR},
+      currMonthIn = #{currMonthIn,jdbcType=VARCHAR},
+      currMonthOut = #{currMonthOut,jdbcType=VARCHAR},
+      currSeaInterestAmt = #{currSeaInterestAmt,jdbcType=DECIMAL},
+      regPersonId = #{regPersonId,jdbcType=VARCHAR},
+      regDate = #{regDate,jdbcType=TIMESTAMP}
+    where serialNo = #{serialNo}
+  </update>
+</mapper>

@@ -1,0 +1,247 @@
+package com.hrbb.loan.spi.TC;
+
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.acct.facade.MadeLoanProcessBizHession;
+import com.hrbb.loan.acct.facade.bean.CalcRamtReq;
+import com.hrbb.loan.acct.facade.bean.CalcRamtRes;
+import com.hrbb.loan.acct.facade.bean.MadeLoanLoanLedgerBean;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+//import com.hrbb.loan.acct.facade.MadeLoanProcessBizHession;
+//import com.hrbb.loan.acct.facade.bean.CalcRamtReq;
+//import com.hrbb.loan.acct.facade.bean.CalcRamtRes;
+import com.hrbb.loan.pos.service.LoanPosPaybackService;
+import com.hrbb.loan.spiconstants.HServiceReturnCode;
+import com.hrbb.sh.framework.HRequest;
+import com.hrbb.sh.framework.HResponse;
+import com.hrbb.sh.framework.HService;
+import com.hrbb.sh.framework.HServiceException;
+@Service("tcPaybackTryCalculate")
+public class TCPaybackTryCalculateImpl implements HService {
+	Logger logger = LoggerFactory.getLogger(TCPaybackTryCalculateImpl.class);
+	@Autowired
+	private LoanPosPaybackService loanPosPaybackService;
+	@Autowired
+    private MadeLoanProcessBizHession service;
+
+	@Override
+	public HResponse serve(HRequest request) throws HServiceException {
+		logger.debug("executing TCPaybackTryCalculateImpl...");
+		HResponse response = new HResponse();
+		Map<String, Object> propMap = request.getProperties();
+		String  issueid = propMap.get("issueid").toString();
+		logger.info("用款申请编号为"+issueid);
+		String aheakind = propMap.get("aheakind").toString();
+		logger.info("还款类型为"+aheakind);
+		
+		try{
+			
+			CalcRamtRes res = new CalcRamtRes();
+	        CalcRamtReq req = new CalcRamtReq();
+	        
+		    String edt = (String)propMap.get("expectretudate");
+		    SimpleDateFormat sft = new SimpleDateFormat("yyyyMMdd");
+		    Date d = sft.parse(edt);
+		    logger.info("还款日期为"+d);
+			String receiptId = loanPosPaybackService.getReceiptIdByPayApplyId(issueid);
+			TReceiptInfo R = loanPosPaybackService.getReceiptInfoByReceiptId(receiptId);
+			/*Date bd = R.getBeginDate();
+			long t1 = d.getTime();
+			long t2 = bd.getTime();
+			long t3 = (t1-t2)/(1000860*60*24);
+			if(t3<7){
+				logger.error("还款试算失败,不允许七天内还款试算");
+				response.setRespCode(HServiceReturnCode.POS_PAYBACK_TRY_CALCULATE_ERROR2.getReturnCode());
+				response.setRespMessage(HServiceReturnCode.POS_PAYBACK_TRY_CALCULATE_ERROR2.getReturnMessage());
+				response.setRespTime(new Date());
+				return getBlankHResponse(response);
+			}else{*/
+			if("3".equals(aheakind)){
+				
+				  logger.info("还本付息试算接口计算利息");
+				  String sumamt = propMap.get("sumamt").toString();
+				  Double sumAmount = new Double(sumamt);
+				  logger.info("还款总金额为"+sumAmount);
+		    	  
+		    	  req.setAheakind("1");//还款类型
+		          req.setSsubsamt(sumAmount);//应放金额
+		          req.setWorkDate(d);
+		          req.setAheaamtkind("2");
+		          MadeLoanLoanLedgerBean bean = new MadeLoanLoanLedgerBean();
+		          bean.setInterestRate(R.getLoanInterest()); //贷款利率
+		          logger.info("贷款利率为"+R.getLoanInterest());
+		          bean.setBeginDate(R.getBeginDate());
+		          bean.setLastInteDate(R.getBeginDate());
+		          logger.info("开始计息日为"+R.getBeginDate());
+		          bean.setRepayMethod(R.getPaybackWay());//还款方式
+		          bean.setProdId("1001020306");
+		          bean.setPayMethod("90");
+		          bean.setaBal(R.getLoanTotalBalance());
+		          req.setBean(bean);
+		    	  res = service.calcRamtWithBean(req);
+		    	  Map<String,Object> resMap = res.getRes();
+		    	  logger.info("核算接口返回的map为"+resMap);
+		    	  String capital = (String) resMap.get("rcapi");
+		    	  logger.info("计算出来的本金为"+capital);
+		    	  String interest = (String) resMap.get("rInte");
+		    	  logger.info("计算出来的利息为"+interest);
+				Double loanTotalBalance = loanPosPaybackService.getLoanTotalBalanceByReceiptId(issueid);
+				logger.info("贷款总余额为"+loanTotalBalance);
+				if(sumAmount>loanTotalBalance){
+					logger.error("还款总金额已大于剩余借据总余额");
+				}else {
+					logger.info("归还本金利息总金额为"+sumAmount);
+				}
+				HashMap<String, Object> map = new HashMap<String, Object>(32);
+	    		map.put("issueid",issueid);
+	    		map.put("aheakind",aheakind);
+	    		map.put("rcapi",capital);
+	    		map.put("rinte",interest);
+	    		map.put("sumamt",sumAmount);
+	    		map.put("expectretudate",edt);
+	    		logger.info("返回给银商的map为"+map);
+	    		response.setRespCode(HServiceReturnCode.SUCCESS.getReturnCode());
+	    		response.setRespMessage(HServiceReturnCode.SUCCESS.getReturnMessage());
+	    		response.setRespTime(new Date());
+	    		response.setProperties(map);
+			}else if("1".equals(aheakind)){
+				Double loanTotalBalance = loanPosPaybackService.getLoanTotalBalanceByReceiptId(issueid);
+				logger.info("剩余贷款总余额为"+loanTotalBalance);
+
+				  logger.info("提前结清试算接口计算利息");
+		    	  req.setAheakind("1");
+		          req.setSsubsamt(new Double("0"));//应放金额
+		          req.setWorkDate(d);
+		          req.setLoanAcNo(R.getLoanAcNo());
+		          logger.info("核心借据号为"+R.getLoanAcNo());
+		          req.setrCapi(R.getLoanTotalBalance().doubleValue());
+		          logger.info("借据余额为"+R.getLoanTotalBalance());
+		          req.setAheaamtkind("1");
+		          MadeLoanLoanLedgerBean bean = new MadeLoanLoanLedgerBean();
+		          bean.setInterestRate(R.getLoanInterest()); //贷款利率
+		          logger.info("贷款利率为"+R.getLoanInterest());
+		          bean.setLastInteDate(R.getBeginDate());
+		          logger.info("开始计息日为"+R.getBeginDate());
+		          bean.setBeginDate(R.getBeginDate());
+		          bean.setRepayMethod(R.getPaybackWay());//还款方式
+		          bean.setProdId("1001020306");
+		          bean.setPayMethod("90");
+		          bean.setaBal(R.getLoanTotalBalance());
+		          req.setBean(bean);
+		    	  res = service.calcRamtWithBean(req);
+		    	  Map<String,Object> resMap = res.getRes();
+		    	  logger.info("核算接口返回的map为"+resMap);
+		    	  String capital = (String) resMap.get("rcapi");
+		    	  logger.info("计算出来的本金为"+capital);
+		    	  BigDecimal capital1= new BigDecimal(capital);
+		    	  String interest = (String) resMap.get("rInte");
+		    	  logger.info("计算出来的利息为"+interest);
+		    	  BigDecimal interest1= new BigDecimal(interest);
+		    	  double tamt = capital1.add(interest1).doubleValue();
+				HashMap<String, Object> map = new HashMap<String, Object>(32);
+				map.put("issueid",issueid);
+	    		map.put("aheakind",aheakind);
+	    		map.put("rcapi",capital);
+	    		map.put("rinte",interest);
+	    		map.put("sumamt",tamt);
+	    		map.put("expectretudate",edt);
+	    		logger.info("返回给银商的map为"+map);
+	    		response.setRespCode(HServiceReturnCode.SUCCESS.getReturnCode());
+	    		response.setRespMessage(HServiceReturnCode.SUCCESS.getReturnMessage());
+	    		response.setRespTime(new Date());
+	    		response.setProperties(map);
+			}else{
+				//指定本金方式试算接口
+			
+				  String sumamt = propMap.get("sumamt").toString();           //归还指定本金
+				  double capit =  Double.parseDouble(sumamt);
+				  BigDecimal capi = new BigDecimal(sumamt);
+				  logger.info("归还指定本金");
+		    	  req.setAheakind("1");
+		          req.setSsubsamt(new Double("0"));//应放金额
+		          req.setWorkDate(d);
+		          req.setLoanAcNo(R.getLoanAcNo());
+		          logger.info("核心借据号为"+R.getLoanAcNo());
+		          req.setrCapi(capit);
+		          logger.info("归还指定本金为"+capit);
+		          req.setAheaamtkind("1");
+		          MadeLoanLoanLedgerBean bean = new MadeLoanLoanLedgerBean();
+		          bean.setInterestRate(R.getLoanInterest()); //贷款利率
+		          logger.info("贷款利率为"+R.getLoanInterest());
+		          bean.setLastInteDate(R.getBeginDate());
+		          logger.info("开始计息日为"+R.getBeginDate());
+		          bean.setBeginDate(R.getBeginDate());
+		          bean.setRepayMethod(R.getPaybackWay());//还款方式
+		          bean.setProdId("1001020306");
+		          bean.setPayMethod("90");
+		          bean.setaBal(capi);
+		          req.setBean(bean);
+		    	  res = service.calcRamtWithBean(req);
+		    	  Map<String,Object> resMap = res.getRes();
+		    	  logger.info("核算接口返回的map为"+resMap);
+		    	  String capital = (String) resMap.get("rcapi");
+		    	  logger.info("计算出来的本金为"+capital);
+		    	  BigDecimal capital1= new BigDecimal(capital);
+		    	  String interest = (String) resMap.get("rInte");
+		    	  logger.info("计算出来的利息为"+interest);
+		    	  BigDecimal interest1= new BigDecimal(interest);
+		    	  double tamt = capital1.add(interest1).doubleValue();
+				HashMap<String, Object> map = new HashMap<String, Object>(32);
+				map.put("issueid",issueid);
+	    		map.put("aheakind",aheakind);
+	    		map.put("rcapi",capital);
+	    		map.put("rinte",interest);
+	    		map.put("sumamt",tamt);
+	    		map.put("expectretudate",edt);
+	    		logger.info("返回给银商的map为"+map);
+	    		response.setRespCode(HServiceReturnCode.SUCCESS.getReturnCode());
+	    		response.setRespMessage(HServiceReturnCode.SUCCESS.getReturnMessage());
+	    		response.setRespTime(new Date());
+	    		response.setProperties(map);
+				
+				
+				
+			}
+			return response;
+			/*}*/
+		}catch(ParseException e){
+			
+			logger.error("日期解析异常"+e);
+			response.setRespCode(HServiceReturnCode.POS_PAYBACK_TRY_CALCULATE_ERROR.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.POS_PAYBACK_TRY_CALCULATE_ERROR
+						.getReturnMessage());
+			response.setRespTime(new Date());
+			return getBlankHResponse(response);
+			
+		}catch(Exception e){
+			logger.error("还款试算失败，某些参数为空"+e);
+			response.setRespCode(HServiceReturnCode.POS_PAYBACK_TRY_CALCULATE_ERROR.getReturnCode());
+			response.setRespMessage(HServiceReturnCode.POS_PAYBACK_TRY_CALCULATE_ERROR
+						.getReturnMessage());
+			response.setRespTime(new Date());
+			return getBlankHResponse(response);
+		}
+		
+	}
+	private HResponse getBlankHResponse(HResponse response){
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("issueid","");
+		map.put("aheakind","");
+		map.put("rcapi","");
+		map.put("rinte","");
+		map.put("sumamt","");
+		map.put("expectretudate","");
+		response.setProperties(map);
+		return response;
+	}
+}

@@ -1,0 +1,45 @@
+/**
+ * 
+ */
+package com.hrbb.loan.pos.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import com.hrbb.loan.pos.dao.entity.TransactionLog;
+
+/**
+* <p>Title: IGenericConfigDao.java </p>
+* <p>Description:  </p>
+* <p>Copyright: Copyright (C) 2015 Hrbb Ltd. Co.</p> 
+*     
+* @author linzhaolin@hrbb.com.cn
+* @version 
+* @date 2015-4-16
+*
+* logs: 1. 
+*/
+public interface IGenericConfigDao {
+	
+	public List<Map<String, Object>> selectSelective(Map<String, Object> map);
+	
+	public Map<String, Object> getIssuerInfo(Map<String, Object> map);
+	
+	public Map<String, Object> getMobileBelong(Map<String, Object> map);
+	
+	public Map<String, Object> getNextWorkingDate(Map<String, Object> map);
+	
+	/**
+	 * 获取展业机构/推荐人信息
+	 * @param map
+	 * @return
+	 */
+	public Map<String, Object> getRecInfo(Map<String, Object> map);
+	
+	/**
+	 * 记录核算发送日志
+	 * @param map
+	 * @return
+	 */
+	public int insertTransactionLog(TransactionLog log);
+}

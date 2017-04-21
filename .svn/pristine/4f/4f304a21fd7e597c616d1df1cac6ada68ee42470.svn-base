@@ -1,0 +1,57 @@
+package com.hrbb.loan.timer;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.biz.backstage.inter.IRepaymentAcctBiz;
+import com.hrbb.loan.pos.dao.TRepaymentPlanDao;
+import com.hrbb.loan.pos.service.ReceiptInfoService;
+
+/**
+ * @author yida
+ * @date 2015年10月20日 下午12:03:39
+ */
+@Service
+public class SyncLoanStatusTimer {
+
+    @Autowired
+    private ReceiptInfoService receiptInfoService;
+    @Autowired
+    private IRepaymentAcctBiz repaymentAcctBiz;
+    @Autowired
+    private TRepaymentPlanDao repaymentPlanDao;
+
+    /**
+     * 同步核算还款状态
+     */
+    @Scheduled(cron = "0 0 6 * * ?")
+    @Transactional
+    public void syncRepay() {
+        List<String> receipts = receiptInfoService.getUnFinishedReceipt();
+        for (String receiptId : receipts) {
+            // 同步还款计划
+            repaymentAcctBiz.updateRepaymentPlan(receiptId);
+            // 查询还款计划表中标识为拖欠的所有拖欠余额
+            Map<String, BigDecimal> map = repaymentPlanDao
+                    .getOverRepaymentAmtAndInterestByReceiptId(receiptId);
+            if (null != map) {
+                BigDecimal overAmtTotal = map.get("overdueBalance");
+                BigDecimal overInterestTotal = map.get("innerOwnedInterest");
+                // 更新借据表预期余额，表内欠息字段
+                Map<String, Object> reqMap = Maps.newHashMap();
+                reqMap.put("receiptId", receiptId);
+                reqMap.put("overdueBalance", overAmtTotal);
+                reqMap.put("innerOwnedInterest", overInterestTotal);
+                receiptInfoService.updateReceiptInfo(reqMap);
+            }
+        }
+    }
+
+}

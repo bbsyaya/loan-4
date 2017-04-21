@@ -1,0 +1,140 @@
+package com.hrbb.loan.controller;
+
+import java.io.PrintWriter;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.controller.helper.ControllerHelper;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosContractManagementBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosPaybackBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosPaybackImportBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosPaybackRunningBiz;
+import com.hrbb.loan.pos.dao.entity.TPaybackImportInfo;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+import com.hrbb.loan.pos.service.LoanPosPaybackService;
+
+@Controller
+@RequestMapping("/paybackImport")
+public class paybackImportController {
+    @Autowired
+    private LoanPosPaybackImportBiz loanPosPaybackImportBiz ;
+	@Autowired
+	private LoanPosPaybackService loanPosPaybackService;
+	@Autowired
+    private LoanPosPaybackBiz loanPosPaybackBiz ;
+	@Autowired
+    private LoanPosPaybackRunningBiz loanPosPaybackRunningBiz ;
+	@RequestMapping("/notMatchedPaybackImport")
+	public ModelAndView queryNotMatchedPaybackInfo(
+			@RequestParam(value="viewStatus", required = false)String viewStatus, 
+			@RequestParam(value="rows", required = false)Integer pageSize, 
+			@RequestParam(value="page", required = false)Integer pageNo,
+			HttpServletRequest request, PrintWriter out){
+		
+		Map<String, Object> reqMap = Maps.newHashMap();
+		if(!StringUtils.isEmpty(request.getParameter("paybackPersonName"))){
+			reqMap.put("paybackPersonNameLike",ControllerHelper.getLikeString(request.getParameter("paybackPersonName")));
+		}
+		if(!StringUtils.isEmpty(request.getParameter("paybackPersonAccount"))){
+			reqMap.put("paybackPersonAccountLike", ControllerHelper.getLikeString(request.getParameter("paybackPersonAccount")));
+		}
+		if(!StringUtils.isEmpty(viewStatus)){
+			reqMap.put("viewStatus", viewStatus);
+		}
+	    reqMap.put("startPage", (pageNo - 1)*pageSize);
+		reqMap.put("limit", pageSize);
+	    //List<TPaybackImportInfo> lists = loanPosPaybackImportBiz.queryPaybackImportInfo(reqMap);
+		List<TPaybackImportInfo> lists = loanPosPaybackImportBiz.queryTransferInRecord(reqMap);
+		long number = loanPosPaybackImportBiz.countImportNumber(reqMap);
+	    JSONObject aaJson =  new JSONObject();
+		aaJson.put("rows", lists);	
+		aaJson.put("total", number);
+		String aa = aaJson.toJSONString();
+		out.write(aa);
+		return null;	
+	}
+	
+	
+	@RequestMapping("/matchedPaybackImport")
+	public ModelAndView queryMatchedPaybackInfo(
+			@RequestParam(value="viewStatus", required = false)String viewStatus,
+			@RequestParam(value="rows", required = false)Integer pageSize, 
+			@RequestParam(value="page", required = false)Integer pageNo,
+			HttpServletRequest request, PrintWriter out){
+		Map<String, Object> reqMap = Maps.newHashMap();
+		if(!StringUtils.isEmpty(request.getParameter("paybackPersonName"))){
+			reqMap.put("paybackPersonNameLike",ControllerHelper.getLikeString(request.getParameter("paybackPersonName")));
+		}
+		if(!StringUtils.isEmpty(request.getParameter("paybackPersonAccount"))){
+			reqMap.put("paybackPersonAccountLike", ControllerHelper.getLikeString(request.getParameter("paybackPersonAccount")));
+		}
+		if(!StringUtils.isEmpty(viewStatus)){
+			reqMap.put("viewStatus", viewStatus);
+		}
+	    reqMap.put("startPage", (pageNo - 1)*pageSize);
+		reqMap.put("limit", pageSize);
+	    
+		List<TPaybackImportInfo> lists = loanPosPaybackImportBiz.queryMatchedPaybackImportInfo(reqMap);
+		long number = loanPosPaybackImportBiz.countImportNumber(reqMap);
+	    JSONObject aaJson =  new JSONObject();
+		aaJson.put("rows", lists);	
+		aaJson.put("total", number);
+		String aa = aaJson.toJSONString();
+		out.write(aa);
+		return null;	
+	}
+	
+	@RequestMapping("/relateReceipt")
+	public ModelAndView relateReceipt(HttpServletRequest request, PrintWriter out){
+		 ModelAndView mav = new ModelAndView();
+	
+	    String custId = request.getParameter("custId");
+	    String importRunningId = request.getParameter("importRunningId");
+	    mav.addObject("custId",custId);
+	    mav.addObject("importRunningId",importRunningId);
+	    mav.setViewName("payback/relateReceipt");
+        return mav;
+	}
+	
+
+	@RequestMapping("/getPaybackRecordInfo")
+	public ModelAndView getPaybackRecordInfo(HttpServletRequest request, PrintWriter out){
+		 ModelAndView mav = new ModelAndView();
+	    String receiptId = request.getParameter("receiptId");
+	    mav.addObject("receiptId",receiptId);
+	    mav.setViewName("payback/paybackRecord");
+        return mav;
+	}
+	
+	
+	@RequestMapping("/displayPaybackRunningRecord")
+	public ModelAndView displayPaybackRunningRecord(HttpServletRequest request, @RequestParam(value="rows", required = false)Integer pageSize, 
+			@RequestParam(value="page", required = false)Integer pageNo,PrintWriter out){
+		Map<String, Object> reqMap = Maps.newHashMap();
+		String receiptId = request.getParameter("receiptId");
+	    reqMap.put("startPage", (pageNo - 1)*pageSize);
+		reqMap.put("limit", pageSize);
+		reqMap.put("receiptId",receiptId);
+	    //List<TPaybackImportInfo> lists = loanPosPaybackImportBiz.queryPaybackImportInfo(reqMap);
+		List<Map<String, Object>> lists = loanPosPaybackRunningBiz.queryPaybackRunnigRecordByReceiptId(reqMap);
+	    JSONObject aaJson =  new JSONObject();
+		aaJson.put("rows", lists);	
+		aaJson.put("total", lists.size());
+		String aa = aaJson.toJSONString();
+		out.write(aa);
+		return null;	
+	}
+
+		
+}

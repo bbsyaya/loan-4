@@ -1,0 +1,61 @@
+package com.hrbb.loan.pos.dao.impl;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+import org.springframework.stereotype.Repository;
+
+import com.hrbb.loan.pos.dao.TChannelMapperDictionaryDao;
+import com.hrbb.loan.pos.dao.entity.TChannelMapperDictionary;
+
+@Repository("tChannelMapperDictionaryDao")
+public class TChannelMapperDictionaryDaoImpl extends SqlSessionDaoSupport implements TChannelMapperDictionaryDao {
+
+    @Override
+    public int deleteByPrimaryKey(Integer id) {
+        return 0;
+    }
+
+    @Override
+    public int insert(TChannelMapperDictionary record) {
+        return 0;
+    }
+
+    @Override
+    public int insertSelective(TChannelMapperDictionary record) {
+        return 0;
+    }
+
+    @Override
+    public TChannelMapperDictionary selectByPrimaryKey(Integer id) {
+        return null;
+    }
+
+    @Override
+    public int updateByPrimaryKeySelective(TChannelMapperDictionary record) {
+        return 0;
+    }
+
+    @Override
+    public int updateByPrimaryKey(TChannelMapperDictionary record) {
+        return 0;
+    }
+
+    @Override
+    public List<Map<String, Object>> getCode(Map<String, Object> reqMap) {
+        return getSqlSession().selectList("TChannelMapperDictionaryMapper.selectMap",reqMap);
+    }
+
+    @Override
+    public BigDecimal getMinLimit(String innerCode) {
+        return getSqlSession().selectOne("TChannelMapperDictionaryMapper.getMinLimit", innerCode);
+    }
+
+    @Override
+    public TChannelMapperDictionary selectByInnerCode(String innerCode) {
+        return getSqlSession().selectOne("TChannelMapperDictionaryMapper.selectByInnerCode", innerCode);
+    }
+
+}

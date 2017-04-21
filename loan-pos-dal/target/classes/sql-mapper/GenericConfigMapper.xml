@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="GenericConfigMapper" >
+
+  <select id="selectIssuerByBIN" resultType="map" parameterType="map">
+	select issueBankName,issueBankCode,cardName,cardType,cardNoLen,bin,bankAttr
+	from t_cardbin_info
+	where #{cardNo,jdbcType=VARCHAR} LIKE CONCAT(bin,'%')
+	limit 0,1
+  </select>
+  
+  <select id="selectMobileBelong" resultType="map" parameterType="map">
+	select belongs
+	from t_mobile_belong
+	where noPrefix = #{prefix,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectNextWorkingDate" resultType="map" parameterType="map">
+	select specName,specType,nextWorkingDate
+	from t_special_date
+	where specDate = #{specDate,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectRecInfo" resultType="map" parameterType="map">
+	select e.menberName as menberName, i.alias as orgName, i.manager as manager
+	from t_bd_executor e, t_bd_institution i
+	where e.belongOrg = i.orgId
+	and e.contactNo = #{contactNo,jdbcType=VARCHAR}
+	and e.active='Y'
+	and i.active='Y'
+	LIMIT 0, 1
+  </select>
+  
+  <select id="selectRecInfoById" resultType="map" parameterType="java.lang.Integer">
+	select i.alias as orgName, i.manager as manager
+	from t_bd_institution i
+	where i.orgId = #{orgId,jdbcType=INTEGER}
+	and i.active='Y'
+  </select>
+  
+  <insert id="insertTransactionLog" parameterType="com.hrbb.loan.pos.dao.entity.TransactionLog" >
+    insert into t_transaction_logs (seq, transTime, bizId, request, reqTime, response, rspTime,status) 
+    values (
+    	#{seq,jdbcType=VARCHAR},
+    	#{transTime,jdbcType=TIMESTAMP},
+    	#{bizId,jdbcType=VARCHAR},
+    	#{request,jdbcType=VARCHAR},
+    	#{reqTime,jdbcType=TIMESTAMP},
+    	#{response,jdbcType=VARCHAR},
+    	#{rspTime,jdbcType=TIMESTAMP},
+    	#{status,jdbcType=VARCHAR}
+    )
+  </insert>
+</mapper>

@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TCallingTaskMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TCallingTask" >
+    <id column="taskNo" property="taskNo" jdbcType="VARCHAR" />
+    <result column="generateTime" property="generateTime" jdbcType="TIMESTAMP" />
+    <result column="callingType" property="callingType" jdbcType="VARCHAR" />
+    <result column="claimerId" property="claimerId" jdbcType="VARCHAR" />
+    <result column="claimerName" property="claimerName" jdbcType="VARCHAR" />
+    <result column="claimTime" property="claimTime" jdbcType="TIMESTAMP" />
+    <result column="callingTime" property="callingTime" jdbcType="TIMESTAMP" />
+    <result column="relaBizNo" property="relaBizNo" jdbcType="VARCHAR" />
+    <result column="relaBizPhase" property="relaBizPhase" jdbcType="VARCHAR" />
+    <result column="dealInfo" property="dealInfo" jdbcType="VARCHAR" />
+    <result column="custId" property="custId" jdbcType="VARCHAR" />
+    <result column="custName" property="custName" jdbcType="VARCHAR" />
+    <result column="posCustId" property="posCustId" jdbcType="VARCHAR" />
+    <result column="posCustName" property="posCustName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    taskNo, generateTime, callingType, claimerId, claimerName, claimTime, callingTime, 
+    relaBizNo, relaBizPhase,dealInfo, custId, custName, posCustId, posCustName
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_calling_task
+    where taskNo = #{taskNo,jdbcType=VARCHAR}
+  </select>
+  <select id="getTCallingTask" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_calling_task
+    where relaBizNo = #{relaBizNo,jdbcType=VARCHAR}
+    and relaBizPhase = #{relaBizPhase,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_calling_task
+    where taskNo = #{taskNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TCallingTask" >
+    insert into t_calling_task (taskNo, generateTime, callingType, 
+      claimerId, claimerName, claimTime, 
+      callingTime, relaBizNo, relaBizPhase
+      )
+    values (#{taskNo,jdbcType=VARCHAR}, #{generateTime,jdbcType=TIMESTAMP}, #{callingType,jdbcType=VARCHAR}, 
+      #{claimerId,jdbcType=VARCHAR}, #{claimerName,jdbcType=VARCHAR}, #{claimTime,jdbcType=TIMESTAMP}, 
+      #{callingTime,jdbcType=TIMESTAMP}, #{relaBizNo,jdbcType=VARCHAR}, #{relaBizPhase,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TCallingTask" >
+    insert into t_calling_task
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="taskNo != null" >
+        taskNo,
+      </if>
+      <if test="generateTime != null" >
+        generateTime,
+      </if>
+      <if test="callingType != null" >
+        callingType,
+      </if>
+      <if test="claimerId != null" >
+        claimerId,
+      </if>
+      <if test="claimerName != null" >
+        claimerName,
+      </if>
+      <if test="claimTime != null" >
+        claimTime,
+      </if>
+      <if test="callingTime != null" >
+        callingTime,
+      </if>
+      <if test="relaBizNo != null" >
+        relaBizNo,
+      </if>
+      <if test="relaBizPhase != null" >
+        relaBizPhase,
+      </if>
+      <if test="dealInfo != null" >
+        dealInfo,
+      </if>
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="custName != null" >
+        custName,
+      </if>
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="posCustName != null" >
+        posCustName,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="taskNo != null" >
+        #{taskNo,jdbcType=VARCHAR},
+      </if>
+      <if test="generateTime != null" >
+        #{generateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="callingType != null" >
+        #{callingType,jdbcType=VARCHAR},
+      </if>
+      <if test="claimerId != null" >
+        #{claimerId,jdbcType=VARCHAR},
+      </if>
+      <if test="claimerName != null" >
+        #{claimerName,jdbcType=VARCHAR},
+      </if>
+      <if test="claimTime != null" >
+        #{claimTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="callingTime != null" >
+        #{callingTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="relaBizNo != null" >
+        #{relaBizNo,jdbcType=VARCHAR},
+      </if>
+      <if test="relaBizPhase != null" >
+        #{relaBizPhase,jdbcType=VARCHAR},
+      </if>
+      <if test="dealInfo != null" >
+        #{dealInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="custName != null" >
+        #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustName != null" >
+        #{posCustName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TCallingTask" >
+    update t_calling_task
+    <set >
+      <if test="generateTime != null" >
+        generateTime = #{generateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="callingType != null" >
+        callingType = #{callingType,jdbcType=VARCHAR},
+      </if>
+      <if test="claimerId != null" >
+        claimerId = #{claimerId,jdbcType=VARCHAR},
+      </if>
+      <if test="claimerName != null" >
+        claimerName = #{claimerName,jdbcType=VARCHAR},
+      </if>
+      <if test="claimTime != null" >
+        claimTime = #{claimTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="callingTime != null" >
+        callingTime = #{callingTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="relaBizNo != null" >
+        relaBizNo = #{relaBizNo,jdbcType=VARCHAR},
+      </if>
+      <if test="relaBizPhase != null" >
+        relaBizPhase = #{relaBizPhase,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where taskNo = #{taskNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TCallingTask" >
+    update t_calling_task
+    set generateTime = #{generateTime,jdbcType=TIMESTAMP},
+      callingType = #{callingType,jdbcType=VARCHAR},
+      claimerId = #{claimerId,jdbcType=VARCHAR},
+      claimerName = #{claimerName,jdbcType=VARCHAR},
+      claimTime = #{claimTime,jdbcType=TIMESTAMP},
+      callingTime = #{callingTime,jdbcType=TIMESTAMP},
+      relaBizNo = #{relaBizNo,jdbcType=VARCHAR},
+      relaBizPhase = #{relaBizPhase,jdbcType=VARCHAR}
+    where taskNo = #{taskNo,jdbcType=VARCHAR}
+  </update>
+  <select id="selectSelectiveForReview" resultType="Map" parameterType="Map">
+  	select custName,
+  	posCustName,
+    taskNo,
+  	generateTime,
+  	claimerId,
+  	claimerName,
+  	claimTime ,
+  	callingType
+  	from t_calling_task
+  	where  1=1
+	  <if test="custName != null">
+	  	and custName like #{custName}
+	  </if>
+	  <if test="posCustName != null">
+	  	and posCustName like #{posCustName}
+	  </if>
+	  <if test="callingType != null">
+	  	and callingType = #{callingType}
+	  </if>
+	  <if test="claimerId != null">
+		 and claimerId = #{claimerId}
+	  </if>
+	  <if test="claimerId == null">
+	  	and claimerId is null
+	  </if>
+	  <if test="opflag == 0">
+	  	and callingTime is not null
+	  </if>
+	  <if test="opflag == 1">
+	  	and callingTime is null
+	  </if>
+	  <if test="startPage != null">
+	  		limit #{startPage}, #{limit}
+	  </if>
+  </select>
+  <select id="selectSelectiveForReviewCount" resultType="Long" parameterType="Map">
+  	select count(taskNo) num
+  	from t_calling_task
+  	where  1=1
+	  <if test="custName != null">
+	  	and custName like #{custName}
+	  </if>
+	  <if test="posCustName != null">
+	  	and posCustName like #{posCustName}
+	  </if>
+	  <if test="callingType != null">
+	  	and callingType = #{callingType}
+	  </if>
+	  <if test="claimerId != null">
+		 and claimerId = #{claimerId}
+	  </if>
+	  <if test="claimerId == null">
+	  	and claimerId is null
+	  </if>
+	  <if test="opflag == 0">
+	  	and callingTime is not null
+	  </if>
+	  <if test="opflag == 1">
+	  	and callingTime is null
+	  </if>
+  </select>
+  <update id="updateTaskClaimer" parameterType="Map">
+	 
+	   update t_calling_task
+		    <set>
+		  	<if test="claimerId !=null">
+		  	 claimerId = #{claimerId,jdbcType=VARCHAR},
+		  	</if>
+		  	<if test="claimerId ==null">
+		  	 claimerId = null,
+		  	</if>
+		   
+		    <if test="claimerName !=null">
+		    claimerName = #{claimerName,jdbcType=VARCHAR},
+		   	</if>
+		   	 <if test="claimerName ==null">
+		    claimerName = null,
+		   	</if>
+		   
+		    <if test="claimTime !=null">
+		    claimTime = #{claimTime,jdbcType=TIMESTAMP},
+		    	</if>
+		    <if test="claimTime ==null">
+		    claimTime = null,
+		    	</if>
+		   
+		    <if test="callingTime !=null">
+		    callingTime = #{callingTime, jdbcType= TIMESTAMP}
+		    	</if>
+		     <if test="callingTime ==null">
+		    callingTime = null
+		    	</if>
+		     </set>
+		  where taskNo = #{taskNo,jdbcType=VARCHAR}
+		  
+		  and claimerId is null
+		  and claimerName is null
+		  and claimTime is null
+		  and callingTime is null
+	 
+  </update>
+  <update id="updateGenerateTime" parameterType="Map" >
+    update t_calling_task
+    set callingTime = #{callingTime,jdbcType=TIMESTAMP},
+    	dealInfo = 	#{dealInfo,jdbcType=VARCHAR}
+      
+    where taskNo = #{taskNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateTcallingTask1" parameterType="Map" >
+    update t_calling_task
+    set callingTime = #{callingTime,jdbcType=TIMESTAMP},
+    	dealInfo = 	#{dealInfo,jdbcType=VARCHAR}
+    where taskNo = #{taskNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateTcallingTask2" parameterType="Map" >
+    update t_calling_task
+    set claimerId = #{claimerId,jdbcType=TIMESTAMP},
+    	claimerName = #{claimerName,jdbcType=VARCHAR},
+    	claimTime = #{claimTime,jdbcType=VARCHAR},
+    	callingTime = #{callingTime,jdbcType=VARCHAR},
+    	dealInfo = 	#{dealInfo,jdbcType=VARCHAR}
+    where taskNo = #{taskNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

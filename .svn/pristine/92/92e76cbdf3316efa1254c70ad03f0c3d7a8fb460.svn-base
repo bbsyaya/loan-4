@@ -1,0 +1,103 @@
+/**
+ * 
+ */
+package com.hrbb.loan.pos.entity.event.impl;
+
+import java.util.Date;
+import java.util.Map;
+
+import com.google.common.base.Objects;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosContractManagementBiz;
+import com.hrbb.loan.pos.dao.TMessageDao;
+import com.hrbb.loan.pos.dao.entity.TContractManagement;
+import com.hrbb.loan.pos.dao.entity.TMessage;
+import com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+import com.hrbb.loan.pos.entity.SpringBeans;
+import com.hrbb.loan.pos.entity.event.EventException;
+import com.hrbb.loan.pos.entity.event.ListenerEventAction;
+import com.hrbb.loan.pos.service.LoanPosCreditApplyService;
+import com.hrbb.loan.pos.service.ReceiptInfoService;
+import com.hrbb.loan.pos.util.DateUtil;
+
+/**
+ * <p>Title: RepayNotifyMessage.java </p>
+ * <p>Description:  </p>
+ * <p>Copyright: Copyright (C) 2015 Hrbb Ltd. Co.</p> 
+ *     
+ * @author linzhaolin@hrbb.com.cn
+ * @version 
+ * @date 2015年8月5日
+ *
+ * logs: 1. 
+ */
+public class RepayNotifyMessage implements ListenerEventAction {
+	
+	private TPaybackApplyInfo repayApply;
+	
+	public RepayNotifyMessage(TPaybackApplyInfo apply){
+		this.repayApply = apply;
+	}
+
+	private TPaybackApplyInfo getRepayApply() {
+		return repayApply;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.hrbb.loan.pos.entity.event.ListenerEventAction#execute()
+	 */
+	@Override
+	public void execute() throws EventException {
+		/*获取Sprig Bean*/
+		LoanPosCreditApplyService loanPosCreditApplyService = (LoanPosCreditApplyService)SpringBeans.getBean("loanPosCreditApplyService");
+		
+		LoanPosContractManagementBiz loanPosContractManagementBiz = (LoanPosContractManagementBiz)SpringBeans.getBean("loanPosContractManagementBiz");
+		TContractManagement contract = loanPosContractManagementBiz.getContractByContNo(getRepayApply().getContNo());
+		
+		ReceiptInfoService receiptInfoService = (ReceiptInfoService)SpringBeans.getBean("receiptInfoService");
+		TReceiptInfo receipt = receiptInfoService.selectReceiptByPrimary(getRepayApply().getReceiptId());
+		
+		/*组装报文*/
+		String dateFormat = (contract!=null && contract.getChannel().equals("UM"))?DateUtil.HRRB_SHORT_DATETIME_FORMAT:DateUtil.HRRB_SHORT_DATETIME_FORMAT_BRIEF;
+		String sPaybackMethod = contract.getPaybackMethod();
+		if(contract!=null && contract.getChannel().equals("UM")){
+			if(sPaybackMethod.equals("90")) sPaybackMethod = "01";
+		}
+		
+		MessageCab message7 = MessageCab.newMessage(MessageCab.消息推送_还款结果通知);
+		message7.addAttribute("listid", receipt.getPayApplyId());
+		message7.addAttribute("repaylistid", getRepayApply().getPaybackApplyId());
+		message7.addAttribute("retukind", sPaybackMethod);
+		message7.addAttribute("retukind2", contract.getRepayMethod());
+		message7.addAttribute("bacnkaccno", receipt.getPayAccount());
+		message7.addAttribute("repaydate", getRepayApply().getExpectPaybackDate(), dateFormat);
+		message7.addAttribute("repaytotalamt", getRepayApply().getPaybackTotalAmount());
+		message7.addAttribute("repayprincipal", getRepayApply().getPaybackAmount());
+		message7.addAttribute("repayint", getRepayApply().getPaybackInterest());
+		
+		TMessage message = new TMessage();
+        message.setChannel(contract.getChannel());
+        message.setInChannelKind(contract.getInChannelKind());
+        message.setLoanId(contract.getLoanId());
+        message.setCustId(contract.getCustId());
+        message.setListId(receipt.getPayApplyId());
+        message.setContNo(getRepayApply().getContNo());
+        message.setCreateTime(new Date());
+        message.setMessageType(message7.getType());
+        message.setMessageInfo(message7.toMessageString());
+        
+        //申请信息
+        Map<String, Object> loanMap = loanPosCreditApplyService.getOneCreditApply(Objects.firstNonNull(contract.getLoanId(), ""));
+        if(loanMap != null){
+            message.setStdshNo((String)loanMap.get("stdshno"));
+            message.setStdMerNo((String)loanMap.get("stdmerno"));
+        }else{
+            message.setStdshNo("");
+            message.setStdMerNo("");
+        }
+        
+        TMessageDao tMessageDao = (TMessageDao)SpringBeans.getBean("tMessageDao");
+        tMessageDao.insert(message);
+	}
+
+}

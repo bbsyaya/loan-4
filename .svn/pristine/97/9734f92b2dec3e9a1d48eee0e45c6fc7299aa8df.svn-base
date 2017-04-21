@@ -1,0 +1,146 @@
+package com.hrbb.loan.pos.biz.backstage.inter;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+
+/**
+ * 
+ * @author cjq
+ * @version $Id: LoanPosPaybackApplyBiz.java, v 0.1 2015年9月6日 上午10:45:12 cjq Exp $
+ */
+public interface LoanPosPaybackApplyBiz {
+    
+    List<TPaybackApplyInfo> queryPaybackApplyInfo(Map<String, Object> reqMap);
+
+    int updatePaybackApply(Map<String, Object> updateMap);
+
+    List<Map<String, Object>> queryPaybackDetailsByMaps(Map<String, Object> map);
+
+    List<Map<String, Object>> queryPaybackDetailsBySlApp(Map<String, Object> map);
+
+    /**
+     * 校验还款申请合法性
+     * 
+     * @param receipt
+     * @param expectPaybackDate
+     * @param paybackPrincipal
+     * @param paybackInterest
+     * @param paybackTotalAmount
+     * @param limitCalcDate   是否限定还款日期不能小于当前日期
+     * @return
+     */
+    Map<String, Object> validatePaybackApply(TReceiptInfo receipt, Date expectPaybackDate,
+                                                    BigDecimal paybackPrincipal,
+                                                    BigDecimal paybackInterest,
+                                                    BigDecimal paybackTotalAmount,
+                                                    boolean limitCalcDate);
+
+    Map<String, Object> validatePaybackApply(TReceiptInfo receipt, Date expectPaybackDate,
+                                                    BigDecimal paybackPrincipal,
+                                                    BigDecimal paybackInterest,
+                                                    BigDecimal paybackTotalAmount);
+
+    /**
+     * 创建用款申请
+     * 
+     * @param receipt
+     * @param paybackDate
+     * @param prcpType
+     * @param principal
+     * @param interest
+     * @param totalAmt
+     * @param userName
+     * @return
+     */
+    String createPaybackApply(TReceiptInfo receipt, Date paybackDate, String prcpType,
+                                     BigDecimal principal, BigDecimal interest,
+                                     BigDecimal totalAmt, String userName, String stdrpno);
+    
+    /**
+     * 创建用款申请
+     * 
+     * @param receipt
+     * @param paybackDate
+     * @param prcpType
+     * @param principal
+     * @param interest
+     * @param totalAmt
+     * @param userName
+     * @param stdrpno
+     * @param penalty
+     * @param term
+     * @return
+     */
+    String createPaybackApply(TReceiptInfo receipt,String term, Date paybackDate, String prcpType,
+                                     BigDecimal principal, BigDecimal interest,BigDecimal penalty,
+                                     BigDecimal totalAmt, String userName, String stdrpno);
+    
+    /**
+     * 创建还款申请,repayMethod添加
+     * 
+     * @param receipt
+     * @param paybackDate
+     * @param prcpType
+     * @param principal
+     * @param interest
+     * @param totalAmt
+     * @param userName
+     * @param stdrpno
+     * @param repayMethod
+     * @return
+     */
+    String createPaybackApply(TReceiptInfo receipt, Date paybackDate, String prcpType,
+                                BigDecimal principal, BigDecimal interest, BigDecimal totalAmt,
+                                String userName, String stdrpno, String repayMethod);
+
+    /**
+     * 计算总数
+     * 
+     * @param reqMap
+     * @return
+     */
+    long countNumber(Map<String, Object> reqMap);
+    
+    /**
+     * 主键查询
+     * 
+     * @param paybackApplyId
+     * @return
+     */
+    TPaybackApplyInfo queryPaybackApplyInfoById(String paybackApplyId);
+
+    /**
+     * 偿还方式为主动时，查询已作废记录
+     * 
+     * @return
+     */
+    List<TPaybackApplyInfo> queryPaybackApplyInfo01();
+    
+    /**
+     * 代扣方式下，查询待处理还款申请列表
+     * 
+     * @return
+     */
+    List<String> queryPaybackApplyIdList02();
+    
+    /**
+     * 偿还方式为代扣时，作废更新处理
+     * 
+     */
+    int updatePaybackApplyInfo(String paybackApplyId);
+    
+    /**
+     * 通过借据号和期数查询最近的还款申请
+     * 
+     * @param receiptId
+     * @param term
+     * @return
+     */
+    TPaybackApplyInfo queryPaybackApply(String receiptId,String term);
+    
+}

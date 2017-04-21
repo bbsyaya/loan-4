@@ -1,0 +1,132 @@
+/**
+ * 
+ */
+package com.hrbb.loan.pos.biz.bean;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import com.hrbb.loan.acct.facade.common.constants.AcctRetConstants;
+import com.hrbb.loan.acct.facade2.MadeLoanProcessQuerySimpleFacade;
+import com.hrbb.loan.acct.facade2.bean.RepayCalmQueryReq;
+import com.hrbb.loan.acct.facade2.bean.RepayCalmQueryRes;
+import com.hrbb.loan.acct.facade2.bean.RepayClamQuerySubBean;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+import com.hrbb.loan.pos.dao.entity.TRepaymentPlan;
+import com.hrbb.loan.pos.dao.entity.TransactionLog;
+import com.hrbb.loan.pos.entity.SpringBeans;
+import com.hrbb.loan.pos.service.IGenericConfigService;
+import com.hrbb.loan.pos.service.LoanPosPaybackService;
+import com.hrbb.loan.pos.service.TRepaymentPlanService;
+import com.hrbb.sh.framework.HServiceException;
+
+/**
+ * <p>Title: RepaymentPlanQuery.java </p>
+ * <p>Description: 查询借据的还款计划 </p>
+ * <p>Copyright: Copyright (C) 2015 Hrbb Ltd. Co.</p> 
+ *     
+ * @author linzhaolin@hrbb.com.cn
+ * @version 
+ * @date 2015年7月29日
+ *
+ * logs: 1. 
+ */
+public class RepaymentPlanQuery extends AbsInternalService {
+	
+	private String receiptId;
+	
+	/*日志记录对象*/
+	private TransactionLog txlog ;
+	
+	private IGenericConfigService genericConfigService;
+	
+	private LoanPosPaybackService loanPosPaybackService = null;
+	
+	private TRepaymentPlanService repaymentPlanService = null;
+	
+	public String getReceiptId() {
+		return receiptId;
+	}
+	
+	public RepaymentPlanQuery(String receiptId){
+		this.receiptId = receiptId;
+	}
+	
+	@Override
+	public boolean initService() throws HServiceException {
+		/*日志对象*/
+		txlog = new TransactionLog(getReceiptId());
+		/*日志记录对象*/
+		genericConfigService = (IGenericConfigService)SpringBeans.getBean("genericConfigService");
+		
+		repaymentPlanService = (TRepaymentPlanService)SpringBeans.getBean("repaymentPlanService");
+		/*2. 获取借据信息*/
+		loanPosPaybackService = (LoanPosPaybackService)SpringBeans.getBean("loanPosPaybackService");
+
+		return true;
+	}
+
+	@Override
+	public boolean processService() throws HServiceException {
+		TReceiptInfo receipt = loanPosPaybackService.getReceiptInfoByReceiptId(getReceiptId());
+		if(receipt == null){
+			logger.error("借据["+getReceiptId() + "]不存在.");
+			return false;
+		}
+		
+		RepayCalmQueryReq request = new RepayCalmQueryReq();
+		try{
+			MadeLoanProcessQuerySimpleFacade madeLoanProcessQuerySimpleFacade = (MadeLoanProcessQuerySimpleFacade)SpringBeans.getBean("madeLoanProcessQuerySimpleFacade");
+			
+			request.setLoanAcNo(receipt.getLoanAcNo());
+			request.setrSumAmt("0");
+			RepayCalmQueryRes response = madeLoanProcessQuerySimpleFacade.doRepayCalm(request);
+			if(response!=null && response.getRespCode().equals(AcctRetConstants.SUCCESS.getValue())){
+				List<RepayClamQuerySubBean> records = response.getRepayList();
+				try{
+					for(RepayClamQuerySubBean plan:records){
+	//					应还本金 应还利息  应还罚息  应还款日期  当前期次 宽限期  减免利息
+						TRepaymentPlan rp = new TRepaymentPlan();
+						rp.setReceiptid(getReceiptId());
+						rp.setPeriod(plan.getSterm());
+						rp.setScheddate(plan.getsRepayDate());
+						rp.setSchedprincipal(plan.getsCapi()==null?BigDecimal.ZERO:new BigDecimal(plan.getsCapi()));
+						rp.setSchedinterest(plan.getsInte()==null?BigDecimal.ZERO:new BigDecimal(plan.getsInte()));
+						rp.setSchedtotalamt(rp.getSchedprincipal().add(rp.getSchedinterest()));
+						rp.setUnpaidinterest(plan.getrFine()==null?BigDecimal.ZERO:new BigDecimal(plan.getrFine()));
+						rp.setOwePrincipal(rp.getSchedprincipal());		//初始化时与计划金额一致
+						rp.setOweInterest(rp.getSchedinterest());		//初始化时与计划金额一致
+						repaymentPlanService.insertSelective(rp);
+					}
+				}catch(Exception e){
+					logger.error("生成还款计划失败",e);
+				}
+			}else{
+				logger.error("获取借据["+this.getReceiptId()+"]的还款计划失败!");
+				return false;
+			}
+		
+			return true;
+		}catch(Exception e){
+			logger.warn("借据["+getReceiptId()+"]用款申请失败!",e);
+			
+			/*日志记录对象*/
+			txlog.setTransObject(request, e.getMessage());
+			txlog.setStatus(TransactionLog.核心交易状态_失败);
+		}finally{
+			/*记录交易日志*/
+			txlog.setRspTime();
+	        genericConfigService.insertTransactionLog(txlog);
+		}
+		
+		return false;
+	}
+
+	@Override
+	public boolean processService(String fileName, byte[] bytes)
+			throws HServiceException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+}

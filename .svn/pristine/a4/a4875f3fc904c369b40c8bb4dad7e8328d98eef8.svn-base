@@ -1,0 +1,245 @@
+package com.hrbb.loan.quartz;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.constants.PaymentApplyConstants;
+import com.hrbb.loan.pos.biz.backstage.inter.CautionConfigBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.IMadeLoanAcctBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.IPaymentApplyBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.IReceiptManageBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosContractManagementBiz;
+import com.hrbb.loan.pos.dao.TMessageDao;
+import com.hrbb.loan.pos.dao.TPaymentApplyDao;
+import com.hrbb.loan.pos.dao.entity.TContractManagement;
+import com.hrbb.loan.pos.dao.entity.TMessage;
+import com.hrbb.loan.pos.dao.entity.TPaymentApplyApproval;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+import com.hrbb.loan.pos.service.bean.IssueResultMessage;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.IdUtil;
+import com.hrbb.sh.framework.HServiceException;
+
+@Service("paymentAutoTask")
+public class PaymentAutoTask {
+	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	private final List<String> channelList = Lists.newArrayList();
+	
+	@Autowired
+	private TPaymentApplyDao paymentDao;
+	
+	@Autowired
+	private CautionConfigBiz cautionConfigBiz;
+	
+	@Autowired
+	private IPaymentApplyBiz paymentApplyBiz;
+	
+	@Autowired
+	private IMadeLoanAcctBiz madeLoanAcctBiz;
+	
+	@Autowired
+	private TMessageDao tMessageDao;
+	
+	@Autowired
+	 LoanPosContractManagementBiz loanPosContractManagementBiz;
+	
+	@Autowired
+    IReceiptManageBiz receiprManageBiz;
+	
+	@PostConstruct
+	public void init(){
+		channelList.add("SM");
+	}
+	
+	
+	public void execute(){
+		List<Map<String, Object>> list = paymentDao.selectPaymentAuto(channelList);
+		for(Map<String, Object> reqMap : list){
+			try{
+				paymentExecute(reqMap);
+				
+			}catch(Exception e){
+				logger.error(reqMap.get("payApplyId") + "自动放款发生异常", e);
+			}
+		}
+	}
+	
+	private void paymentExecute(Map<String, Object> reqMap)
+			throws HServiceException {
+		//校验保证金
+				String payApplyId = (String)reqMap.get("payApplyId");
+				Date expectDateStr = (Date)reqMap.get("expectedDate");
+				String channel = (String)reqMap.get("channel");
+				String contNo = (String)reqMap.get("contNo");
+				String inChannelKind = (String)reqMap.get("inChannelKind");
+				String payApplyTerm = (String)reqMap.get("payApplyTerm");
+				if (!cautionConfigBiz.checkCautionMoney(reqMap)){
+					logger.error("保证金余额不足");
+					return;
+				}
+				
+				
+				//如果保证金充足则修改用款状态为自动通过
+				Map<String, Object> payUpMap = Maps.newHashMap();
+				payUpMap.put("status", "91");
+				payUpMap.put("payApplyId", payApplyId);
+				paymentApplyBiz.updatePaymentApply(payUpMap);
+				logger.debug("用款申请自动通过成功....");
+		
+		TPaymentApplyApproval tp = new TPaymentApplyApproval();
+         tp.setPayApplyId(payApplyId);
+         tp.setPaymentStatusBefore("00");
+         tp.setApprovalName("system");
+         tp.setApprovalStartTime(expectDateStr);
+         tp.setApprBeginDate(expectDateStr);
+         tp.setApprovalContent("通过");
+         tp.setApprovalStatus(0);
+         try {
+			tp.setApprEndDate(DateUtil.getDatePattern3(DateUtil.getRelativeDate(expectDateStr, 0, Integer.valueOf(payApplyTerm), 0)));
+		} catch (NumberFormatException e) {
+			logger.error("日期格式转换发生异常", e);
+			throw new HServiceException("FFFF");
+		} catch (Exception e) {
+			logger.error("日期格式转换发生异常", e);
+			throw new HServiceException("FFFF");
+		}
+         tp.setApprovalEndTime(expectDateStr);
+         tp.setGraceDays(3);
+         tp.setScheduleTimes(Integer.valueOf(Integer.valueOf(payApplyTerm.replace("月", ""))));
+		logger.debug("插入批复表成功");
+		//生成借据
+		TReceiptInfo receiptInfo = generateReceipt(reqMap, tp);
+		if(receiptInfo == null){
+			logger.error("生成借据失败");
+		}
+		logger.debug("生成借据成功。。。");
+		
+		
+		//调用核算放款
+
+
+          
+                   Map<String,Object> map = madeLoanAcctBiz.sendMadeLoanCommend(receiptInfo);		//放款针对借据
+                   logger.debug("调核算放款结果为:" + map);
+                    //Map<String, Object> map = Maps.newHashMap();
+                   // map.put("resCode", "000000");
+                    if(map.get("resCode").equals("000000")){
+                    	logger.debug("调用核算成功。。。");
+                    	logger.debug("插入放款成功消息开始");
+                    	TMessage message = new TMessage();
+                    	message.setMessageType("5");
+                    	message.setListId(payApplyId);
+                    	message.setContNo(contNo);
+                    	message.setChannel(channel);
+                    	message.setInChannelKind(inChannelKind);
+                    	IssueResultMessage info = new IssueResultMessage();
+                    	info.setListId(payApplyId);
+                    	info.setIssueResult("0");
+                    	message.setMessageInfo(info.toString());
+                    	tMessageDao.insert(message);
+                    	logger.debug("插入放款成功消息结束");
+
+                    }else{
+                    	logger.debug("调用核算失败。。。");
+
+                    }
+	}
+	
+	
+
+
+	
+	private TReceiptInfo generateReceipt(Map<String,Object> paymentApplyMap, TPaymentApplyApproval tp) {
+        //查询协议信息
+        TContractManagement contract = loanPosContractManagementBiz.getContractByContNo((String)paymentApplyMap.get("contNo"));
+        if(null != contract){
+            //借据对象
+            TReceiptInfo receipt = new TReceiptInfo();
+            //借据编号
+            receipt.setReceiptId(IdUtil.getReceiptId());
+            //用款编号
+            receipt.setPayApplyId((String)paymentApplyMap.get("payApplyId"));
+            //协议编号
+            receipt.setContNo((String)paymentApplyMap.get("contNo"));
+            //客户编号
+            receipt.setCustId(contract.getCustId());
+            //商户编号
+            receipt.setPosCustId(contract.getPosCustId());
+            //客户名称
+            receipt.setCustName(contract.getCustName());
+            //商户名称
+            receipt.setPosCustName(contract.getPosCustName());
+            //用款金额
+            receipt.setPayApplyAmt(new BigDecimal ((String)paymentApplyMap.get(PaymentApplyConstants.payApplyAmt)));
+            //用款期限
+            receipt.setPayApplyTerm((String)paymentApplyMap.get(PaymentApplyConstants.payApplyTerm));
+            //起息日
+            receipt.setBeginDate(tp.getApprBeginDate());
+//            //结算日
+//            if(!StringUtil.isEmpty(expectedDate)){
+//                Date endDate;
+//                try {
+//                    endDate = DateUtil.getDatePattern3(expectedEndDate);
+            receipt.setEndDate(tp.getApprEndDate());
+//                } catch (Exception e) {
+//                    logger.error("日期格式转换异常 ", e);
+//                }
+//            }
+            //用款利率
+            receipt.setLoanInterest(new BigDecimal((String)paymentApplyMap.get(PaymentApplyConstants.payApplyInterest)));
+            //还款方式
+            receipt.setPaybackWay(contract.getPaybackMethod());
+            //贷款偿还方式
+            receipt.setLoanPaybackWay(contract.getRepayMethod());
+            //贷款用途
+            receipt.setLoanUsage("");
+            //还款账号
+            receipt.setPayAccount((String)paymentApplyMap.get(PaymentApplyConstants.accNo));
+            //开户账号
+            receipt.setAccountOpenBank((String)paymentApplyMap.get("bankName"));
+            //分行
+            receipt.setAccountBranchBank(contract.getAccountBranchBank());
+            //支行
+            receipt.setAccountSubBranchBank(contract.getAccountSubBranchBank());
+            //支付渠道
+            receipt.setPayChannel((String)paymentApplyMap.get("payChannel"));
+            //放款执行状态
+            receipt.setLoanExecuteStatus(TReceiptInfo.用款执行状态_待发送指令);
+            //add 罚息利率和宽限天数 by Lin,Zhaolin
+            receipt.setFineRate(new BigDecimal((String)paymentApplyMap.get(PaymentApplyConstants.payApplyInterest)).multiply(new BigDecimal("1.5")));		//罚息利率1.5倍
+            receipt.setGraceDays(tp.getGraceDays());
+            receipt.setScheduleTimes(tp.getScheduleTimes());
+            
+//            //**************app测试用************
+//            logger.info("业务渠道为" + contract.getChannel());
+//            if("ZZ".equals(contract.getChannel())){
+//                receipt.setLoanTotalBalance(new BigDecimal(payApplyAmt));
+//            }
+            //*********************************
+            
+            //借据入库，初始放款执行状态00--待发送指令
+            int num = receiprManageBiz.generateReceiptInfo(receipt);
+            if(num>0){
+                logger.debug("借据["+receipt.getReceiptId()+"]生成成功");
+                return receipt;
+            }else{
+                logger.error("借据["+receipt.getReceiptId()+"]生成异常");
+                return null;    
+            }     
+        }
+        return null;
+    }
+}

@@ -1,0 +1,23 @@
+package com.hrbb.loan.pos.dao.entity;
+
+public class TReviewNoteKey {
+    private String loanid;
+
+    private Integer reviewid;
+
+    public String getloanid() {
+        return loanid;
+    }
+
+    public void setloanid(String loanid) {
+        this.loanid = loanid == null ? null : loanid.trim();
+    }
+
+    public Integer getReviewid() {
+        return reviewid;
+    }
+
+    public void setReviewid(Integer reviewid) {
+        this.reviewid = reviewid;
+    }
+}

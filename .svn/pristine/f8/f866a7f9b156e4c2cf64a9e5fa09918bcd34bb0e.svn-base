@@ -1,0 +1,85 @@
+package com.hrbb.loan.pos.dao.entity;
+
+import java.util.Date;
+
+public class TBizOperationRecord {
+    private Integer id;
+
+    private String bizPhase;
+
+    private String bizNo;
+
+    private String operationType;
+
+    private String operationContent;
+
+    private String operationId;
+
+    private Date operationTime;
+
+    private String remarks;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getBizPhase() {
+        return bizPhase;
+    }
+
+    public void setBizPhase(String bizPhase) {
+        this.bizPhase = bizPhase == null ? null : bizPhase.trim();
+    }
+
+    public String getBizNo() {
+        return bizNo;
+    }
+
+    public void setBizNo(String bizNo) {
+        this.bizNo = bizNo == null ? null : bizNo.trim();
+    }
+
+    public String getOperationType() {
+        return operationType;
+    }
+
+    public void setOperationType(String operationType) {
+        this.operationType = operationType == null ? null : operationType.trim();
+    }
+
+    public String getOperationContent() {
+        return operationContent;
+    }
+
+    public void setOperationContent(String operationContent) {
+        this.operationContent = operationContent == null ? null : operationContent.trim();
+    }
+
+    public String getOperationId() {
+        return operationId;
+    }
+
+    public void setOperationId(String operationId) {
+        this.operationId = operationId == null ? null : operationId.trim();
+    }
+
+    public Date getOperationTime() {
+        return operationTime;
+    }
+
+    public void setOperationTime(Date operationTime) {
+        this.operationTime = operationTime;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks == null ? null : remarks.trim();
+    }
+}

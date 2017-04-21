@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TPosCustInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TPosCustInfo" >
+    <id column="posCustId" property="posCustId" jdbcType="VARCHAR" />
+    <result column="stdmerno" property="stdmerno" jdbcType="VARCHAR" />
+    <result column="custId" property="custId" jdbcType="VARCHAR" />
+    <result column="posCustName" property="posCustName" jdbcType="VARCHAR" />
+    <result column="busiDivision" property="busiDivision" jdbcType="VARCHAR" />
+    <result column="operName" property="operName" jdbcType="VARCHAR" />
+    <result column="operDate" property="operDate" jdbcType="DATE" />
+    <result column="posCustBusiScope" property="posCustBusiScope" jdbcType="VARCHAR" />
+    <result column="posCustAddress" property="posCustAddress" jdbcType="VARCHAR" />
+    <result column="operAddrCode" property="operAddrCode" jdbcType="VARCHAR" />
+    <result column="industryTypeId" property="industryTypeId" jdbcType="VARCHAR" />
+    <result column="industryTypeId2" property="industryTypeId2" jdbcType="VARCHAR" />
+    <result column="regiCode" property="regiCode" jdbcType="VARCHAR" />
+    <result column="regCapital" property="regCapital" jdbcType="DECIMAL" />
+    <result column="registDate" property="registDate" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    posCustId, stdmerno, custId, posCustName, busiDivision, operName, operDate,posCustBusiScope,posCustAddress,
+    operAddrCode,industryTypeId,industryTypeId2,regiCode,regCapital,registDate,legalPersonName
+  </sql>
+  <sql id="Base_Column_List2" >
+    posCustId, custId, posCustName, busiDivision, operName, operDate,posCustBusiScope
+,posCustAddress
+,operAddrCode
+,industryTypeId
+,industryTypeId2   
+,regiCode,
+regCapital,
+registDate,
+legalPersonName  
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_poscust_info
+    where posCustId = #{posCustId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectMap" resultType="map" parameterType="map" >
+    select 
+    <include refid="Base_Column_List2" />
+    from t_poscust_info t1 
+    where 1=1
+    <if test="posCustName != null">
+    	AND t1.posCustName = #{posCustName}
+    </if>
+    <if test="custId != null">
+    	AND t1.custId =  #{custId}
+    </if>
+    <if test="posCustId != null">
+    	AND t1.posCustId =  #{posCustId}
+    </if>
+    <if test="startPage != null">
+    	LIMIT #{startPage}, #{limit} 
+    </if>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_poscust_info
+    where posCustId = #{posCustId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TPosCustInfo" >
+    insert into t_poscust_info (posCustId, stdmerno, custId, posCustName, 
+      busiDivision,  operName, 
+      operDate)
+    values (#{posCustId,jdbcType=VARCHAR}, #{stdmerno,jdbcType=VARCHAR}, #{custId,jdbcType=VARCHAR}, #{posCustName,jdbcType=VARCHAR}, 
+      #{busiDivision,jdbcType=VARCHAR},  #{operName,jdbcType=VARCHAR}, 
+      #{operDate,jdbcType=DATE}, #{posCustBusiScope,jdbcType=VARCHAR}, #{posCustAddress,jdbcType=VARCHAR},)
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TPosCustInfo" >
+    insert into t_poscust_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="stdmerno != null" >
+        stdmerno,
+      </if>
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="posCustName != null" >
+        posCustName,
+      </if>
+      <if test="busiDivision != null" >
+        busiDivision,
+      </if>
+      <if test="operName != null" >
+        operName,
+      </if>
+      <if test="operDate != null" >
+        operDate,
+      </if>
+      <if test="posCustBusiScope != null" >
+        posCustBusiScope,
+      </if>
+      <if test="posCustAddress != null" >
+        posCustAddress,
+      </if>
+      <if test="operAddrCode != null">
+      	operAddrCode,
+      </if>
+      <if test="industryTypeId != null">
+      	industryTypeId,
+      </if>
+      <if test="industryTypeId2 != null">
+      	industryTypeId2,
+      </if>
+      <if test="regiCode != null">
+      	regiCode,
+      </if>
+      <if test="regCapital != null">
+      	regCapital,
+      </if>
+      <if test="registDate != null">
+      	registDate,
+      </if>
+      <if test="isPosInstall != null">
+      	isPosInstall,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="stdmerno != null" >
+        #{stdmerno,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustName != null" >
+        #{posCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="busiDivision != null" >
+        #{busiDivision,jdbcType=VARCHAR},
+      </if>
+      <if test="operName != null" >
+        #{operName,jdbcType=VARCHAR},
+      </if>
+      <if test="operDate != null" >
+        #{operDate,jdbcType=DATE},
+      </if>
+      <if test="posCustBusiScope != null" >
+        #{posCustBusiScope,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustAddress != null" >
+        #{posCustAddress,jdbcType=DATE},
+      </if>
+      <if test="operAddrCode != null">
+      	#{operAddrCode},
+      </if>
+      <if test="industryTypeId != null">
+      	#{industryTypeId},
+      </if>
+      <if test="industryTypeId2 != null">
+      	#{industryTypeId2},
+      </if>
+      <if test="regiCode != null">
+      	#{regiCode},
+      </if>
+      <if test="regCapital != null">
+      	#{regCapital},
+      </if>
+      <if test="registDate != null">
+      	#{registDate},
+      </if>
+      <if test="isPosInstall != null">
+      	#{isPosInstall},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="map">
+    insert into t_poscust_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="posCustId != null" >
+        posCustId,
+      </if>
+      <if test="custId != null" >
+        custId,
+      </if>
+      <if test="posCustName != null" >
+        posCustName,
+      </if>
+      <if test="busiDivision != null" >
+        busiDivision,
+      </if>
+    
+      <if test="operName != null" >
+        operName,
+      </if>
+      <if test="operDate != null" >
+        operDate,
+      </if>
+      <if test="posCustBusiScope != null">
+      	posCustBusiScope,
+      </if>
+      <if test="posCustAddress != null">
+      	posCustAddress,
+      </if>
+      <if test="operAddrCode != null">
+      	operAddrCode,
+      </if>
+      <if test="industryTypeId != null">
+      	industryTypeId,
+      </if>
+      <if test="industryTypeId2 != null">
+      	industryTypeId2,
+      </if>
+      <if test="regiCode != null">
+      	regiCode,
+      </if>
+      <if test="isPosInstall != null">
+      	isPosInstall,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="posCustId != null" >
+        #{posCustId,jdbcType=VARCHAR},
+      </if>
+      <if test="custId != null" >
+        #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustName != null" >
+        #{posCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="busiDivision != null" >
+        #{busiDivision,jdbcType=VARCHAR},
+      </if>
+     
+      <if test="operName != null" >
+        #{operName,jdbcType=VARCHAR},
+      </if>
+      <if test="operDate != null" >
+        #{operDate,jdbcType=DATE},
+      </if>
+      <if test="posCustBusiScope != null">
+      	#{posCustBusiScope},
+      </if>
+      <if test="posCustAddress != null">
+      	#{posCustAddress},
+      </if>
+      <if test="operAddrCode != null">
+      	#{operAddrCode},
+      </if>
+      <if test="industryTypeId != null">
+      	#{industryTypeId},
+      </if>
+      <if test="industryTypeId2 != null">
+      	#{industryTypeId2},
+      </if>
+      <if test="regiCode != null">
+      	#{regiCode},
+      </if>
+      <if test="isPosInstall != null">
+      	#{isPosInstall},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TPosCustInfo" >
+    update t_poscust_info
+    <set >
+      <if test="custId != null" >
+        custId = #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustName != null" >
+        posCustName = #{posCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="busiDivision != null" >
+        busiDivision = #{busiDivision,jdbcType=VARCHAR},
+      </if>
+
+      <if test="operName != null" >
+        operName = #{operName,jdbcType=VARCHAR},
+      </if>
+      <if test="operDate != null" >
+        operDate = #{operDate,jdbcType=DATE},
+      </if>
+      <if test="posCustBusiScope != null" >
+        posCustBusiScope = #{posCustBusiScope,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustAddress != null" >
+        posCustAddress = #{posCustAddress,jdbcType=VARCHAR},
+      </if>
+
+    </set>
+    where posCustId = #{posCustId,jdbcType=VARCHAR}
+  </update>
+  
+  <update id="updateByPrimaryKeySelectiveMap" parameterType="map" >
+    update t_poscust_info
+    <set >
+      <if test="custId != null" >
+        custId = #{custId,jdbcType=VARCHAR},
+      </if>
+      <if test="posCustName != null" >
+        posCustName = #{posCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="busiDivision != null" >
+        busiDivision = #{busiDivision,jdbcType=VARCHAR},
+      </if>
+
+      <if test="operName != null" >
+        operName = #{operName,jdbcType=VARCHAR},
+      </if>
+      <if test="operDate != null" >
+        operDate = #{operDate,jdbcType=DATE},
+      </if>
+      <if test="posCustBusiScope != null">
+      	posCustBusiScope = #{posCustBusiScope},
+      </if>
+      <if test="posCustAddress != null">
+      	posCustAddress = #{posCustAddress},
+      </if>
+      <if test="operAddrCode != null">
+      	operAddrCode = #{operAddrCode},
+      </if>
+      <if test="industryTypeId != null">
+      	industryTypeId = #{industryTypeId},
+      </if>
+      <if test="industryTypeId2 != null">
+      	industryTypeId2 = #{industryTypeId2},
+      </if>
+      <if test="regiCode != null">
+      	regiCode = #{regiCode},
+      </if>
+      <if test="legalPersonName != null">
+      	legalPersonName = #{legalPersonName},
+      </if>
+      <if test="regCapital != null">
+      	regCapital = #{regCapital},
+      </if>
+      <if test="registDate != null">
+      	registDate = #{registDate},
+      </if>
+    </set>
+    where posCustId = #{posCustId,jdbcType=VARCHAR}
+  </update>
+  
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TPosCustInfo" >
+    update t_poscust_info
+    set custId = #{custId,jdbcType=VARCHAR},
+      posCustName = #{posCustName,jdbcType=VARCHAR},
+      busiDivision = #{busiDivision,jdbcType=VARCHAR},
+      operName = #{operName,jdbcType=VARCHAR},
+      operDate = #{operDate,jdbcType=DATE},
+      posCustBusiScope = #{posCustBusiScope,jdbcType=VARCHAR},
+      posCustAddress = #{posCustAddress,jdbcType=VARCHAR}
+    where posCustId = #{posCustId,jdbcType=VARCHAR}
+  </update>
+</mapper>

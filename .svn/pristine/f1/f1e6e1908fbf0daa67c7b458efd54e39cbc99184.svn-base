@@ -1,0 +1,66 @@
+package com.hrbb.loan.pos.biz.backstage.inter.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.biz.backstage.inter.IReceiptManageBiz;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+import com.hrbb.loan.pos.service.LoanPosPaybackService;
+import com.hrbb.loan.pos.service.ReceiptInfoService;
+
+/**
+ * 
+ * @author jianQing
+ * @version $Id: ReceiptManageBizImpl.java, v 0.1 2015年4月27日 下午6:06:50 jianQing Exp $
+ */
+@Component("receiptManageBiz")
+public class ReceiptManageBizImpl implements IReceiptManageBiz {
+    
+    @Autowired
+    ReceiptInfoService receiptInfoService;
+    
+    @Autowired
+    private LoanPosPaybackService loanPosPaybackService;
+    
+    @Override
+    public int generateReceiptInfo(TReceiptInfo receiptInfo) {
+        return receiptInfoService.insertReceiptInfo(receiptInfo);
+    }
+    
+    @Override
+    public TReceiptInfo selectReceiptByPrimary(String receiptId){
+        return receiptInfoService.selectReceiptByPrimary(receiptId);
+    }    
+    
+    @Override
+    public TReceiptInfo selectReceiptOne(String payApplyId){
+        return receiptInfoService.selectReceiptOne(payApplyId);
+    }
+    
+    @Override
+    public void updateReceiptInfo(Map<String, Object> reqMap) {
+        receiptInfoService.updateReceiptInfo(reqMap);
+    }
+    
+    @Override
+    public String sumLoanTotalBalance(String contNo) {
+        return receiptInfoService.sumLoanTotalBalance(contNo);
+    }
+
+    @Override
+    public List<TReceiptInfo> getReceiptList10() {
+        return receiptInfoService.getReceiptList10();
+    }
+
+	@Override
+	public List<TReceiptInfo> queryReceiptByContNo(String contNo, String loanExtStatus) {
+		Map<String, Object> reqMap = Maps.newHashMap();
+		reqMap.put("contNo", contNo);
+		reqMap.put("loanExecuteStatus", loanExtStatus);
+		return loanPosPaybackService.getReceiptList(reqMap);
+	}
+}

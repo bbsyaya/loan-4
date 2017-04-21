@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TActivityContentInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TActivityContentInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="contentSql" property="contentSql" jdbcType="VARCHAR" />
+    <result column="contentName" property="contentName" jdbcType="VARCHAR" />
+    <result column="actFlag" property="actFlag"/>
+    <result column="contentParamType" property="contentParamType"/>
+    <result column="activityType" property="activityType"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, contentSql, contentName, IF(actFlag='1', '失效', '有效') as actFlag,contentParamType, activityType
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_activity_content_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectSelective" resultMap="BaseResultMap" parameterType="Map">
+  	 select 
+    <include refid="Base_Column_List" />
+    from t_activity_content_info
+    where 1=1
+    <if test="id != null">
+    	AND id = #{id}
+    </if>
+    <if test="actFlag != null">
+    	AND actFlag = #{actFlag}
+    </if>
+    <if test="contentNameLike != null">
+    	AND contentName like #{contentNameLike}
+    </if>
+    <if test="activityType != null">
+    	AND activityType = #{activityType}
+    </if>
+    ORDER BY actFlag
+    <if test="limit != null">
+    	LIMIT #{startPage}, #{limit}
+    </if>
+  </select>
+  
+  <select id="countSelective" resultType="String" parameterType="Map">
+  	select count(*)  from t_activity_content_info
+    where 1=1
+    <if test="id != null">
+    	AND id = #{id}
+    </if>
+    <if test="actFlag != null">
+    	AND actFlag = #{actFlag}
+    </if>
+    <if test="contentNameLike != null">
+    	AND contentName like #{contentNameLike}
+    </if>
+    ORDER BY actFlag
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_activity_content_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TActivityContentInfo" >
+    insert into t_activity_content_info (id, contentSql, contentName
+      )
+    values (#{id,jdbcType=INTEGER}, #{contentSql,jdbcType=VARCHAR}, #{contentName,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TActivityContentInfo" >
+    insert into t_activity_content_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="contentSql != null" >
+        contentSql,
+      </if>
+      <if test="contentName != null" >
+        contentName,
+      </if>
+      <if test="actFlag != null">
+      	actFlag,
+      </if>
+      <if test="contentParamType != null">
+      	contentParamType,
+      </if>
+      <if test="activityType != null">
+      	activityType,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="contentSql != null" >
+        #{contentSql,jdbcType=VARCHAR},
+      </if>
+      <if test="contentName != null" >
+        #{contentName,jdbcType=VARCHAR},
+      </if>
+      <if test="actFlag != null">
+      	#{actFlag},
+      </if>
+      <if test="contentParamType != null">
+      	#{contentParamType},
+      </if>
+      <if test="activityType != null">
+      	#{activityType},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TActivityContentInfo" >
+    update t_activity_content_info
+    <set >
+      <if test="contentSql != null" >
+        contentSql = #{contentSql,jdbcType=VARCHAR},
+      </if>
+      <if test="contentName != null" >
+        contentName = #{contentName,jdbcType=VARCHAR},
+      </if>
+      <if test="actFlag != null">
+      	actFlag = #{actFlag},
+      </if>
+      <if test="contentParamType != null">
+      	contentParamType = #{contentParamType},
+      </if>
+      <if test="activityType != null">
+      	activityType = #{activityType},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TActivityContentInfo" >
+    update t_activity_content_info
+    set contentSql = #{contentSql,jdbcType=VARCHAR},
+      contentName = #{contentName,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,17 @@
+package com.hrbb.loan.pos.factory;
+
+import com.google.common.collect.ImmutableSet;
+
+public class ReturnUrlMapFactory {
+
+	public static final ImmutableSet<String> channelSet = new ImmutableSet.Builder<String>().add("SM")
+			.build();
+	
+	public static boolean isContainChannel(String channel){
+		if(channelSet.contains(channel)){
+			return true;
+		}else{
+			return false;
+		}
+	}
+}

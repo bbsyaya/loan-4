@@ -1,0 +1,87 @@
+package com.hrbb.loan.timer;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang.time.DateFormatUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.dao.TCallingTaskDao;
+import com.hrbb.loan.pos.dao.TReceiptInfoDao;
+import com.hrbb.loan.pos.dao.entity.TCallingTask;
+import com.hrbb.loan.pos.util.IdUtil;
+import com.hrbb.loan.pos.util.constants.ReviewNoteConstants;
+import com.hrbb.sh.framework.HServiceException;
+
+/**
+ * 消费贷 贷后管理 即将到期的贷款到期提醒.
+ * 对于即将到期的贷款，参照2.6贷款偿还。<贷后管理岗>每日在系统中导出下一个工作日贷款到期客户数据，
+ * 如有必要可致电客户催收。到期当日及时查询客户还款情况，对于无法按时还款的客户，
+ * 如发现重大问题，应立即报告风控负责人。应及时追踪偿还问题，并制定催收方案。
+ * 
+ * @author xiongshaogang
+ * @version $Id: ZzSaleAppPaymentTimer.java, v 0.1 2015年5月12日 下午6:09:12 xiongshaogang Exp $
+ */
+@Service("zzSaleAppRiskExpirationReminderTimer")
+public class ZzSaleAppRiskExpirationReminderTimer {
+	
+	private static final Logger logger = LoggerFactory.getLogger(ZzSaleAppRiskExpirationReminderTimer.class);
+	
+	@Autowired
+	private TReceiptInfoDao tReceiptInfoDao;
+	
+	@Autowired
+	private TCallingTaskDao tCallingTaskDao;
+	
+	
+	@Scheduled(cron="0 0 12 * * ?")
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class })
+	public void run() throws HServiceException {
+		logger.info("start ZzSaleAppRiskExpirationReminderTimer...");
+		
+		// 当前日期
+		Calendar calendar = Calendar.getInstance();
+		Map<String, Object> queryMap = Maps.newHashMap();
+		queryMap.put("endDate", DateFormatUtils.format(calendar, "yyyyMMdd"));
+		List<Map<String, Object>> riskExpirationReminderList = tReceiptInfoDao.selectListMapsByTimer(queryMap);
+		if (riskExpirationReminderList == null || riskExpirationReminderList.size() < 1) {
+            logger.info("riskExpirationReminderList 为空，本日不在执行该任务！");
+            return;
+        }
+		
+		// 轮询队列，生成外呼任务
+		for (Map<String, Object> map : riskExpirationReminderList) {
+            if (map.get("loanid") == null) {
+                logger.info("loanid is null，本次执行跳过!");
+                continue;
+            }
+            
+            insertCallingTask("09", (String)map.get("loanid"));
+        }
+        
+		logger.info("end ZzSaleAppRiskExpirationReminderTimer!");
+	}
+	
+	/**
+     * 生成外呼任务
+     * 
+     */
+    private int insertCallingTask(String callingType, String relaBizNo) {
+        TCallingTask ct = new TCallingTask();
+        ct.setTaskNo(IdUtil.getId(ReviewNoteConstants.CALLING_TASK_KEY_PREFIX));
+        ct.setGenerateTime(new Date());
+        ct.setCallingType(callingType);
+        ct.setRelaBizNo(relaBizNo);
+        ct.setRelaBizPhase(ReviewNoteConstants.CALLING_TASK_RELABIZPHASE_APP);
+        return tCallingTaskDao.insertSelective(ct);
+    }
+}

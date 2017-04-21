@@ -1,0 +1,178 @@
+package com.hrbb.loan.spi.TC;
+
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.acct.facade.MadeLoanProcessBizHession;
+import com.hrbb.loan.pos.biz.bean.OTInterestPayableCalc;
+import com.hrbb.loan.pos.dao.TReceiptInfoDao;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+import com.hrbb.loan.pos.service.LoanPosPaybackService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.spiconstants.HServiceReturnCode;
+import com.hrbb.sh.framework.HRequest;
+import com.hrbb.sh.framework.HResponse;
+import com.hrbb.sh.framework.HService;
+import com.hrbb.sh.framework.HServiceException;
+
+@Service("tcPaybackTryCalculate")
+public class TCPaybackTryCalculateImpl implements HService {
+	Logger logger = LoggerFactory.getLogger(TCPaybackTryCalculateImpl.class);
+	@Autowired
+	private LoanPosPaybackService loanPosPaybackService;
+	@Autowired
+    private MadeLoanProcessBizHession service;
+	
+	@Autowired
+	private TReceiptInfoDao tReceiptInfoDao;
+	
+	@Override
+	public HResponse serve(HRequest request) throws HServiceException {
+		logger.debug("executing TCPaybackTryCalculateImpl...");
+		
+		Map<String, Object> properties = request.getProperties();
+
+		Assert.notNull(properties, "doesn't allow empty properties");
+
+		HResponse hResponse = new HResponse();
+
+		if (!properties.containsKey("issueid")) {
+			hResponse.setRespCode(HServiceReturnCode.LISTID_REPAY_ERROR
+					.getReturnCode());
+			hResponse.setRespMessage(HServiceReturnCode.LISTID_REPAY_ERROR
+					.getReturnMessage());
+			hResponse.setRespTime(new Date());
+			return getBlankHResponse(hResponse);
+		}
+		
+		BigDecimal applyAmt = null;
+		String amount = String.valueOf(properties.get("sumamt"));
+		if (!StringUtils.isEmpty(amount)) {
+			try {
+				applyAmt = new BigDecimal(amount);
+			} catch (Exception ex) {
+				logger.warn("还款总金额["+amount+"]格式错误",ex);
+				hResponse.setRespCode(HServiceReturnCode.AMT_REPAY_ERROR.getReturnCode());
+				hResponse.setRespMessage(HServiceReturnCode.AMT_REPAY_ERROR.getReturnMessage());
+				hResponse.setRespTime(new Date());
+				return getBlankHResponse(hResponse);
+			}
+		} else {
+			logger.warn("还款总金额为空");
+			hResponse.setRespCode(HServiceReturnCode.AMT_REPAY_ERROR.getReturnCode());
+			hResponse.setRespMessage(HServiceReturnCode.AMT_REPAY_ERROR.getReturnMessage());
+			return getBlankHResponse(hResponse);
+		}
+		
+		String paymentApplyNo = (String) properties.get("issueid");
+
+		TReceiptInfo receipt = null;
+		if (!StringUtils.isEmpty(paymentApplyNo)) {
+			receipt = tReceiptInfoDao.selectByPayApplyId(paymentApplyNo);
+			/*判断该笔用款的状态*/
+			if(receipt==null){
+				logger.info("["+paymentApplyNo+"]不存在对应的有效用款");
+				hResponse.setRespCode(HServiceReturnCode.FAILURE_REPAY_ERROR.getReturnCode());
+				hResponse.setRespMessage("不存在对应的有效用款");
+				return getBlankHResponse(hResponse);
+			}
+			
+		} else {
+			logger.warn("用款申请编号不能空");
+			hResponse.setRespCode(HServiceReturnCode.FAILURE_REPAY_ERROR.getReturnCode());
+			hResponse.setRespMessage("用款申请编号不能空");
+			return getBlankHResponse(hResponse);
+		}
+		
+		HResponse response = new HResponse();
+		
+//		String amount = (String) properties.get("sumamt");
+		String preType = (String) properties.get("aheakind");
+		String accNo = (String) properties.get("subsaccno");
+		String edt = (String) properties.get("expectretudate");
+		
+		Date applyDate = null;
+		try {
+			applyDate = DateUtil.parse2Date(edt, DateUtil.HRRB_SHORT_DATETIME_FORMAT_BRIEF);	//yyyyMMdd
+		} catch (ParseException ex) {
+			logger.warn("期望还款日期["+edt+"]格式错误",ex);
+			hResponse.setRespCode(HServiceReturnCode.FAILURE_REPAY_ERROR.getReturnCode());
+			hResponse.setRespMessage("期望还款日期格式错误");
+			return getBlankHResponse(hResponse);
+		}
+		
+		/**
+		 * 利息试算
+		 */
+		Map<String,Object> returnResult = Maps.newHashMap();
+		OTInterestPayableCalc calc = new OTInterestPayableCalc(receipt);
+		try{
+			calc.setPaybackAmt(applyAmt.doubleValue());
+		    calc.setRepayDate(applyDate);
+		    calc.setRepayType((preType!=null && preType.equals("3"))?"1":"0");		//0归还指定本金 /1归还指定总额/2归还剩余本金
+			
+		    if(calc.execute()){
+		    	returnResult = calc.getRspResult();
+		    }else{
+		    	hResponse.setRespCode(HServiceReturnCode.FAILURE_REPAY_ERROR.getReturnCode());
+				hResponse.setRespMessage("还款试算失败，请稍后再试。");
+				return getBlankHResponse(hResponse);
+		    }
+		    
+		}catch(Exception e){
+			logger.error("还款试算失败",e);
+	       	
+	       	hResponse.setRespCode(HServiceReturnCode.FAILURE_REPAY_ERROR.getReturnCode());
+			hResponse.setRespMessage("还款试算失败，请稍后再试。");
+			return getBlankHResponse(hResponse);
+	       	
+		}
+		
+		/**
+		 * 校验用款申请合法性
+		 */
+		BigDecimal pbPrincipal = (BigDecimal)returnResult.get("repayPrincipal");
+		BigDecimal pbInterest = (BigDecimal)returnResult.get("repayInterest");
+		BigDecimal pbTotalAmount = (BigDecimal)returnResult.get("repayTotalAmt");
+
+		HashMap<String, Object> map = new HashMap<String, Object>(32);
+		map.put("issueid",paymentApplyNo);
+		map.put("aheakind",preType);
+		map.put("rcapi",pbPrincipal.doubleValue());
+		map.put("rinte",pbInterest.doubleValue());
+		map.put("sumamt",pbTotalAmount.doubleValue());
+		map.put("expectretudate",edt);
+		logger.info("返回给银商的map为"+map);
+		
+		response.setRespCode(HServiceReturnCode.SUCCESS.getReturnCode());
+		response.setRespMessage(HServiceReturnCode.SUCCESS.getReturnMessage());
+		response.setRespTime(new Date());
+		response.setProperties(map);
+		
+		return response;
+		
+	}
+	private HResponse getBlankHResponse(HResponse response){
+		Map<String, Object> map = Maps.newHashMap();
+		map.put("issueid","");
+		map.put("aheakind","");
+		map.put("rcapi","");
+		map.put("rinte","");
+		map.put("sumamt","");
+		map.put("expectretudate","");
+		response.setProperties(map);
+		return response;
+	}
+	
+}

@@ -1,0 +1,130 @@
+package com.hrbb.loan.pos.service.impl;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.dao.TSmsMessageDao;
+import com.hrbb.loan.pos.dao.TSmsMessageHistDao;
+import com.hrbb.loan.pos.dao.entity.TSmsMessage;
+import com.hrbb.loan.pos.service.SendSmsMessageService;
+import com.hrbb.loan.pos.service.constants.SmsTypeContants;
+
+@Service("sendMessageService")
+public class SendMessageServiceImpl implements SendSmsMessageService {
+	
+	private static Logger logger = LoggerFactory.getLogger(SendMessageServiceImpl.class);
+	
+	@Autowired
+	private TSmsMessageDao tSmsMessageDao;
+	
+	@Autowired
+	private TSmsMessageHistDao tSmsMessageHistDao;
+    
+	@Override
+	public void insertSmsMessage(String tempId, String mobile,
+			String sendContent) {
+		Map<String, Object> reqMap = Maps.newHashMap();
+		reqMap.put("tempId", tempId);
+		reqMap.put("mobile", mobile);
+		reqMap.put("sendContent", sendContent);
+		reqMap.put("createTime", new Date());
+		tSmsMessageDao.insertSelectiveMap(reqMap);
+
+	}
+
+	@Override
+	public List<Map<String, Object>> selectAllMessage() {
+		Map<String, Object> reqMap = Maps.newHashMap();
+		reqMap.put("schedSendTime", new Date());
+		return tSmsMessageDao.getSelectiveMap(reqMap);
+	}
+
+	@Override
+	public void insertSmsMessageHist(String tempId, String mobile,
+			String sendContent) {
+		Map<String, Object> reqMap = Maps.newHashMap();
+		reqMap.put("tempId", tempId);
+		reqMap.put("mobile", mobile);
+		reqMap.put("sendContent", sendContent);
+		reqMap.put("sendTime", new Date());
+		tSmsMessageHistDao.insertSelectiveMap(reqMap);
+	}
+
+	@Override
+	public void deleteSmsMessage(Integer id) {
+		tSmsMessageDao.deleteByPrimaryKey(id);
+		
+	}
+
+    public void batchInsertSmsMessage(List<TSmsMessage> messages) {
+        tSmsMessageDao.batchInsert(messages);
+    }
+    
+    @Override
+    public void insertSmsMessage(String tempId, String mobile, String sendContent, String channel,
+                                 String notifyType) {
+    	insertSmsMessage(tempId, mobile, sendContent, channel,notifyType, new Date());
+    }
+
+    @Override
+    public void insertSmsMessage(String tempId, String mobile, String sendContent, String channel,
+                                 String notifyType, Date schedSendTime) {
+        
+        Map<String, Object> reqMap = Maps.newHashMap();
+        reqMap.put("tempId", tempId);
+        reqMap.put("mobile", mobile);
+        reqMap.put("sendContent", sendContent);
+        reqMap.put("createTime", new Date());
+        reqMap.put("channel", channel);
+        reqMap.put("notifyType", notifyType);
+        reqMap.put("schedSendTime", schedSendTime);
+        tSmsMessageDao.insertSelectiveMap(reqMap);
+    }
+
+    @Override
+    public void sendSmsMessage(TSmsMessage msg) {
+    	if(msg.getNotifyType().equals(SmsTypeContants.审核补件)){
+    		logger.debug("补件暂停发送通知短信. channel="+msg.getChannel()+"|mobile="+msg.getMobile());
+    		return;
+    	}
+    	
+    	Date schedSendTime = null;			//计划发送时间
+    	if(msg.getNotifyType()!=null 
+    			&& (msg.getNotifyType().equals(SmsTypeContants.审批通过) 
+    					|| msg.getNotifyType().equals(SmsTypeContants.审批拒绝))){
+    		//审批通过短信计划发送时间在8-20/2期间延后2小时发送,定时规则=(T+2-T%2)+2
+    		int delayHours = 2;
+    		 GregorianCalendar gc = new GregorianCalendar();
+            gc.setTime(new Date());           //设置时间
+            int hour24 = gc.get(Calendar.HOUR_OF_DAY);
+            int schedHour = (hour24 + 2 - hour24%2) + delayHours;
+            
+            if(schedHour>=24) schedHour -= 24;
+            if(schedHour > 20){		//超过8点顺延到次日8点
+           	 	gc.add(Calendar.DATE, 1);
+           	 	gc.set(Calendar.HOUR_OF_DAY, 8);
+            }if(schedHour < 8){
+           	 	gc.set(Calendar.HOUR_OF_DAY, 8);
+            }else{
+           	 	gc.set(Calendar.HOUR_OF_DAY, schedHour);
+            }
+            gc.set(Calendar.MINUTE, 0);
+            gc.set(Calendar.SECOND, 0);
+            gc.set(Calendar.MILLISECOND, 0);
+    	}else{
+    		schedSendTime = new Date();
+    	}
+    	
+        insertSmsMessage(msg.getTempId(), msg.getMobile(), msg.getSendContent(),msg.getChannel(),msg.getNotifyType(), schedSendTime);
+    }
+
+}

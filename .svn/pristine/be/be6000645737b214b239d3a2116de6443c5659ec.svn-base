@@ -1,0 +1,17 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:fram="http://framework.facade.common.transcore.pinganfu.com/">
+	<soapenv:Header />
+	<soapenv:Body>
+		<fram:execPay>
+			<arg0>
+				<paymentMode>262144</paymentMode>
+				<tranDetails>
+					<payAcctId>1000010000026540</payAcctId>
+					<payAmt>1000000</payAmt>
+					<payType>18</payType>
+				</tranDetails>
+				<transId>${transId}</transId>
+			</arg0>
+		</fram:execPay>
+	</soapenv:Body>
+</soapenv:Envelope>

@@ -1,0 +1,9 @@
+package com.hrbb.loan.pos.biz.backstage.inter;
+
+public interface IAsyncLoadPoliceInfoService {
+	
+	public void loadPoliceInfoInTime(String loanId);
+	
+	public void loadPoliceInfo(String loanId);
+
+}

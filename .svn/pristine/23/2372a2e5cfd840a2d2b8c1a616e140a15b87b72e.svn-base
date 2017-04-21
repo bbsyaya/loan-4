@@ -1,0 +1,339 @@
+package com.hrbb.loan.pos.biz.backstage.inter.impl;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Maps;
+import com.hrbb.loan.acct.facade.MadeLoanProcessBizHession;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosPaybackBiz;
+import com.hrbb.loan.pos.biz.bean.HInternalService;
+import com.hrbb.loan.pos.biz.bean.RepaymentExecDo;
+import com.hrbb.loan.pos.biz.bean.RepaymentExecForm;
+import com.hrbb.loan.pos.dao.entity.TCfgChannelAccount;
+import com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+import com.hrbb.loan.pos.entity.SpringBeans;
+import com.hrbb.loan.pos.entity.event.EventException;
+import com.hrbb.loan.pos.entity.event.POSEvent;
+import com.hrbb.loan.pos.entity.event.POSEventsSource;
+import com.hrbb.loan.pos.entity.event.cab.MessageCab;
+import com.hrbb.loan.pos.entity.listener.impl.MsgListener;
+import com.hrbb.loan.pos.service.LoanPosBusinessCodeService;
+import com.hrbb.loan.pos.service.LoanPosContractManagementService;
+import com.hrbb.loan.pos.service.LoanPosPaybacApplykService;
+import com.hrbb.loan.pos.service.LoanPosPaybackRunningRecordService;
+import com.hrbb.loan.pos.service.LoanPosPaybackService;
+import com.hrbb.loan.pos.service.RepaymentApplyService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.pos.util.IdUtil;
+import com.hrbb.loan.pos.util.ListUtil;
+
+@Component("loanPosPaybackBiz")
+public class LoanPosPaybackBizImpl implements LoanPosPaybackBiz {
+	@Autowired
+	private LoanPosPaybackService loanPosPaybackService;
+	
+	@Autowired
+	private LoanPosPaybacApplykService loanPosPaybacApplykService; 
+	
+	@Autowired
+	private RepaymentApplyService repaymentApplyService;
+	
+	@Autowired
+	private LoanPosContractManagementService loanPosContractManagementService;
+	
+	@Autowired
+	private MadeLoanProcessBizHession madeLoanProcessBizHession;
+	
+	@Autowired
+	private LoanPosBusinessCodeService loanPosBusinessCodeService;
+	
+	@Autowired
+	private LoanPosPaybacApplykService loanPosPaybackApplyService;
+	
+	@Autowired
+	private LoanPosPaybackRunningRecordService loanPosPaybackRunningRecordService;
+	
+//	@Value("#{systemInfo[umReturnAcct]}")
+//    private String umReturnAcct;
+	
+	private Logger logger = LoggerFactory.getLogger(LoanPosPaybackBizImpl.class);
+	
+	public Map<String, String> effectiveAcctMap = null;
+	
+	@PostConstruct
+	public void init(){
+		effectiveAcctMap = Maps.newHashMap();
+		List<TCfgChannelAccount> channelAccounts = repaymentApplyService.getEffectAccount();
+		if(ListUtil.isNotEmpty(channelAccounts)){
+			for(TCfgChannelAccount account : channelAccounts){
+				effectiveAcctMap.put(account.getChannel(), account.getAccountIssue());
+			}
+		}
+	}
+
+	@Override
+	public List<TReceiptInfo> queryPaybackInfo(Map<String, Object> reqMap) {
+		List<TReceiptInfo> l =  loanPosPaybackService.getPaybackMap(reqMap);
+		for (TReceiptInfo r : l){
+//			if(r.getBeginDate()!=null){
+//				r.setBeginDateStr(DateUtil.getDateToString3(r.getBeginDate()));
+//			}
+//			if(r.getEndDate()!=null){
+//				r.setEndDateStr(DateUtil.getDateToString3(r.getEndDate()));
+//			}
+			String paybackWay = r.getPaybackWay();
+			if(paybackWay!=null && paybackWay.trim().length()>0){
+				String paybackWayName = loanPosBusinessCodeService.getItemNameByNo("AccrualType", paybackWay);
+				r.setPaybackWayName(paybackWayName);
+			}
+		}
+		return l;
+	}
+	
+	/**
+	 * count,用于分页
+	 * 
+	 * @param reqMap
+	 * @return
+	 */
+	@Override
+	public long countPaybackInfo(Map<String,Object> reqMap){
+	    
+	    return loanPosPaybackService.countPaybackInfo(reqMap);
+	}
+
+		@Override
+		public TReceiptInfo getReceiptInfoByReceiptId(String receiptId) {
+			TReceiptInfo t = loanPosPaybackService.getReceiptInfoByReceiptId(receiptId);
+			return t;
+		}
+
+
+		@Override
+		public String getContNoByReceiptId(String receiptId) {
+			return loanPosPaybackService.getContNoByReceiptId(receiptId);
+		}
+
+
+		@Override
+		public List<TReceiptInfo> getAllReceipts(Map<String, Object> reqMap) {
+			return loanPosPaybackService.getAllReceipts(reqMap);
+		}
+		
+        @Override
+        public int savePaybackApply(TPaybackApplyInfo paybackApplyInfo) {
+            return loanPosPaybackService.savePaybackApply(paybackApplyInfo);
+        }
+        
+		@Override
+		public List<TPaybackApplyInfo> queryPaybackApplyList(
+				Map<String, Object> reqMap) {
+			return loanPosPaybackService.queryPaybackApplyList(reqMap);
+		}
+
+
+		@Override
+		public long countNumber(Map<String, Object> reqMap) {
+			return loanPosPaybackService.countNumber(reqMap);
+		}
+
+		@Override
+		public int updateReceipt(Map<String, Object> receiptMap) {
+			return loanPosPaybackService.updateReceipt(receiptMap);
+		}
+
+		@Override
+		public Map<String,Object> executeRepayment(String paybackApplyId) {
+			return executeRepayment(paybackApplyId, "system");
+		}
+		
+		@Override
+		public Map<String,Object> executeRepayment(String paybackApplyId, String userName) {
+			Map<String,Object> resultVar = Maps.newHashMap();
+			
+			try{
+				/*还款申请信息::需要考虑申请本身是提前/正常/逾期三种情况下，对核算接口的不同调用*/
+				Map<String, Object> reqMap = Maps.newHashMap();
+				reqMap.put("paybackApplyId", paybackApplyId);
+				TPaybackApplyInfo paybackApply = loanPosPaybackApplyService.selectByPrimaryKey(paybackApplyId);
+				if(paybackApply==null){
+					logger.error(paybackApplyId + "没有该还款申请");
+					resultVar.put("respCode", "919");
+					resultVar.put("respMsg", "还款准备失败。Err=没有该还款申请");
+					return resultVar;
+				}
+				
+				/*2. 获取借据信息*/
+				LoanPosPaybackService loanPosPaybackService = (LoanPosPaybackService)SpringBeans.getBean("loanPosPaybackService");
+				TReceiptInfo receipt = loanPosPaybackService.getReceiptInfoByReceiptId(paybackApply.getReceiptId());
+				if(receipt == null){
+					logger.error("还款申请对应的借据["+paybackApply.getReceiptId() + "]不存在.");
+					resultVar.put("respCode", "918");
+					resultVar.put("respMsg", "还款准备失败。Err=没有对应借据信息");
+					return resultVar;
+				}
+				
+				String prepaymentListId ="";
+				if(paybackApply.getPrepaymentId() == null || paybackApply.getPrepaymentId().length()==0){		//已经添加过了还款单据后跳过查询
+					
+					HInternalService reform = new RepaymentExecForm(paybackApply,receipt);
+					if(reform.execute()){
+						Map<String,Object> rspResult = reform.getRspResult();
+						prepaymentListId = (String)rspResult.get("prepaymentListId");
+						
+						/*更新prepaymentId 到还款申请*/
+						Map<String,Object> updateVar = Maps.newHashMap();
+						updateVar.put("prepaymentId", prepaymentListId);
+						updateVar.put("paybackApplyId", paybackApply.getPaybackApplyId());
+						loanPosPaybackApplyService.updatePaybackApply(updateVar);
+						
+					}else{
+						resultVar.put("respCode", "901");
+						resultVar.put("respMsg", "还款表单生成失败!");
+						return resultVar;
+					}
+				}else{
+					prepaymentListId =paybackApply.getPrepaymentId();
+				}
+				
+				/*执行还款*/
+				HInternalService red = new RepaymentExecDo(prepaymentListId,receipt.getLoanAcNo(),receipt.getReceiptId(),paybackApply.getTerm());
+				if(red.execute()){
+					/*还款后续处理*/
+					if(postAndCommitRepayment(paybackApply, receipt, userName)){
+						resultVar.put("respCode", "000");
+						resultVar.put("respMsg", "还款成功!");				
+					}else{
+						resultVar.put("respCode", "909");
+						resultVar.put("respMsg", "还款后续处理提交失败!");
+					}
+				}else{
+					resultVar.put("respCode", "900");
+					resultVar.put("respMsg", "还款执行失败!");
+				}
+				
+			}catch(Exception e){
+				logger.error("还款执行失败!",e);
+				e.printStackTrace();
+				resultVar.put("respCode", "999");
+				resultVar.put("respMsg", e.getMessage());
+			}
+			
+			return resultVar;
+		}
+		
+		
+		/**
+		 * 提交并完成还款的后续处理
+		 * @param paybackApply
+		 * @param receipt
+		 * @param userName
+		 * @return
+		 */
+		@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
+		private boolean postAndCommitRepayment(TPaybackApplyInfo paybackApply, TReceiptInfo receipt, String userName) {
+			/* 还款的后续工作主要包含4个方面；
+			 * 1. 更新本次还款的扣款状态：是否全额扣款etc。
+			 * 2. 更新借据状态：根据还款金额进行匹配更新，并将对应项目进行扣减。后期会增加与核心接口的对账功能；
+			 * 3。 生成还款记录
+			 * 3. 发送消息
+			 */
+			Map<String, Object> updateMap = Maps.newHashMap();
+			updateMap.put("paybackApplyId", paybackApply.getPaybackApplyId());
+			updateMap.put("paybackStatus", "20");		//全额扣款成功
+			loanPosPaybackApplyService.updatePaybackApply(updateMap);
+			
+			/*生成还款记录*/
+			Map<String,Object> newVar = Maps.newHashMap();
+			newVar.put("paybackRunningRecordId", IdUtil.getId("RW"));
+			newVar.put("paybackApplyId", paybackApply.getPaybackApplyId());
+			newVar.put("receiptId", paybackApply.getReceiptId());
+			newVar.put("actualPaybackDate", paybackApply.getExpectPaybackDate());
+			newVar.put("actualTotalAmount", paybackApply.getPaybackTotalAmount());
+			newVar.put("actualCapital", paybackApply.getPaybackAmount());
+			newVar.put("actualInterest", paybackApply.getPaybackInterest());
+			newVar.put("inputUser", userName);
+			newVar.put("inputTime", new Date());
+			loanPosPaybackRunningRecordService.insertPaybackRunningInfo(newVar);
+			
+			/*更新借据状态 */
+			Map<String,Object> updateReceiptVars = Maps.newHashMap();
+			BigDecimal intrst = paybackApply.getPaybackInterest();
+			BigDecimal prncpl = paybackApply.getPaybackAmount();
+			//清空利息
+			if(receipt.getOutterOwnedInterest().compareTo(BigDecimal.ZERO)>0){
+				intrst = receipt.getOutterOwnedInterest().subtract(intrst);
+				BigDecimal obsi = (intrst.compareTo(BigDecimal.ZERO) < 0)?BigDecimal.ZERO:intrst;
+				updateReceiptVars.put("outterOwnedInterest", obsi);
+			}
+			if(intrst.compareTo(BigDecimal.ZERO) > 0 
+					&& receipt.getInnerOwnedInterest().compareTo(BigDecimal.ZERO)>0){
+				intrst = receipt.getInnerOwnedInterest().subtract(intrst);
+				BigDecimal ibsi = (intrst.compareTo(BigDecimal.ZERO) < 0)?BigDecimal.ZERO:intrst;
+				updateReceiptVars.put("innerOwnedInterest", ibsi);
+			}
+			//扣减本金
+			BigDecimal allBalance = receipt.getLoanTotalBalance().subtract(prncpl);
+			if(allBalance.compareTo(BigDecimal.ZERO) <= 0) {		
+				allBalance = BigDecimal.ZERO;
+				//还清贷款
+				int msdays=DateUtil.daysBetween(paybackApply.getExpectPaybackDate(),receipt.getActualMaturity());
+				if(msdays==0){	//到期当日还款
+					updateReceiptVars.put("loanStatus", "91");
+				}else if(msdays>0){	//逾期还款
+					updateReceiptVars.put("loanStatus", "92");
+				}else{	//提前还款
+					updateReceiptVars.put("loanStatus", "90");
+				}
+				updateReceiptVars.put("finishDate", new Date());				
+			}
+			if(receipt.getOverdueBalance().compareTo(BigDecimal.ZERO)>0){
+				prncpl = prncpl.subtract(receipt.getOverdueBalance());
+				//归还本金大于等于逾期金额/归还本金小于预期金额，归还后的逾期余额为差额的绝对值
+				BigDecimal overAmt = (prncpl.compareTo(BigDecimal.ZERO) >= 0)? BigDecimal.ZERO : prncpl.abs();
+				updateReceiptVars.put("overdueBalance", overAmt);
+			}
+			if(prncpl.compareTo(BigDecimal.ZERO) > 0 		//有未扣减的金额
+					&& receipt.getNormalBalance().compareTo(BigDecimal.ZERO) > 0){
+				BigDecimal normalAmt = receipt.getNormalBalance().subtract(prncpl);
+				if(normalAmt.compareTo(BigDecimal.ZERO) <= 0) {		//还清贷款
+					normalAmt = BigDecimal.ZERO;
+				}
+				updateReceiptVars.put("normalBalance", normalAmt);
+			}
+			updateReceiptVars.put("loanTotalBalance", allBalance);
+			updateReceiptVars.put("receiptId", receipt.getReceiptId());
+			updateReceipt(updateReceiptVars);
+			
+			//TODO;同步核心接口,更新还款计划
+			
+			
+			/*生成消息*/
+	        try {
+				POSEventsSource source = new POSEventsSource();
+				source.setAttribute("paybackApply", paybackApply);
+		        source.setAttribute(POSEvent.监听事件名称_消息推送, MessageCab.消息推送_还款结果通知);
+		        source.addListener(new MsgListener());
+				source.notifyEvent();
+			} catch (EventException e) {
+				logger.error("推送还款通知消息失败.",e);
+			}
+			
+			
+			return true;
+		}
+
+		
+}

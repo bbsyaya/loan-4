@@ -1,0 +1,25 @@
+package com.hrbb.activity.action.inter.impl;
+
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Maps;
+import com.hrbb.activity.action.inter.ActivityActionInter;
+
+@Component("actionOne")
+public class ActivityActionOne implements ActivityActionInter{
+	
+	Logger logger = LoggerFactory.getLogger(ActivityActionOne.class);
+
+	@Override
+	public Map<String, Object> doAction(Object obj) {
+		logger.debug("这是活动1");
+		return Maps.newHashMap();
+	}
+
+	
+	
+}

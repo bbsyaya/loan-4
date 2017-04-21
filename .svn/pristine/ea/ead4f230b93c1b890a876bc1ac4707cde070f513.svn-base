@@ -1,0 +1,61 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+  pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<!-- 展业机构信息 -->
+<div title="机构信息" style="padding: 20px; margin: auto; width: 90%">
+  <table style="width: 100%">
+    <tr>
+      <td style="width: 15%;" class="tdtitle">额度上限:</td>
+      <td style="width: 35%;"><input type="text" class="amt_uplimit"
+        name="amt_uplimit"
+        <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if>
+        value="${tApprovingRateUplimitConfig.amt_uplimit}" size="30"></td>
+      <td class="tdtitle">利率上限:</td>
+      <td><input type="text" class="rate_uplimit" name="rate_uplimit"
+        <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if>
+        value="${tApprovingRateUplimitConfig.rate_uplimit}" size="30"></td>
+    </tr>
+    <tr>
+      <td class="tdtitle">是否生效:</td>
+      <td><input type="text" class="deleted_flag" name="deleted_flag"
+        <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if>
+        value="${tApprovingRateUplimitConfig.deleted_flag}" size="30"></td>
+      <td class="tdtitle">生效时间:</td>
+      <td><input type="text" class="valid_date easyui-datetimebox"
+        name="valid_date"
+        <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if>
+        value="${tApprovingRateUplimitConfig.valid_date}" size="30"></td>
+    </tr>
+    <tr>
+      <td class="tdtitle">失效时间:</td>
+      <td><input type="text" class="invalid_date easyui-datetimebox"
+        name="invalid_date"
+        <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if>
+        value="${tApprovingRateUplimitConfig.invalid_date}" /></td>
+      <td class="tdtitle">创建时间:</td>
+      <td><input type="text" class="create_date easyui-datetimebox"
+        name="create_date"
+        <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if>
+        value="${tApprovingRateUplimitConfig.create_date}" size="30"></td>
+    </tr>
+    <tr>
+      <td class="tdtitle">修改时间:</td>
+      <td><input type="text" class="modify_date easyui-datetimebox"
+        name="modify_date"
+        <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if>
+        value="${tApprovingRateUplimitConfig.modify_date}" /></td>
+    </tr>
+  </table>
+  <br />
+  <br />
+  <div style="text-align: center;display:${oprFlag=='3' ? 'none' : 'block'}">
+    <input type="hidden" id="orgId" value="${institution.orgId}" /> <a
+      href="javascript:void(0)" id="save" width="100px"
+      class="easyui-linkbutton" iconCls="icon-ok"
+      onclick="saveApprovingRateUplimitConfig(${oprFlag})">保存</a>&nbsp;&nbsp; <a
+      href="javascript:void(0)" id="cancel" width="100px"
+      class="easyui-linkbutton" iconCls="icon-no"
+      onclick="cancelApprovingRateUplimitConfig(${oprFlag})">返回</a>
+  </div>
+</div>

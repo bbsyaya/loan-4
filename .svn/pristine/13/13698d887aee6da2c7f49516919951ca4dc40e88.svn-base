@@ -1,0 +1,348 @@
+package com.hrbb.loan.controller;
+
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import jodd.util.StringUtil;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.controller.helper.ControllerHelper;
+import com.hrbb.loan.pos.biz.backstage.inter.IReceiptManageBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosContractManagementBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosPaybackApplyBiz;
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosPaybackBiz;
+import com.hrbb.loan.pos.biz.bean.pay.IPayService;
+import com.hrbb.loan.pos.biz.bean.pay.PayServiceFactory;
+import com.hrbb.loan.pos.biz.bean.pay.constant.PayTypeEnum;
+import com.hrbb.loan.pos.dao.entity.TContractManagement;
+import com.hrbb.loan.pos.dao.entity.TCustomer;
+import com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo;
+import com.hrbb.loan.pos.dao.entity.TReceiptInfo;
+import com.hrbb.loan.pos.dao.entity.TRepaymentPlan;
+import com.hrbb.loan.pos.dao.entity.TTransactionRelative;
+import com.hrbb.loan.pos.facade.LoanPosCustomerBizFacade;
+import com.hrbb.loan.pos.service.LoanPosCustomerService;
+import com.hrbb.loan.pos.service.LoanPosPaybacApplykService;
+import com.hrbb.loan.pos.service.TRepaymentPlanService;
+import com.hrbb.loan.pos.service.TransactionRelativeService;
+import com.hrbb.loan.pos.util.DateUtil;
+import com.hrbb.loan.web.security.entity.User;
+
+@Controller
+@RequestMapping("/paybackApply")
+public class PaybackApplyController {
+    
+    private Logger logger = Logger.getLogger(PaybackApplyController.class);
+    
+	@Autowired
+    private LoanPosPaybackApplyBiz loanPosPaybackApplyBiz ;
+	@Autowired
+    private LoanPosPaybackBiz loanPosPaybackBiz ;
+	@Autowired
+	private LoanPosCustomerBizFacade<TCustomer> loanPosCustomerBizFacade;
+    @Autowired
+    private LoanPosContractManagementBiz loanPosContractManagementBiz ;
+    @Autowired
+    private TRepaymentPlanService repaymentPlanService ;
+    
+    @Autowired
+    private LoanPosPaybacApplykService loanPosPaybackApplyService;
+    
+    @Autowired
+    private LoanPosCustomerService loanPosCustomerService;
+    
+    @Autowired
+    private TransactionRelativeService transactionRelativeService;
+    
+    /** 借据管理 */
+    @Autowired
+    private IReceiptManageBiz receiprManageBiz;
+    
+    
+	@RequestMapping("/queryPaybackInfo")
+	public ModelAndView queryPaybackInfo(@RequestParam(value="rows", required = false)Integer pageSize, @RequestParam(value="page", required = false)Integer pageNo,HttpServletRequest request, PrintWriter out){
+		Map<String, Object> reqMap = Maps.newHashMap();
+		if(!StringUtils.isEmpty(request.getParameter("ReceiptIdLike"))){
+			reqMap.put("ReceiptIdLike",ControllerHelper.getLikeString(request.getParameter("ReceiptIdLike")));
+		}
+		String a = request.getParameter("custNameLike");
+		if(!StringUtils.isEmpty(a)){
+			reqMap.put("custNameLike", ControllerHelper.getLikeString(a));
+		}
+		if(!StringUtils.isEmpty(request.getParameter("merchantNameLike"))){
+			reqMap.put("merchantNameLike", ControllerHelper.getLikeString(request.getParameter("merchantNameLike")));
+		}
+		if(!StringUtils.isEmpty(request.getParameter("paperIdNoLike"))){
+			reqMap.put("paperIdNoLike", ControllerHelper.getLikeString(request.getParameter("paperIdNoLike")));
+		}
+	    String paybackStatus = request.getParameter("paybackStatus");
+		if(!StringUtils.isEmpty(paybackStatus)  && !paybackStatus.equals("99")){
+			reqMap.put("paybackStatus", paybackStatus);
+		}
+	    reqMap.put("startPage", (pageNo - 1)*pageSize);
+		reqMap.put("limit", pageSize);
+	    List<TPaybackApplyInfo> lists = loanPosPaybackApplyBiz.queryPaybackApplyInfo(reqMap);
+	    long number = loanPosPaybackApplyBiz.countNumber(reqMap);
+	    JSONObject aaJson =  new JSONObject();
+		aaJson.put("rows", lists);	
+		aaJson.put("total", number);
+		String aa = aaJson.toJSONString();
+		out.write(aa);
+		return null;
+	}
+	
+	/**
+	 * 增加还款申请
+	 * @param receiptId 借据号
+	 * @param insertLoanBalance 贷款余额
+	 * @param insertPaybackWay 还款方式
+	 * @param insertExpectPaybackDate 期望还款日期
+	 * @param insertLoanPaybackWay 贷款偿还方式
+	 * @param kind 归还本金类型
+	 * @param insertPaybackAmount 还款金额
+	 * @param insertPaybackPrincipal 还款本金
+	 * @param insertPaybackInterest 还款利息
+	 * @param insertPaybackTotalAmount 还款总金额
+	 * @param request
+	 * @param out
+	 * @return
+	 */
+	@RequestMapping("/savePaybackApply")
+	public ModelAndView savePaybackApply(@RequestParam(value="receiptId",required=true)String receiptId,
+	                                     //@RequestParam(value="insertLoanBalance",required=false)String insertLoanBalance,
+	                                     //@RequestParam(value="insertPaybackWay",required=false)String insertPaybackWay,
+	                                     @RequestParam(value="expectPaybackDate",required=false)String expectPaybackDate,
+	                                     //@RequestParam(value="insertLoanPaybackWay",required=false)String insertLoanPaybackWay,
+	                                     @RequestParam(value="kind",required=false)String kind,
+	                                     //@RequestParam(value="insertPaybackAmount",required=false)String insertPaybackAmount,
+	                                     @RequestParam(value="paybackPrincipal",required=true)String paybackPrincipal,
+	                                     @RequestParam(value="paybackInterest",required=true)String paybackInterest,
+	                                     @RequestParam(value="paybackTotalAmount",required=true)String paybackTotalAmount,
+	                                     HttpServletRequest request, PrintWriter out){
+		
+		/*反馈结果*/
+		JSONObject jsonResult = new JSONObject();
+		TReceiptInfo receipt = loanPosPaybackBiz.getReceiptInfoByReceiptId(receiptId);
+		if(receipt==null){
+			jsonResult.put("returnCode", "999");
+			jsonResult.put("returnMsg", "借据[receiptId="+receiptId+"]不存在.");
+		    out.write(jsonResult.toJSONString());
+			return null;
+		}
+		
+		/*还款金额校验*/
+		BigDecimal pbPrincipal = new BigDecimal(paybackPrincipal);
+		BigDecimal pbInterest = new BigDecimal(paybackInterest);
+		BigDecimal pbTotalAmount = new BigDecimal(paybackTotalAmount);
+		
+		Date paybackDate = null;
+		if(expectPaybackDate==null || expectPaybackDate.trim().length()==0){
+			paybackDate = new Date();
+		}else{
+			try {
+				paybackDate = DateUtil.parse2Date(expectPaybackDate, DateUtil.HRRB_SHORT_DATETIME_FORMAT);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+		/**
+		 * 校验用款申请合法性
+		 */
+		Map<String,Object> vResult = loanPosPaybackApplyBiz.validatePaybackApply(receipt, paybackDate, pbPrincipal, pbInterest, pbTotalAmount);
+		if(!vResult.get("returnCode").equals("000")){
+			jsonResult.put("returnCode", vResult.get("returnCode"));
+			jsonResult.put("returnMsg", vResult.get("returnMsg"));
+		    out.write(jsonResult.toJSONString());
+			return null;
+		}
+		
+		/**
+		 * 创建还款申请
+		 */
+		BigDecimal bgPrincipal = new BigDecimal(paybackPrincipal);
+		BigDecimal bgInterest = new BigDecimal(paybackInterest);
+		BigDecimal bgTotalAmnt = new BigDecimal(paybackTotalAmount);
+		User user = (User)request.getSession().getAttribute("USER");
+		String repayApplyId = loanPosPaybackApplyBiz.createPaybackApply(receipt, paybackDate, kind, bgPrincipal, bgInterest, bgTotalAmnt, user.getUserName());
+		if(repayApplyId!=null){
+			jsonResult.put("returnCode", "000");
+        	jsonResult.put("returnMsg", "还款申请创建成功.");
+		}else{
+        	jsonResult.put("returnCode", "988");
+        	jsonResult.put("returnMsg", "还款申请创建失败.");
+		}
+	    
+	    out.write(jsonResult.toJSONString());
+	    return null;
+	}
+	
+	
+	@RequestMapping("/getCustomerInfo")
+	public ModelAndView getCustomerInfo(HttpServletRequest request, PrintWriter out){
+		
+	    String receiptId = request.getParameter("receiptId");
+	    String contNo = loanPosPaybackBiz.getContNoByReceiptId(receiptId);
+	    String custId = loanPosContractManagementBiz.getcustId(contNo);
+	    TCustomer cust =  loanPosCustomerBizFacade.selectByPrimaryKey(custId);
+		if (cust != null) {
+			out.print(JSON.toJSONString(cust));
+		};
+		return null;	
+	}
+	
+	@RequestMapping("/getReceiptInfo")
+	public ModelAndView getContractInfo(HttpServletRequest request, PrintWriter out){
+	    String receiptId = request.getParameter("receiptId");
+	    TReceiptInfo r =  loanPosPaybackBiz.getReceiptInfoByReceiptId(receiptId);
+		if (r != null) {
+			out.print(JSON.toJSONString(r));
+		};
+		return null;	
+	}
+	
+	@RequestMapping("/cancelPaybackApply")
+	public ModelAndView cancelPaybackApply(@RequestParam(value = "paybackApplyId", required = true)String paybackApplyId,
+			HttpServletRequest request, PrintWriter out){
+		Map<String, Object> updateMap = Maps.newHashMap();
+		updateMap.put("paybackApplyId", paybackApplyId);
+		updateMap.put("paybackStatus", "30");
+		loanPosPaybackApplyBiz.updatePaybackApply(updateMap);
+		out.print("还款申请取消成功.");
+		return null;
+	}
+	
+    /**
+     * 发送还款指令
+     * 
+     * @param request
+     * @param out
+     * @return
+     */
+    @RequestMapping("/sentPayback")
+    public ModelAndView sentPayback(HttpServletRequest request, PrintWriter out) {
+        // 读取请求参数
+        String receiptId = request.getParameter("receiptId");
+        String paybackApplyId = request.getParameter("paybackApplyId");
+        logger.debug("receiptId=[" + receiptId + "],paybackApplyId=[" + paybackApplyId + "]");
+
+        User user = (User) request.getSession().getAttribute("USER");
+
+        Map<String, Object> resultMap = Maps.newHashMap();
+        Map<String, Object> resultVar = Maps.newHashMap();
+
+        // 获取该表还款的贷款偿还方式 loanPaybackWay：02代表代扣，01代表主动还款
+        String loanPaybackWay = getLoanPaybackWay(receiptId);
+        if (loanPaybackWay != null) {
+            if ("02".equals(loanPaybackWay)) { // 02代扣：先调用第三方代扣，然后调用核算记账
+                //判断是否已经代扣成功
+                TTransactionRelative transactionRelative = transactionRelativeService
+                    .queryTTransactionRelativeByBusinessId(paybackApplyId);
+                if (transactionRelative != null && transactionRelative.getTransactionStatus().equals("SUCCESS")) { // 已经代扣成功，不需要调用易极付
+                    resultMap.put("resultCode", "SUCCESS");
+                } else if(transactionRelative != null && transactionRelative.getTransactionStatus().equals("PROCESSING")){ // 代扣处理中
+                    resultMap.put("resultCode", "PROCESSING");
+                }else {
+                    TPaybackApplyInfo paybackApply = loanPosPaybackApplyService
+                            .selectByPrimaryKey(paybackApplyId);
+                    IPayService service = PayServiceFactory.getThirdPayService(
+                        PayTypeEnum.REPAY.getPayTypeCode(), paybackApply);
+                    try {
+                        resultMap = service.repayMap();
+                    } catch (Exception e) {
+                        logger.error("代扣异常", e);
+                        resultVar.put("respCode", "999");
+                        resultVar.put("respMsg", "还款失败!");
+                    }
+                }
+                logger.info("代扣结果为" + resultMap);
+                if (resultMap != null) {
+                    String resultCode = (String) resultMap.get("resultCode");
+                    if (!StringUtil.isEmpty(resultCode)) {
+                        if ("SUCCESS".equals(resultCode)) {
+                            resultVar = loanPosPaybackBiz.executeRepayment(paybackApplyId,
+                                user.getUserName());
+                        } else if ("FAIL".equals(resultCode)) {
+                            resultVar.put("respCode", "999");
+                            resultVar.put("respMsg", "还款失败!");
+                        } else if ("PROCESSING".equals(resultCode)) {
+                            resultVar.put("respCode", "333");
+                            resultVar.put("respMsg", "还款处理中!");
+                        }
+                    }
+                }
+            } else {
+                resultVar = loanPosPaybackBiz.executeRepayment(paybackApplyId, user.getUserName());
+            }
+        }
+        if (resultVar != null && resultVar.size() > 0) {
+            //do nothing
+            String respCode = (String) resultVar.get("respCode");
+            if (respCode.equals("000")) {
+                logger.info("还款申请[" + paybackApplyId + "] 执行成功!");
+            } else if (respCode.equals("333")) {
+                logger.info("还款申请[" + paybackApplyId + "] 执行处理中!");
+            } else {
+                logger.info("还款申请[" + paybackApplyId + "] 执行失败!");
+            }
+        } else {
+            resultVar.put("respCode", "999");
+            resultVar.put("respMsg", "还款失败!");
+        }
+        out.write(JSONObject.toJSONString(resultVar));
+
+        return null;
+    }
+
+    /**
+     * 获取贷款偿还方式
+     * 
+     * @param receiptId
+     * @return
+     */
+    private String getLoanPaybackWay(String receiptId) {
+        if(StringUtil.isEmpty(receiptId)){
+            logger.info("借据编号为null，获取偿还方式失败");
+            return null;
+        }
+        TReceiptInfo receipt = receiprManageBiz.selectReceiptByPrimary(receiptId);
+        TContractManagement contract = loanPosContractManagementBiz.getContractByContNo(receipt.getContNo());
+        String loanPaybackWay = contract.getRepayMethod();
+        return loanPaybackWay;
+    }
+
+	@RequestMapping("/getRecentRepayPlan")
+	public ModelAndView getRecentlyRepaymentPlan(@RequestParam(value = "receiptId", required = true)String receiptId,
+			HttpServletRequest request, PrintWriter out){
+		TRepaymentPlan plan = repaymentPlanService.getRecentlyPlan(receiptId);
+		//
+		JSONObject jsonVars =  new JSONObject();
+		if(plan==null){
+			jsonVars.put("respCode", "999");
+		}else{
+			jsonVars.put("respCode", "000");
+			jsonVars.put("Scheddate", plan.getScheddate()==null?"":DateUtil.formatDate(plan.getScheddate()));
+			jsonVars.put("totalAmount", plan.getSchedtotalamt());
+			jsonVars.put("capital", plan.getSchedprincipal());
+			jsonVars.put("interest", plan.getSchedinterest());
+		}
+		out.write(JSONObject.toJSONString(jsonVars));
+		return null;
+	}
+	
+}

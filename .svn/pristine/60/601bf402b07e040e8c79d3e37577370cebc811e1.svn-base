@@ -1,0 +1,476 @@
+package com.hrbb.loan.pos.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.hrbb.loan.pos.dao.TBankAccnoInfoDao;
+import com.hrbb.loan.pos.dao.TBankSerialnoInfoDao;
+import com.hrbb.loan.pos.dao.TChannelBankInfoDao;
+import com.hrbb.loan.pos.dao.TChannelPoscustInfoDao;
+import com.hrbb.loan.pos.dao.TCreditApplyDao;
+import com.hrbb.loan.pos.dao.TPaymentApplyDao;
+import com.hrbb.loan.pos.dao.TPosCustInfoDao;
+import com.hrbb.loan.pos.dao.TPosSerialnoInfoDao;
+import com.hrbb.loan.pos.dao.TRepaymentPlanDao;
+import com.hrbb.loan.pos.dao.entity.TBankAccnoInfo;
+import com.hrbb.loan.pos.dao.entity.TCreditApply;
+import com.hrbb.loan.pos.dao.entity.TPosSerialnoInfo;
+import com.hrbb.loan.pos.service.LoanPosCreditApplyService;
+import com.hrbb.loan.pos.util.ListUtil;
+import com.hrbb.loan.pos.util.StringUtil;
+
+/**
+ *<h1>业务申请服务层实现</h1>
+ *@author Johnson Song
+ *@version Id: CreditApplyServiceImpl.java, v 1.0 2015-2-15 下午7:30:56 Johnson Song Exp
+ */
+@Service("loanPosCreditApplyService")
+public class LoanPosCreditApplyServiceImpl implements LoanPosCreditApplyService{
+	
+	private Logger logger = LoggerFactory.getLogger(LoanPosCreditApplyServiceImpl.class);
+	
+	
+	public static final String POS_CUST_NAME = "posCustName";
+	
+	public static final String LOAN_ID = "loanId";
+	
+	public static final String BANK_ACC_NO = "bankAccno";
+
+	private static final String POS_CUST_ID = "posCustId";
+	
+	private static final String CHANNEL_POSCUST_ID = "channelPosCustId";
+	
+	private static final String CHANNEL = "channel";
+
+	private static final String STDMERNO = "stdmerno";
+
+	private static final String START_PAGE = "startPage";
+
+	private static final String PAGE_SIZE = "pageSize";
+
+	
+	@Autowired
+	private TCreditApplyDao tCreditApplyDao;
+	
+	@Autowired
+	private TChannelBankInfoDao tChannelBankInfoDao;
+	
+	@Autowired
+	private TBankAccnoInfoDao bankAccnoInfoDao;
+	
+	@Autowired
+	private TPosCustInfoDao posCustInfoDao;
+	
+	@Autowired
+	private TPosSerialnoInfoDao posSerialnoInfoDao;
+	
+	@Autowired
+	private TBankSerialnoInfoDao bankSerialnoInfoDao;
+	
+	@Autowired
+	private TChannelPoscustInfoDao tChannelPoscustInfoDao;
+	
+	@Autowired
+	private TRepaymentPlanDao tRepaymentPlanDao;
+	
+	@Autowired
+	private TPaymentApplyDao tPaymentApplyDao;
+	
+	/**
+	 * <h2>根据条件获取记录</h2>
+	 * @param Map
+	 * @return List
+	 */
+
+	@Override
+	public List<TCreditApply> getCreditApply(Map<String, Object> reqMap) {
+		return tCreditApplyDao.selectSelective(reqMap);
+
+	}
+
+	/**
+	 * <h2>更新记录</h2>
+	 * @param TCreditApply
+	 * @return int
+	 */
+	@Override
+	public int updateCreditApply(TCreditApply tCreditApply) {
+		return tCreditApplyDao.updateByPrimaryKeySelective(tCreditApply);
+	}
+
+	/**
+	 * <h2>删除记录</h2>
+	 * @param String
+	 * @return int
+	 */
+	@Override
+	public int delCreditApply(String loanId) {
+		return tCreditApplyDao.deleteByPrimaryKey(loanId);
+	}
+
+	/**
+	 * <h2>插入记录</h2>
+	 * @param TCreditApply
+	 * @return int
+	 */
+	@Override
+	public int insertCreditApply(TCreditApply tCreditApply) {
+		return tCreditApplyDao.insertSelective(tCreditApply);
+	}
+	@Override
+	public List<Map<String, Object>> getCreditApplyMap(
+			Map<String, Object> reqMap) {
+		return tCreditApplyDao.selectSelectiveMap(reqMap);
+	}
+	
+	@Override
+	public Long countCreditApply(Map<String, Object> reqMap) {
+		return tCreditApplyDao.countCreitApply(reqMap);
+	}
+	
+	
+	@Override
+	public int deleteBatch(List<String> loanIds) {
+		return tCreditApplyDao.deleteBatch(loanIds);
+	}
+	@Override
+	public int updateCreditApplyMap(Map<String, Object> map) {
+		return tCreditApplyDao.updateByPrimaryKeySelectiveMap(map);
+	}
+	@Override
+	public int insertCreditApplyMap(Map<String, Object> reqMap) {
+		tCreditApplyDao.insertSelectiveMap(reqMap);
+		return 1;
+	}
+	@Override
+	public List<Map<String, Object>> selectBankAccMap(Map<String, Object> reqMap) {
+		return bankAccnoInfoDao.selectMap(reqMap);
+	}
+	@Override
+	public int updateBankAccByPrimaryKeySelectiveMap(Map<String, Object> reqMap) {
+		return bankAccnoInfoDao.updateByPrimaryKeySelectiveMap(reqMap);
+	}
+	@Override
+	public int insertBankAccSelectiveMap(Map<String, Object> map) {
+		return bankAccnoInfoDao.insertSelectiveMap(map);
+	}
+	@Override
+	public List<Map<String, Object>> selectPosCustMap(Map<String, Object> reqMap) {
+		return posCustInfoDao.selectMap(reqMap);
+	}
+	@Override
+	public int updatePosCustByPrimaryKeySelectiveMap(Map<String, Object> reqMap) {
+		return posCustInfoDao.updateByPrimaryKeySelectiveMap(reqMap);
+	}
+	@Override
+	public int insertPosCustSelectiveMap(Map<String, Object> map) {
+		return posCustInfoDao.insertSelectiveMap(map);
+	}
+	@Override
+	public List<Map<String, Object>> selectPosSerialMap(
+			Map<String, Object> reqMap) {
+		return posSerialnoInfoDao.selectMap(reqMap);
+	}
+	@Override
+	public int updatePosSerialByPrimaryKeySelectiveMap(
+			Map<String, Object> reqMap) {
+		return posSerialnoInfoDao.updateByPrimaryKeySelectiveMap(reqMap);
+	}
+	@Override
+	public int insertPosSerialSelectiveMap(Map<String, Object> map) {
+		return posSerialnoInfoDao.insertSelectiveMap(map);
+	}
+	
+	@Override
+	public int insertPosSerialSelectiveMapBatch(List<Map<String, Object>> reqList){
+		return posSerialnoInfoDao.insertSelectiveMapBatch(reqList);
+	}
+	@Override
+	public Map<String, Object> getOneCreditApply(String loanId) {
+		if(loanId != null){
+			Map<String, Object> reqMap = Maps.newHashMap();
+			reqMap.put(LOAN_ID, loanId);
+			List<Map<String, Object>> resList = getCreditApplyMap(reqMap);
+			if(resList != null && resList.size() != 0){
+				return resList.get(0);
+			}else{
+				return Maps.newHashMap();
+			}
+		}else{
+			return Maps.newHashMap();
+		}
+	}
+	@Override
+	public Map<String, Object> selectOnePosCustMap(String posCustName) {
+		if(!StringUtil.isEmpty(posCustName)){
+			Map<String, Object> reqMap = Maps.newHashMap();
+			reqMap.put(POS_CUST_NAME, posCustName);
+			List<Map<String, Object>> resList = selectPosCustMap(reqMap);
+			if(resList != null && resList.size() != 0){
+				return resList.get(0);
+			}else{
+				return Maps.newHashMap();
+			}
+		}else{
+			return Maps.newHashMap();
+		}
+	}
+	@Override
+	public List<Map<String, Object>> selectBankSerialMap(
+			Map<String, Object> reqMap) {
+		return bankSerialnoInfoDao.selectMap(reqMap);
+	}
+	
+	@Override
+	public List<Map<String,Object>> selectMapByCurrMonth(Map<String,Object> reqMap){
+	    return bankSerialnoInfoDao.selectMapByCurrMonth(reqMap);
+	}
+	@Override
+	public int updateBankSerialMap(Map<String, Object> reqMap) {
+		return bankSerialnoInfoDao.updateSelectiveMap(reqMap);
+	}
+	@Override
+	public int insertBankSerialMap(Map<String, Object> reqMap) {
+		return bankSerialnoInfoDao.insertSelectiveMap(reqMap);
+	}
+	@Override
+	public Map<String, Object> selectOneBankAcc(String bankAccno) {
+		if(!StringUtil.isEmpty(bankAccno)){
+			Map<String, Object> reqMap = Maps.newHashMap();
+			reqMap.put(BANK_ACC_NO, bankAccno);
+			List<Map<String, Object>> resList = selectBankAccMap(reqMap);
+			if(resList != null && resList.size() != 0){
+				return resList.get(0);
+			}else{
+				return Maps.newHashMap();
+			}
+		}else{
+			return Maps.newHashMap();
+		}
+	}
+
+	@Override
+	public Map<String, Object> selectOnePosCustMapById(String posCustId) {
+		if(!StringUtil.isEmpty(posCustId)){
+			Map<String, Object> reqMap = Maps.newHashMap();
+			reqMap.put(POS_CUST_ID, posCustId);
+			List<Map<String, Object>> resList = selectPosCustMap(reqMap);
+			if(resList != null && resList.size() != 0){
+				return resList.get(0);
+			}else{
+				return Maps.newHashMap();
+			}
+		}else{
+			return Maps.newHashMap();
+		}
+	}
+	@Override
+	public Long countBankSerialNum(Map<String, Object> reqMap) {
+		return bankSerialnoInfoDao.countMap(reqMap);
+	}
+	@Override
+	public Long countPosSerialNum(Map<String, Object> reqMap) {
+		return posSerialnoInfoDao.countMap(reqMap);
+	}
+
+	
+	
+	
+	public TCreditApply queryCreditApply(String loanId){
+		return tCreditApplyDao.queryCreditApplyInfo(loanId);	
+	}
+	@Override
+	public List<Map<String, Object>> selectChannelPosCustSelectiveMap(
+			Map<String, Object> reqMap) {
+		return tChannelPoscustInfoDao.selectSelectiveMap(reqMap);
+	}
+	@Override
+	public void insertChannelPosCustSelectiveMap(Map<String, Object> reqMap) {
+		
+		tChannelPoscustInfoDao.insertSelectvieMap(reqMap);
+	}
+	@Override
+	public Map<String, Object> selectOneChannelPosCustSelectiveMap(
+			Map<String, Object> reqMap) {
+		List<Map<String, Object>> list = tChannelPoscustInfoDao.selectSelectiveMap(reqMap);
+		if(ListUtil.isNotEmpty(list)){
+			return list.get(0);
+		}else{
+			return Maps.newHashMap();
+		}
+	}
+	@Override
+	public Map<String, Object> selectOneChannelPosCustByEle(
+			String channelPoscustId, String channel) {
+		Map<String, Object> reqMap = Maps.newHashMap();
+		if(!StringUtil.isEmpty(channelPoscustId)){
+			reqMap.put(CHANNEL_POSCUST_ID, channelPoscustId);
+		}
+		if(!StringUtil.isEmpty(channel)){
+			reqMap.put(CHANNEL, channel);
+		}
+		
+		return selectOneChannelPosCustSelectiveMap(reqMap);
+	}
+	@Override
+	public String selectLoanId(String stdshno, String channel) {
+		Map<String, Object> reqMap = Maps.newHashMap();
+		if(!StringUtil.isEmpty(stdshno) && !StringUtil.isEmpty(channel)){
+			reqMap.put("channel", channel);
+			reqMap.put("stdshno", stdshno);
+			List<Map<String, Object>> creMap = tCreditApplyDao.selectSelectiveMap(reqMap);
+			if(ListUtil.isNotEmpty(creMap)){
+				return (String)creMap.get(0).get("loanId");
+			}else{
+				return null;
+			}
+		}else{
+			return null;
+		}
+	}
+	@Override
+	public String getCustIdbyStdshno(String stdshno) {
+		return tCreditApplyDao.getCustIdbyStdshno(stdshno);	
+	}
+	@Override
+	public String getLoanIdbyStdshno(String stdshno) {
+		return tCreditApplyDao.getLoanIdbyStdshno(stdshno);	
+	}
+
+	@Override
+	public List<Map<String, Object>> queryChannelDetail(String stdshno, String stdmerno,
+			String channel, Long startPage, Long pageSize) {
+		if(StringUtil.isEmpty(stdmerno) && "UM".equals(channel) || StringUtil.isEmpty(channel)){
+			return Lists.newArrayList();
+		}
+		Map<String, Object> reqMap = Maps.newHashMap();
+		if(!StringUtil.isEmpty(stdshno)){
+			reqMap.put("stdshno", stdshno);
+		}
+		reqMap.put(STDMERNO, stdmerno);
+		reqMap.put(CHANNEL, channel);
+		reqMap.put(START_PAGE, startPage);
+		reqMap.put(PAGE_SIZE, pageSize);
+		return queryChannlDetailMap(reqMap);
+	}
+	@Override
+	public List<Map<String, Object>> queryChannlDetailMap(
+			Map<String, Object> reqMap) {
+		// TODO Auto-generated method stub
+		return tChannelPoscustInfoDao.queryChannelDetail(reqMap);
+	}
+	@Override
+	public Long countChannelDetail(String stdshno, String stdmerno, String channel) {
+		Map<String, Object> reqMap = Maps.newHashMap();
+		reqMap.put(STDMERNO, stdmerno);
+		reqMap.put(CHANNEL, channel);
+		if(!StringUtil.isEmpty(stdshno)){
+			reqMap.put("stdshno", stdshno);
+		}
+		return countChannelDetailMap(reqMap);
+	}
+	@Override
+	public Long countChannelDetailMap(Map<String, Object> reqMap) {
+		return tChannelPoscustInfoDao.countChannelDetail(reqMap);
+	}
+
+	@Override
+	public String getCustIdbyPosCustId(String posCustId) {
+		return tCreditApplyDao.getCustIdbyPosCustId(posCustId);	
+	}
+	@Override
+	public String getLoanIdbyPosCustId(String posCustId) {
+		return tCreditApplyDao.getLoanIdbyPosCustId(posCustId);	
+	}
+	@Override
+	public String getStdshnobyLoanId(String loanId) {
+		return tCreditApplyDao.getStdshnobyLoanId(loanId);	
+	}
+    @Override
+    public int deletePosSerial(String loanId) {
+        return posSerialnoInfoDao.deleteByLoanId(loanId);
+    }
+    @Override
+    public Long countPosSerials(String loanId) {
+        return posSerialnoInfoDao.countPosSerials(loanId);
+    }
+
+	public List<Map<String, Object>> queryListByZzApp(Map<String, Object> queryMap) {
+	    return tCreditApplyDao.selectDetailsByZzApp(queryMap);
+	}
+    @Override
+    public int updateApplyStatus(Map<String, Object> updateMap) {
+        return tCreditApplyDao.updateApplyStatus(updateMap);
+    }
+    
+    
+    //获取业务数据--导出excel时使用
+    @Override
+    public List<Map<String, Object>> getBizData(Map<String, Object> reqMap){        
+        return tCreditApplyDao.getBizData(reqMap);
+    }
+    
+    public List<TPosSerialnoInfo> selectTPosByMap(Map<String, Object> reqMap){
+        return posSerialnoInfoDao.selectTPosByMap(reqMap);
+    }
+    public TBankAccnoInfo selectByBankAccno(String bankAccno){
+        return bankAccnoInfoDao.selectByPrimaryKey(bankAccno);
+    }
+    @Override
+    public Map<String, Object> selectLastTh(String custId) {
+        return tCreditApplyDao.selectLastTh(custId);
+    }
+    @Override
+	public List<Map<String, Object>> getBankMapList(String channel,
+			String bankName) {
+		if(channel == null && bankName == null){
+			return Lists.newArrayList();
+		}
+		Map<String, Object> reqMap = Maps.newHashMap();
+		reqMap.put("channel", channel);
+		reqMap.put("bankName", bankName);
+		return tChannelBankInfoDao.getSeletiveMap(reqMap);
+	}
+
+    @Override
+    public Map<String, Object> selectNameAndBankAccNoByLoanId(String loanId) {
+        return tCreditApplyDao.selectNameAndBankAccNoByLoanId(loanId);
+    }
+
+	@Override
+	public Map<String, Object> selectRepaymentPlayById(Map<String, Object> reqMap) {
+		
+		logger.debug("in repaymentPlanQueryService....");
+		Map<String, Object> resMap = Maps.newHashMap();
+		Map<String, Object> payResMap = tPaymentApplyDao.queryPaymentApplyByIssueId(reqMap);
+		logger.debug("payResMap= " + payResMap);
+		List<Map<String, Object>> resList = tRepaymentPlanDao.getRepaymPlansByPayApplyId(reqMap);
+		logger.debug("repaymentPlaysRes= " + resList);
+		String count = tRepaymentPlanDao.countRepaymentPlans(reqMap);
+		logger.debug("plansCount="+count);
+		String recNum = String.valueOf(resList.size());
+		String contNo = (String) payResMap.get("contNo");
+		String custId = (String) payResMap.get("custId");
+		resMap.put("issueid", reqMap.get("payApplyId"));
+		resMap.put("contno", contNo);
+		resMap.put("custid", custId);
+		resMap.put("totalnum", count);
+		resMap.put("retnum", recNum);
+		resMap.put("list", resList);
+		
+		return resMap;
+	}
+
+    @Override
+    public String getChannelByLoanId(String loanId) {
+        return tCreditApplyDao.selectChannelByLoanId(loanId);
+    }
+
+}

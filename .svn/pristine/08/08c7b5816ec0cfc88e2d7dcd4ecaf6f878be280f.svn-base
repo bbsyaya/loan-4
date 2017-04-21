@@ -1,0 +1,60 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+  pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<!-- 展业机构信息 -->
+<div title="机构信息" style="padding: 20px; margin: auto; width: 90%">
+  <table style="width: 100%">
+    <tr>
+      <td style="width: 15%;" class="tdtitle">渠道:</td>
+      <td style="width: 35%;"><input type="text"
+        class="channel easyui-validatebox" name="channel"
+        <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if>
+        value="${tRiskChannelConfig.channel}" size="30"
+        data-options="required:true"></td>
+      <td class="tdtitle">渠道no:</td>
+      <td><input type="text" class="channel_no" name="channel_no"
+        value="${tRiskChannelConfig.channel_no}" <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if> size="30"></td>
+    </tr>
+    <tr>
+      <td class="tdtitle">渠道code:</td>
+      <td><input type="text" class="channel_code" name="channel_code"
+        value="${tRiskChannelConfig.channel_code}" <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if> size="30"></td>
+      <td class="tdtitle">风险等级:</td>
+      <td><input type="text" class="risk_type" name="risk_type"
+        value="${tRiskChannelConfig.risk_type}" <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if> size="30"></td>
+    </tr>
+    <tr>
+      <td class="tdtitle">风险等级code:</td>
+      <td><input type="text" class="risk_type_code" <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if> name="risk_type_code"
+        value="${tRiskChannelConfig.risk_type_code}" /></td>
+      <td class="tdtitle">是否生效:</td>
+      <td><input type="text" class="deleted_flag" <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if> name="deleted_flag"
+        value="${tRiskChannelConfig.deleted_flag}" size="30"></td>
+    </tr>
+    <tr>
+      <td class="tdtitle">生效时间:</td>
+      <td><input type="text" class="easyui-datetimebox valid_date" <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if>
+        name="valid_date" value="${tRiskChannelConfig.valid_date}" size="30"></td>
+      <td class="tdtitle">失效时间:</td>
+      <td><input type="text" class="easyui-datetimebox invalid_date" <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if>
+        name="invalid_date" value="${tRiskChannelConfig.invalid_date}" size="30"></td>
+    </tr>
+    <tr>
+      <td class="tdtitle">创建时间:</td>
+      <td><input type="text" class="easyui-datetimebox create_date" <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if>
+        name="create_date" value="${tRiskChannelConfig.risk_type_code}" /></td>
+    </tr>
+  </table>
+  <br />
+  <br />
+  <div style="text-align: center;display:${oprFlag=='3' ? 'none' : 'block'}">
+    <input type="hidden" id="orgId" value="${institution.orgId}" /> <a
+      href="javascript:void(0)" id="save" width="100px"
+      class="easyui-linkbutton" iconCls="icon-ok"
+      onclick="saveRiskchannelConfig(${oprFlag})">保存</a>&nbsp;&nbsp; <a
+      href="javascript:void(0)" id="cancel" width="100px"
+      class="easyui-linkbutton" iconCls="icon-no"
+      onclick="cancelRiskchannelConfig(${oprFlag})">返回</a>
+  </div>
+</div>

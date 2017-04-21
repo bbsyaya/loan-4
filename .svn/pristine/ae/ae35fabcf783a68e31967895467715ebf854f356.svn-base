@@ -1,0 +1,46 @@
+package com.hrbb.loan.pos.biz.backstage.inter.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.hrbb.loan.pos.biz.backstage.inter.LoanPosPaybackApplyBiz;
+import com.hrbb.loan.pos.dao.entity.TPaybackApplyInfo;
+import com.hrbb.loan.pos.service.LoanPosPaybacApplykService;
+import com.hrbb.loan.pos.service.LoanPosPaybackService;
+import com.hrbb.loan.pos.util.DateUtil;
+@Component("loanPosPaybackApplyBiz")
+public class LoanPosPaybackApplyBizImpl implements LoanPosPaybackApplyBiz {
+	@Autowired
+	private LoanPosPaybacApplykService loanPosPaybackApplyService;
+	@Autowired
+	private LoanPosPaybackService loanPosPaybackService;
+	@Override
+	public List<TPaybackApplyInfo> queryPaybackApplyInfo(
+			Map<String, Object> reqMap) {
+		List<TPaybackApplyInfo> l =  loanPosPaybackApplyService.getPaybackApplyMap(reqMap);
+		for(TPaybackApplyInfo r:l){
+			if(r.getExpectPaybackDate()!=null){
+				r.setExpectPaybackDateStr(DateUtil.getDateToString3(r.getExpectPaybackDate()));
+			}
+		}
+		return l;
+	}
+
+	@Override
+	public int updatePaybackStatus(Map<String, Object> updateMap) {
+		return loanPosPaybackApplyService.updatePaybackStatus(updateMap);
+	}
+
+    @Override
+    public List<Map<String, Object>> queryPaybackDetailsByMaps(Map<String, Object> map) {
+        return loanPosPaybackApplyService.queryPaybackDetailsByMaps(map);
+    }
+
+    @Override
+    public List<Map<String, Object>> queryPaybackDetailsBySlApp(Map<String, Object> map) {
+        return loanPosPaybackApplyService.queryPaybackDetailsBySlApp(map);
+    }
+}

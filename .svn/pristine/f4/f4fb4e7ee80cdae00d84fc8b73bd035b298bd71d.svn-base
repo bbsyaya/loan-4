@@ -1,0 +1,21 @@
+#web server
+url=http://35.8.33.21:11096/loan-pos-web/
+#url=http://35.8.33.21:11096/loan-pos-web/
+#Synchro File Path
+#synFilePath=/home/loan-pos-synchrofile/synchrofile/
+synFileUploanEnable=false
+#synchroFilePath=C\:\\loan-pos-synchrofile\\synchrofile\\
+#web url--影像件查看地址
+imageUrl=http://35.8.33.21:11096/
+#核算接口开关
+accountingEnable=true
+
+umReturnAcct=680101416030010017
+
+bankCheckChannelFlag=1
+#58applyupdatemessageurl=http://csd.58v5.cn/channel/hrbb/info/update      
+
+tcapplyupdatemessageurl=http\://csd.58.com/channel/hrbb/info/update
+
+#cdc_realtime.csv file location
+cdc_realtimeUrl=/home/cdc/CDC/

@@ -1,0 +1,92 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+  pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<!-- 展业机构信息 -->
+<div id="apprvRuleDiv" title="机构信息"
+  style="padding: 20px; margin: auto; width: 90%">
+  <table style="width: 100%">
+    <tr>
+      <td style="width: 15%;" class="tdtitle">规则编号:</td>
+      <td style="width: 35%;"><input type="text" class="ruleNo"
+        <c:if test="${oprFlag=='3'||oprFlag=='1'}">readonly="readonly"</c:if> name="ruleNo"
+        value="${tApprovedRulesConfig.ruleNo}" size="30"></td>
+      <td class="tdtitle">产品代码:</td>
+      <td><select id="rule_prodId" name="prodId" class="easyui-combobox" style="width: 243px;" validType="selectedRequired" required=true
+        <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if>>
+          <option value="">--请选择产品代码--</option>
+          <c:forEach items="${productList}" var="obj">
+            <option value="${obj.itemNo}"
+              <c:if test="${obj.itemNo == tApprovedRulesConfig.prodId}">selected</c:if>>${obj.itemName}</option>
+          </c:forEach>
+      </select></td>
+    </tr>
+    <tr>
+      <td style="width: 15%;" class="tdtitle">渠道:</td>
+      <td style="width: 35%;"><select id="rule_channel" class="easyui-combobox"
+        style="width: 243px;" validType="selectedRequired" required=true
+        <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if>>
+          <option value="">--请选择渠道--</option>
+          <c:forEach items="${channelList}" var="obj">
+            <option value="${obj.itemNo}"
+              <c:if test="${obj.itemNo == tApprovedRulesConfig.channel}">selected</c:if>>${obj.itemName}</option>
+          </c:forEach>
+      </select></td>
+      <td class="tdtitle">地区:</td>
+      <td><select id="rule_region" class="easyui-combobox" style="width: 243px;" validType="selectedRequired" required=true
+        <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if>>
+          <option value="">--请选择地区--</option>
+          <c:forEach items="${provinceList}" var="obj">
+            <option value="${obj.itemNo}"
+              <c:if test="${obj.itemNo == tApprovedRulesConfig.region}">selected</c:if>>${obj.itemName}</option>
+          </c:forEach>
+      </select></td>
+    </tr>
+    <tr>
+      <td class="tdtitle">年龄:</td>
+      <td><input type="text" class="age easyui-validatebox" validType="number" invalidMessage="必须填写数字"
+        <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if>
+        value="${tApprovedRulesConfig.age}" size="30" /></td>
+      <td class="tdtitle">额度上限:</td>
+      <td><input type="text" class="amt_uplimit easyui-validatebox" validType="amt" invalidMessage="必须填写金额"
+        <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if>
+        value="${tApprovedRulesConfig.amt_uplimit}" size="30"></td>
+    </tr>
+    <tr>
+      <td class="tdtitle">是否生效:</td>
+      <td><select id="rule_deleted_flag" style="width: 243px;"
+        class="easyui-combobox" validType="selectedRequired" required=true
+        <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if>>
+          <option value="">--请选是否生效--</option>
+          <c:forEach items="${deleteflagList}" var="obj">
+            <option value="${obj.itemNo}"
+              <c:if test="${obj.itemNo == tApprovedRulesConfig.deleted_flag}">selected</c:if>>${obj.itemName}</option>
+          </c:forEach>
+      </select></td>
+      <td class="tdtitle">生效时间:</td>
+      <td><input type="text" class="valid_date easyui-datebox"
+        <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if>
+        name="valid_date"
+        value="<fmt:formatDate value='${tApprovedRulesConfig.valid_date}' pattern='yyyy-MM-dd'/>"
+        size="30"></td>
+    </tr>
+    <tr>
+      <td class="tdtitle">失效时间:</td>
+      <td><input type="text" class="invalid_date easyui-datebox"
+        <c:if test="${oprFlag=='3'}">readonly="readonly"</c:if>
+        name="invalid_date"
+        value="<fmt:formatDate value='${tApprovedRulesConfig.invalid_date}' pattern='yyyy-MM-dd'/>"
+        size="30" /></td>
+    </tr>
+  </table>
+  <br /> <br />
+  <div style="text-align: center;display:${oprFlag=='3' ? 'none' : 'block'}">
+    <input type="hidden" id="orgId" value="${institution.orgId}" /> <a
+      href="javascript:void(0)" id="save" width="100px"
+      class="easyui-linkbutton" iconCls="icon-ok"
+      onclick="saveApprovedRulesConfig(${oprFlag})">保存</a>&nbsp;&nbsp; <a
+      href="javascript:void(0)" id="cancel" width="100px"
+      class="easyui-linkbutton" iconCls="icon-no"
+      onclick="cancelApprovedRulesConfig(${oprFlag})">返回</a>
+  </div>
+</div>

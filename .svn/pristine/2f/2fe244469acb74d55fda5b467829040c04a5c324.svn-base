@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="TPoliceInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hrbb.loan.pos.dao.entity.TPoliceInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="custName" property="custName" jdbcType="VARCHAR" />
+    <result column="photo" property="photo" jdbcType="VARCHAR" />
+    <result column="policeCustName" property="policeCustName" jdbcType="VARCHAR" />
+    <result column="servPlace" property="servPlace" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="mariSign" property="mariSign" jdbcType="VARCHAR" />
+    <result column="eduSign" property="eduSign" jdbcType="VARCHAR" />
+    <result column="birthPlace" property="birthPlace" jdbcType="VARCHAR" />
+    <result column="nativePlace" property="nativePlace" jdbcType="VARCHAR" />
+    <result column="birthDate" property="birthDate" jdbcType="VARCHAR" />
+    <result column="nation" property="nation" jdbcType="VARCHAR" />
+    <result column="sexSign" property="sexSign" jdbcType="VARCHAR" />
+    <result column="idNo" property="idNo" jdbcType="VARCHAR" />
+    <result column="policeIdNo" property="policeIdNo" jdbcType="VARCHAR" />
+   	<result column="result" property="result"/>
+    <result column="territorial" property="territorial" jdbcType="VARCHAR"/>
+    <result column="queryTime" property="queryTime"/>
+    <result column="updateTime" property="updateTime"/>
+    <result column="createTime" property="createTime"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, custName, photo, policeCustName, servPlace, address, mariSign, eduSign, birthPlace, 
+    nativePlace, birthDate, nation, sexSign, idNo, policeIdNo, result, queryTime, territorial, updateTime, createTime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_police_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectByLoanId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select p.* 
+    from t_police_info p,t_credit_apply_info a,t_customer_info c 
+    where a.custId = c.custId and c.paperId = p.idNo 
+    and loanId = #{loanId} limit 1
+  </select>
+  
+  <select id="selectSelectiveMap" resultType="Map" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_police_info
+    where 1=1
+    <if test="custName != null">
+    	AND custName = #{custName}
+    </if>
+    <if test="idNo != null">
+    	AND idNo = #{idNo}
+    </if>
+  </select>
+  <select id="selectByCertNo" resultType="Map" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_police_info
+    where idNo = #{idNo}
+    order by queryTime desc
+    LIMIT 0, 1
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_police_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hrbb.loan.pos.dao.entity.TPoliceInfo" >
+    insert into t_police_info (id, custName, photo, 
+      policeCustName, servPlace, address, 
+      mariSign, eduSign, birthPlace, 
+      nativePlace, birthDate, nation, 
+      sexSign, idNo, policeIdNo, 
+     result)
+    values (#{id,jdbcType=INTEGER}, #{custName,jdbcType=VARCHAR}, #{photo,jdbcType=VARCHAR}, 
+      #{policeCustName,jdbcType=VARCHAR}, #{servPlace,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+      #{mariSign,jdbcType=VARCHAR}, #{eduSign,jdbcType=VARCHAR}, #{birthPlace,jdbcType=VARCHAR}, 
+      #{nativePlace,jdbcType=VARCHAR}, #{birthDate,jdbcType=VARCHAR}, #{nation,jdbcType=VARCHAR}, 
+      #{sexSign,jdbcType=VARCHAR}, #{idNo,jdbcType=VARCHAR}, #{policeIdNo,jdbcType=VARCHAR}, 
+      #{result})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hrbb.loan.pos.dao.entity.TPoliceInfo" >
+    insert into t_police_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="custName != null" >
+        custName,
+      </if>
+      <if test="photo != null" >
+        photo,
+      </if>
+      <if test="policeCustName != null" >
+        policeCustName,
+      </if>
+      <if test="servPlace != null" >
+        servPlace,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="mariSign != null" >
+        mariSign,
+      </if>
+      <if test="eduSign != null" >
+        eduSign,
+      </if>
+      <if test="birthPlace != null" >
+        birthPlace,
+      </if>
+      <if test="nativePlace != null" >
+        nativePlace,
+      </if>
+      <if test="birthDate != null" >
+        birthDate,
+      </if>
+      <if test="nation != null" >
+        nation,
+      </if>
+      <if test="sexSign != null" >
+        sexSign,
+      </if>
+      <if test="idNo != null" >
+        idNo,
+      </if>
+      <if test="policeIdNo != null" >
+        policeIdNo,
+      </if>
+      <if test="result != null">
+      	result,
+      </if>
+      <if test="queryTime != null">
+      	queryTime,
+      </if>
+      <if test="territorial != null">
+      	territorial,
+      </if>
+      <if test="createTime != null">
+      	createTime,
+      </if>
+      <if test="updateTime != null">
+      	updateTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="custName != null" >
+        #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="photo != null" >
+        #{photo,jdbcType=VARCHAR},
+      </if>
+      <if test="policeCustName != null" >
+        #{policeCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="servPlace != null" >
+        #{servPlace,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="mariSign != null" >
+        #{mariSign,jdbcType=VARCHAR},
+      </if>
+      <if test="eduSign != null" >
+        #{eduSign,jdbcType=VARCHAR},
+      </if>
+      <if test="birthPlace != null" >
+        #{birthPlace,jdbcType=VARCHAR},
+      </if>
+      <if test="nativePlace != null" >
+        #{nativePlace,jdbcType=VARCHAR},
+      </if>
+      <if test="birthDate != null" >
+        #{birthDate,jdbcType=VARCHAR},
+      </if>
+      <if test="nation != null" >
+        #{nation,jdbcType=VARCHAR},
+      </if>
+      <if test="sexSign != null" >
+        #{sexSign,jdbcType=VARCHAR},
+      </if>
+      <if test="idNo != null" >
+        #{idNo,jdbcType=VARCHAR},
+      </if>
+      <if test="policeIdNo != null" >
+        #{policeIdNo,jdbcType=VARCHAR},
+      </if>
+      <if test="result != null">
+      	#{result},
+      </if>
+      <if test="queryTime != null">
+      	#{queryTime},
+      </if>
+      <if test="territorial != null">
+      	#{territorial},
+      </if>
+      <if test="createTime != null">
+      	#{createTime},
+      </if>
+      <if test="updateTime != null">
+      	#{updateTime},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertSelectiveMap" parameterType="Map" >
+    insert into t_police_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="custName != null" >
+        custName,
+      </if>
+      <if test="photo != null" >
+        photo,
+      </if>
+      <if test="policeCustName != null" >
+        policeCustName,
+      </if>
+      <if test="servPlace != null" >
+        servPlace,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="mariSign != null" >
+        mariSign,
+      </if>
+      <if test="eduSign != null" >
+        eduSign,
+      </if>
+      <if test="birthPlace != null" >
+        birthPlace,
+      </if>
+      <if test="nativePlace != null" >
+        nativePlace,
+      </if>
+      <if test="birthDate != null" >
+        birthDate,
+      </if>
+      <if test="nation != null" >
+        nation,
+      </if>
+      <if test="sexSign != null" >
+        sexSign,
+      </if>
+      <if test="idNo != null" >
+        idNo,
+      </if>
+      <if test="policeIdNo != null" >
+        policeIdNo,
+      </if>
+      <if test="result != null">
+      	result,
+      </if>
+      <if test="queryTime != null">
+      	queryTime,
+      </if>
+      <if test="territorial != null">
+      	territorial,
+      </if>
+      <if test="createTime != null">
+      	createTime,
+      </if>
+      <if test="updateTime != null">
+      	updateTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="custName != null" >
+        #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="photo != null" >
+        #{photo,jdbcType=VARCHAR},
+      </if>
+      <if test="policeCustName != null" >
+        #{policeCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="servPlace != null" >
+        #{servPlace,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="mariSign != null" >
+        #{mariSign,jdbcType=VARCHAR},
+      </if>
+      <if test="eduSign != null" >
+        #{eduSign,jdbcType=VARCHAR},
+      </if>
+      <if test="birthPlace != null" >
+        #{birthPlace,jdbcType=VARCHAR},
+      </if>
+      <if test="nativePlace != null" >
+        #{nativePlace,jdbcType=VARCHAR},
+      </if>
+      <if test="birthDate != null" >
+        #{birthDate,jdbcType=VARCHAR},
+      </if>
+      <if test="nation != null" >
+        #{nation,jdbcType=VARCHAR},
+      </if>
+      <if test="sexSign != null" >
+        #{sexSign,jdbcType=VARCHAR},
+      </if>
+      <if test="idNo != null" >
+        #{idNo,jdbcType=VARCHAR},
+      </if>
+      <if test="policeIdNo != null" >
+        #{policeIdNo,jdbcType=VARCHAR},
+      </if>
+      <if test="result != null">
+      	#{result},
+      </if>
+      <if test="queryTime != null">
+      	#{queryTime},
+      </if>
+      <if test="territorial != null">
+      	#{territorial},
+      </if>
+      <if test="createTime != null">
+      	#{createTime},
+      </if>
+      <if test="updateTime != null">
+      	#{updateTime},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.hrbb.loan.pos.dao.entity.TPoliceInfo" >
+    update t_police_info
+    <set >
+      <if test="custName != null" >
+        custName = #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="photo != null" >
+        photo = #{photo,jdbcType=VARCHAR},
+      </if>
+      <if test="policeCustName != null" >
+        policeCustName = #{policeCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="servPlace != null" >
+        servPlace = #{servPlace,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="mariSign != null" >
+        mariSign = #{mariSign,jdbcType=VARCHAR},
+      </if>
+      <if test="eduSign != null" >
+        eduSign = #{eduSign,jdbcType=VARCHAR},
+      </if>
+      <if test="birthPlace != null" >
+        birthPlace = #{birthPlace,jdbcType=VARCHAR},
+      </if>
+      <if test="nativePlace != null" >
+        nativePlace = #{nativePlace,jdbcType=VARCHAR},
+      </if>
+      <if test="birthDate != null" >
+        birthDate = #{birthDate,jdbcType=VARCHAR},
+      </if>
+      <if test="nation != null" >
+        nation = #{nation,jdbcType=VARCHAR},
+      </if>
+      <if test="sexSign != null" >
+        sexSign = #{sexSign,jdbcType=VARCHAR},
+      </if>
+      <if test="idNo != null" >
+        idNo = #{idNo,jdbcType=VARCHAR},
+      </if>
+      <if test="policeIdNo != null" >
+        policeIdNo = #{policeIdNo,jdbcType=VARCHAR},
+      </if>
+      <if test="result != null">
+      	result = #{result},
+      </if>
+      <if test="territorial != null">
+      	territorial = #{territorial, jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  
+  <update id="updateSelectiveMap" parameterType="Map" >
+    update t_police_info
+    <set >
+      <if test="custName != null" >
+        custName = #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="photo != null" >
+        photo = #{photo,jdbcType=VARCHAR},
+      </if>
+      <if test="policeCustName != null" >
+        policeCustName = #{policeCustName,jdbcType=VARCHAR},
+      </if>
+      <if test="servPlace != null" >
+        servPlace = #{servPlace,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="mariSign != null" >
+        mariSign = #{mariSign,jdbcType=VARCHAR},
+      </if>
+      <if test="eduSign != null" >
+        eduSign = #{eduSign,jdbcType=VARCHAR},
+      </if>
+      <if test="birthPlace != null" >
+        birthPlace = #{birthPlace,jdbcType=VARCHAR},
+      </if>
+      <if test="nativePlace != null" >
+        nativePlace = #{nativePlace,jdbcType=VARCHAR},
+      </if>
+      <if test="birthDate != null" >
+        birthDate = #{birthDate,jdbcType=VARCHAR},
+      </if>
+      <if test="nation != null" >
+        nation = #{nation,jdbcType=VARCHAR},
+      </if>
+      <if test="sexSign != null" >
+        sexSign = #{sexSign,jdbcType=VARCHAR},
+      </if>
+      <if test="idNo != null" >
+        idNo = #{idNo,jdbcType=VARCHAR},
+      </if>
+      <if test="policeIdNo != null" >
+        policeIdNo = #{policeIdNo,jdbcType=VARCHAR},
+      </if>
+      <if test="result != null">
+      	result = #{result},
+      </if>
+      <if test="territorial != null">
+      	territorial = #{territorial, jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+      	createTime = #{createTime},
+      </if>
+      <if test="updateTime != null">
+      	updateTime = #{updateTime},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  
+  <update id="updateByPrimaryKey" parameterType="com.hrbb.loan.pos.dao.entity.TPoliceInfo" >
+    update t_police_info
+    set custName = #{custName,jdbcType=VARCHAR},
+      photo = #{photo,jdbcType=VARCHAR},
+      policeCustName = #{policeCustName,jdbcType=VARCHAR},
+      servPlace = #{servPlace,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      mariSign = #{mariSign,jdbcType=VARCHAR},
+      eduSign = #{eduSign,jdbcType=VARCHAR},
+      birthPlace = #{birthPlace,jdbcType=VARCHAR},
+      nativePlace = #{nativePlace,jdbcType=VARCHAR},
+      birthDate = #{birthDate,jdbcType=VARCHAR},
+      nation = #{nation,jdbcType=VARCHAR},
+      sexSign = #{sexSign,jdbcType=VARCHAR},
+      idNo = #{idNo,jdbcType=VARCHAR},
+      policeIdNo = #{policeIdNo,jdbcType=VARCHAR},
+      isIdNoSame = #{isIdNoSame,jdbcType=VARCHAR},
+      isNameSame = #{isNameSame,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

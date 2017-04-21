@@ -1,0 +1,60 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<div id="editBankCardInfoWindow" minimizable="false" maximizable="true" style="background: #fafafa;"   title="信息提示" >
+	<font size="5">确认更改银行信息？</font>
+	<br/>
+	<table style="width:100%;height:150px;text-align: center;"  border="1">
+	  <!--  
+	  <tr>
+       		<td>*客户姓名:</td>
+       		<td><input type="text" id="custName" name="custName"/></td>
+       		<td>*合同编号:</td>
+       		<td><input type="text" id="contNo" name="contNo"/></td>
+       	</tr>
+       	<tr>
+       		<td>*证件类型:</td>
+       		<td><input type="text" id="paperKind" name="paperKind"/></td>
+       		<td>*证件编号:</td>
+       		<td><input type="text" id="paperId" name="paperId"/></td>
+       	</tr>
+       	<tr>
+       		<td>*授信额度:</td>
+       		<td><input type="text" id="approvedAmount" name="approvedAmount"/></td>
+       		<td>*授信利率:</td>
+       		<td><input type="text" id="approvedInterate" name="approvedInterate"/></td>
+       	</tr>
+       	 -->
+       	 
+		<tr>
+       		<td>*银行账号:</td>
+       		<!-- <td><input type="text" id="newBankAccount" name="newBankAccount"/></td> -->
+       		<td><input id="newBankAccount" name="newBankAccount" class="easyui-validatebox" 
+							size="30" maxlength="30" data-options="required:true" onChange="javascript:valiateBankCard(this);"
+							validType="number[8,20]" invalidMessage="账号填写错误"/></td>
+       		<td>*开户行:</td>
+       		<td>
+       	 	<!-- <input type="text" id="newAccountOpenBank" name="newAccountOpenBank"/> -->
+       		<select	id="newAccountOpenBank" name="newAccountOpenBank" 
+								data-options="width:150"
+								class="easyui-combobox" validType="selectedRequired" required=true editable=false>
+								<option value="">--请选择开户行--</option>
+								<c:forEach items="${bankNoList}" var="obj">
+									<option value="${obj.itemNo}">${obj.itemName}</option>
+								</c:forEach>
+			</select>
+       		</td>
+       	</tr>
+		<tr>
+       		<td>*账户分行:</td>
+       		<td><input type="text" id="newAccountBranchBank" name="newAccountBranchBank"/></td>
+       		<td>*账户支行:</td>
+       		<td><input type="text" id="newAccountSubBranchBank" name="newAccountSubBranchBank"/></td>
+       	</tr>
+	
+	</table>
+	<div style="text-align: center">
+		<a id="btnEp" class="easyui-linkbutton" icon="icon-ok" onclick="changeBankCard()" >确认调整</a>
+	    <a id="btnEp"  class="easyui-linkbutton" icon="icon-cancel" onclick="closeChangeBankInfo()">取消</a>	
+    </div>
+</div>
